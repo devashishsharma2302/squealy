@@ -23,8 +23,9 @@ class TransposeTranformer(TableTransformer):
         transposed = zip(*table.data)
 
         new_table = Table()
-        new_table.columns = [Column(c, "String", "Dimension") for c in transposed[0]]
-        del transposed[0]
+        if transposed :
+            new_table.columns = [Column(c, "String", "Dimension") for c in transposed[0]]
+            del transposed[0]
         new_table.data = transposed
         return new_table
 

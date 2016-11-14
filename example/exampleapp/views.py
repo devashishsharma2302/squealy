@@ -6,4 +6,6 @@ from squealy.views import SqlApiView
 class DatabaseTableReport(SqlApiView):
     query = "select name, sql from sqlite_master where name = {{ params.name }};"
     format = "table"
-    transformations = []
+    transformations = ["transpose"]
+    parameters = {"name": { "type": "string"}}
+

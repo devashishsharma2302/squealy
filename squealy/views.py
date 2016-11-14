@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from jinjasql import JinjaSql
 from django.db import connections
 
+from squealy.exception_handlers import RequiredParameterMissingException
 from squealy.transformer import TransformationsLoader, transformers
 from .formatter import SimpleFormatter, FormatLoader, formatters
 from .table import Table, Column
@@ -27,7 +28,7 @@ class SqlApiView(APIView):
         # First, validate the request parameters
         # If validation fails, a sub-class of ApiException
         # must be raised
-        # self.validate_request(request)
+        self._validate_params(request)
 
         # Execute the SQL Query, and return a Table
         table = self.execute_query(request)
@@ -55,6 +56,14 @@ class SqlApiView(APIView):
             transformers_requested.append(transformers[transformation])
         return TransformationsLoader(transformers_requested)
 
+    def _validate_params(self, request):
+        params = request.GET
+        for param in self.parameters:
+            # Check for missing required parameters
+            if not params.get(param):
+                raise RequiredParameterMissingException("Parameter required",
+                                                     param)
+        return params
 
     def execute_query(self, request):
         query, bind_params = jinjasql.prepare_query(self.query, {"params": request.GET})
