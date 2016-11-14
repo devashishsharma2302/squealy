@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 from django.test import TestCase, RequestFactory
-from exampleapp.views import DatabaseTableReport
+from example.exampleapp.views import DatabaseTableReport
 
 class SqlApiViewTest(TestCase):
     def test_get(self):
