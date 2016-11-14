@@ -1,0 +1,105 @@
+from .table import Column, Table
+
+
+class TableTransformer(object):
+    def transform(self):
+        """
+        To be implemented in inherited classes
+        """
+        pass
+
+
+class TransposeTranformer(TableTransformer):
+    # Fixme: Introduce Dimensions
+    def transform(self, table):
+        """Converts rows into columns and vice versa
+        1. The first column in the original
+           becomes the column names in the transformed
+        2. The column names in the original
+           become the values in the first column in the transformed
+        """
+        column_names = [c.name for c in table.columns]
+        table.data.insert(0, column_names)
+        transposed = zip(*table.data)
+
+        new_table = Table()
+        new_table.columns = [Column(c, "String", "Dimension") for c in transposed[0]]
+        del transposed[0]
+        new_table.data = transposed
+        return new_table
+
+
+class SplitColumnTransformer(TableTransformer):
+
+    def transform(self, table, pivot_column):
+        """Returns pivot table based on the pivot column"""
+        #NOTE:: Split transformation is for single metric. Future implementation for multiple metric
+        #Get index of the pivot column
+        pivot_column_index = table.columns_to_str().index(pivot_column)
+        #Find the index of the metric column
+        metric_column_index = table.get_col_type().index("Metric")
+        new_split_columns = set()
+        #Get values of new columns
+        for data in table.data:
+            new_split_columns.add(data[pivot_column_index])
+        new_split_columns = list(new_split_columns)
+        #Set the metric for the new columns 
+        for index,data in enumerate(table.data):
+            temp_metric = data[metric_column_index]
+            #Delete the metric column data as metric would be displayed in the new columns
+            del table.data[index][metric_column_index]
+            temp_pivot_value = data[pivot_column_index]
+            #Delete the pivot column data as it has been split into multiple columns
+            del table.data[index][pivot_column_index]
+            table.data[index] = table.data[index][:pivot_column_index] + [(temp_metric if i==new_split_columns.index(temp_pivot_value) else '-') for i in range(len(new_split_columns))] + table.data[index][pivot_column_index:]
+        #Delete the metric and pivot column
+        del table.columns[metric_column_index]
+        del table.columns[pivot_column_index]
+        # TODO:: Remove hardcoded string and col_type. 
+        table.columns = table.columns[:pivot_column_index] + [Column(column,'string','Dimension') for column in new_split_columns] + table.columns[pivot_column_index:]
+        return table
+
+
+class MergeColumnTransformer(TableTransformer):
+
+    def transform(self, table, columns_to_merge, new_column_name):
+        """
+        Returns table objects with merged columns and data
+        """
+        cur_columns = table.columns_to_str()
+        columns_to_merge_index = [cur_columns.index(column) for column in columns_to_merge]
+        data = []
+        for index,row in enumerate(table.data):
+            temp_row = []
+            temp_merge_value = []
+            for row_index,value in enumerate(table.data[index]):
+                if row_index not in columns_to_merge_index:
+                    temp_row.append(value)
+                else:
+                    temp_merge_value.append(value)
+            #create rows for merged values
+            for merge_value in temp_merge_value:
+                row_copy = list(temp_row)
+                row_copy.append(merge_value)
+                data.append(row_copy)
+	    #TODO:: Remove hardcoded values
+        new_columns = [Column(column, 'string', 'Dimension') for index,column in enumerate(cur_columns) if index not in columns_to_merge_index]
+        new_columns.append(Column(new_column_name, 'string', 'Dimension'))
+        return Table(new_columns, data)
+
+
+class TransformationsLoader(TableTransformer):
+    def __init__(self, transformers=None):
+        self.transformers = transformers if transformers else []
+
+    def excecute_transformations(self, table):
+        for transformer in self.transformers:
+            table = transformer.transform(table)
+        return table
+
+
+transformers = {
+                'transpose': TransposeTranformer(),
+                'split': SplitColumnTransformer(),
+                'merge': MergeColumnTransformer()
+                }

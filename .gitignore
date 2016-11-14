@@ -1,0 +1,15 @@
+# Ignore generated directories
+venv
+
+# Ignore generated files
+*.pyc
+*.sqlite3
+
+# Ignore other specific files
+.project
+.pydevproject
+.settings
+
+build
+dist
+*.egg-info
