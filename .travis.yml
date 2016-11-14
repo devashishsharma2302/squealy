@@ -5,4 +5,9 @@ python:
   - "3.4"
   - "3.5"
 
+before_install:
+  - export DJANGO_SETTINGS_MODULE=example.example.settings
+
 script: python run_tests
+
+

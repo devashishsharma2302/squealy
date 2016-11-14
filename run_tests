@@ -6,6 +6,9 @@ from os.path import dirname, abspath, join
 import os
 import sys
 
+import django
+django.setup()
+
 if __name__ == "__main__":
     # Include squealy library into python path
     PROJECT_ROOT = dirname(abspath(__file__))
