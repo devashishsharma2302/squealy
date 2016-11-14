@@ -1,0 +1,2 @@
+class NoQueryException(Exception):
+    pass
