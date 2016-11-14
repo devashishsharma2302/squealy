@@ -1,6 +1,10 @@
 from __future__ import unicode_literals
 from django.test import TestCase, RequestFactory
-from example.exampleapp.views import DatabaseTableReport
+import os, sys
+root = os.path.dirname(__file__)
+sys.path.append(root + "/../example/exampleapp")
+
+from views import DatabaseTableReport
 
 class SqlApiViewTest(TestCase):
     def test_get(self):
