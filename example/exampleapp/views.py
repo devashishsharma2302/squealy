@@ -17,4 +17,4 @@ class DatabaseTableReport(SqlApiView):
             "type": "metric",
         }
     }
-    transformations = [{"name": "split", "kwargs": {"pivot_column": "sql"}}]
+    transformations = [{"name": "merge", "kwargs": {"columns_to_merge": ["sql","num"], "new_column_name": "merged_column"}}]

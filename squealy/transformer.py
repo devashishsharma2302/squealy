@@ -62,7 +62,7 @@ class SplitColumnTransformer(TableTransformer):
 
 class MergeColumnTransformer(TableTransformer):
 
-    def transform(self, table, columns_to_merge, new_column_name):
+    def transform(self, table, columns_to_merge, new_column_name="merged_column"):
         """
         Returns table objects with merged columns and data
         """
