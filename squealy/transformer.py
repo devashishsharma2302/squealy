@@ -83,7 +83,10 @@ class MergeColumnTransformer(TableTransformer):
                 row_copy.append(merge_value)
                 data.append(row_copy)
 	    #TODO:: Remove hardcoded values
-        new_columns = [Column(column, 'string', 'dimension') for index,column in enumerate(cur_columns) if index not in columns_to_merge_index]
+        new_columns = []
+        for column in table.columns:
+            if column.name not in columns_to_merge:
+                new_columns.append(column)
         new_columns.append(Column(new_column_name, 'string', 'dimension'))
         return Table(new_columns, data)
 
