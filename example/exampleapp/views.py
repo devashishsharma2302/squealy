@@ -4,6 +4,17 @@ from squealy.views import SqlApiView
 # Create your views here.
 
 class DatabaseTableReport(SqlApiView):
-    query = "select name, sql from sqlite_master where name = {{ params.name }};"
+    query = "select name, sql, 5 as num from sqlite_master limit 4;"
     format = "table"
-    transformations = []
+    columns = {
+        "name": {
+            "type": "dimension",
+        },
+        "sql": {
+            "type": "dimension",
+        },
+        "num": {
+            "type": "metric",
+        }
+    }
+    transformations = [{"name": "split", "kwargs": {"pivot_column": "sql"}}]
