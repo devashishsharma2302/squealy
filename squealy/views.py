@@ -76,7 +76,7 @@ class SqlApiView(APIView):
                 row_list = []
                 for col_index, chart_col in enumerate(cols):
                     value = db_row[col_index]
-                    if isinstance(value, basestring):
+                    if isinstance(value, str):
                         # If value contains a non english alphabet
                         value = value.encode('utf-8')
                     else:
