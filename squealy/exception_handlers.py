@@ -3,3 +3,6 @@ class NoQueryException(Exception):
 
 class RequiredParameterMissingException(Exception):
     pass
+
+class DateParseException(Exception):
+    pass

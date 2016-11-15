@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from jinjasql import JinjaSql
 from django.db import connections
 
+from squealy.config import DateParameter, DateTimeParameter, StringParameter
 from squealy.exception_handlers import RequiredParameterMissingException
 from squealy.transformer import TransformationsLoader, transformers
 from .formatter import SimpleFormatter, FormatLoader, formatters
@@ -28,7 +29,7 @@ class SqlApiView(APIView):
         # First, validate the request parameters
         # If validation fails, a sub-class of ApiException
         # must be raised
-        self._validate_params(request)
+        params = self._validate_params(request)
 
         # Execute the SQL Query, and return a Table
         table = self.execute_query(request)
@@ -57,12 +58,23 @@ class SqlApiView(APIView):
         return TransformationsLoader(transformers_requested)
 
     def _validate_params(self, request):
-        params = request.GET
+        params = request.GET.copy()
         for param in self.parameters:
             # Check for missing required parameters
             if not params.get(param):
                 raise RequiredParameterMissingException("Parameter required",
                                                      param)
+
+            # Formatting parameters
+            parameter_type = self.parameters[param].get("type", "string")
+            if parameter_type.lower() == "date":
+                date_format = self.parameters[param].get("format")
+                params[param] = DateParameter(param, format=date_format).to_internal(params[param])
+            if parameter_type.lower() == "datetime":
+                datetime_format = self.parameters[param].get("format")
+                params[param] = DateTimeParameter(param, format=datetime_format).to_internal(params[param])
+            if parameter_type.lower() == "string":
+                params[param] = StringParameter(param).to_internal(params[param])
         return params
 
     def execute_query(self, request):
