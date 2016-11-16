@@ -2,6 +2,9 @@
 id: api1
 name: Test API
 url: api1
+access_control:
+    required_permissions:
+        - can_access_api_1
 
 query: >
     select name, sql, 5 as num, 123 as some_column from sqlite_master limit 4;

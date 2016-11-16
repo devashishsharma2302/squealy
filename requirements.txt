@@ -4,3 +4,4 @@ jinjasql==0.1.4
 django-cors-headers==1.2.2
 PyYAML>=3
 arrow==0.8.0
+PyJWT==1.4.2
