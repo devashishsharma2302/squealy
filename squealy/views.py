@@ -52,7 +52,7 @@ class SqlApiView(APIView):
     def load_transformations_loader(self):
         transformers_requested = []
         for transformation in self.transformations:
-            transformers_requested.append(transformers[transformation])
+            transformers_requested.append({"transformer": transformers[transformation.get("name", "default")], "kwargs": transformation.get("kwargs", {})})
         return TransformationsLoader(transformers_requested)
 
 
@@ -65,13 +65,18 @@ class SqlApiView(APIView):
             cols = []
             rows = []
             for desc in cursor.description:
-                cols.append(Column(name=desc[0], data_type='String', col_type='Dimension'))
+                # if column definition is provided
+                if self.columns.get(desc[0]):
+                    column = self.columns.get(desc[0])
+                    cols.append(Column(name=desc[0], data_type=column.get('data_type', 'string'), col_type=column.get('type', 'dimension')))
+                else:
+                    cols.append(Column(name=desc[0], data_type='string', col_type='dimension'))
 
             for db_row in cursor:
                 row_list = []
                 for col_index, chart_col in enumerate(cols):
                     value = db_row[col_index]
-                    if isinstance(value, basestring):
+                    if isinstance(value, str):
                         # If value contains a non english alphabet
                         value = value.encode('utf-8')
                     else:

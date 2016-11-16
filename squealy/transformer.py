@@ -2,11 +2,11 @@ from .table import Column, Table
 
 
 class TableTransformer(object):
-    def transform(self):
+    def transform(self, table, *args):
         """
         To be implemented in inherited classes
         """
-        pass
+        return table
 
 
 class TransposeTranformer(TableTransformer):
@@ -23,7 +23,7 @@ class TransposeTranformer(TableTransformer):
         transposed = zip(*table.data)
 
         new_table = Table()
-        new_table.columns = [Column(c, "String", "Dimension") for c in transposed[0]]
+        new_table.columns = [Column(c, "string", "dimension") for c in transposed[0]]
         del transposed[0]
         new_table.data = transposed
         return new_table
@@ -37,7 +37,7 @@ class SplitColumnTransformer(TableTransformer):
         #Get index of the pivot column
         pivot_column_index = table.columns_to_str().index(pivot_column)
         #Find the index of the metric column
-        metric_column_index = table.get_col_type().index("Metric")
+        metric_column_index = table.get_col_type().index("metric")
         new_split_columns = set()
         #Get values of new columns
         for data in table.data:
@@ -56,13 +56,13 @@ class SplitColumnTransformer(TableTransformer):
         del table.columns[metric_column_index]
         del table.columns[pivot_column_index]
         # TODO:: Remove hardcoded string and col_type. 
-        table.columns = table.columns[:pivot_column_index] + [Column(column,'string','Dimension') for column in new_split_columns] + table.columns[pivot_column_index:]
+        table.columns = table.columns[:pivot_column_index] + [Column(column,'string','dimension') for column in new_split_columns] + table.columns[pivot_column_index:]
         return table
 
 
 class MergeColumnTransformer(TableTransformer):
 
-    def transform(self, table, columns_to_merge, new_column_name):
+    def transform(self, table, columns_to_merge, new_column_name="merged_column"):
         """
         Returns table objects with merged columns and data
         """
@@ -83,8 +83,11 @@ class MergeColumnTransformer(TableTransformer):
                 row_copy.append(merge_value)
                 data.append(row_copy)
 	    #TODO:: Remove hardcoded values
-        new_columns = [Column(column, 'string', 'Dimension') for index,column in enumerate(cur_columns) if index not in columns_to_merge_index]
-        new_columns.append(Column(new_column_name, 'string', 'Dimension'))
+        new_columns = []
+        for column in table.columns:
+            if column.name not in columns_to_merge:
+                new_columns.append(column)
+        new_columns.append(Column(new_column_name, 'string', 'dimension'))
         return Table(new_columns, data)
 
 
@@ -94,12 +97,14 @@ class TransformationsLoader(TableTransformer):
 
     def excecute_transformations(self, table):
         for transformer in self.transformers:
-            table = transformer.transform(table)
+            kwargs = transformer.get("kwargs", {})
+            table = transformer.get('transformer').transform(table, **kwargs)
         return table
 
 
 transformers = {
                 'transpose': TransposeTranformer(),
                 'split': SplitColumnTransformer(),
-                'merge': MergeColumnTransformer()
+                'merge': MergeColumnTransformer(),
+                'default': TableTransformer()
                 }
