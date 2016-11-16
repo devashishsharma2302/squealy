@@ -12,3 +12,10 @@ url: api2
 
 query: >
     select name, sql, 5 as num, 123 as some_column from sqlite_master limit 1;
+---
+id: api3
+name: Test API
+url: api3
+
+query: >
+    select name, sql, 5 as num, 123 as some_column from sqlite_master limit 10;

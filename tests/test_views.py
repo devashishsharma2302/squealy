@@ -11,7 +11,7 @@ class SqlApiViewTest(TestCase):
         # factory = APIRequestFactory()
         # request = factory.get('/example/table-report/')
         factory = RequestFactory()
-        request = factory.get('/example/table-report/?name=testname')
+        request = factory.get('/example/table-report/?name=testname&date=2008/09/08&datetime=2016/12/28%2012:12:12')
         response = DatabaseTableReport.as_view()(request)
         self.assertEqual(response.status_code, 200)
         #response.render()

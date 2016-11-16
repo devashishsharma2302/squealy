@@ -23,4 +23,7 @@ class DatabaseTableReport(SqlApiView):
                        {"name": "merge", "kwargs": {"columns_to_merge": ["sql","some_column"], "new_column_name": "merged_column"}},
                         {"name": "split", "kwargs": {"pivot_column": "name"}}
     ]
+    parameters = {"name": { "type": "string"},
+                  "date": {"type": "date", "format": "YYYY/MM/DD"},
+                  "datetime": {"type": "datetime", "format": "YYYY/MM/DD HH:mm:ss"}}
 
