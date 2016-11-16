@@ -11,7 +11,7 @@ class StringParameter:
         self.description = description if description else ""
 
     def to_internal(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             return value
         else:
             return str(value)
