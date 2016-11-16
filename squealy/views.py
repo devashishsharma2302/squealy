@@ -32,7 +32,7 @@ class SqlApiView(APIView):
         params = self._validate_params(request)
 
         # Execute the SQL Query, and return a Table
-        table = self.execute_query(request)
+        table = self.execute_query(params)
 
         # Perform basic transformations on the table
         transformations_loader = self.load_transformations_loader()
@@ -54,7 +54,7 @@ class SqlApiView(APIView):
     def load_transformations_loader(self):
         transformers_requested = []
         for transformation in self.transformations:
-            transformers_requested.append(transformers[transformation])
+            transformers_requested.append({"transformer": transformers[transformation.get("name", "default")], "kwargs": transformation.get("kwargs", {})})
         return TransformationsLoader(transformers_requested)
 
     def _validate_params(self, request):
@@ -77,8 +77,8 @@ class SqlApiView(APIView):
                 params[param] = StringParameter(param).to_internal(params[param])
         return params
 
-    def execute_query(self, request):
-        query, bind_params = jinjasql.prepare_query(self.query, {"params": request.GET})
+    def execute_query(self, params):
+        query, bind_params = jinjasql.prepare_query(self.query, {"params": params})
         conn = connections[self.connection_name]
     
         with conn.cursor() as cursor:
@@ -86,13 +86,18 @@ class SqlApiView(APIView):
             cols = []
             rows = []
             for desc in cursor.description:
-                cols.append(Column(name=desc[0], data_type='String', col_type='Dimension'))
+                # if column definition is provided
+                if self.columns.get(desc[0]):
+                    column = self.columns.get(desc[0])
+                    cols.append(Column(name=desc[0], data_type=column.get('data_type', 'string'), col_type=column.get('type', 'dimension')))
+                else:
+                    cols.append(Column(name=desc[0], data_type='string', col_type='dimension'))
 
             for db_row in cursor:
                 row_list = []
                 for col_index, chart_col in enumerate(cols):
                     value = db_row[col_index]
-                    if isinstance(value, basestring):
+                    if isinstance(value, str):
                         # If value contains a non english alphabet
                         value = value.encode('utf-8')
                     else:
