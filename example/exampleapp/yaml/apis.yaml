@@ -1,0 +1,14 @@
+---
+id: api1
+name: Test API
+url: api1
+
+query: >
+    select name, sql, 5 as num, 123 as some_column from sqlite_master limit 4;
+---
+id: api2
+name: Test API
+url: api2
+
+query: >
+    select name, sql, 5 as num, 123 as some_column from sqlite_master limit 1;

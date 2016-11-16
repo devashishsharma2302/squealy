@@ -90,7 +90,7 @@ class HighchartsFormatter(Formatter):
 
 class FormatLoader(Formatter):
     def __init__(self, formatter=None):
-        self.formatter = formatter() if formatter else Formatter()
+        self.formatter = formatter() if formatter else SimpleFormatter()
 
     def execute_formatter(self, table):
         return self.formatter.format(table)

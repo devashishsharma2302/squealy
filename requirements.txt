@@ -2,3 +2,4 @@ Django==1.10.2
 djangorestframework==3.5.1
 jinjasql==0.1.4
 django-cors-headers==1.2.2
+PyYAML>=3
