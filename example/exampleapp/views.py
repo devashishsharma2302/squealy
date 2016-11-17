@@ -4,6 +4,8 @@ from squealy.views import SqlApiView
 # Create your views here.
 
 class DatabaseTableReport(SqlApiView):
+
+
     query = "select name, sql, 5 as num, 123 as some_column from sqlite_master limit 4;"
     format = "table"
     columns = {

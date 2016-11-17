@@ -29,26 +29,33 @@ class SqlApiView(APIView):
         # First, validate the request parameters
         # If validation fails, a sub-class of ApiException
         # must be raised
-        params = self._validate_params(request)
+        params = request.GET.copy()
+        if hasattr(self, 'parameters'):
+            params = self._validate_params(request)
 
         # Execute the SQL Query, and return a Table
         table = self.execute_query(params)
 
-        # Perform basic transformations on the table
-        transformations_loader = self.load_transformations_loader()
-        transformed_table = transformations_loader.excecute_transformations(table)
+        if hasattr(self, 'transformations'):
+            # Perform basic transformations on the table
+            transformations_loader = self.load_transformations_loader()
+            table = transformations_loader.excecute_transformations(table)
+
         # Format the table according to google charts / highcharts etc
         formatter = self.get_formatter()
 
         # Return the response
-        return Response(formatter.execute_formatter(transformed_table))
+        return Response(formatter.execute_formatter(table))
 
     # def validate_request(self, request):
     #     for validation in self.validations:
     #         validation.validate(request)
 
     def get_formatter(self):
-        return FormatLoader(formatters.get(self.format))
+        if hasattr(self, 'format'):
+            return FormatLoader(formatters.get(self.format, None))
+        return FormatLoader()
+
 
 
     def load_transformations_loader(self):
@@ -87,7 +94,7 @@ class SqlApiView(APIView):
             rows = []
             for desc in cursor.description:
                 # if column definition is provided
-                if self.columns.get(desc[0]):
+                if hasattr(self, 'columns') and self.columns.get(desc[0]):
                     column = self.columns.get(desc[0])
                     cols.append(Column(name=desc[0], data_type=column.get('data_type', 'string'), col_type=column.get('type', 'dimension')))
                 else:
