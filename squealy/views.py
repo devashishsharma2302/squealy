@@ -3,13 +3,11 @@ from rest_framework.response import Response
 from jinjasql import JinjaSql
 from django.db import connections
 
-from squealy.config import DateParameter, DateTimeParameter, StringParameter, PermissionValidator, SessionPermissionMapper
-from squealy.exception_handlers import RequiredParameterMissingException, InvalidJWTException, PermissionDeniedException
+from squealy.config import DateParameter, DateTimeParameter, StringParameter
+from squealy.exception_handlers import RequiredParameterMissingException
 from squealy.transformer import TransformationsLoader, transformers
 from .formatter import SimpleFormatter, FormatLoader, formatters
 from .table import Table, Column
-import jwt
-
 
 
 jinjasql = JinjaSql()
@@ -32,11 +30,6 @@ class SqlApiView(APIView):
         # If validation fails, a sub-class of ApiException
         # must be raised
         params = request.GET.copy()
-        if hasattr(self, 'access_control'):
-            session = self.extract_session_from_jwt(request)
-            print session
-            self._validate_permissions(session)
-
         if hasattr(self, 'parameters'):
             params = self._validate_params(request)
 
@@ -63,17 +56,6 @@ class SqlApiView(APIView):
             return FormatLoader(formatters.get(self.format, None))
         return FormatLoader()
 
-    def extract_session_from_jwt(self, request):
-        session_params = {}
-        try:
-            if request.META.get('HTTP_AUTHORIZATION'):
-                encoded_jwt = request.META["HTTP_AUTHORIZATION"].split()[1]
-                session_params = jwt.decode(encoded_jwt, 'secret',
-                                            algorithms=['HS256'])
-            return session_params
-        except jwt.InvalidTokenError:
-            msg = 'Invalid JWT passed'
-            raise InvalidJWTException(msg)
 
 
     def load_transformations_loader(self):
@@ -81,13 +63,6 @@ class SqlApiView(APIView):
         for transformation in self.transformations:
             transformers_requested.append({"transformer": transformers[transformation.get("name", "default")], "kwargs": transformation.get("kwargs", {})})
         return TransformationsLoader(transformers_requested)
-
-
-    def _validate_permissions(self, session):
-        user_permission_mapper = SessionPermissionMapper(lookup_key_name='permissions')
-        required_permissions = self.access_control['required_permissions']
-        PermissionValidator(required_permissions,
-                            user_permission_mapper).has_permission(session)
 
     def _validate_params(self, request):
         params = request.GET.copy()
