@@ -34,7 +34,6 @@ class SqlApiView(APIView):
         params = request.GET.copy()
         if hasattr(self, 'access_control'):
             session = self.extract_session_from_jwt(request)
-            print session
             self._validate_permissions(session)
 
         if hasattr(self, 'parameters'):
