@@ -1,6 +1,6 @@
 import arrow
 
-from squealy.exception_handlers import DateParseException
+from squealy.exception_handlers import DateParseException, DateTimeParseException
 
 
 class StringParameter:
@@ -25,23 +25,24 @@ class StringParameter:
 
 
 class DateParameter:
-    def __init__(self, name, description=None, default_value=None, format=None):
+    def __init__(self, name, description=None, default_value=None, format=None, output_format=None):
         self.default_value = default_value
         self.format = format
         self.name = name
         self.description = description if description else ""
+        self.output_format = output_format
 
     def to_internal(self, value):
         try:
             if (value.lower() == "today"):
                 date = arrow.utcnow()
-                if self.format:
-                    return date.format(self.format)
+                if self.output_format:
+                    return date.format(self.output_format)
                 return str(date.date())
             else:
                 date = arrow.get(value, self.format)
-                if self.format:
-                    return date.format(self.format)
+                if self.output_format:
+                    return date.format(self.output_format)
                 return str(date.date())
         except arrow.parser.ParserError:
             if self.format:
@@ -53,28 +54,29 @@ class DateParameter:
 
 
 class DateTimeParameter:
-    def __init__(self, name, description=None, default_value=None, format=None):
+    def __init__(self, name, description=None, default_value=None, format=None, output_format=None):
         self.default_value = default_value
         self.format = format
         self.name = name
         self.description = description if description else ""
+        self.output_format = output_format
 
     def to_internal(self, value):
         try:
-            if (value.lower() == "now"):
+            if value.lower() == "now":
                 date = arrow.utcnow()
-                if self.format:
-                    return date.format(self.format)
+                if self.output_format:
+                    return date.format(self.output_format)
                 return str(date.format())
             else:
                 date = arrow.get(value, self.format)
-                if self.format:
-                    return date.format(self.format)
+                if self.output_format:
+                    return date.format(self.output_format)
                 return str(date.format())
         except arrow.parser.ParserError:
             if self.format:
-                raise DateParseException("DateTime could not be parsed:\
+                raise DateTimeParseException("DateTime could not be parsed:\
                                          Received value - " + value +
                                          "Expected Format - "+self.format)
             else:
-                raise DateParseException("Invalid DateTime", value)
+                raise DateTimeParseException("Invalid DateTime", value)

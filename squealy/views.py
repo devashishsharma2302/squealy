@@ -34,7 +34,7 @@ class SqlApiView(APIView):
             params = self._validate_params(request)
 
         # Execute the SQL Query, and return a Table
-        table = self.execute_query(params)
+        table = self._execute_query(params)
 
         if hasattr(self, 'transformations'):
             # Perform basic transformations on the table
@@ -76,15 +76,17 @@ class SqlApiView(APIView):
             parameter_type = self.parameters[param].get("type", "string")
             if parameter_type.lower() == "date":
                 date_format = self.parameters[param].get("format")
-                params[param] = DateParameter(param, format=date_format).to_internal(params[param])
+                date_output_format = self.parameters[param].get("output_format")
+                params[param] = DateParameter(param, format=date_format, output_format=date_output_format).to_internal(params[param])
             if parameter_type.lower() == "datetime":
                 datetime_format = self.parameters[param].get("format")
-                params[param] = DateTimeParameter(param, format=datetime_format).to_internal(params[param])
+                datetime_output_format = self.parameters[param].get("output_format")
+                params[param] = DateTimeParameter(param, format=datetime_format, output_format=datetime_output_format).to_internal(params[param])
             if parameter_type.lower() == "string":
                 params[param] = StringParameter(param).to_internal(params[param])
         return params
 
-    def execute_query(self, params):
+    def _execute_query(self, params):
         query, bind_params = jinjasql.prepare_query(self.query, {"params": params})
         conn = connections[self.connection_name]
     
