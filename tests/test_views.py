@@ -1,7 +1,10 @@
 from __future__ import unicode_literals
 from django.test import TestCase, RequestFactory
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from squealy.exception_handlers import RequiredParameterMissingException, DateParseException, DateTimeParseException
 from squealy.views import SqlApiView
+from squealy.apigenerator import ApiGenerator
+from os.path import dirname, abspath, join
 
 
 class ParameterSubstitutionView(SqlApiView):
@@ -194,3 +197,30 @@ class TestDateTimeParameter(TestCase):
         request = factory.get('/example/table-report/?date_time=now')
         response = DateTimeParameterMacroView.as_view()(request)
         self.assertEqual(len(response.data.get('data')), 1)
+
+
+class TestYamlApiGeneration(TestCase):
+    def setUp(self):
+        TEST_YAML_ROOT = dirname(abspath(__file__))
+        file_path = join(TEST_YAML_ROOT, "test_apis.yaml")
+        self.squealy_urls = ApiGenerator.generate_urls_from_yaml(file_path)
+
+    def test_multiple_generated_apis(self):
+        factory = RequestFactory()
+        request = factory.get('/example/api1/')
+        response = self.squealy_urls[0].resolve('api1').func(request)
+        response.render()
+        self.assertEqual(response.status_code, 200)
+        request = factory.get('/example/api2/')
+        response = self.squealy_urls[1].resolve('api2').func(request)
+        response.render()
+        self.assertEqual(response.status_code, 200)
+
+    def test_authentication_classes(self):
+        factory = RequestFactory()
+        request = factory.get('/example/api3/')
+        view_func = self.squealy_urls[2].resolve('api3').func
+        authentication_classes = view_func.view_class.authentication_classes
+        self.assertIn(SessionAuthentication, authentication_classes)
+        self.assertIn(BasicAuthentication, authentication_classes)
+        self.assertIn(TokenAuthentication, authentication_classes)
