@@ -13,7 +13,7 @@ from os.path import dirname, abspath, join
 class ParameterSubstitutionView(SqlApiView):
     query = "select name, sql from sqlite_master where name = {{params.name}};"
     format = "table"
-    parameters = {"name": { "type": "string"} }
+    parameters = {"name": { "type": "string"}, "user_id": {"type": "string", "default_value": "user001"}, "optional_param": {"type": "string", "optional": True }}
 
 
 class TestParameterSubstitution(TestCase):
@@ -29,6 +29,21 @@ class TestParameterSubstitution(TestCase):
         request = factory.get('/example/table-report/')
         self.assertRaises(RequiredParameterMissingException, ParameterSubstitutionView.as_view(), request)
 
+    def test_default_value(self):
+        factory = RequestFactory()
+        request = factory.get('/example/table-report/?name=testname')
+        params = ParameterSubstitutionView().parse_params(request)
+        self.assertEqual(params.get('user_id'), 'user001')
+
+    def test_optional_param(self):
+        factory = RequestFactory()
+        request = factory.get('/example/table-report/?name=testname')
+        exception_raised = False
+        try:
+            ParameterSubstitutionView.as_view()(request)
+        except RequiredParameterMissingException:
+            exception_raised = True
+        self.assertFalse(exception_raised)
 
 class SessionParameterSubstitutionView(SqlApiView):
     query = "select name, sql, 'user001' as user_name from sqlite_master where user_name = {{user.username}};"
