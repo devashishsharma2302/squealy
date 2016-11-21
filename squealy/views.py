@@ -33,7 +33,7 @@ class SqlApiView(APIView):
         params = request.GET.copy()
         user = request.user
         if hasattr(self, 'parameters'):
-            params = self._validate_params(request)
+            params = self.parse_params(request)
         if hasattr(self, 'validations'):
             self.run_validations(params, user)
 
@@ -75,7 +75,7 @@ class SqlApiView(APIView):
                 error_code = validation.get("error_code", 400)
                 raise ValidationFailedException(msg, error_code)
 
-    def _validate_params(self, request):
+    def parse_params(self, request):
         params = request.GET.copy()
         for param in self.parameters:
             # Check for missing required parameters
@@ -87,12 +87,10 @@ class SqlApiView(APIView):
             parameter_type = self.parameters[param].get("type", "string")
             if parameter_type.lower() == "date":
                 date_format = self.parameters[param].get("format")
-                date_output_format = self.parameters[param].get("output_format")
-                params[param] = DateParameter(param, format=date_format, output_format=date_output_format).to_internal(params[param])
+                params[param] = DateParameter(param, format=date_format).to_internal(params[param])
             if parameter_type.lower() == "datetime":
                 datetime_format = self.parameters[param].get("format")
-                datetime_output_format = self.parameters[param].get("output_format")
-                params[param] = DateTimeParameter(param, format=datetime_format, output_format=datetime_output_format).to_internal(params[param])
+                params[param] = DateTimeParameter(param, format=datetime_format).to_internal(params[param])
             if parameter_type.lower() == "string":
                 params[param] = StringParameter(param).to_internal(params[param])
         return params
@@ -100,7 +98,7 @@ class SqlApiView(APIView):
     def _execute_query(self, params, user):
         query, bind_params = jinjasql.prepare_query(self.query, {"params": params, "user": user})
         conn = connections[self.connection_name]
-    
+
         with conn.cursor() as cursor:
             cursor.execute(query, bind_params)
             cols = []

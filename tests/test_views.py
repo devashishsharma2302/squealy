@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import datetime
 from django.contrib.auth.models import User
 from django.test import TestCase, RequestFactory
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
@@ -149,7 +150,7 @@ class DateParameterView(SqlApiView):
 
     format = "table"
 
-    parameters = {"date": {"type": "date", "format": "DD/MM/YYYY", "output_format": "YYYY/MM/DD"}}
+    parameters = {"date": {"type": "date", "format": "DD/MM/YYYY"}}
 
 
 class DateParameterMacroView(SqlApiView):
@@ -157,7 +158,7 @@ class DateParameterMacroView(SqlApiView):
 
     format = "table"
 
-    parameters = {"date": {"type": "date", "format": "DD/MM/YYYY", "output_format": "YYYY-MM-DD"}}
+    parameters = {"date": {"type": "date", "format": "DD/MM/YYYY"}}
 
 
 class TestDateParameter(TestCase):
@@ -179,6 +180,12 @@ class TestDateParameter(TestCase):
         request = factory.get('/example/table-report/?date=08-09/2016')
         self.assertRaises(DateParseException, DateParameterView.as_view(), request)
 
+    def test_date_parameter_datatype(self):
+        factory = RequestFactory()
+        request = factory.get('/example/table-report/?date=08/09/2016')
+        params = DateParameterView().parse_params(request)
+        self.assertEqual(type(params.get('date')), datetime.date)
+
     def test_date_macro_today(self):
         factory = RequestFactory()
         request = factory.get('/example/table-report/?date=today')
@@ -190,14 +197,14 @@ class DateTimeParameterView(SqlApiView):
     query = "select datetime('2016-09-08 10:44:50') as some_datetime where some_datetime = {{params.date_time}};"
     format = "table"
     parameters = {
-        "date_time": {"type": "datetime", "format": "DD/MM/YYYY HH:mm:ss", "output_format": "YYYY-MM-DD HH:mm:ss"}}
+        "date_time": {"type": "datetime", "format": "DD/MM/YYYY HH:mm:ss"}}
 
 
 class DateTimeParameterMacroView(SqlApiView):
     query = "select DATETIME() as some_datetime where some_datetime={{params.date_time}}"
     format = "table"
     parameters = {
-        "date_time": {"type": "datetime", "format": "DD/MM/YYYY HH:mm:ss", "output_format": "YYYY-MM-DD HH:mm:ss"}}
+        "date_time": {"type": "datetime", "format": "DD/MM/YYYY HH:mm:ss"}}
 
 
 class TestDateTimeParameter(TestCase):
@@ -218,6 +225,12 @@ class TestDateTimeParameter(TestCase):
         factory = RequestFactory()
         request = factory.get('/example/table-report/?date_time=08/09/2016')
         self.assertRaises(DateTimeParseException, DateTimeParameterView.as_view(), request)
+
+    def test_datetime_parameter_datatype(self):
+        factory = RequestFactory()
+        request = factory.get('/example/table-report/?date_time=08/09/2016 10:44:50')
+        params = DateTimeParameterView().parse_params(request)
+        self.assertEqual(type(params.get('date_time')), datetime.datetime)
 
     def test_date_macro_now(self):
         factory = RequestFactory()
