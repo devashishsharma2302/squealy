@@ -4,10 +4,11 @@ from jinjasql import JinjaSql
 from django.db import connections
 
 from squealy.config import DateParameter, DateTimeParameter, StringParameter
-from squealy.exception_handlers import RequiredParameterMissingException
+from squealy.exception_handlers import RequiredParameterMissingException, ValidationFailedException
 from squealy.transformer import TransformationsLoader, transformers
 from .formatter import SimpleFormatter, FormatLoader, formatters
 from .table import Table, Column
+from pydoc import locate
 
 
 jinjasql = JinjaSql()
@@ -32,6 +33,8 @@ class SqlApiView(APIView):
         params = request.GET.copy()
         if hasattr(self, 'parameters'):
             params = self._validate_params(request)
+        if hasattr(self, 'validations'):
+            self.run_validations(params)
 
         # Execute the SQL Query, and return a Table
         table = self._execute_query(params)
@@ -56,13 +59,20 @@ class SqlApiView(APIView):
             return FormatLoader(formatters.get(self.format, None))
         return FormatLoader()
 
-
-
     def load_transformations_loader(self):
         transformers_requested = []
         for transformation in self.transformations:
             transformers_requested.append({"transformer": transformers[transformation.get("name", "default")], "kwargs": transformation.get("kwargs", {})})
         return TransformationsLoader(transformers_requested)
+
+    def run_validations(self, params):
+        for validation in self.validations:
+            validation_function = locate(validation.get("validation_function").get("name"))
+            kwargs = validation.get("validation_function").get("kwargs", {})
+            if not validation_function(self, params, **kwargs):
+                msg = validation.get("error_message", "Validation Failed")
+                error_code = validation.get("error_code", 400)
+                raise ValidationFailedException(msg, error_code)
 
     def _validate_params(self, request):
         params = request.GET.copy()

@@ -12,3 +12,7 @@ class DateParseException(Exception):
 
 class DateTimeParseException(Exception):
     pass
+
+
+class ValidationFailedException(Exception):
+    pass
