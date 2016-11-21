@@ -1,4 +1,6 @@
 from __future__ import unicode_literals
+
+from django.contrib.auth.models import User
 from django.test import TestCase, RequestFactory
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from squealy.exception_handlers import RequiredParameterMissingException, DateParseException, DateTimeParseException
@@ -26,6 +28,31 @@ class TestParameterSubstitution(TestCase):
         request = factory.get('/example/table-report/')
         self.assertRaises(RequiredParameterMissingException, ParameterSubstitutionView.as_view(), request)
 
+
+class SessionParameterSubstitutionView(SqlApiView):
+    query = "select name, sql, 'user001' as user_name from sqlite_master where user_name = {{user.username}};"
+    format = "table"
+
+
+class TestSessionParameterSubstitution(TestCase):
+
+    def setUp(self):
+        factory = RequestFactory()
+        self.request = factory.get('/example/table-report/')
+
+    def test_authenticated_user(self):
+        self.user = User.objects.create_user(username="user001")
+        self.request.user = self.user
+        response = SessionParameterSubstitutionView.as_view()(self.request)
+        self.assertEqual(response.status_code, 200)
+        self.assertGreater(len(response.data.get('data', [])), 1)
+
+    def test_unauthenticated_user(self):
+        self.user = User.objects.create_user(username="user002")
+        self.request.user = self.user
+        response = SessionParameterSubstitutionView.as_view()(self.request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data.get('data', []), [[]])
 
 
 class MergeTransformationView(SqlApiView):

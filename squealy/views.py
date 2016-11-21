@@ -31,13 +31,14 @@ class SqlApiView(APIView):
         # If validation fails, a sub-class of ApiException
         # must be raised
         params = request.GET.copy()
+        user = request.user
         if hasattr(self, 'parameters'):
             params = self._validate_params(request)
         if hasattr(self, 'validations'):
-            self.run_validations(params)
+            self.run_validations(params, user)
 
         # Execute the SQL Query, and return a Table
-        table = self._execute_query(params)
+        table = self._execute_query(params, user)
 
         if hasattr(self, 'transformations'):
             # Perform basic transformations on the table
@@ -65,11 +66,11 @@ class SqlApiView(APIView):
             transformers_requested.append({"transformer": transformers[transformation.get("name", "default")], "kwargs": transformation.get("kwargs", {})})
         return TransformationsLoader(transformers_requested)
 
-    def run_validations(self, params):
+    def run_validations(self, params, user):
         for validation in self.validations:
             validation_function = locate(validation.get("validation_function").get("name"))
             kwargs = validation.get("validation_function").get("kwargs", {})
-            if not validation_function(self, params, **kwargs):
+            if not validation_function(self, params, user, **kwargs):
                 msg = validation.get("error_message", "Validation Failed")
                 error_code = validation.get("error_code", 400)
                 raise ValidationFailedException(msg, error_code)
@@ -96,8 +97,8 @@ class SqlApiView(APIView):
                 params[param] = StringParameter(param).to_internal(params[param])
         return params
 
-    def _execute_query(self, params):
-        query, bind_params = jinjasql.prepare_query(self.query, {"params": params})
+    def _execute_query(self, params, user):
+        query, bind_params = jinjasql.prepare_query(self.query, {"params": params, "user": user})
         conn = connections[self.connection_name]
     
         with conn.cursor() as cursor:
