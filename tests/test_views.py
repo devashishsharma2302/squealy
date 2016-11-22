@@ -4,6 +4,8 @@ import datetime
 from django.contrib.auth.models import User
 from django.test import TestCase, RequestFactory
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+
 from squealy.exception_handlers import RequiredParameterMissingException, DateParseException, DateTimeParseException
 from squealy.views import SqlApiView
 from squealy.apigenerator import ApiGenerator
@@ -279,3 +281,16 @@ class TestYamlApiGeneration(TestCase):
         self.assertIn(SessionAuthentication, authentication_classes)
         self.assertIn(BasicAuthentication, authentication_classes)
         self.assertIn(TokenAuthentication, authentication_classes)
+
+    def test_permission_classes(self):
+        factory = RequestFactory()
+        request = factory.get('/example/api3/')
+        view_func = self.squealy_urls[2].resolve('api3').func
+        permission_classes = view_func.view_class.permission_classes
+        self.assertIn(IsAuthenticated, permission_classes)
+
+    def test_authentication(self):
+        factory = RequestFactory()
+        request = factory.get('/example/api3/')
+        response = self.squealy_urls[2].resolve('api3').func(request)
+        self.assertEqual(response.status_code, 403)
