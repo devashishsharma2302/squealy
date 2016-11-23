@@ -20,7 +20,7 @@ class TransposeTranformer(TableTransformer):
         """
         column_names = [c.name for c in table.columns]
         table.data.insert(0, column_names)
-        transposed = zip(*table.data)
+        transposed = list(zip(*table.data))
 
         new_table = Table()
         if transposed :

@@ -4,10 +4,11 @@ from jinjasql import JinjaSql
 from django.db import connections
 
 from squealy.config import DateParameter, DateTimeParameter, StringParameter
-from squealy.exception_handlers import RequiredParameterMissingException
+from squealy.exception_handlers import RequiredParameterMissingException, ValidationFailedException
 from squealy.transformer import TransformationsLoader, transformers
 from .formatter import SimpleFormatter, FormatLoader, formatters
 from .table import Table, Column
+from pydoc import locate
 
 
 jinjasql = JinjaSql()
@@ -30,11 +31,14 @@ class SqlApiView(APIView):
         # If validation fails, a sub-class of ApiException
         # must be raised
         params = request.GET.copy()
+        user = request.user
         if hasattr(self, 'parameters'):
-            params = self._validate_params(request)
+            params = self.parse_params(request)
+        if hasattr(self, 'validations'):
+            self.run_validations(params, user)
 
         # Execute the SQL Query, and return a Table
-        table = self.execute_query(params)
+        table = self._execute_query(params, user)
 
         if hasattr(self, 'transformations'):
             # Perform basic transformations on the table
@@ -56,38 +60,51 @@ class SqlApiView(APIView):
             return FormatLoader(formatters.get(self.format, None))
         return FormatLoader()
 
-
-
     def load_transformations_loader(self):
         transformers_requested = []
         for transformation in self.transformations:
             transformers_requested.append({"transformer": transformers[transformation.get("name", "default")], "kwargs": transformation.get("kwargs", {})})
         return TransformationsLoader(transformers_requested)
 
-    def _validate_params(self, request):
+    def run_validations(self, params, user):
+        for validation in self.validations:
+            validation_function = locate(validation.get("validation_function").get("name"))
+            kwargs = validation.get("validation_function").get("kwargs", {})
+            if not validation_function(self, params, user, **kwargs):
+                msg = validation.get("error_message", "Validation Failed")
+                error_code = validation.get("error_code", 400)
+                raise ValidationFailedException(msg, error_code)
+
+    def parse_params(self, request):
         params = request.GET.copy()
         for param in self.parameters:
+            # Default values
+            if self.parameters[param].get('default_value') and params.get(param) == None:
+                params[param] = self.parameters[param].get('default_value')
+
             # Check for missing required parameters
-            if not params.get(param):
+            is_parameter_optional = self.parameters[param].get('optional', False)
+            if not is_parameter_optional and not params.get(param):
                 raise RequiredParameterMissingException("Parameter required",
                                                      param)
 
             # Formatting parameters
             parameter_type = self.parameters[param].get("type", "string")
-            if parameter_type.lower() == "date":
-                date_format = self.parameters[param].get("format")
-                params[param] = DateParameter(param, format=date_format).to_internal(params[param])
-            if parameter_type.lower() == "datetime":
-                datetime_format = self.parameters[param].get("format")
-                params[param] = DateTimeParameter(param, format=datetime_format).to_internal(params[param])
-            if parameter_type.lower() == "string":
-                params[param] = StringParameter(param).to_internal(params[param])
+            if  params.get(param):
+                if parameter_type.lower() == "date":
+                    date_format = self.parameters[param].get("format")
+                    params[param] = DateParameter(param, format=date_format).to_internal(params[param])
+                if parameter_type.lower() == "datetime":
+                    datetime_format = self.parameters[param].get("format")
+                    params[param] = DateTimeParameter(param, format=datetime_format).to_internal(params[param])
+                if parameter_type.lower() == "string":
+                    params[param] = StringParameter(param).to_internal(params[param])
         return params
 
-    def execute_query(self, params):
-        query, bind_params = jinjasql.prepare_query(self.query, {"params": params})
+    def _execute_query(self, params, user):
+        query, bind_params = jinjasql.prepare_query(self.query, {"params": params, "user": user})
         conn = connections[self.connection_name]
-    
+
         with conn.cursor() as cursor:
             cursor.execute(query, bind_params)
             cols = []

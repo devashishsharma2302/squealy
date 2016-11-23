@@ -2,7 +2,10 @@
 id: api1
 name: Test API
 url: api1
-
+authentication_classes:
+    - SessionAuthentication
+    - BasicAuthentication
+    - TokenAuthentication
 query: >
     select name, sql, 5 as num, 123 as some_column from sqlite_master limit 4;
 ---
@@ -16,6 +19,23 @@ query: >
 id: api3
 name: Test API
 url: api3
+parameters:
+        name:
+                type: string
+validations:
+    -
+        error_message: "Invalid parameter: name"
+        error_code: 403
+        validation_function:
+                            name: 'squealy.validators.run_query'
+                            kwargs:
+                                   query: >
+                                            select name from sqlite_master where {{params.name}} in ("django_migrations");
+    -
+        error_message: "Custom Validation Failed"
+        error_code: 403
+        validation_function:
+                            name: 'exampleapp.custom_validators.validate_user_id'
 
 query: >
-    select name, sql, 5 as num, 123 as some_column from sqlite_master limit 10;
+    select name, sql, 5 as num, {{params.name}} as some_column from sqlite_master limit 10;

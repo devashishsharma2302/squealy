@@ -1,6 +1,6 @@
 import arrow
 
-from squealy.exception_handlers import DateParseException
+from squealy.exception_handlers import DateParseException, DateTimeParseException
 
 
 class StringParameter:
@@ -33,16 +33,12 @@ class DateParameter:
 
     def to_internal(self, value):
         try:
-            if (value.lower() == "today"):
+            if value.lower() == "today":
                 date = arrow.utcnow()
-                if self.format:
-                    return date.format(self.format)
-                return str(date.date())
+                return date.date()
             else:
                 date = arrow.get(value, self.format)
-                if self.format:
-                    return date.format(self.format)
-                return str(date.date())
+                return date.date()
         except arrow.parser.ParserError:
             if self.format:
                 raise DateParseException("Date could not be parsed:\
@@ -61,20 +57,16 @@ class DateTimeParameter:
 
     def to_internal(self, value):
         try:
-            if (value.lower() == "now"):
+            if value.lower() == "now":
                 date = arrow.utcnow()
-                if self.format:
-                    return date.format(self.format)
-                return str(date.format())
+                return date.datetime
             else:
                 date = arrow.get(value, self.format)
-                if self.format:
-                    return date.format(self.format)
-                return str(date.format())
+                return date.datetime
         except arrow.parser.ParserError:
             if self.format:
-                raise DateParseException("DateTime could not be parsed:\
+                raise DateTimeParseException("DateTime could not be parsed:\
                                          Received value - " + value +
                                          "Expected Format - "+self.format)
             else:
-                raise DateParseException("Invalid DateTime", value)
+                raise DateTimeParseException("Invalid DateTime", value)
