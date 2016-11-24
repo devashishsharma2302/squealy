@@ -1,12 +1,15 @@
+import importlib
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from jinjasql import JinjaSql
 from django.db import connections
 
+from squealy.formatters import SimpleFormatter
 from squealy.parameters import DateParameter, DateTimeParameter, StringParameter
 from squealy.exceptions import RequiredParameterMissingException
 from squealy.transformers import TransformationsLoader, transformers
-from .formatter import SimpleFormatter, FormatLoader, formatters
+from squealy.formatters import *
 from .table import Table, Column
 from pydoc import locate
 
@@ -45,19 +48,25 @@ class SqlApiView(APIView):
             table = transformations_loader.excecute_transformations(table)
 
         # Format the table according to google charts / highcharts etc
-        formatter = self.get_formatter()
+        data = self._format(table)
 
         # Return the response
-        return Response(formatter.execute_formatter(table))
+        return Response(data)
 
     # def validate_request(self, request):
     #     for validation in self.validations:
     #         validation.validate(request)
 
-    def get_formatter(self):
+    def _format(self, table):
         if hasattr(self, 'format'):
-            return FormatLoader(formatters.get(self.format, None))
-        return FormatLoader()
+            if '.' in self.format:
+                module_name, class_name = self.format.rsplit('.',1)
+                module = importlib.import_module(module_name)
+                formatter = getattr(module, class_name)()
+            else:
+                formatter = eval(self.format)()
+            return formatter.format(table)
+        return SimpleFormatter().format(table)
 
     def load_transformations_loader(self):
         transformers_requested = []
