@@ -6,7 +6,7 @@ from django.test import TestCase, RequestFactory
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from squealy.exception_handlers import RequiredParameterMissingException, DateParseException, DateTimeParseException
+from squealy.exceptions import RequiredParameterMissingException, DateParseException, DateTimeParseException
 from squealy.views import SqlApiView
 from squealy.apigenerator import ApiGenerator
 from os.path import dirname, abspath, join
@@ -29,7 +29,8 @@ class TestParameterSubstitution(TestCase):
     def test_required_parameter_missing_exception(self):
         factory = RequestFactory()
         request = factory.get('/example/table-report/')
-        self.assertRaises(RequiredParameterMissingException, ParameterSubstitutionView.as_view(), request)
+        response = ParameterSubstitutionView.as_view()(request)
+        self.assertEqual(response.status_code, 400)
 
     def test_default_value(self):
         factory = RequestFactory()
@@ -195,7 +196,8 @@ class TestDateParameter(TestCase):
     def test_invalid_date_format_exception(self):
         factory = RequestFactory()
         request = factory.get('/example/table-report/?date=08-09/2016')
-        self.assertRaises(DateParseException, DateParameterView.as_view(), request)
+        response = DateParameterView.as_view()(request)
+        self.assertEqual(response.status_code, 400)
 
     def test_date_parameter_datatype(self):
         factory = RequestFactory()
@@ -241,7 +243,8 @@ class TestDateTimeParameter(TestCase):
     def test_invalid_datetime_format_exception(self):
         factory = RequestFactory()
         request = factory.get('/example/table-report/?date_time=08/09/2016')
-        self.assertRaises(DateTimeParseException, DateTimeParameterView.as_view(), request)
+        response = DateTimeParameterView.as_view()(request)
+        self.assertEqual(response.status_code, 400)
 
     def test_datetime_parameter_datatype(self):
         factory = RequestFactory()

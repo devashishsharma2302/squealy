@@ -56,7 +56,6 @@ class SplitColumnTransformer(TableTransformer):
         #Delete the metric and pivot column
         del table.columns[metric_column_index]
         del table.columns[pivot_column_index]
-        # TODO:: Remove hardcoded string and col_type. 
         table.columns = table.columns[:pivot_column_index] + [Column(column,'string','dimension') for column in new_split_columns] + table.columns[pivot_column_index:]
         return table
 
@@ -83,8 +82,7 @@ class MergeColumnTransformer(TableTransformer):
                 row_copy = list(temp_row)
                 row_copy.append(merge_value)
                 data.append(row_copy)
-	    #TODO:: Remove hardcoded values
-        new_columns = []
+	    new_columns = []
         for column in table.columns:
             if column.name not in columns_to_merge:
                 new_columns.append(column)

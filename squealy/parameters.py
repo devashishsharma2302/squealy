@@ -1,6 +1,6 @@
 import arrow
 
-from squealy.exception_handlers import DateParseException, DateTimeParseException
+from squealy.exceptions import DateParseException, DateTimeParseException
 
 
 class StringParameter:
@@ -41,11 +41,12 @@ class DateParameter:
                 return date.date()
         except arrow.parser.ParserError:
             if self.format:
-                raise DateParseException("Date could not be parsed:\
-                                         Received value - " + value +
-                                         "Expected Format - "+self.format)
+                raise DateParseException("Date could not be parsed: Expected Format- "+self.format+", Received value - "
+                                         + value)
             else:
-                raise DateParseException("Invalid date", value)
+                raise DateParseException("Invalid date: " + value)
+        except ValueError as err:
+            raise DateParseException(err[0] + ", Received Value - " + value)
 
 
 class DateTimeParameter:
@@ -65,8 +66,9 @@ class DateTimeParameter:
                 return date.datetime
         except arrow.parser.ParserError:
             if self.format:
-                raise DateTimeParseException("DateTime could not be parsed:\
-                                         Received value - " + value +
-                                         "Expected Format - "+self.format)
+                raise DateTimeParseException("Datetime could not be parsed: Expected Format - "+self.format
+                                             + ", Received value - " + value)
             else:
-                raise DateTimeParseException("Invalid DateTime", value)
+                raise DateTimeParseException("Invalid DateTime: " + value)
+        except ValueError as err:
+                raise DateTimeParseException(err[0]+", Received Value - " + value)

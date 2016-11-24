@@ -3,9 +3,9 @@ from rest_framework.response import Response
 from jinjasql import JinjaSql
 from django.db import connections
 
-from squealy.config import DateParameter, DateTimeParameter, StringParameter
-from squealy.exception_handlers import RequiredParameterMissingException, ValidationFailedException
-from squealy.transformer import TransformationsLoader, transformers
+from squealy.parameters import DateParameter, DateTimeParameter, StringParameter
+from squealy.exceptions import RequiredParameterMissingException
+from squealy.transformers import TransformationsLoader, transformers
 from .formatter import SimpleFormatter, FormatLoader, formatters
 from .table import Table, Column
 from pydoc import locate
@@ -20,7 +20,6 @@ class SqlApiView(APIView):
     # formatter = DefaultFormatter
     connection_name = "default"
     
-
     def get(self, request, *args, **kwargs):
         # When this function is called, DRF has already done:
         # 1. Authentication Checks
@@ -70,10 +69,7 @@ class SqlApiView(APIView):
         for validation in self.validations:
             validation_function = locate(validation.get("validation_function").get("name"))
             kwargs = validation.get("validation_function").get("kwargs", {})
-            if not validation_function(self, params, user, **kwargs):
-                msg = validation.get("error_message", "Validation Failed")
-                error_code = validation.get("error_code", 400)
-                raise ValidationFailedException(msg, error_code)
+            validation_function(self, params, user, **kwargs)
 
     def parse_params(self, request):
         params = request.GET.copy()
@@ -85,8 +81,7 @@ class SqlApiView(APIView):
             # Check for missing required parameters
             is_parameter_optional = self.parameters[param].get('optional', False)
             if not is_parameter_optional and not params.get(param):
-                raise RequiredParameterMissingException("Parameter required",
-                                                     param)
+                raise RequiredParameterMissingException("Parameter required: "+param)
 
             # Formatting parameters
             parameter_type = self.parameters[param].get("type", "string")
