@@ -9,7 +9,7 @@ class TableTransformer(object):
         return table
 
 
-class TransposeTranformer(TableTransformer):
+class Transpose(TableTransformer):
     # Fixme: Introduce Dimensions
     def transform(self, table):
         """Converts rows into columns and vice versa
@@ -30,7 +30,7 @@ class TransposeTranformer(TableTransformer):
         return new_table
 
 
-class SplitColumnTransformer(TableTransformer):
+class Split(TableTransformer):
 
     def transform(self, table, pivot_column):
         """Returns pivot table based on the pivot column"""
@@ -60,7 +60,7 @@ class SplitColumnTransformer(TableTransformer):
         return table
 
 
-class MergeColumnTransformer(TableTransformer):
+class Merge(TableTransformer):
 
     def transform(self, table, columns_to_merge, new_column_name="merged_column"):
         """
@@ -88,22 +88,3 @@ class MergeColumnTransformer(TableTransformer):
                 new_columns.append(column)
         new_columns.append(Column(new_column_name, 'string', 'dimension'))
         return Table(new_columns, data)
-
-
-class TransformationsLoader(TableTransformer):
-    def __init__(self, transformers=None):
-        self.transformers = transformers if transformers else []
-
-    def excecute_transformations(self, table):
-        for transformer in self.transformers:
-            kwargs = transformer.get("kwargs", {})
-            table = transformer.get('transformer').transform(table, **kwargs)
-        return table
-
-
-transformers = {
-                'transpose': TransposeTranformer(),
-                'split': SplitColumnTransformer(),
-                'merge': MergeColumnTransformer(),
-                'default': TableTransformer()
-                }

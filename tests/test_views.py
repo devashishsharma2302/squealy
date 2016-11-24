@@ -14,7 +14,7 @@ from os.path import dirname, abspath, join
 
 class ParameterSubstitutionView(SqlApiView):
     query = "select name, sql from sqlite_master where name = {{params.name}};"
-    format = "table"
+    format = "SimpleFormatter"
     parameters = {"name": { "type": "string"}, "user_id": {"type": "string", "default_value": "user001"}, "optional_param": {"type": "string", "optional": True }}
 
 
@@ -50,7 +50,7 @@ class TestParameterSubstitution(TestCase):
 
 class SessionParameterSubstitutionView(SqlApiView):
     query = "select name, sql, 'user001' as user_name from sqlite_master where user_name = {{user.username}};"
-    format = "table"
+    format = "SimpleFormatter"
 
 
 class TestSessionParameterSubstitution(TestCase):
@@ -76,10 +76,10 @@ class TestSessionParameterSubstitution(TestCase):
 
 class MergeTransformationView(SqlApiView):
     query = "select name, sql, 5 as num from sqlite_master limit 2;"
-    format = "table"
+    format = "SimpleFormatter"
 
     transformations = [
-                       {"name": "merge", "kwargs": {"columns_to_merge": ["sql","num"], "new_column_name": "merged_column"}}
+                       {"name": "Merge", "kwargs": {"columns_to_merge": ["sql","num"], "new_column_name": "merged_column"}}
 
     ]
 
@@ -113,10 +113,10 @@ class SplitTransformationView(SqlApiView):
             "type": "metric",
         }
     }
-    format = "table"
+    format = "SimpleFormatter"
 
     transformations = [
-        {"name": "split", "kwargs": {"pivot_column": "name"}}
+        {"name": "Split", "kwargs": {"pivot_column": "name"}}
 
     ]
 
@@ -140,10 +140,10 @@ class TestSplitTransformation(TestCase):
 class TransposeTransformationView(SqlApiView):
     query = "select name, sql from sqlite_master limit 5;"
 
-    format = "table"
+    format = "SimpleFormatter"
 
     transformations = [
-        {"name": "transpose"}
+        {"name": "Transpose"}
     ]
 
 
@@ -166,7 +166,7 @@ class TestTransposeTransformation(TestCase):
 class DateParameterView(SqlApiView):
     query = "select date('2016-09-08') as some_date where some_date={{params.date}}"
 
-    format = "table"
+    format = "SimpleFormatter"
 
     parameters = {"date": {"type": "date", "format": "DD/MM/YYYY"}}
 
@@ -174,7 +174,7 @@ class DateParameterView(SqlApiView):
 class DateParameterMacroView(SqlApiView):
     query = "select DATE() as some_date where some_date={{params.date}}"
 
-    format = "table"
+    format = "SimpleFormatter"
 
     parameters = {"date": {"type": "date", "format": "DD/MM/YYYY"}}
 
@@ -214,14 +214,14 @@ class TestDateParameter(TestCase):
 
 class DateTimeParameterView(SqlApiView):
     query = "select datetime('2016-09-08 10:44:50') as some_datetime where some_datetime = {{params.date_time}};"
-    format = "table"
+    format = "SimpleFormatter"
     parameters = {
         "date_time": {"type": "datetime", "format": "DD/MM/YYYY HH:mm:ss"}}
 
 
 class DateTimeParameterMacroView(SqlApiView):
     query = "select DATETIME() as some_datetime where some_datetime={{params.date_time}}"
-    format = "table"
+    format = "SimpleFormatter"
     parameters = {
         "date_time": {"type": "datetime", "format": "DD/MM/YYYY HH:mm:ss"}}
 

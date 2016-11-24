@@ -8,7 +8,7 @@ from django.db import connections
 from squealy.formatters import SimpleFormatter
 from squealy.parameters import DateParameter, DateTimeParameter, StringParameter
 from squealy.exceptions import RequiredParameterMissingException
-from squealy.transformers import TransformationsLoader, transformers
+from squealy.transformers import *
 from squealy.formatters import *
 from .table import Table, Column
 from pydoc import locate
@@ -44,8 +44,7 @@ class SqlApiView(APIView):
 
         if hasattr(self, 'transformations'):
             # Perform basic transformations on the table
-            transformations_loader = self.load_transformations_loader()
-            table = transformations_loader.excecute_transformations(table)
+            table = self._run_transformations(table)
 
         # Format the table according to google charts / highcharts etc
         data = self._format(table)
@@ -68,11 +67,17 @@ class SqlApiView(APIView):
             return formatter.format(table)
         return SimpleFormatter().format(table)
 
-    def load_transformations_loader(self):
-        transformers_requested = []
+    def _run_transformations(self, table):
         for transformation in self.transformations:
-            transformers_requested.append({"transformer": transformers[transformation.get("name", "default")], "kwargs": transformation.get("kwargs", {})})
-        return TransformationsLoader(transformers_requested)
+            if '.' in transformation.get('name'):
+                module_name, class_name = self.format.rsplit('.',1)
+                module = importlib.import_module(module_name)
+                transformer_instance = getattr(module, class_name)()
+            else:
+                transformer_instance = eval(transformation.get('name', 'TableTransformer'))()
+            kwargs = transformation.get("kwargs", {})
+            table = transformer_instance.transform(table, **kwargs)
+        return table
 
     def run_validations(self, params, user):
         for validation in self.validations:
