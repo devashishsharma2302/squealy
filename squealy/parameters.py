@@ -44,8 +44,11 @@ class Date(Parameter):
             if value.lower() == "today":
                 date = arrow.utcnow()
                 return date.date()
-            else:
+            if self.format:
                 date = arrow.get(value, self.format)
+                return date.date()
+            else:
+                date = arrow.get(value)
                 return date.date()
         except arrow.parser.ParserError:
             if self.format:
@@ -69,8 +72,11 @@ class Datetime(Parameter):
             if value.lower() == "now":
                 date = arrow.utcnow()
                 return date.datetime
-            else:
+            if self.format:
                 date = arrow.get(value, self.format)
+                return date.datetime
+            else:
+                date = arrow.get(value)
                 return date.datetime
         except arrow.parser.ParserError:
             if self.format:
