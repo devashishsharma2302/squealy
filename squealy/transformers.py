@@ -60,7 +60,7 @@ class Split(TableTransformer):
         return table
 
 
-class MergeColumns(TableTransformer):
+class Merge(TableTransformer):
 
     def transform(self, table, columns_to_merge, new_column_name="merged_column"):
         """
