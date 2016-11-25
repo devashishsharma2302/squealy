@@ -304,4 +304,5 @@ class TestYamlApiGeneration(TestCase):
         response = self.squealy_urls[3].resolve('api4').func(request)
         response.render()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data.get('data')[0][3].split(' ',1)[0], str(datetime.datetime.now().date()-datetime.timedelta(days=1)))
+        yesterday = datetime.datetime.now().date()-datetime.timedelta(days=1)
+        self.assertEqual(response.data.get('data')[0][3].split(' ',1)[0], yesterday.__str__())
