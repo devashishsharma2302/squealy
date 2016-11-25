@@ -5,11 +5,10 @@ from rest_framework.response import Response
 from jinjasql import JinjaSql
 from django.db import connections
 
-from squealy.formatters import SimpleFormatter
-from squealy.parameters import DateParameter, DateTimeParameter, StringParameter
 from squealy.exceptions import RequiredParameterMissingException
 from squealy.transformers import *
 from squealy.formatters import *
+from squealy.parameters import *
 from .table import Table, Column
 from pydoc import locate
 
@@ -74,7 +73,7 @@ class SqlApiView(APIView):
                 module = importlib.import_module(module_name)
                 transformer_instance = getattr(module, class_name)()
             else:
-                transformer_instance = eval(transformation.get('name', 'TableTransformer'))()
+                transformer_instance = eval(transformation.get('name', 'TableTransformer').title())()
             kwargs = transformation.get("kwargs", {})
             table = transformer_instance.transform(table, **kwargs)
         return table
@@ -98,16 +97,16 @@ class SqlApiView(APIView):
                 raise RequiredParameterMissingException("Parameter required: "+param)
 
             # Formatting parameters
-            parameter_type = self.parameters[param].get("type", "string")
-            if  params.get(param):
-                if parameter_type.lower() == "date":
-                    date_format = self.parameters[param].get("format")
-                    params[param] = DateParameter(param, format=date_format).to_internal(params[param])
-                if parameter_type.lower() == "datetime":
-                    datetime_format = self.parameters[param].get("format")
-                    params[param] = DateTimeParameter(param, format=datetime_format).to_internal(params[param])
-                if parameter_type.lower() == "string":
-                    params[param] = StringParameter(param).to_internal(params[param])
+            parameter_type_str = self.parameters[param].get("type", "String")
+            kwargs = self.parameters[param].get("kwargs", {})
+            if '.' in parameter_type_str:
+                module_name, class_name = parameter_type_str.rsplit('.',1)
+                module = importlib.import_module(module_name)
+                parameter_type = getattr(module, class_name)
+            else:
+                parameter_type = eval(parameter_type_str.title())
+            if params.get(param):
+                params[param] = parameter_type(param, **kwargs).to_internal(params[param])
         return params
 
     def _execute_query(self, params, user):

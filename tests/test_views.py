@@ -168,7 +168,7 @@ class DateParameterView(SqlApiView):
 
     format = "SimpleFormatter"
 
-    parameters = {"date": {"type": "date", "format": "DD/MM/YYYY"}}
+    parameters = {"date": {"type": "date", "kwargs": {"format": "DD/MM/YYYY"}}}
 
 
 class DateParameterMacroView(SqlApiView):
@@ -176,7 +176,7 @@ class DateParameterMacroView(SqlApiView):
 
     format = "SimpleFormatter"
 
-    parameters = {"date": {"type": "date", "format": "DD/MM/YYYY"}}
+    parameters = {"date": {"type": "date", "kwargs": {"format": "DD/MM/YYYY"}}}
 
 
 class TestDateParameter(TestCase):
@@ -216,14 +216,14 @@ class DateTimeParameterView(SqlApiView):
     query = "select datetime('2016-09-08 10:44:50') as some_datetime where some_datetime = {{params.date_time}};"
     format = "SimpleFormatter"
     parameters = {
-        "date_time": {"type": "datetime", "format": "DD/MM/YYYY HH:mm:ss"}}
+        "date_time": {"type": "datetime", "kwargs": {"format": "DD/MM/YYYY HH:mm:ss"}}}
 
 
 class DateTimeParameterMacroView(SqlApiView):
     query = "select DATETIME() as some_datetime where some_datetime={{params.date_time}}"
     format = "SimpleFormatter"
     parameters = {
-        "date_time": {"type": "datetime", "format": "DD/MM/YYYY HH:mm:ss"}}
+        "date_time": {"type": "datetime", "kwargs": {"format": "DD/MM/YYYY HH:mm:ss"}}}
 
 
 class TestDateTimeParameter(TestCase):
@@ -297,3 +297,11 @@ class TestYamlApiGeneration(TestCase):
         request = factory.get('/example/api3/')
         response = self.squealy_urls[2].resolve('api3').func(request)
         self.assertEqual(response.status_code, 403)
+
+    def test_custom_parameter(self):
+        factory = RequestFactory()
+        request = factory.get('/example/api4/?datetime=yesterday')
+        response = self.squealy_urls[3].resolve('api4').func(request)
+        response.render()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data.get('data')[0][3].split(' ',1)[0], str(datetime.datetime.now().date()-datetime.timedelta(days=1)))

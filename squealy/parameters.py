@@ -3,7 +3,15 @@ import arrow
 from squealy.exceptions import DateParseException, DateTimeParseException
 
 
-class StringParameter:
+class Parameter():
+    def __init__(self):
+        pass
+
+    def to_internal(self, value):
+        return value
+
+
+class String(Parameter):
     def __init__(self, name, description=None, default_value=None, valid_values=None):
         self.default_value = None
         self.valid_values = valid_values
@@ -24,7 +32,7 @@ class StringParameter:
         return False
 
 
-class DateParameter:
+class Date(Parameter):
     def __init__(self, name, description=None, default_value=None, format=None):
         self.default_value = default_value
         self.format = format
@@ -49,7 +57,7 @@ class DateParameter:
             raise DateParseException(err[0] + ", Received Value - " + value)
 
 
-class DateTimeParameter:
+class Datetime(Parameter):
     def __init__(self, name, description=None, default_value=None, format=None):
         self.default_value = default_value
         self.format = format
@@ -71,4 +79,4 @@ class DateTimeParameter:
             else:
                 raise DateTimeParseException("Invalid DateTime: " + value)
         except ValueError as err:
-                raise DateTimeParseException(err[0]+", Received Value - " + value)
+                raise DateTimeParseException(err[0]+" Recieved Value - " + value)
