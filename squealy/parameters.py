@@ -1,4 +1,5 @@
 import arrow
+import datetime
 
 from squealy.exceptions import DateParseException, DateTimeParseException
 
@@ -38,18 +39,30 @@ class Date(Parameter):
         self.format = format
         self.name = name
         self.description = description if description else ""
+        self.date_macros = {"today": self.today, "tomorrow": self.tomorrow,
+                       "next_day": self.tomorrow, "current_day": self.today}
+
+    def today(self, value):
+        date = arrow.utcnow()
+        return date.date()
+
+    def tomorrow(self, value):
+        date = arrow.utcnow()+datetime.timedelta(days=1)
+        return date.date()
+
+    def default_formatter(self, value):
+        if self.format:
+            date = arrow.get(value, self.format)
+            return date.date()
+        else:
+            date = arrow.get(value)
+            return date.date()
 
     def to_internal(self, value):
         try:
-            if value.lower() == "today":
-                date = arrow.utcnow()
-                return date.date()
-            if self.format:
-                date = arrow.get(value, self.format)
-                return date.date()
-            else:
-                date = arrow.get(value)
-                return date.date()
+            value = value.lower()
+            date = self.date_macros.get(value, self.default_formatter)(value)
+            return date
         except arrow.parser.ParserError:
             if self.format:
                 raise DateParseException("Date could not be parsed: Expected Format- "+self.format+", Received value - "
@@ -62,22 +75,29 @@ class Date(Parameter):
 
 class Datetime(Parameter):
     def __init__(self, name, description=None, default_value=None, format=None):
+        self.datetime_macros = {"today": self.now, "now": self.now}
         self.default_value = default_value
         self.format = format
         self.name = name
         self.description = description if description else ""
 
+    def now(self, value):
+        date = arrow.utcnow()
+        return date.datetime
+
+    def default_formatter(self, value):
+        if self.format:
+            date = arrow.get(value, self.format)
+            return date.datetime
+        else:
+            date = arrow.get(value)
+            return date.datetime
+
     def to_internal(self, value):
         try:
-            if value.lower() == "now":
-                date = arrow.utcnow()
-                return date.datetime
-            if self.format:
-                date = arrow.get(value, self.format)
-                return date.datetime
-            else:
-                date = arrow.get(value)
-                return date.datetime
+            value = value.lower()
+            date_time = self.datetime_macros.get(value, self.default_formatter)(value)
+            return date_time
         except arrow.parser.ParserError:
             if self.format:
                 raise DateTimeParseException("Datetime could not be parsed: Expected Format - "+self.format
