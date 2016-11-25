@@ -305,4 +305,4 @@ class TestYamlApiGeneration(TestCase):
         response.render()
         self.assertEqual(response.status_code, 200)
         yesterday = datetime.datetime.now().date()-datetime.timedelta(days=1)
-        self.assertEqual(response.data.get('data')[0][3].split(' ',1)[0], yesterday.__str__())
+        self.assertEqual(str(response.data.get('data')[0][3].split(' ',1)[0]), yesterday.__str__())
