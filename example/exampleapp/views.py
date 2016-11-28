@@ -7,7 +7,7 @@ class DatabaseTableReport(SqlApiView):
 
 
     query = "select name, sql, 5 as num, 123 as some_column from sqlite_master limit 4;"
-    format = "table"
+    format = "GoogleChartsFormatter"
     columns = {
         "name": {
             "type": "dimension",
@@ -20,10 +20,10 @@ class DatabaseTableReport(SqlApiView):
         }
     }
     transformations = [
-                       {"name": "merge", "kwargs": {"columns_to_merge": ["sql","some_column"], "new_column_name": "merged_column"}},
+                       {"name": "Merge", "kwargs": {"columns_to_merge": ["sql","some_column"], "new_column_name": "merged_column"}},
                         {"name": "split", "kwargs": {"pivot_column": "name"}}
     ]
     parameters = {"name": { "type": "string", "default_value": "asds"},
-                  "date": {"type": "date", "format": "YYYY/MM/DD"},
-                  "datetime": {"type": "datetime", "format": "YYYY/MM/DD HH:mm:ss", "optional": True}}
+                  "date": {"type": "date", "kwargs": {"format": "YYYY/MM/DD"}},
+                  "datetime": {"type": "exampleapp.custom_parameters.CustomDatetime", "optional": True, "kwargs": {"format": "YYYY/MM/DD HH:mm:ss"}}}
 

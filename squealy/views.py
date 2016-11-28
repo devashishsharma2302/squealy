@@ -1,12 +1,14 @@
+import importlib
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from jinjasql import JinjaSql
 from django.db import connections
 
-from squealy.config import DateParameter, DateTimeParameter, StringParameter
-from squealy.exception_handlers import RequiredParameterMissingException, ValidationFailedException
-from squealy.transformer import TransformationsLoader, transformers
-from .formatter import SimpleFormatter, FormatLoader, formatters
+from squealy.exceptions import RequiredParameterMissingException
+from squealy.transformers import *
+from squealy.formatters import *
+from squealy.parameters import *
 from .table import Table, Column
 from pydoc import locate
 
@@ -20,7 +22,6 @@ class SqlApiView(APIView):
     # formatter = DefaultFormatter
     connection_name = "default"
     
-
     def get(self, request, *args, **kwargs):
         # When this function is called, DRF has already done:
         # 1. Authentication Checks
@@ -42,38 +43,46 @@ class SqlApiView(APIView):
 
         if hasattr(self, 'transformations'):
             # Perform basic transformations on the table
-            transformations_loader = self.load_transformations_loader()
-            table = transformations_loader.excecute_transformations(table)
+            table = self._run_transformations(table)
 
         # Format the table according to google charts / highcharts etc
-        formatter = self.get_formatter()
+        data = self._format(table)
 
         # Return the response
-        return Response(formatter.execute_formatter(table))
+        return Response(data)
 
     # def validate_request(self, request):
     #     for validation in self.validations:
     #         validation.validate(request)
 
-    def get_formatter(self):
+    def _format(self, table):
         if hasattr(self, 'format'):
-            return FormatLoader(formatters.get(self.format, None))
-        return FormatLoader()
+            if '.' in self.format:
+                module_name, class_name = self.format.rsplit('.',1)
+                module = importlib.import_module(module_name)
+                formatter = getattr(module, class_name)()
+            else:
+                formatter = eval(self.format)()
+            return formatter.format(table)
+        return SimpleFormatter().format(table)
 
-    def load_transformations_loader(self):
-        transformers_requested = []
+    def _run_transformations(self, table):
         for transformation in self.transformations:
-            transformers_requested.append({"transformer": transformers[transformation.get("name", "default")], "kwargs": transformation.get("kwargs", {})})
-        return TransformationsLoader(transformers_requested)
+            if '.' in transformation.get('name'):
+                module_name, class_name = self.format.rsplit('.',1)
+                module = importlib.import_module(module_name)
+                transformer_instance = getattr(module, class_name)()
+            else:
+                transformer_instance = eval(transformation.get('name', 'TableTransformer').title())()
+            kwargs = transformation.get("kwargs", {})
+            table = transformer_instance.transform(table, **kwargs)
+        return table
 
     def run_validations(self, params, user):
         for validation in self.validations:
             validation_function = locate(validation.get("validation_function").get("name"))
             kwargs = validation.get("validation_function").get("kwargs", {})
-            if not validation_function(self, params, user, **kwargs):
-                msg = validation.get("error_message", "Validation Failed")
-                error_code = validation.get("error_code", 400)
-                raise ValidationFailedException(msg, error_code)
+            validation_function(self, params, user, **kwargs)
 
     def parse_params(self, request):
         params = request.GET.copy()
@@ -85,20 +94,19 @@ class SqlApiView(APIView):
             # Check for missing required parameters
             is_parameter_optional = self.parameters[param].get('optional', False)
             if not is_parameter_optional and not params.get(param):
-                raise RequiredParameterMissingException("Parameter required",
-                                                     param)
+                raise RequiredParameterMissingException("Parameter required: "+param)
 
             # Formatting parameters
-            parameter_type = self.parameters[param].get("type", "string")
-            if  params.get(param):
-                if parameter_type.lower() == "date":
-                    date_format = self.parameters[param].get("format")
-                    params[param] = DateParameter(param, format=date_format).to_internal(params[param])
-                if parameter_type.lower() == "datetime":
-                    datetime_format = self.parameters[param].get("format")
-                    params[param] = DateTimeParameter(param, format=datetime_format).to_internal(params[param])
-                if parameter_type.lower() == "string":
-                    params[param] = StringParameter(param).to_internal(params[param])
+            parameter_type_str = self.parameters[param].get("type", "String")
+            kwargs = self.parameters[param].get("kwargs", {})
+            if '.' in parameter_type_str:
+                module_name, class_name = parameter_type_str.rsplit('.',1)
+                module = importlib.import_module(module_name)
+                parameter_type = getattr(module, class_name)
+            else:
+                parameter_type = eval(parameter_type_str.title())
+            if params.get(param):
+                params[param] = parameter_type(param, **kwargs).to_internal(params[param])
         return params
 
     def _execute_query(self, params, user):

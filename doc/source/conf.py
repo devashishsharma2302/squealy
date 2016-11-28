@@ -52,7 +52,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'squealy'
-copyright = u'2016, Sripathi Krishnan, Devashish Sharma'
+copyright = u'2016, Hashedin Technologies Pvt Ltd.'
 author = u'Sripathi Krishnan, Devashish Sharma'
 
 # The version info for the project you're documenting, acts as replacement for

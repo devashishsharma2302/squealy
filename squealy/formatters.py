@@ -86,19 +86,3 @@ class HighchartsFormatter(Formatter):
                         response[index-1]['data'].append(copy.deepcopy(data_list))
                         response[index-1]['name'] = column
         return response
-
-
-class FormatLoader(Formatter):
-    def __init__(self, formatter=None):
-        self.formatter = formatter() if formatter else SimpleFormatter()
-
-    def execute_formatter(self, table):
-        return self.formatter.format(table)
-
-
-formatters = {
-              'table': SimpleFormatter,
-              'gc': GoogleChartsFormatter,
-              'hc': HighchartsFormatter,
-              'json': SimpleFormatter
-              }

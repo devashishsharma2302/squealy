@@ -8,7 +8,6 @@ query: >
 id: api2
 name: Test API
 url: api2
-
 query: >
     select name, sql, 5 as num, 123 as some_column from sqlite_master limit 1;
 ---
@@ -23,3 +22,14 @@ permission_classes:
     - IsAuthenticated
 query: >
     select name, sql, 5 as num, 123 as some_column from sqlite_master limit 4;
+---
+id: api4
+name: Test API
+url: api4
+parameters:
+           datetime:
+                    type: 'exampleapp.custom_parameters.CustomDatetime'
+                    kwargs:
+                           format: 'YYYY/MM/DD HH:mm:ss'
+query: >
+    select name, sql, 5 as num, {{params.datetime}} as custom_datetime from sqlite_master limit 4;

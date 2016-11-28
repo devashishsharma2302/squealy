@@ -6,7 +6,7 @@ from django.test import TestCase, RequestFactory
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from squealy.exception_handlers import RequiredParameterMissingException, DateParseException, DateTimeParseException
+from squealy.exceptions import RequiredParameterMissingException, DateParseException, DateTimeParseException
 from squealy.views import SqlApiView
 from squealy.apigenerator import ApiGenerator
 from os.path import dirname, abspath, join
@@ -14,7 +14,7 @@ from os.path import dirname, abspath, join
 
 class ParameterSubstitutionView(SqlApiView):
     query = "select name, sql from sqlite_master where name = {{params.name}};"
-    format = "table"
+    format = "SimpleFormatter"
     parameters = {"name": { "type": "string"}, "user_id": {"type": "string", "default_value": "user001"}, "optional_param": {"type": "string", "optional": True }}
 
 
@@ -29,7 +29,8 @@ class TestParameterSubstitution(TestCase):
     def test_required_parameter_missing_exception(self):
         factory = RequestFactory()
         request = factory.get('/example/table-report/')
-        self.assertRaises(RequiredParameterMissingException, ParameterSubstitutionView.as_view(), request)
+        response = ParameterSubstitutionView.as_view()(request)
+        self.assertEqual(response.status_code, 400)
 
     def test_default_value(self):
         factory = RequestFactory()
@@ -49,7 +50,7 @@ class TestParameterSubstitution(TestCase):
 
 class SessionParameterSubstitutionView(SqlApiView):
     query = "select name, sql, 'user001' as user_name from sqlite_master where user_name = {{user.username}};"
-    format = "table"
+    format = "SimpleFormatter"
 
 
 class TestSessionParameterSubstitution(TestCase):
@@ -75,10 +76,10 @@ class TestSessionParameterSubstitution(TestCase):
 
 class MergeTransformationView(SqlApiView):
     query = "select name, sql, 5 as num from sqlite_master limit 2;"
-    format = "table"
+    format = "SimpleFormatter"
 
     transformations = [
-                       {"name": "merge", "kwargs": {"columns_to_merge": ["sql","num"], "new_column_name": "merged_column"}}
+                       {"name": "Merge", "kwargs": {"columns_to_merge": ["sql","num"], "new_column_name": "merged_column"}}
 
     ]
 
@@ -112,10 +113,10 @@ class SplitTransformationView(SqlApiView):
             "type": "metric",
         }
     }
-    format = "table"
+    format = "SimpleFormatter"
 
     transformations = [
-        {"name": "split", "kwargs": {"pivot_column": "name"}}
+        {"name": "Split", "kwargs": {"pivot_column": "name"}}
 
     ]
 
@@ -139,10 +140,10 @@ class TestSplitTransformation(TestCase):
 class TransposeTransformationView(SqlApiView):
     query = "select name, sql from sqlite_master limit 5;"
 
-    format = "table"
+    format = "SimpleFormatter"
 
     transformations = [
-        {"name": "transpose"}
+        {"name": "Transpose"}
     ]
 
 
@@ -165,17 +166,17 @@ class TestTransposeTransformation(TestCase):
 class DateParameterView(SqlApiView):
     query = "select date('2016-09-08') as some_date where some_date={{params.date}}"
 
-    format = "table"
+    format = "SimpleFormatter"
 
-    parameters = {"date": {"type": "date", "format": "DD/MM/YYYY"}}
+    parameters = {"date": {"type": "date", "kwargs": {"format": "DD/MM/YYYY"}}}
 
 
 class DateParameterMacroView(SqlApiView):
     query = "select DATE() as some_date where some_date={{params.date}}"
 
-    format = "table"
+    format = "SimpleFormatter"
 
-    parameters = {"date": {"type": "date", "format": "DD/MM/YYYY"}}
+    parameters = {"date": {"type": "date", "kwargs": {"format": "DD/MM/YYYY"}}}
 
 
 class TestDateParameter(TestCase):
@@ -195,7 +196,8 @@ class TestDateParameter(TestCase):
     def test_invalid_date_format_exception(self):
         factory = RequestFactory()
         request = factory.get('/example/table-report/?date=08-09/2016')
-        self.assertRaises(DateParseException, DateParameterView.as_view(), request)
+        response = DateParameterView.as_view()(request)
+        self.assertEqual(response.status_code, 400)
 
     def test_date_parameter_datatype(self):
         factory = RequestFactory()
@@ -212,16 +214,16 @@ class TestDateParameter(TestCase):
 
 class DateTimeParameterView(SqlApiView):
     query = "select datetime('2016-09-08 10:44:50') as some_datetime where some_datetime = {{params.date_time}};"
-    format = "table"
+    format = "SimpleFormatter"
     parameters = {
-        "date_time": {"type": "datetime", "format": "DD/MM/YYYY HH:mm:ss"}}
+        "date_time": {"type": "datetime", "kwargs": {"format": "DD/MM/YYYY HH:mm:ss"}}}
 
 
 class DateTimeParameterMacroView(SqlApiView):
     query = "select DATETIME() as some_datetime where some_datetime={{params.date_time}}"
-    format = "table"
+    format = "SimpleFormatter"
     parameters = {
-        "date_time": {"type": "datetime", "format": "DD/MM/YYYY HH:mm:ss"}}
+        "date_time": {"type": "datetime", "kwargs": {"format": "DD/MM/YYYY HH:mm:ss"}}}
 
 
 class TestDateTimeParameter(TestCase):
@@ -241,7 +243,8 @@ class TestDateTimeParameter(TestCase):
     def test_invalid_datetime_format_exception(self):
         factory = RequestFactory()
         request = factory.get('/example/table-report/?date_time=08/09/2016')
-        self.assertRaises(DateTimeParseException, DateTimeParameterView.as_view(), request)
+        response = DateTimeParameterView.as_view()(request)
+        self.assertEqual(response.status_code, 400)
 
     def test_datetime_parameter_datatype(self):
         factory = RequestFactory()
@@ -294,3 +297,10 @@ class TestYamlApiGeneration(TestCase):
         request = factory.get('/example/api3/')
         response = self.squealy_urls[2].resolve('api3').func(request)
         self.assertEqual(response.status_code, 403)
+
+    def test_custom_parameter(self):
+        factory = RequestFactory()
+        request = factory.get('/example/api4/?datetime=yesterday')
+        response = self.squealy_urls[3].resolve('api4').func(request)
+        response.render()
+        self.assertEqual(response.status_code, 200)
