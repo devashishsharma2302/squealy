@@ -34,7 +34,7 @@ class SqlApiView(APIView):
         params = request.GET.copy()
         user = request.user
         if hasattr(self, 'parameters'):
-            params = self.parse_params(request)
+            params = self.parse_params(params)
         if hasattr(self, 'validations'):
             self.run_validations(params, user)
 
@@ -84,8 +84,7 @@ class SqlApiView(APIView):
             kwargs = validation.get("validation_function").get("kwargs", {})
             validation_function(self, params, user, **kwargs)
 
-    def parse_params(self, request):
-        params = request.GET.copy()
+    def parse_params(self, params):
         for param in self.parameters:
             # Default values
             if self.parameters[param].get('default_value') and params.get(param) == None:
