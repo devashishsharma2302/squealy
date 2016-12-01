@@ -1,0 +1,22 @@
+@mixin input-style($width, $height) {
+  border-radius: 3px;
+  display: block;
+  padding: 6px;
+  margin: 0 0 6px 10px;
+  color: $black_color;
+  min-width: $width;
+  min-height: $height;
+}
+
+@mixin on-hover-style {
+  color: $blue_color;
+  text-decoration: underline;
+  cursor: default;
+  font-weight: bold;
+}
+
+@mixin hidash-box-shadow {
+  -webkit-box-shadow: 10px 11px 6px -12px rgba(0,0,0,0.75);
+  -moz-box-shadow: 10px 11px 6px -12px rgba(0,0,0,0.75);
+  box-shadow: 10px 11px 6px -12px rgba(0,0,0,0.75);
+}
