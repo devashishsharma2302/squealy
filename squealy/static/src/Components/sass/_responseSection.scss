@@ -1,0 +1,41 @@
+
+.response-formatwrapper{
+  background-color: #f6f6f6;
+  .response-format {
+    float: right;
+    padding: 5px 0px 5px 0px;
+    label {
+      margin: 0px 10px 0px 10px;
+
+      input {
+        margin-right: 5px;
+      }
+    }
+  }
+}
+
+.json-response-wrapper {
+  max-height: 350px;
+  overflow: auto;
+}
+
+.radio-inline {
+  font-size: 1.2em;
+  margin-right: 4px;
+}
+
+.respone-table-header {
+  width: inherit !important;
+  display: inherit; 
+  i.fa {
+    float: right;
+  }
+}
+
+.col-def-form > input[type="text"] {
+  width: 100%;
+}
+
+.edit-col-modal > div.row {
+  margin-bottom: 10px;
+}

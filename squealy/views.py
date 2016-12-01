@@ -4,6 +4,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from jinjasql import JinjaSql
 from django.db import connections
+from django.shortcuts import render
+from rest_framework import status
+from django.conf import settings
 
 from squealy.exceptions import RequiredParameterMissingException
 from squealy.transformers import *
@@ -16,18 +19,95 @@ from pydoc import locate
 jinjasql = JinjaSql()
 
 
+class DatabaseView(APIView):
+
+    def get(self, request, *args, **kwargs):
+        try:
+            database_response = []
+            database = settings.DATABASES
+            for db in database:
+                database_response.append({
+                  'value': db,
+                  'label': database[db]['NAME']
+                })
+            return Response({'database': database_response})
+        except Exception as e:
+            return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request, *args, **kwargs):
+        connection_name = request.data.get('database', None)
+        conn = connections[connection_name['value']]
+        table = request.data.get('table', None)
+        if table:
+            query = 'Desc {}'.format(table['value'])
+            print query
+            with conn.cursor() as cursor:
+                cursor.execute(query)
+                column_metadata = []
+                for meta in cursor:
+                    column_metadata.append({'column': meta[0],
+                                            'type': meta[1]})
+            return Response({'schema': column_metadata})
+        else:
+            with conn.cursor() as cursor:
+                cursor.execute('Show tables;')
+                tables = []
+                for table_names in cursor:
+                    tables.append({
+                                   'value': str(table_names[0]),
+                                   'label': str(table_names[0])
+                                })
+            return Response({'tables': tables})
+
+
 class SqlApiView(APIView):
     # validations = []
     # transformations = []
     # formatter = DefaultFormatter
     connection_name = "default"
-    
+
+    def post(self, request, *args, **kwargs):
+        try:
+            params = request.data.get('params', {})
+            # handle no query exception  here
+            user = request.data.get('user', None)
+            if request.data.get('parameters'):
+                self.parameters = request.data.get('parameters')
+                params = self.parse_params(params)
+            if request.data.get('validations'):
+                self.validations = request.data.get('validations')
+                self.run_validations(params, user)
+            # Execute the SQL Query, and return a Table
+            self.query = request.data.get('config').get('query', '')
+            # TODO: Fix this
+            columns_dict = {}
+            for column in request.data.get('columns', []):
+                columns_dict[column.get('name')] = {
+                    'type': column.get('type', 'dimension').lower()
+                }
+            self.columns = columns_dict
+            table = self._execute_query(params, user)
+
+            if request.data.get('transformations'):
+                # Perform basic transformations on the table
+                self.transformations = request.data.get('transformations', [])
+                table = self._run_transformations(table)
+
+            # Format the table according to the format requested
+            if request.data.get('format') not in ['table', 'JSON']:
+                print request.data.get('format')
+                self.format = request.data.get('format', 'SimpleFormatter')
+            data = self._format(table)
+            return Response(data, status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
+
     def get(self, request, *args, **kwargs):
         # When this function is called, DRF has already done:
         # 1. Authentication Checks
         # 2. Permission Checks
         # 3. Throttling
-        
+
         # First, validate the request parameters
         # If validation fails, a sub-class of ApiException
         # must be raised
@@ -188,3 +268,10 @@ class SqlApiView(APIView):
     #         params = transform["params"]
     #         table = func(table, **params)
     #     return table
+
+
+def squealy_interface(request):
+    """
+    Renders the squealy authouring interface template
+    """
+    return render(request, 'index.html')
