@@ -1,0 +1,250 @@
+import React, {Component} from 'react'
+import ApiTabs from '../Components/ApiTabs'
+import NavHeader from '../Components/NavHeader'
+import {
+  SIDE_BAR_WIDTH,
+  YAML_CONTENT_TYPE,
+  RESPONSE_FORMATS
+} from '../Constant'
+import {
+  postApiRequest,
+  objectToYaml,
+  saveBlobToFile,
+  getEmptyApiDefinition,
+  exportFile,
+  getDefaultApiDefinition,
+  parseObjectAsYamlConfig,
+  getEmptyTestData,
+  setDataInLocalStorage,
+  getDataFromLocalStorage
+} from '../Utils'
+
+
+//API URL host name. For testing only. later user will define this in setup configuration.
+export const apiUriHostName = 'http://localhost:8000'
+
+export class MainContainer extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      apiDefinition: [],
+      testData: [],
+      selectedApiIndex: 0
+    }
+  }
+
+  initializeStates = () => {
+    if (!this.state.apiDefinition.length) {
+          let tempApiDef = [getEmptyApiDefinition()]
+          this.setState({apiDefinition: tempApiDef})
+        }
+
+        if (!this.state.testData.length) {
+          let tempTestData = [getEmptyTestData()]
+          this.setState({testData: tempTestData})
+        }
+        this.setState({selectedApiIndex: this.state.selectedApiIndex || 0})
+  }
+
+  componentWillMount() {
+    let localStorageData = getDataFromLocalStorage('hidash')
+    if (localStorageData) {
+      Object.keys(localStorageData).map((key) => {
+      this.setState({[key]: localStorageData[key]}, () => {
+          this.initializeStates()
+        })
+      })
+    } else {
+      this.initializeStates()
+    }
+  }
+
+  onChangeApiDefinition = (variableName, value) => {
+    let tempAPIDef = this.state.apiDefinition.slice()
+    tempAPIDef[this.state.selectedApiIndex][variableName] = value
+    this.setState({apiDefinition: tempAPIDef})
+  }
+
+  apiTabRenameHandler = (value, index) => {
+    let apiDefinition = this.state.apiDefinition.slice()
+    apiDefinition[index]['apiName'] = value
+    if (apiDefinition[index]['urlName'] === '') {
+      apiDefinition[index]['urlName'] = value.replace(/\s+/g, '-').toLowerCase()
+    }
+    this.setState({apiDefinition: apiDefinition})
+  }
+
+  onChangeTestData = (value) => {
+    let tempTestData = this.state.testData.slice()
+    tempTestData[this.state.selectedApiIndex].apiParams = value
+    this.setState({testData: tempTestData})
+  }
+
+  apiCloseHandler = (index) => {
+    let apiDefinition = this.state.apiDefinition.slice()
+    apiDefinition[index].open = false
+    let selectedApiIndex = this.state.selectedApiIndex - 1
+    this.setState({apiDefinition: apiDefinition, selectedApiIndex: selectedApiIndex})
+  }
+
+  apiOpenHandler = (index) => {
+    let apiDefinition = this.state.apiDefinition.slice()
+    apiDefinition[index].open = true
+    let selectedApiIndex = index
+    this.setState({apiDefinition: apiDefinition, selectedApiIndex: selectedApiIndex})
+  }
+
+  apiParamToggleHandler = () => {
+    let newUiPreferences = Object.assign({}, this.state.uiPreferences)
+    newUiPreferences.apiParamsVisible = !this.state.uiPreferences.apiParamsVisible
+    this.setState({uiPreferences: newUiPreferences})
+  }
+
+  onSuccessTest = (response, format) => {
+    let tempTestData = this.state.testData.slice()
+    let testAPIdef = this.state.apiDefinition.slice()
+    let onSuccessTestData =  {
+      apiResponse: response,
+      apiSuccess: true,
+      apiError: false,
+      apiParams: tempTestData[this.state.selectedApiIndex].apiParams,
+      selectedFormat: format
+    }
+    tempTestData[this.state.selectedApiIndex] = Object.assign(tempTestData[this.state.selectedApiIndex], onSuccessTestData)
+    testAPIdef[this.state.selectedApiIndex].columns = response.columns
+
+    this.setState({testData: tempTestData, apiDefinition: testAPIdef},()=>{
+      this.onChangeApiDefinition('format', format)
+    })
+  }
+
+  onErrorTest = (error) => {
+    let tempTestData = this.state.testData.slice()
+    let onErrorTestData = {
+      apiResponse: JSON.parse(error.responseText),
+      apiSuccess: false,
+      apiError: true,
+      apiParams: tempTestData[this.state.selectedApiIndex].apiParams,
+      selectedFormat: tempTestData[this.state.selectedApiIndex].selectedFormat
+    }
+    tempTestData[this.state.selectedApiIndex] = Object.assign(tempTestData[this.state.selectedApiIndex], onErrorTestData)
+    this.setState({testData: tempTestData})
+  }
+
+  exportConfigAsYaml = () => {
+    let apiDefinition =this.state.apiDefinition.slice()
+    let fileName = 'hidash-api'
+    let yamlData = exportFile(apiDefinition, YAML_CONTENT_TYPE)
+    saveBlobToFile(yamlData, fileName+'.yaml')
+  }
+
+  processParamDef = (definitions) => {
+    let appliedDef = {}
+    if (definitions.length) {
+      definitions.map((data) => {
+        appliedDef[data.name] = {
+          type: data.type,
+          optional: data.optional,
+          default_values: data.default_values,
+          isParamDefCustom: data.isParamDefCustom
+        }
+        if (data.hasOwnProperty('kwargs')) {
+          appliedDef[data.name].kwargs = data.kwargs
+        }
+      })
+    }
+    return appliedDef
+  }
+
+  onHandleTestButton = (event, format=null) => {
+    let tempParam = this.state.testData[this.state.selectedApiIndex].apiParams || {}
+    let paramObj = {}
+    try {
+      paramObj = typeof tempParam === 'string' ? JSON.parse(tempParam) : tempParam
+    } catch (e) {
+      console.log(e)
+      console.log('please check your object syntax. Object key and value should be wrapped up in double quotes. Expected input: {"objKey": "objVal"}')
+    }
+    let paramDef = this.processParamDef(this.state.apiDefinition[this.state.selectedApiIndex].paramDefinition)
+    format = format || 'table'
+    let payloadObj = {
+      config: {
+        query: this.state.apiDefinition[this.state.selectedApiIndex].sqlQuery
+      },
+      transformations: this.state.apiDefinition[this.state.selectedApiIndex].transformations,
+      format: format,
+      params: paramObj.params,
+      parameters: paramDef,
+      user: paramObj.session,
+      validations: this.state.apiDefinition[this.state.selectedApiIndex].validations,
+      columns: this.state.apiDefinition[this.state.selectedApiIndex].columns
+    }
+    postApiRequest(apiUriHostName+'/test/', payloadObj,
+                   this.onSuccessTest, this.onErrorTest, format)
+  }
+
+  //Removes the API definition from the curret API list
+  apiDeletionHandler = (index) => {
+    if(this.state.apiDefinition.length > 1) {
+      let newApiDefinitions = this.state.apiDefinition.slice(),
+        newTestData = this.state.testData.slice()
+      newApiDefinitions.splice(index, 1)
+      newTestData.splice(index, 1)
+      //Decrement the selectedApiIndex only if the selectedIndex is not zero
+      let selectedApiIndex = this.state.selectedApiIndex
+      selectedApiIndex = selectedApiIndex===0 ? 0 : selectedApiIndex-1
+      this.setState({apiDefinition: newApiDefinitions, testData: newTestData, selectedApiIndex: selectedApiIndex})
+    } else {
+      let tempApiDef = [getEmptyApiDefinition()],
+        tempTestData = [getEmptyTestData()]
+      this.setState({apiDefinition: tempApiDef, testData: tempTestData})
+    }
+  }
+
+  //Appends an empty API definition object to current API Definitions
+  apiAdditionHandler = () => {
+    let newApiDefinitions = this.state.apiDefinition.slice(),
+      newTestData = this.state.testData.slice(),
+      selectedApiIndex = newApiDefinitions.length
+    newApiDefinitions.push(getDefaultApiDefinition(newApiDefinitions.length))
+    newTestData.push(getEmptyTestData())
+    this.setState({
+      apiDefinition: newApiDefinitions,
+      testData: newTestData,
+      selectedApiIndex: selectedApiIndex
+    })
+  }
+
+  //Changes the selected API index to the one which was clicked from the API list
+  apiSelectionHandler = (index) => {
+    this.setState({selectedApiIndex: index})
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextState !== nextProps) {
+      //FIXME: Need to change hardcode localstorage key name. Later we will save as project name
+      setDataInLocalStorage('hidash', nextState)
+      return true
+    }
+  }
+
+  render () {
+    return (
+      <div>
+      <NavHeader apiDefinition={this.state.apiDefinition} apiOpenHandler={this.apiOpenHandler} apiAdditionHandler={this.apiAdditionHandler} exportConfigAsYaml={this.exportConfigAsYaml}/>
+      <ApiTabs
+        {...this.state}
+        apiCloseHandler={this.apiCloseHandler}
+        apiTabRenameHandler={this.apiTabRenameHandler}
+        onChangeApiDefinition={this.onChangeApiDefinition}
+        onHandleTestButton={this.onHandleTestButton}
+        apiDeletionHandler={this.apiDeletionHandler}
+        apiAdditionHandler={this.apiAdditionHandler}
+        apiSelectionHandler={this.apiSelectionHandler}
+        apiParamToggleHandler={this.apiParamToggleHandler}
+        onChangeTestData={this.onChangeTestData}
+      />
+      </div>
+    )
+  }
+}

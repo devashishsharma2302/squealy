@@ -4,6 +4,7 @@ venv
 # Ignore generated files
 *.pyc
 *.sqlite3
+node_modules
 
 # Ignore other specific files
 .project
