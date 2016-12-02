@@ -40,7 +40,6 @@ class DatabaseView(APIView):
         table = request.data.get('table', None)
         if table:
             query = 'Desc {}'.format(table['value'])
-            print query
             with conn.cursor() as cursor:
                 cursor.execute(query)
                 column_metadata = []
@@ -95,7 +94,6 @@ class SqlApiView(APIView):
 
             # Format the table according to the format requested
             if request.data.get('format') not in ['table', 'JSON']:
-                print request.data.get('format')
                 self.format = request.data.get('format', 'SimpleFormatter')
             data = self._format(table)
             return Response(data, status.HTTP_200_OK)
@@ -114,7 +112,7 @@ class SqlApiView(APIView):
         params = request.GET.copy()
         user = request.user
         if hasattr(self, 'parameters'):
-            params = self.parse_params(request)
+            params = self.parse_params(params)
         if hasattr(self, 'validations'):
             self.run_validations(params, user)
 
@@ -164,8 +162,7 @@ class SqlApiView(APIView):
             kwargs = validation.get("validation_function").get("kwargs", {})
             validation_function(self, params, user, **kwargs)
 
-    def parse_params(self, request):
-        params = request.GET.copy()
+    def parse_params(self, params):
         for param in self.parameters:
             # Default values
             if self.parameters[param].get('default_value') and params.get(param) == None:

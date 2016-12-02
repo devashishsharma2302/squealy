@@ -30,8 +30,7 @@
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinxcontrib.fulltoc',
+    'sphinx.ext.autodoc'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -177,7 +176,7 @@ html_static_path = ['_static']
 
 # Custom sidebar templates, maps document names to template names.
 #
-html_sidebars = { '**': [ 'relations.html', 'globaltoc.html'], }
+html_sidebars = { '**': [ 'localtoc.html'], }
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
