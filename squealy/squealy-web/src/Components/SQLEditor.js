@@ -32,10 +32,10 @@ export class SQLEditor extends Component {
     let paramArray = fetchParamsFromQuery(editorContent)
     //Update new params in Test Parameter if query has new param added
     paramArray.map((param) => {
-      if (param && !newApiParams.hasOwnProperty('params')) {
+      if (!newApiParams.hasOwnProperty('params')) {
         newApiParams.params = {}
       }
-      if (newApiParams.params && !newApiParams.params.hasOwnProperty(param)) {
+      if (param && !newApiParams.params.hasOwnProperty(param)) {
         newApiParams.params[param] = 'value'
       }
     })
