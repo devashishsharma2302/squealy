@@ -131,11 +131,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, '../squealy/templates/static/'),
-    os.path.join(BASE_DIR, '../squealy/templates/')
-]
-
 CORS_ORIGIN_WHITELIST = (
     'localhost:3000'
 )
