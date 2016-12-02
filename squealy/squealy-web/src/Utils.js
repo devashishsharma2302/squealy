@@ -139,7 +139,7 @@ export function getEmptyTestData() {
     apiSuccess: false,
     apiError: false,
     apiResponse: [],
-    apiParams: '',
+    apiParams: {},
     selectedFormat: RESPONSE_FORMATS.table.value
   }
 }
@@ -236,4 +236,33 @@ function formatApiDataToYaml(data, index) {
     formattedData.columns = column_dict
   }
   return YAML.stringify(formattedData, YAML_INDENTATION)
+}
+
+export function fetchParamsFromQuery(text) {
+  let regExpForParams = /{{\s*params\.([^\s}%]+)\s*}}/g,
+      regExpForExp = /{%[^(%})]*params\.([^\s}%]+)[^({%)]*%}/g,
+      matchForDblBraces = regExpForParams.exec(text),
+      matchForExp = regExpForExp.exec(text),
+      paramsArray = []
+
+
+  while (matchForDblBraces !== null || matchForExp !== null) {
+    if (matchForExp && paramsArray.indexOf(matchForExp[1]) === -1) {
+      paramsArray.push(matchForExp[1])
+    }
+
+    if (matchForDblBraces && paramsArray.indexOf(matchForDblBraces[1]) === -1) {
+      paramsArray.push(matchForDblBraces[1])
+    }
+
+    if (matchForDblBraces !== null) {
+      matchForDblBraces = regExpForParams.exec(text)
+    }
+
+    if (matchForExp !== null) {
+      matchForExp = regExpForExp.exec(text)
+    }
+  }
+
+  return paramsArray
 }

@@ -86,7 +86,8 @@ export default class MainComponent extends Component {
             onChangeApiDefinition={onChangeApiDefinition}
             sqlQuery={selectedAPIDefinition.sqlQuery}
             selectedApiIndex={selectedApiIndex}
-            />
+            onChangeTestData={onChangeTestData}
+            apiParams={selectedTestData.apiParams}/>
           <div className="api-section">
             <div className="api-btn-wrapper">
               <button onClick={(e) => onHandleTestButton(e)}
