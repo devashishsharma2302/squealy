@@ -2,3 +2,9 @@ include CHANGES
 include INSTALL
 include LICENSE
 include README.textile
+recursive-include squealy/templates *
+prune venv/
+prune example/
+prune doc/
+prune squealy/static/
+

@@ -35,7 +35,7 @@ class TestParameterSubstitution(TestCase):
     def test_default_value(self):
         factory = RequestFactory()
         request = factory.get('/example/table-report/?name=testname')
-        params = ParameterSubstitutionView().parse_params(request)
+        params = ParameterSubstitutionView().parse_params(request.GET.copy())
         self.assertEqual(params.get('user_id'), 'user001')
 
     def test_optional_param(self):
@@ -202,7 +202,7 @@ class TestDateParameter(TestCase):
     def test_date_parameter_datatype(self):
         factory = RequestFactory()
         request = factory.get('/example/table-report/?date=08/09/2016')
-        params = DateParameterView().parse_params(request)
+        params = DateParameterView().parse_params(request.GET.copy())
         self.assertEqual(type(params.get('date')), datetime.date)
 
     def test_date_macro_today(self):
@@ -249,7 +249,7 @@ class TestDateTimeParameter(TestCase):
     def test_datetime_parameter_datatype(self):
         factory = RequestFactory()
         request = factory.get('/example/table-report/?date_time=08/09/2016 10:44:50')
-        params = DateTimeParameterView().parse_params(request)
+        params = DateTimeParameterView().parse_params(request.GET.copy())
         self.assertEqual(type(params.get('date_time')), datetime.datetime)
 
     def test_date_macro_now(self):
