@@ -3,7 +3,7 @@ import AceEditor from 'react-ace'
 import 'brace/mode/sql'
 import 'brace/theme/tomorrow'
 import 'brace/ext/language_tools'
-import {fetchParamsFromQuery} from './../Utils'
+import { fetchParamsFromQuery, fetchParamsFromQuery } from './../Utils'
 
 
 export class SQLEditor extends Component {
@@ -27,11 +27,14 @@ export class SQLEditor extends Component {
 
   onBlur = () => {
     const {onChangeApiDefinition, onChangeTestData, apiParams} = this.props
-    let {editorContent} = this.state
-    let newApiParams = Object.assign({}, apiParams)
-    let paramArray = fetchParamsFromQuery(editorContent)
+    let {editorContent} = this.state,
+      newApiParams = Object.assign({}, apiParams),
+      apiParamArray = fetchApiParamsFromQuery(editorContent),
+      sessionParamArray = 
+
+
     //Update new params in Test Parameter if query has new param added
-    paramArray.map((param) => {
+    apiParamArray.map((param) => {
       if (!newApiParams.hasOwnProperty('params')) {
         newApiParams.params = {}
       }
