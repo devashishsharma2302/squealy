@@ -4,7 +4,7 @@
 
 Installing dependencies
 ```
-cd squealy/static
+cd squealy/squealy-web
 npm install
 ```
 
