@@ -1,6 +1,7 @@
 import YAML from 'yamljs'
 import { YAML_INDENTATION, RESPONSE_FORMATS } from './Constant'
 import FileSaver from 'filesaver.js-npm'
+import jsyaml from 'js-yaml'
 /*!*************************************************************************
 [Utils.js]
 *****************************************************************************/
@@ -226,14 +227,14 @@ function formatApiDataToYaml(data, index) {
     'name': data.apiName,
     'url': data.urlName,
     'parameters': data.paramDefinition,
-    'access_control':data.access_control,
+    // 'access_control':data.access_control,
     'validations': data.validations,
     'query': data.sqlQuery,
     'transformations': data.transformations,
-    'format': f
+    'format': data.format
   }
   if(data.columns) {
-    formattedData.columns = column_dict
+    formattedData.columns = data.columns
   }
-  return YAML.stringify(formattedData, YAML_INDENTATION)
+  return jsyaml.dump(formattedData, {indent: YAML_INDENTATION})
 }
