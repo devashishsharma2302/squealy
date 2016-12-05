@@ -10,7 +10,6 @@ import {
   postApiRequest,
   objectToYaml,
   saveBlobToFile,
-  saveYamlOnServer,
   getEmptyApiDefinition,
   exportFile,
   getDefaultApiDefinition,
@@ -265,13 +264,6 @@ export class MainContainer extends Component {
       setDataInLocalStorage('hidash', nextState)
       return true
     }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    let apiDefinition =this.state.apiDefinition.slice()
-    let yamlData = saveYamlOnServer(apiDefinition)
-    let data = {yamlData: yamlData}
-    postApiRequest(apiUriHostName+'/yaml-generator/', data, ()=>{console.log('Hola!success')},()=>{console.log('Oppsy! thats a fucking error!')}, null) 
   }
 
   render () {
