@@ -4,6 +4,7 @@ import GoogleChartComponent from './GoogleChartComponent'
 import JSONViewer from './JSONViewer'
 import { QueryResponseTable } from './ResponseTable'
 import {VISUALIZATION_MODES, RESPONSE_FORMATS} from '../Constant'
+import {chartData} from '../mockData'
 
 const responseElementReferenceMap = {
   'JSON':  JSONViewer,
@@ -12,15 +13,6 @@ const responseElementReferenceMap = {
   'HighchartsFormatter': JSONViewer
 }
 
-const temp = {
-    cols: [{id: 'task', label: 'Task', type: 'string'},
-           {id: 'hours', label: 'Hours per Day', type: 'number'}],
-    rows: [{c:[{v: 'Work'}, {v: 11}]},
-           {c:[{v: 'Eat'}, {v: 2}]},
-           {c:[{v: 'Commute'}, {v: 2}]},
-           {c:[{v: 'Watch TV'}, {v:2}]},
-           {c:[{v: 'Sleep'}, {v:7, f:'7.000'}]}]
-    }
 
 export default class ResponseSection extends Component {
   constructor(props) {
@@ -31,8 +23,6 @@ export default class ResponseSection extends Component {
   }
 
   visualizationChangeHandler = (event, mode) => {
-    console.log(event)
-    event.preventDefault();
     this.setState({visualizationMode: mode})
   }
 
@@ -82,7 +72,7 @@ export default class ResponseSection extends Component {
           </button>
           <div>
             {(visualizationMode==VISUALIZATION_MODES.raw)?
-              responseElem:<GoogleChartComponent config={temp} />
+              responseElem:<GoogleChartComponent config={chartData} />
             }
           </div>
         </div>

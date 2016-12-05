@@ -66,5 +66,5 @@ export const COLUMN_TYPE = [
 
 export const VISUALIZATION_MODES = {
   raw: 'Raw',
-  'widget': 'Widget'
+  widget: 'Widget'
 }
