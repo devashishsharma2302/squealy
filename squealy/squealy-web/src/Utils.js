@@ -230,10 +230,21 @@ function formatApiDataToYaml(data, index) {
     'validations': data.validations,
     'query': data.sqlQuery,
     'transformations': data.transformations,
-    'format': f
-  }
-  if(data.columns) {
-    formattedData.columns = column_dict
+    'format': data.format
   }
   return YAML.stringify(formattedData, YAML_INDENTATION)
+}
+
+// The following function loads the google charts JS files
+export function googleChartLoader(version, packages) {
+  var options = {
+    dataType: 'script',
+    cache: true,
+    url: 'https://www.gstatic.com/charts/loader.js',
+  };
+  jQuery.ajax(options).done(function(){
+    google.charts.load(version || 'current', {
+      packages: packages || ['corechart']
+    });
+  });
 }

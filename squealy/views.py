@@ -40,7 +40,6 @@ class DatabaseView(APIView):
         table = request.data.get('table', None)
         if table:
             query = 'Desc {}'.format(table['value'])
-            print query
             with conn.cursor() as cursor:
                 cursor.execute(query)
                 column_metadata = []
@@ -95,7 +94,6 @@ class SqlApiView(APIView):
 
             # Format the table according to the format requested
             if request.data.get('format') not in ['table', 'JSON']:
-                print request.data.get('format')
                 self.format = request.data.get('format', 'SimpleFormatter')
             data = self._format(table)
             return Response(data, status.HTTP_200_OK)
