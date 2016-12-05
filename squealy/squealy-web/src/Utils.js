@@ -218,11 +218,18 @@ export function preProcessResponse(response) {
   return processedResponse
 }
 
+export function saveYamlOnServer(data) {
+  let yamlArray = []
+  for (let index in data) {
+     yamlArray.push(formatApiDataToYaml(data[index],index))
+  }
+  return yamlArray
+}
 
 function formatApiDataToYaml(data, index) {
   data.sqlQuery = data.sqlQuery.replace(/\n|\r|\t/g,' ').trim()
   let formattedData = {
-    'id': data.apiName,
+    'id': index+1,
     'name': data.apiName,
     'url': data.urlName,
     'parameters': data.paramDefinition,
@@ -230,10 +237,7 @@ function formatApiDataToYaml(data, index) {
     'validations': data.validations,
     'query': data.sqlQuery,
     'transformations': data.transformations,
-    'format': f
+    'format': data.format
   }
-  if(data.columns) {
-    formattedData.columns = column_dict
-  }
-  return YAML.stringify(formattedData, YAML_INDENTATION)
+  return formattedData
 }
