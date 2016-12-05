@@ -238,31 +238,43 @@ function formatApiDataToYaml(data, index) {
   return YAML.stringify(formattedData, YAML_INDENTATION)
 }
 
-export function fetchParamsFromQuery(text) {
+
+function execRegexGroupedMulValues(regex, text, result) {
+  let match = regex.exec(text),
+    newResult = result.slice()
+
+  while (match !== null) {
+    if (newResult.indexOf(match[1]) === -1) {
+      newResult.push(match[1])
+    }
+    match = regex.exec(text)
+  }
+
+  return newResult
+}
+
+
+
+export function fetchApiParamsFromQuery(text) {
   let regExpForParams = /{{\s*params\.([^\s}%]+)\s*}}/g,
       regExpForExp = /{%[^(%})]*params\.([^\s}%]+)[^({%)]*%}/g,
-      matchForDblBraces = regExpForParams.exec(text),
-      matchForExp = regExpForExp.exec(text),
       paramsArray = []
 
 
-  while (matchForDblBraces !== null || matchForExp !== null) {
-    if (matchForExp && paramsArray.indexOf(matchForExp[1]) === -1) {
-      paramsArray.push(matchForExp[1])
-    }
+  paramsArray = execRegexGroupedMulValues(regExpForParams, text, paramsArray)
+  paramsArray = execRegexGroupedMulValues(regExpForExp, text, paramsArray)
 
-    if (matchForDblBraces && paramsArray.indexOf(matchForDblBraces[1]) === -1) {
-      paramsArray.push(matchForDblBraces[1])
-    }
+  return paramsArray
+}
 
-    if (matchForDblBraces !== null) {
-      matchForDblBraces = regExpForParams.exec(text)
-    }
+export function fetchSessionParamsFromQuery(text) {
+  let regExpForParams = /{{\s*user\.([^\s}%]+)\s*}}/g,
+      regExpForExp = /{%[^(%})]*user\.([^\s}%]+)[^({%)]*%}/g,
+      paramsArray = []
 
-    if (matchForExp !== null) {
-      matchForExp = regExpForExp.exec(text)
-    }
-  }
+
+  paramsArray = execRegexGroupedMulValues(regExpForParams, text, paramsArray)
+  paramsArray = execRegexGroupedMulValues(regExpForExp, text, paramsArray)
 
   return paramsArray
 }

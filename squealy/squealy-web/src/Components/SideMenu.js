@@ -70,7 +70,7 @@ export default class SideMenu extends Component {
 
     return(
       <div className="parameters-value-wrapper">
-        <h2>Test Parameter Values: </h2>
+        <h2>Test API Parameters: </h2>
         <table className="table table-bordered">
           <thead>
             <tr>
@@ -95,7 +95,7 @@ export default class SideMenu extends Component {
             }
           </tbody>
         </table>
-
+        <h2>Test User Parameters: </h2>
         <table className="table table-bordered">
           <thead>
             <tr>
