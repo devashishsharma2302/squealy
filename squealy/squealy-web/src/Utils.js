@@ -221,7 +221,6 @@ export function preProcessResponse(response) {
 
 
 function formatApiDataToYaml(data, index) {
-  data.sqlQuery = data.sqlQuery.replace(/\n|\r|\t/g,' ').trim()
   let formattedData = {
     'id': data.apiName,
     'name': data.apiName,
