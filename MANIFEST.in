@@ -3,8 +3,8 @@ include INSTALL
 include LICENSE
 include README.textile
 recursive-include squealy/templates *
+recursive-include squealy/static *
 prune venv/
 prune example/
 prune doc/
-prune squealy/static/
-
+prune squealy/squealy-web/
