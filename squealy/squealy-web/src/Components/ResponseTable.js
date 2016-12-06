@@ -28,10 +28,10 @@ export class QueryResponseTable extends Component {
         <div className="hidash-api-response hidash-query-response-grid">
         {(response.data.length > 0 && response.columns.length > 0)?
             <ReactTable
-            data={response.data}
-            columns={responseColumn}
-            pageSize={10}
-            minRows={3}
+              data={response.data}
+              columns={responseColumn}
+              pageSize={10}
+              minRows={3}
           />
         :
           <div>Loading...</div>

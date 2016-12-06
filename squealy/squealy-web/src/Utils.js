@@ -139,7 +139,7 @@ export function getEmptyTestData() {
     apiSuccess: false,
     apiError: false,
     apiResponse: [],
-    apiParams: '',
+    apiParams: {},
     selectedFormat: RESPONSE_FORMATS.table.value
   }
 }
@@ -249,4 +249,45 @@ export function googleChartLoader(version, packages) {
       packages: packages || ['corechart']
     });
   });
+}
+
+
+function execRegexGroupedMulValues(regex, text, result) {
+  let match = regex.exec(text),
+    newResult = result.slice()
+
+  while (match !== null) {
+    if (newResult.indexOf(match[1]) === -1) {
+      newResult.push(match[1])
+    }
+    match = regex.exec(text)
+  }
+
+  return newResult
+}
+
+
+
+export function fetchApiParamsFromQuery(text) {
+  let regExpForParams = /{{\s*params\.([^\s}%]+)\s*}}/g,
+      regExpForExp = /{%[^(%})]*params\.([^\s}%]+)[^({%)]*%}/g,
+      paramsArray = []
+
+
+  paramsArray = execRegexGroupedMulValues(regExpForParams, text, paramsArray)
+  paramsArray = execRegexGroupedMulValues(regExpForExp, text, paramsArray)
+
+  return paramsArray
+}
+
+export function fetchSessionParamsFromQuery(text) {
+  let regExpForParams = /{{\s*user\.([^\s}%]+)\s*}}/g,
+      regExpForExp = /{%[^(%})]*user\.([^\s}%]+)[^({%)]*%}/g,
+      paramsArray = []
+
+
+  paramsArray = execRegexGroupedMulValues(regExpForParams, text, paramsArray)
+  paramsArray = execRegexGroupedMulValues(regExpForExp, text, paramsArray)
+
+  return paramsArray
 }
