@@ -44,8 +44,10 @@ class DatabaseView(APIView):
                 cursor.execute(query)
                 column_metadata = []
                 for meta in cursor:
-                    column_metadata.append({'column': meta[0],
-                                            'type': meta[1]})
+                    column_metadata.append({
+                        'column': meta[0],
+                        'type': meta[1]
+                    })
             return Response({'schema': column_metadata})
         else:
             with conn.cursor() as cursor:
@@ -68,6 +70,8 @@ class SqlApiView(APIView):
     def post(self, request, *args, **kwargs):
         try:
             params = request.data.get('params', {})
+            if request.data.get('connection'):
+                self.connection_name = request.data.get('connection')
             # handle no query exception  here
             user = request.data.get('user', None)
             if request.data.get('parameters'):

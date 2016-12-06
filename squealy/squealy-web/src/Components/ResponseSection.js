@@ -53,7 +53,6 @@ export default class ResponseSection extends Component {
         {selectedTestData.apiResponse.error}
       </div>
     }
-    console.log(selectedTestData.selectedFormat)
     return (
       <div className="response-section">
       {(selectedTestData.selectedFormat === 'GoogleChartsFormatter')?

@@ -56,7 +56,8 @@ export default class ApiTabsToggle extends Component {
       exportConfigAsYaml,
       onChangeTestData,
       apiOpenHandler,
-      apiCloseHandler
+      apiCloseHandler,
+      dbUpdationHandler
     } = this.props
     const renameTabModalContent =
       <div className='row add-modal-content'>
@@ -109,6 +110,7 @@ export default class ApiTabsToggle extends Component {
                 apiParamToggleHandler={apiParamToggleHandler}
                 onChangeTestData={onChangeTestData}
                 exportConfigAsYaml={exportConfigAsYaml}
+                dbUpdationHandler={dbUpdationHandler}
                 />
               </div>
             </div>

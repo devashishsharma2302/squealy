@@ -130,7 +130,8 @@ export function getDefaultApiDefinition(apiIndex) {
     validations: [],
     transformations: [],
     selectedTransformations: [],
-    columns: []
+    columns: [],
+    selectedDB: null
   }
 }
 

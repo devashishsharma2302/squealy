@@ -196,7 +196,8 @@ export class MainContainer extends Component {
       parameters: paramDef,
       user: paramObj.session,
       validations: this.state.apiDefinition[this.state.selectedApiIndex].validations,
-      columns: this.state.apiDefinition[this.state.selectedApiIndex].columns
+      columns: this.state.apiDefinition[this.state.selectedApiIndex].columns,
+      connection: this.state.selectedDB
     }
     postApiRequest(apiUriHostName+'/test/', payloadObj,
                    this.onSuccessTest, this.onErrorTest, format)
@@ -268,6 +269,10 @@ export class MainContainer extends Component {
     }
   }
 
+  dbUpdationHandler = (selectedDB) => {
+    this.setState({selectedDB: selectedDB.value})
+  }
+
   render () {
     return (
       <div>
@@ -283,6 +288,7 @@ export class MainContainer extends Component {
         apiSelectionHandler={this.apiSelectionHandler}
         apiParamToggleHandler={this.apiParamToggleHandler}
         onChangeTestData={this.onChangeTestData}
+        dbUpdationHandler={this.dbUpdationHandler}
       />
       </div>
     )
