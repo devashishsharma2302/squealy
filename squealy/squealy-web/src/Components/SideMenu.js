@@ -70,6 +70,7 @@ export default class SideMenu extends Component {
 
     return(
       <div className="parameters-value-wrapper">
+        <DatabaseDescription />
         <h2>Test API Parameters: </h2>
         <table className="table table-bordered">
           <thead>
