@@ -39,3 +39,13 @@
 .edit-col-modal > div.row {
   margin-bottom: 10px;
 }
+
+.response-section {
+  .response-section-btn {
+    background: $white_color;
+    border-radius: 3px;
+    margin: 0 7px 4px 0;
+    padding: 5px 18px;
+    outline: none;
+  }
+}

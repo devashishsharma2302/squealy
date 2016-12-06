@@ -236,3 +236,17 @@ function formatApiDataToYaml(data, index) {
   }
   return jsyaml.dump(formattedData, {indent: YAML_INDENTATION})
 }
+
+// The following function loads the google charts JS files
+export function googleChartLoader(version, packages) {
+  var options = {
+    dataType: 'script',
+    cache: true,
+    url: 'https://www.gstatic.com/charts/loader.js',
+  };
+  jQuery.ajax(options).done(function(){
+    google.charts.load(version || 'current', {
+      packages: packages || ['corechart']
+    });
+  });
+}
