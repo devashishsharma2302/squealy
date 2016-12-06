@@ -1,10 +1,7 @@
 import React, {Component} from 'react'
+import {Modal} from 'react-bootstrap'
 
 export class HidashModal extends Component {
-
-  saveChangesHandler = () => {
-    this.props.saveChanges()
-  }
 
   render () {
     const {
@@ -13,29 +10,24 @@ export class HidashModal extends Component {
       modalContent,
       saveChanges,
       showModal,
-      modalSize
+      modalSize,
+      closeModal
     } = this.props
 
+
     return (
-      <div className="modal fade" id={modalId} role="dialog">
-        <div className= {'modal-dialog '+modalSize}>
-          <div className="modal-content">
-            <div className="modal-header">
-              <button type="button" className="close" data-dismiss="modal">&times;</button>
-              <h2 className="modal-title">{modalHeader}</h2>
-            </div>
-            <div className="modal-body">
-              {modalContent}
-            </div>
-            <div className="modal-footer">
-              <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
-              {
-                saveChanges ? <button type="button" className="btn btn-primary" onClick={this.saveChangesHandler} data-dismiss="modal">Save</button> : null
-              }
-            </div>
-          </div>
-        </div>
-      </div>
+      <Modal show={showModal} onHide={closeModal} key={modalId} bsSize={modalSize}>
+        <Modal.Header closeButton>
+          <Modal.Title>{modalHeader}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {modalContent}
+        </Modal.Body>
+        <Modal.Footer>
+          <button onClick={closeModal} className="btn btn-default">Close</button>
+          {saveChanges ? <button onClick={saveChanges} className="btn btn-info">Save</button> : null}
+        </Modal.Footer>
+      </Modal>
     )
   }
 }
