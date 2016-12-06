@@ -1,6 +1,24 @@
-.database-selection-wrapper {
-}
-
 .parameters-value-wrapper {
-  margin-top: 47px;
+  margin-top: 27px;
+
+  > table > thead > tr > th > i.fa {
+    color: $blue_color;
+    cursor: pointer;
+  }
+
+  > table > tbody > tr > td {
+    > i.fa {
+      opacity: 0.3;
+      cursor: pointer;
+    }
+    > i.fa:hover {
+      opacity: 1;
+      color: $orange_color;
+    }
+  }
+
+  > table > tbody > tr > td:last-child,
+    table > thead > tr > th:last-child {
+    text-align: center;
+  } 
 }
