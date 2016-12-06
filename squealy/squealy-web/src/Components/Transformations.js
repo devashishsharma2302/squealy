@@ -4,7 +4,7 @@ import {Modal} from 'react-bootstrap'
 import 'react-select/dist/react-select.css'
 import {HidashModal} from './HidashUtilsComponents'
 import { AVAILABLE_TRANSFORMATIONS } from '../Constant'
-import { WithContext as ReactTags } from 'react-tag-input'
+import { WithContext as ReactTags } from './ReactTags/ReactTags'
 
 export default class Transformations extends Component {
 
@@ -176,13 +176,13 @@ export default class Transformations extends Component {
           <div className='transformations-select'>
             <ReactTags
               tags={selectedApiDefinition.selectedTransformations}
+              autocomplete={true}
+              minQueryLength={0}
               suggestions={AVAILABLE_TRANSFORMATIONS}
               handleDelete={this.handleDelete}
               handleAddition={this.handleAddition}
               handleDrag={this.handleDrag}
               placeholder='Type transformation names' />
-            <p className="help-text">
-              <span>Transformation Options: </span>transpose/ merge/ split</p>
           </div>
         </div>
         <Modal show={this.state.showMergeModal} onHide={this.closeMergeModal}>

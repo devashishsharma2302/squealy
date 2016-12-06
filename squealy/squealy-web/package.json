@@ -71,8 +71,10 @@
     "react-dom": "^15.4.1",
     "react-select": "^1.0.0-rc.2",
     "react-table": "^3.1.2",
-    "react-tag-input": "^4.4.0",
-    "resolve-url-loader": "^1.4.3"
+    "resolve-url-loader": "^1.4.3",
+    "lodash.flow": "^3.3.0",
+    "react-dnd": "^2.0.2",
+    "react-dnd-html5-backend": "^2.0.0"
   },
   "scripts": {
     "start": "node scripts/start.js",
