@@ -1,6 +1,6 @@
-import YAML from 'yamljs'
 import { YAML_INDENTATION, RESPONSE_FORMATS } from './Constant'
 import FileSaver from 'filesaver.js-npm'
+import jsyaml from 'js-yaml'
 /*!*************************************************************************
 [Utils.js]
 *****************************************************************************/
@@ -151,7 +151,7 @@ export function getEmptyTestData() {
  * @return {[yaml]}     [return api definition as yaml]
  */
 export function objectToYaml(obj) {
-  return YAML.stringify(obj, YAML_INDENTATION)
+  return jsyaml.dump(obj, {indent: YAML_INDENTATION})
 }
 
 /**
@@ -161,7 +161,7 @@ export function objectToYaml(obj) {
  * @param {[object]}  [return file data as json object]
  */
 export function YamlFileToJsonObj(fileName) {
-  return YAML.load(fileName)
+  return jsyaml.load(fileName)
 }
 
 /**
@@ -170,7 +170,7 @@ export function YamlFileToJsonObj(fileName) {
  * @return {object}      [return data as json object]
  */
 export function yamlObjToJson(yaml) {
-  return YAML.parse(yaml)
+  return jsyaml.load(yaml)
 }
 
 /**
@@ -220,19 +220,21 @@ export function preProcessResponse(response) {
 
 
 function formatApiDataToYaml(data, index) {
-  data.sqlQuery = data.sqlQuery.replace(/\n|\r|\t/g,' ').trim()
   let formattedData = {
     'id': data.apiName,
     'name': data.apiName,
     'url': data.urlName,
     'parameters': data.paramDefinition,
-    'access_control':data.access_control,
+    // 'access_control':data.access_control,
     'validations': data.validations,
     'query': data.sqlQuery,
     'transformations': data.transformations,
     'format': data.format
   }
-  return YAML.stringify(formattedData, YAML_INDENTATION)
+  if(data.columns) {
+    formattedData.columns = data.columns
+  }
+  return jsyaml.dump(formattedData, {indent: YAML_INDENTATION})
 }
 
 // The following function loads the google charts JS files
