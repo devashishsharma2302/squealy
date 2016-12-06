@@ -1,9 +1,8 @@
-----------------------------------------
 Welcome to squealy's documentation!
------------------------------------------
+----------------------------------------
 
 About Squealy
-============
+==============
 Squealy is a django app for auto-generating reporting APIs. All configurations are passed through a single **.yml** file, which includes sql queries to fetch report data for each API.
 
 There is support for auto-formatting the data to google charts and highcharts format for quick dashboard integration.
@@ -111,7 +110,7 @@ Lets build some simple APIs that fetch some data from database via SQL query.
 | (assuming the server running on port 8000)
 
 
-.. code-block::
+.. code-block:
 
   http://localhost:8000/squealy/api1
   http://localhost:8000/squealy/api2/?limit=10
