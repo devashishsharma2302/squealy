@@ -3,6 +3,7 @@ import AceEditor from 'react-ace'
 import 'brace/mode/sql'
 import 'brace/theme/tomorrow'
 import 'brace/ext/language_tools'
+import { fetchApiParamsFromQuery, fetchSessionParamsFromQuery } from './../Utils'
 
 
 export class SQLEditor extends Component {
@@ -25,10 +26,34 @@ export class SQLEditor extends Component {
   }
 
   onBlur = () => {
-    const {onChangeApiDefinition} = this.props
-    let {editorContent} = this.state
+    const {onChangeApiDefinition, onChangeTestData, apiParams} = this.props
+    let {editorContent} = this.state,
+      newApiParams = Object.assign({}, apiParams),
+      apiParamArray = fetchApiParamsFromQuery(editorContent),
+      sessionParamArray = fetchSessionParamsFromQuery(editorContent)
+
+
+    //Update new params in Test Parameter if query has new param added
+    apiParamArray.map((param) => {
+      if (!newApiParams.hasOwnProperty('params')) {
+        newApiParams.params = {}
+      }
+      if (param && !newApiParams.params.hasOwnProperty(param)) {
+        newApiParams.params[param] = 'value'
+      }
+    })
+
+    sessionParamArray.map((param) => {
+      if (!newApiParams.hasOwnProperty('session')) {
+        newApiParams.session = {}
+      }
+      if (param && !newApiParams.session.hasOwnProperty(param)) {
+        newApiParams.session[param] = 'value'
+      }
+    })
+    onChangeTestData(newApiParams)
     //Update sql query in selected api definition
-    this.props.onChangeApiDefinition('sqlQuery', editorContent)
+    onChangeApiDefinition('sqlQuery', editorContent)
   }
 
   render () {

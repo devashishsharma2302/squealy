@@ -26,6 +26,18 @@
 
 .api-param-def-table {
   border: 1px solid $light_gray_color;
+
+  > tbody > tr {
+    > td > i.fa-trash-o {
+      opacity: 0.5;
+      cursor: pointer;
+    }
+
+    > td > i.fa-trash-o:hover {
+      opacity: 1;
+      color: $orange_color;
+    }
+  } 
 }
 
 .validation-table-wrapper {
