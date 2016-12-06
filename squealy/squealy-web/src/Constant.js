@@ -63,3 +63,8 @@ export const COLUMN_TYPE = [
     value: 'Metric'
   }
 ]
+
+export const VISUALIZATION_MODES = {
+  raw: 'Raw',
+  widget: 'Widget'
+}

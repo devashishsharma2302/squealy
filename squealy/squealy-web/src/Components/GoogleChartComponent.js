@@ -4,24 +4,21 @@ import equal from 'deep-equal'
 
 export default class GoogleChartWrapper extends Component {
 
-   static propTypes = {
-    config: React.PropTypes.shape({
-      grid_width: React.PropTypes.oneOf(GRID_WIDTH_OPTIONS),
-      chart_data: React.PropTypes.object.isRequired,
-      chart_type: React.PropTypes.oneOf(GOOGLE_CHART_TYPE_OPTIONS),
-      height: React.PropTypes.string
-    })
-  }
-
   componentDidMount() {
     this.renderChart(this.props.config)
   }
 
   renderChart = (config) => {
     var wrapper = new google.visualization.ChartWrapper({
-      chartType: config.chart_type,
-      dataTable: config.chart_data,
-      containerId: config.chartId
+      chartType: 'ColumnChart',
+      dataTable: config,
+      containerId: 'widget',
+      options: {
+        'height': '400',
+        'width': '100%',
+        'backgroundColor': '#ffffff',
+        'chartArea': {'width': '100%', 'height': '80%'}
+      }
     });
     wrapper.draw();
   }
@@ -37,12 +34,9 @@ export default class GoogleChartWrapper extends Component {
 
   render() {
     const { config } = this.props
-    const chartHeight = {height: parseInt(config.height)}
-
-    return(
-      <div id={config.chartId + "chart"} className={'col-md-'+config.grid_width+' col-xs-'+config.grid_width + ' hidash-reports-section'}>
-        {config.noHeader ? null : <h3>{config.chart_id}</h3>}
-          <div id={config.chartId} style={chartHeight} />
+    return( 
+      <div>
+        <div id="widget" />
       </div>
     )
   }

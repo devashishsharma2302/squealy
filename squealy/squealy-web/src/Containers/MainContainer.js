@@ -16,7 +16,8 @@ import {
   parseObjectAsYamlConfig,
   getEmptyTestData,
   setDataInLocalStorage,
-  getDataFromLocalStorage
+  getDataFromLocalStorage,
+  googleChartLoader
 } from '../Utils'
 
 
@@ -62,6 +63,7 @@ export class MainContainer extends Component {
     } else {
       this.initializeStates()
     }
+    googleChartLoader()
   }
 
   onChangeApiDefinition = (variableName, value) => {

@@ -2,21 +2,14 @@ import React, {Component} from 'react'
 
 import SideMenu from './SideMenu'
 import { SQLEditor } from './SQLEditor'
-import { QueryResponseTable } from './ResponseTable'
 import { MOCK_DATA, COLUMN_META_DATA } from './../mockData'
 import { APIHeader } from './NavHeader'
 import ApiParams from './ApiParamsComponent'
 import FormatSelector from './FormatSelector'
-import JSONViewer from './JSONViewer'
 import Transformations from './Transformations'
 import UrlInputBox from './ApiUrlInputBox'
+import ResponseSection from './ResponseSection'
 
-const responseElementReferenceMap = {
-  'JSON':  JSONViewer,
-  'table': QueryResponseTable,
-  'GoogleChartsFormatter': JSONViewer,
-  'HighchartsFormatter': JSONViewer
-}
 
 export default class MainComponent extends Component {
 
@@ -38,29 +31,6 @@ export default class MainComponent extends Component {
     let selectedAPIDefinition = apiDefinition[selectedApiIndex]
 
     let selectedTestData = testData[selectedApiIndex], responseElem
-
-    //if data is not present, don't show response section. show sql editor full page.
-    if (selectedTestData.apiSuccess) {
-      //Gets the reference of the response element to be rendered
-      const ReponseElementReference = responseElementReferenceMap[selectedTestData.selectedFormat]
-      responseElem =
-            <div>
-              <button type="button" className="btn btn-default" >Raw Data</button>
-              <button type="button" className="btn btn-default">Visualise Button</button>
-              <ReponseElementReference
-                response={selectedTestData.apiResponse}
-                columnDefinition={selectedAPIDefinition.columns}
-                onChangeApiDefinition={onChangeApiDefinition}
-              />
-            </div>
-    } else if (selectedTestData.apiError) {
-      responseElem =
-      <div className="alert alert-danger query-error-section">
-        <h2>Results: </h2>
-        <strong>Error Occured!</strong>
-        {selectedTestData.apiResponse.error}
-      </div>
-    }
     return (
       <div className="row main-container">
         <div className="col-md-3">
@@ -107,9 +77,10 @@ export default class MainComponent extends Component {
                 />
             </div>
           </div>
-          <div className="response-section">
-            {responseElem}
-          </div>
+          <ResponseSection
+            selectedTestData={selectedTestData}
+            selectedAPIDefinition={selectedAPIDefinition}
+            onChangeApiDefinition={onChangeApiDefinition}/>
         </div>
       </div>
     )
