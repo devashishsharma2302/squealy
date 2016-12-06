@@ -256,6 +256,9 @@ function formattedData(data, index) {
     'transformations': data.transformations,
     'format': data.format
   }
+  if(data.columns) {
+    formattedData.columns = data.columns
+  }
   return formattedData
 }
 
