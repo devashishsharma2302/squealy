@@ -139,7 +139,6 @@ export class MainContainer extends Component {
         }
       })
     }
-    console.log('asdasd')
     this.setState({testData: newTestData, apiDefinition: newAPIdef},()=>{
       this.onChangeApiDefinition('format', format)
     })
