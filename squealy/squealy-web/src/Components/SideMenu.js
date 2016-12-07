@@ -16,12 +16,12 @@ export default class SideMenu extends Component {
 
   updateKey = (e, currentKey, type) => {
     let apiParams = Object.assign({}, this.props.apiParams)
-    if (e.target.innerText !== currentKey) {
-      if (apiParams[type].hasOwnProperty(e.target.innerText)) {
+    if (e.target.value !== currentKey) {
+      if (apiParams[type].hasOwnProperty(e.target.value)) {
         console.error('Parameter key can not be repeated', apiParams[type])
       } else {
         if (apiParams && apiParams[type].hasOwnProperty(currentKey)) {
-          apiParams[type][e.target.innerText] = apiParams[type][currentKey]
+          apiParams[type][e.target.value] = apiParams[type][currentKey]
           delete apiParams[type][currentKey]
           this.props.onChangeTestData(apiParams)
         } else {
@@ -34,9 +34,9 @@ export default class SideMenu extends Component {
   updateValue = (e, currentKey, type) => {
     let apiParams = Object.assign({}, this.props.apiParams)
 
-    if (apiParams.hasOwnProperty(type) && apiParams[type][currentKey] !== e.target.innerText) {
+    if (apiParams.hasOwnProperty(type) && apiParams[type][currentKey] !== e.target.value) {
       if (apiParams[type].hasOwnProperty(currentKey)) {
-        apiParams[type][currentKey] = e.target.innerText
+        apiParams[type][currentKey] = e.target.value
         this.props.onChangeTestData(apiParams)
       } else {
         console.error('Something went wrong! Not able to find key ', currentKey, ' in apiParams')
@@ -48,10 +48,8 @@ export default class SideMenu extends Component {
     let apiParams = Object.assign({}, this.props.apiParams)
     if (apiParams && !apiParams.hasOwnProperty(type)) {
       apiParams[type] = {}
-      apiParams[type]['newKey'] = 'value'
-    } else {
-      apiParams[type]['newKey'] = 'value'
-    }
+    } 
+    apiParams[type][''] = ''
     this.props.onChangeTestData(apiParams)
   }
 
@@ -85,8 +83,8 @@ export default class SideMenu extends Component {
                 Object.keys(apiParams.params).map((key) => {
                   return (
                     <tr key={key}>
-                      <td contentEditable={true} onBlur={(e) => this.updateKey(e, key, 'params')}>{key}</td>
-                      <td contentEditable={true} onBlur={(e) => this.updateValue(e, key, 'params')}>{apiParams.params[key]}</td>
+                      <td> <input defaultValue={key} onBlur={(e) => this.updateKey(e, key, 'params')} placeholder='Enter Key' /></td>
+                      <td> <input defaultValue={apiParams.params[key]} onBlur={(e) => this.updateValue(e, key, 'params')} placeholder="Enter Value" /></td>
                       <td onClick={() => this.removeParam(key, 'params')}><i className="fa fa-trash"/></td>
                     </tr>
                   )
@@ -110,8 +108,8 @@ export default class SideMenu extends Component {
                 Object.keys(apiParams.session).map((key) => {
                   return (
                     <tr key={key}>
-                      <td contentEditable={true} onBlur={(e) => this.updateKey(e, key, 'session')}>{key}</td>
-                      <td contentEditable={true} onBlur={(e) => this.updateValue(e, key, 'session')}>{apiParams.session[key]}</td>
+                      <td> <input defaultValue={key} onBlur={(e) => this.updateKey(e, key, 'session')} placeholder='Enter Key' /></td>
+                      <td> <input defaultValue={apiParams.session[key]} onBlur={(e) => this.updateValue(e, key, 'session')} placeholder='Enter Value' /> </td>
                       <td onClick={() => this.removeParam(key, 'session')}><i className="fa fa-trash"/></td>
                     </tr>
                   )
