@@ -15,10 +15,14 @@
       opacity: 1;
       color: $orange_color;
     }
+    > input {
+      width: 100%;
+      border: 0;
+    }
   }
 
   > table > tbody > tr > td:last-child,
     table > thead > tr > th:last-child {
     text-align: center;
-  } 
+  }
 }
