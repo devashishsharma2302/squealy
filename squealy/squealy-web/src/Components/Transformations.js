@@ -28,50 +28,52 @@ export default class Transformations extends Component {
 
   handleAddition = (value) => {
     let transformationsLen = this.props.selectedApiDefinition.selectedTransformations.length,
-      transformations = this.props.selectedApiDefinition.selectedTransformations.slice()
-    let curTransformations = this.props.selectedApiDefinition.transformations.slice()
+        transformationTags = this.props.selectedApiDefinition.selectedTransformations.slice(),
+        transformations = this.props.selectedApiDefinition.transformations.slice()
 
     if (value === 'merge') {
       this.setState({showMergeModal: true})
-    } else if (value === 'split') {
-      this.setState({showSplitModal: true})
-    } else {
-      curTransformations.push({name: 'transpose'})
     }
-
-    transformations.push({
+    else if (value === 'split') {
+      this.setState({showSplitModal: true})
+    }
+    else {
+      transformations.push({name: value})
+      transformationTags.push({
       id: transformationsLen + 1,
       text: value
-    })
+      })
+      this.props.onChangeApiDefinition('selectedTransformations', transformationTags)
+      this.props.onChangeApiDefinition('transformations', transformations)
+    }
     this.setState({selectedMergedCol: null, selectedSplitCol: null})
-    this.props.onChangeApiDefinition('selectedTransformations', transformations)
-    this.props.onChangeApiDefinition('transformations', curTransformations)
+    
   }
 
   handleDelete = (index) => {
-    let transformations = this.props.selectedApiDefinition.selectedTransformations.slice()
-    let curTransformations = this.props.selectedApiDefinition.transformations.slice()
+    let transformationTags = this.props.selectedApiDefinition.selectedTransformations.slice(),
+        transformations = this.props.selectedApiDefinition.transformations.slice()
+    
+    transformationTags.splice(index, 1)
     transformations.splice(index, 1)
-    curTransformations.splice(index, 1)
-    this.props.onChangeApiDefinition('selectedTransformations', transformations)
-    this.props.onChangeApiDefinition('transformations', curTransformations)
+    this.props.onChangeApiDefinition('selectedTransformations', transformationTags)
+    this.props.onChangeApiDefinition('transformations', transformations)
   }
 
   handleDrag = (val, curPos, newPos) => {
     if (curPos !== newPos) {
-      let transformations = this.props.selectedApiDefinition.selectedTransformations.slice()
+      let transformationTags = this.props.selectedApiDefinition.selectedTransformations.slice(),
+          transformations = this.props.selectedApiDefinition.transformations.slice(),
+          draggableTransformation = transformations[curPos]
 
-      let curTransformations = this.props.selectedApiDefinition.transformations.slice(),
-        draggableTransformation = curTransformations[curPos]
+      transformationTags.splice(curPos, 1);
+      transformationTags.splice(newPos, 0, val);
 
       transformations.splice(curPos, 1);
-      transformations.splice(newPos, 0, val);
+      transformations.splice(newPos, 0, draggableTransformation)
 
-      curTransformations.splice(curPos, 1);
-      curTransformations.splice(newPos, 0, draggableTransformation)
-
-      this.props.onChangeApiDefinition('selectedTransformations', transformations)
-      this.props.onChangeApiDefinition('transformations', curTransformations)
+      this.props.onChangeApiDefinition('selectedTransformations', transformationTags)
+      this.props.onChangeApiDefinition('transformations', transformations)
     }
   }
 
@@ -79,42 +81,60 @@ export default class Transformations extends Component {
     this.setState({ showSplitModal: false })
   }
 
-   closeMergeModal = () => {
+  closeMergeModal = () => {
     this.setState({ showMergeModal: false })
   }
 
   saveSplitColumnHandler = () => {
     let splitTransformationObj = {
-        name: 'split',
-        kwargs: {
-          pivot_column: this.state.selectedSplitCol.value
-        }
-      }
-    let curTransformations = this.props.selectedApiDefinition.transformations.slice()
+          name: 'split',
+          kwargs: {
+            pivot_column: this.state.selectedSplitCol.value
+          }
+        },
+        curTransformations = this.props.selectedApiDefinition.transformations.slice(),
+        transformationsLen = this.props.selectedApiDefinition.selectedTransformations.length,
+        transformationTags = this.props.selectedApiDefinition.selectedTransformations.slice()
+    
     curTransformations.push(splitTransformationObj)
+    transformationTags.push({
+      id: transformationsLen + 1,
+      text: 'split ('+this.state.selectedSplitCol.value+')'
+    })
+    this.props.onChangeApiDefinition('selectedTransformations', transformationTags)
     this.props.onChangeApiDefinition('transformations', curTransformations)
     this.setState({showSplitModal: false})
     }
 
   saveMergeColumnHandler = () => {
     let mergeTransformationObj = {
-        name: 'merge',
-        kwargs: {
-          columns_to_merge: [],
-          new_column_name: this.refs.mergedColumnName.value
-        }
-      }
-
-    let tempMergedColumnArr = this.state.selectedMergedCol,
-      newMergedColumnArr = []
+          name: 'merge',
+          kwargs: {
+            columns_to_merge: [],
+            new_column_name: this.refs.mergedColumnName.value
+          }
+        },
+        tempMergedColumnArr = this.state.selectedMergedCol,
+    
+    newMergedColumnArr = []
 
     tempMergedColumnArr.map((data) => {
       newMergedColumnArr.push(data.value)
     })
     mergeTransformationObj.kwargs.columns_to_merge = newMergedColumnArr
-    let curTransformations = this.props.selectedApiDefinition.transformations.slice()
-    curTransformations.push(mergeTransformationObj)
-    this.props.onChangeApiDefinition('transformations', curTransformations)
+    
+    let transformations = this.props.selectedApiDefinition.transformations.slice(),
+        transformationsLen = this.props.selectedApiDefinition.selectedTransformations.length,
+        transformationTags = this.props.selectedApiDefinition.selectedTransformations.slice()
+    
+    transformations.push(mergeTransformationObj)
+    
+    transformationTags.push({
+      id: transformationsLen + 1,
+      text: 'merge ('+newMergedColumnArr+')'
+    })
+    this.props.onChangeApiDefinition('selectedTransformations', transformationTags)
+    this.props.onChangeApiDefinition('transformations', transformations)
     this.setState({showMergeModal: false})
   }
 
@@ -193,7 +213,7 @@ export default class Transformations extends Component {
               {mergeColumnModal}
             </Modal.Body>
             <Modal.Footer>
-              <button onClick={this.close} className="btn btn-default">Close</button>
+              <button onClick={this.closeMergeModal} className="btn btn-default">Close</button>
               <button onClick={this.saveMergeColumnHandler} className="btn btn-info">Save</button>
             </Modal.Footer>
           </Modal>
@@ -205,7 +225,7 @@ export default class Transformations extends Component {
               {splitColumnModal}
             </Modal.Body>
             <Modal.Footer>
-              <button onClick={this.close} className="btn btn-default">Close</button>
+              <button onClick={this.closeSplitModal} className="btn btn-default">Close</button>
               <button onClick={this.saveSplitColumnHandler} className="btn btn-info">Save</button>
             </Modal.Footer>
           </Modal>
