@@ -96,7 +96,11 @@ class TestMergeTransformation(TestCase):
 
     def test_merged_column(self):
         self.response.render()
-        self.assertIn({"name":"merged_column","data_type":"string"}, self.response.data.get('columns'))
+        self.assertIn({
+            "name": "merged_column",
+            "data_type": "string",
+            "col_type": "dimension"
+        }, self.response.data.get('columns'))
         self.assertEqual(len(self.response.data.get('data')), 4)
 
 
