@@ -120,19 +120,25 @@ export class MainContainer extends Component {
   }
 
   onSuccessTest = (response, format) => {
-    let tempTestData = this.state.testData.slice()
-    let testAPIdef = this.state.apiDefinition.slice()
+    let newTestData = this.state.testData.slice()
+    let newAPIdef = this.state.apiDefinition.slice()
     let onSuccessTestData =  {
       apiResponse: response,
       apiSuccess: true,
       apiError: false,
-      apiParams: tempTestData[this.state.selectedApiIndex].apiParams,
+      apiParams: newTestData[this.state.selectedApiIndex].apiParams,
       selectedFormat: format
     }
-    tempTestData[this.state.selectedApiIndex] = Object.assign(tempTestData[this.state.selectedApiIndex], onSuccessTestData)
-    testAPIdef[this.state.selectedApiIndex].columns = response.columns
-
-    this.setState({testData: tempTestData, apiDefinition: testAPIdef},()=>{
+    newTestData[this.state.selectedApiIndex] = Object.assign(newTestData[this.state.selectedApiIndex], onSuccessTestData)
+    response.columns.map((column) => {
+      console.log(column)
+      newAPIdef[this.state.selectedApiIndex].columns[column.name] = {
+        type: (column.col_type)?column.col_type:'dimension',
+        data_type: (column.data_type)?column.data_type:'string'
+      }
+    })
+    console.log(newAPIdef)
+    this.setState({testData: newTestData, apiDefinition: newAPIdef},()=>{
       this.onChangeApiDefinition('format', format)
     })
   }

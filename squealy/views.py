@@ -72,7 +72,7 @@ class SqlApiView(APIView):
             params = request.data.get('params', {})
             if request.data.get('connection'):
                 self.connection_name = request.data.get('connection')
-            # handle no query exception  here
+            # TODO: handle no query exception  here
             user = request.data.get('user', None)
             if request.data.get('parameters'):
                 self.parameters = request.data.get('parameters')
@@ -80,17 +80,10 @@ class SqlApiView(APIView):
             if request.data.get('validations'):
                 self.validations = request.data.get('validations')
                 self.run_validations(params, user)
-            # Execute the SQL Query, and return a Table
             self.query = request.data.get('config').get('query', '')
-            # TODO: Fix this
-            columns_dict = {}
-            for column in request.data.get('columns', []):
-                columns_dict[column.get('name')] = {
-                    'type': column.get('type', 'dimension').lower()
-                }
-            self.columns = columns_dict
+            self.columns = request.data.get('columns')
+            # Execute the SQL Query, and return a Table
             table = self._execute_query(params, user)
-
             if request.data.get('transformations'):
                 # Perform basic transformations on the table
                 self.transformations = request.data.get('transformations', [])
@@ -169,11 +162,13 @@ class SqlApiView(APIView):
     def parse_params(self, params):
         for param in self.parameters:
             # Default values
-            if self.parameters[param].get('default_value') and params.get(param) == None:
+            if self.parameters[param].get('default_value') and\
+               params.get(param) == None:
                 params[param] = self.parameters[param].get('default_value')
 
             # Check for missing required parameters
-            is_parameter_optional = self.parameters[param].get('optional', False)
+            is_parameter_optional = self.parameters[param].get('optional',
+                                                               False)
             if not is_parameter_optional and not params.get(param):
                 raise RequiredParameterMissingException("Parameter required: "+param)
 
@@ -181,7 +176,7 @@ class SqlApiView(APIView):
             parameter_type_str = self.parameters[param].get("type", "String")
             kwargs = self.parameters[param].get("kwargs", {})
             if '.' in parameter_type_str:
-                module_name, class_name = parameter_type_str.rsplit('.',1)
+                module_name, class_name = parameter_type_str.rsplit('.', 1)
                 module = importlib.import_module(module_name)
                 parameter_type = getattr(module, class_name)
             else:
@@ -191,9 +186,12 @@ class SqlApiView(APIView):
         return params
 
     def _execute_query(self, params, user):
-        query, bind_params = jinjasql.prepare_query(self.query, {"params": params, "user": user})
+        query, bind_params = jinjasql.prepare_query(self.query,
+                                                    {
+                                                     "params": params,
+                                                     "user": user
+                                                    })
         conn = connections[self.connection_name]
-
         with conn.cursor() as cursor:
             cursor.execute(query, bind_params)
             cols = []
@@ -202,10 +200,18 @@ class SqlApiView(APIView):
                 # if column definition is provided
                 if hasattr(self, 'columns') and self.columns.get(desc[0]):
                     column = self.columns.get(desc[0])
-                    cols.append(Column(name=desc[0], data_type=column.get('data_type', 'string'), col_type=column.get('type', 'dimension')))
+                    cols.append(
+                        Column(
+                           name=desc[0],
+                           data_type=column.get('data_type', 'string'),
+                           col_type=column.get('type', 'dimension')
+                        )
+                    )
                 else:
-                    cols.append(Column(name=desc[0], data_type='string', col_type='dimension'))
-
+                    cols.append(
+                        Column(name=desc[0],
+                               data_type='string', col_type='dimension')
+                    )
             for db_row in cursor:
                 row_list = []
                 for col_index, chart_col in enumerate(cols):
