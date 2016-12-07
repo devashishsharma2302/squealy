@@ -71,7 +71,8 @@ export default class ResponseSection extends Component {
           </button>
           <div>
             {(visualizationMode==VISUALIZATION_MODES.raw)?
-              responseElem:<GoogleChartComponent config={chartData} />
+              responseElem:<GoogleChartComponent 
+                              config={selectedTestData.apiResponse} />
             }
           </div>
         </div>

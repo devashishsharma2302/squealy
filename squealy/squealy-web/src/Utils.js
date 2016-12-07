@@ -220,10 +220,17 @@ export function preProcessResponse(response) {
   return processedResponse
 }
 
+export function saveYamlOnServer(data) {
+  let yamlArray = []
+  for (let index in data) {
+     yamlArray.push(formattedData(data[index],index))
+  }
+  return yamlArray
+}
 
 function formatApiDataToYaml(data, index) {
   let formattedData = {
-    'id': data.apiName,
+    'id': index+1,
     'name': data.apiName,
     'url': data.urlName,
     'parameters': data.paramDefinition,
@@ -238,6 +245,25 @@ function formatApiDataToYaml(data, index) {
   }
   return jsyaml.dump(formattedData, {indent: YAML_INDENTATION})
 }
+
+function formattedData(data, index) {
+  let formattedData = {
+    'id': index+1,
+    'name': data.apiName,
+    'url': data.urlName,
+    'parameters': data.paramDefinition,
+    // 'access_control':data.access_control,
+    'validations': data.validations,
+    'query': data.sqlQuery,
+    'transformations': data.transformations,
+    'format': data.format
+  }
+  if(data.columns) {
+    formattedData.columns = data.columns
+  }
+  return formattedData
+}
+
 
 // The following function loads the google charts JS files
 export function googleChartLoader(version, packages) {

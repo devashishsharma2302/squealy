@@ -14,7 +14,10 @@ from squealy.formatters import *
 from squealy.parameters import *
 from .table import Table, Column
 from pydoc import locate
-
+import yaml
+import os
+import json
+from django.core.files import File
 
 jinjasql = JinjaSql()
 
@@ -59,6 +62,25 @@ class DatabaseView(APIView):
                                    'label': str(table_names[0])
                                 })
             return Response({'tables': tables})
+
+
+class YamlGeneratorView(APIView):
+
+    def post(self, request, *args, **kwargs):
+        try:
+            #FIX ME:: Remove Hardcoded Values
+            json_data = json.loads(request.body).get('yamlData')
+            directory = os.path.join(os.path.dirname(os.path.dirname(__file__)),'yaml/')
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+            with open(directory+'api.yaml','w+') as f:
+                myfile = File(f)
+                myfile.write(yaml.safe_dump_all(json_data, explicit_start=True))
+            f.close()
+            myfile.close()    
+            return Response({}, status.HTTP_200_OK)
+        except  Exception as e:
+            return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)    
 
 
 class SqlApiView(APIView):

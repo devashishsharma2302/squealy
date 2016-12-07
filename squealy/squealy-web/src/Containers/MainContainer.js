@@ -10,6 +10,7 @@ import {
   postApiRequest,
   objectToYaml,
   saveBlobToFile,
+  saveYamlOnServer,
   getEmptyApiDefinition,
   exportFile,
   getDefaultApiDefinition,
@@ -130,14 +131,15 @@ export class MainContainer extends Component {
       selectedFormat: format
     }
     newTestData[this.state.selectedApiIndex] = Object.assign(newTestData[this.state.selectedApiIndex], onSuccessTestData)
-    response.columns.map((column) => {
-      console.log(column)
-      newAPIdef[this.state.selectedApiIndex].columns[column.name] = {
-        type: (column.col_type)?column.col_type:'dimension',
-        data_type: (column.data_type)?column.data_type:'string'
-      }
-    })
-    console.log(newAPIdef)
+    if(format === RESPONSE_FORMATS.table.value){
+      response.columns.map((column) => {
+        newAPIdef[this.state.selectedApiIndex].columns[column.name] = {
+          type: (column.col_type)?column.col_type:'dimension',
+          data_type: (column.data_type)?column.data_type:'string'
+        }
+      })
+    }
+    console.log('asdasd')
     this.setState({testData: newTestData, apiDefinition: newAPIdef},()=>{
       this.onChangeApiDefinition('format', format)
     })
@@ -277,6 +279,13 @@ export class MainContainer extends Component {
 
   dbUpdationHandler = (selectedDB) => {
     this.setState({selectedDB: selectedDB.value})
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    let apiDefinition =this.state.apiDefinition.slice()
+    let yamlData = saveYamlOnServer(apiDefinition)
+    let data = {yamlData: yamlData}
+    postApiRequest(apiUriHostName+'/yaml-generator/', data, ()=>{},()=>{}, null) 
   }
 
   render () {

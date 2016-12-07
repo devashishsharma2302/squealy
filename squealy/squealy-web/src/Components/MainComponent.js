@@ -13,7 +13,6 @@ import ResponseSection from './ResponseSection'
 
 export default class MainComponent extends Component {
 
-
   render () {
     const {
       onHandleTestButton,

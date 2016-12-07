@@ -23,16 +23,16 @@ export const RESPONSE_FORMATS = {
 export const PARAM_FORMAT_OPTIONS = [
   {
     label: 'DateTime',
-    value: 'DateTime'
+    value: 'dateTime'
   }, {
     label: 'String',
-    value: 'String'
+    value: 'string'
   }, {
     label: 'Date',
-    value: 'Date'
+    value: 'date'
   }, {
     label: 'Number',
-    value: 'Number'
+    value: 'number'
   }
 ]
 
@@ -57,10 +57,10 @@ export let TEST_STATE = {
 export const COLUMN_TYPE = [
   {
     label: 'Dimension',
-    value: 'Dimension'
+    value: 'dimension'
   }, {
     label: 'Metric',
-    value: 'Metric'
+    value: 'metric'
   }
 ]
 
