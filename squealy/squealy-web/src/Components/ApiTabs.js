@@ -1,7 +1,6 @@
 import React, {Component} from 'react'
 import MainComponent from './MainComponent'
 import { DropdownButton, MenuItem, Tab, Tabs } from 'react-bootstrap'
-import Modal from '../Components/ParamDefinitionModalWrapper'
 import {HidashModal} from './HidashUtilsComponents'
 
 
@@ -9,20 +8,12 @@ export default class ApiTabsToggle extends Component {
   constructor(props) {
     super(props) 
     this.state = {
-      editParam:false,
-      paramIndex:-1,
-      selectedApiParamDef: null
+      showRenameModal: false
     }
   }
 
   currentApiIndex = 0
   
-  handleEditParam = (bool, index) => {
-    this.setState({editParam: bool, paramIndex:index})
-    let selectedApiParamDef = this.props.apiDefinition[this.props.selectedApiIndex].paramDefinition
-    this.setState({selectedApiParamDef: selectedApiParamDef[index]})
-  }
-
   handleSelect = (key, e) => {
     if (key === 'add_tab') {
       this.props.apiAdditionHandler()
@@ -36,13 +27,18 @@ export default class ApiTabsToggle extends Component {
     this.props.apiDeletionHandler(index)
   }
 
-  updateApiIndex = (index, selectedApi) => {
-    this.refs.apiName.value = selectedApi.apiName.includes('Untitled API') ? '' : selectedApi.apiName
-    this.currentApiIndex = index
+  closeModal = () => {
+    this.setState({showRenameModal: !this.state.showRenameModal})
+  }
+
+  updateApiIndex = (index) => {
+    this.currentApiIndex=index
+    this.closeModal()
   }
 
   renameTab = () => {
     this.props.apiTabRenameHandler(this.refs.apiName.value, this.currentApiIndex)
+    this.closeModal()
   }
 
   render() {
@@ -81,8 +77,7 @@ export default class ApiTabsToggle extends Component {
               <MenuItem eventKey="1" onClick={() => {this.deleteTab(i)}}>
                 <i className="fa fa-trash" /> Delete API
               </MenuItem>
-              <MenuItem eventKey="2" data-toggle="modal" 
-                data-target={'#renameTabModal'} onClick={()=>{this.updateApiIndex(i, apiDefinition[selectedApiIndex])}}>
+              <MenuItem eventKey="2"  onClick={()=>{this.updateApiIndex(i,apiDefinition[selectedApiIndex])}}>
                 <i className="fa fa-i-cursor" /> Rename Tab
               </MenuItem>
               <MenuItem eventKey="3" onClick={() => {apiCloseHandler(i)}}>
@@ -137,12 +132,10 @@ export default class ApiTabsToggle extends Component {
           eventKey="add_tab"
         />
       </Tabs>
-      <Modal editParamState={this.state} handleEditParam={this.handleEditParam} selectedApiDefinition={this.props.apiDefinition[this.props.selectedApiIndex]}
-        onChangeApiDefinition={this.props.onChangeApiDefinition}
-      />
       <HidashModal
-        modalId='renameTabModal' modalHeader='Rename API' 
+        modalId='renameTabModal' modalHeader='Rename API' showModal={this.state.showRenameModal}
         modalContent={renameTabModalContent} saveChanges={this.renameTab}
+        closeModal={this.closeModal}
       />
       </div>
     )

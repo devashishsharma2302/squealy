@@ -1,8 +1,26 @@
 import React, {Component} from 'react'
+import ParamDefinitionModalWrapper from './ParamDefinitionModalWrapper'
 
 
 export default class ApiParamsDefinition extends Component {
   //Reset Input field every time open modal to add new params
+  constructor(props) {
+    super(props)
+    this.state = {
+      showParamModal: false,
+      showValidationModal: false,
+      editParam:false,
+      paramIndex:-1,
+      selectedApiParamDef: null
+    }
+  }
+
+  handleEditParam = (bool, index) => {
+    this.setState({editParam: bool, paramIndex:index})
+    let selectedApiParamDef = this.props.selectedApiDefinition.paramDefinition
+    this.setState({selectedApiParamDef: selectedApiParamDef[index]})
+  }
+
   resetParams = () => {
     document.getElementById('varName').value = ''
     if (document.getElementById('customParamPath')) {
@@ -12,6 +30,16 @@ export default class ApiParamsDefinition extends Component {
     document.getElementById('defaultValues').values = ''
     document.getElementById('params_type').selectedIndex = 0
     document.getElementById('selectedValueFormat').value = ''
+  }
+
+  toggleParamModalState = () => {
+    let bool = !this.state.showParamModal
+    this.setState({showParamModal: bool})
+  }
+
+  toggleValidationModalState = () => {
+    let bool = !this.state.showValidationModal
+    this.setState({showValidationModal: bool})
   }
 
   //Common function to delete parameter definition and validation
@@ -42,7 +70,7 @@ export default class ApiParamsDefinition extends Component {
                 paramDefinition.map((param, i) => {
                   return (
                     <tr key={'param_row_'+i}>
-                      <td onClick={() => handleEditParam(true, i)} 
+                      <td onClick={() => this.handleEditParam(true, i)} 
                         data-toggle="modal" data-target={'#addParamsModal'} className='param-name'>{param.name}</td>
                       <td>{param.type}</td>
                       <td><i className="fa fa-trash-o" aria-hidden="true" onClick={() =>this.deleteEntry(i, 'paramDefinition')}/></td>
@@ -56,17 +84,27 @@ export default class ApiParamsDefinition extends Component {
             <tr>
               <td>
                 <button type="button" className="btn btn-info" data-toggle="modal" 
-                data-target={'#addParamsModal'} onClick={this.resetParams}>Add</button>
+                 onClick={this.toggleParamModalState}>Add</button>
               </td>
               <td>
                 <button type="button" className="btn btn-default" data-toggle="modal" 
-                  data-target={'#addValidationsModal'}>
+                  onClick={this.toggleValidationModalState}>
                   Validations</button>
               </td>
               <td></td>
             </tr>
           </tfoot>
         </table>
+        <ParamDefinitionModalWrapper 
+          editParamState={this.state}
+          selectedApiDefinition={selectedApiDefinition} 
+          onChangeApiDefinition= {onChangeApiDefinition}
+          handleEditParam={this.handleEditParam}
+          closeParamModal={this.toggleParamModalState}
+          closeValidationModal={this.toggleValidationModalState}
+          showValidationModal={this.state.showValidationModal}
+          showParamModal={this.state.showParamModal}
+        />
       </div>
     )
   }
