@@ -121,19 +121,25 @@ export class MainContainer extends Component {
   }
 
   onSuccessTest = (response, format) => {
-    let tempTestData = this.state.testData.slice()
-    let testAPIdef = this.state.apiDefinition.slice()
+    let newTestData = this.state.testData.slice()
+    let newAPIdef = this.state.apiDefinition.slice()
     let onSuccessTestData =  {
       apiResponse: response,
       apiSuccess: true,
       apiError: false,
-      apiParams: tempTestData[this.state.selectedApiIndex].apiParams,
+      apiParams: newTestData[this.state.selectedApiIndex].apiParams,
       selectedFormat: format
     }
-    tempTestData[this.state.selectedApiIndex] = Object.assign(tempTestData[this.state.selectedApiIndex], onSuccessTestData)
-    testAPIdef[this.state.selectedApiIndex].columns = response.columns
-
-    this.setState({testData: tempTestData, apiDefinition: testAPIdef},()=>{
+    newTestData[this.state.selectedApiIndex] = Object.assign(newTestData[this.state.selectedApiIndex], onSuccessTestData)
+    if(format === RESPONSE_FORMATS.table.value){
+      response.columns.map((column) => {
+        newAPIdef[this.state.selectedApiIndex].columns[column.name] = {
+          type: (column.col_type)?column.col_type:'dimension',
+          data_type: (column.data_type)?column.data_type:'string'
+        }
+      })
+    }
+    this.setState({testData: newTestData, apiDefinition: newAPIdef},()=>{
       this.onChangeApiDefinition('format', format)
     })
   }
@@ -197,7 +203,8 @@ export class MainContainer extends Component {
       parameters: paramDef,
       user: paramObj.session,
       validations: this.state.apiDefinition[this.state.selectedApiIndex].validations,
-      columns: this.state.apiDefinition[this.state.selectedApiIndex].columns
+      columns: this.state.apiDefinition[this.state.selectedApiIndex].columns,
+      connection: this.state.selectedDB
     }
     postApiRequest(apiUriHostName+'/test/', payloadObj,
                    this.onSuccessTest, this.onErrorTest, format)
@@ -269,6 +276,10 @@ export class MainContainer extends Component {
     }
   }
 
+  dbUpdationHandler = (selectedDB) => {
+    this.setState({selectedDB: selectedDB.value})
+  }
+
   componentDidUpdate(prevProps, prevState) {
     let apiDefinition =this.state.apiDefinition.slice()
     let yamlData = saveYamlOnServer(apiDefinition)
@@ -291,6 +302,7 @@ export class MainContainer extends Component {
         apiSelectionHandler={this.apiSelectionHandler}
         apiParamToggleHandler={this.apiParamToggleHandler}
         onChangeTestData={this.onChangeTestData}
+        dbUpdationHandler={this.dbUpdationHandler}
       />
       </div>
     )

@@ -63,11 +63,13 @@ export default class SideMenu extends Component {
     const {
       apiParams,
       onChangeTestData,
-      onChangeApiDefinition
+      onChangeApiDefinition,
+      dbUpdationHandler
     } = this.props
 
     return(
       <div className="parameters-value-wrapper">
+        <DatabaseDescription dbUpdationHandler={dbUpdationHandler}/>
         <h2>Test API Parameters: </h2>
         <table className="table table-bordered">
           <thead>
