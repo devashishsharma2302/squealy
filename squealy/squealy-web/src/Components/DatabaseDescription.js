@@ -29,6 +29,7 @@ export default class DatabaseDescription extends Component {
           let payloadObj = {database: this.state.selectedDB}
           postApiRequest(apiUriHostName+'/database-details/', payloadObj,
                       this.setDatabaseState, this.onError)
+          this.props.dbUpdationHandler(this.state.selectedDB)
       })
     } else {
       this.setState({
@@ -48,7 +49,7 @@ export default class DatabaseDescription extends Component {
       this.setState({tables: response.tables})
     }
     else if(response.schema) {
-      this.setState({schema: response.schema})      
+      this.setState({schema: response.schema})
     }
   }
 

@@ -116,7 +116,8 @@ export function getEmptyApiDefinition() {
     validations: [],
     transformations: [],
     selectedTransformations: [],
-    columns: []
+    columns: {},
+    selectedDB: null
   }
 }
 
@@ -130,7 +131,8 @@ export function getDefaultApiDefinition(apiIndex) {
     validations: [],
     transformations: [],
     selectedTransformations: [],
-    columns: []
+    columns: {},
+    selectedDB: null
   }
 }
 
