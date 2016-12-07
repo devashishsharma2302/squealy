@@ -27,9 +27,9 @@ export default class Transformations extends Component {
   }
 
   handleAddition = (value) => {
-    let transformationsLen = this.props.selectedApiDefinition.selectedTransformations.length
-    let transformationTags = this.props.selectedApiDefinition.selectedTransformations.slice()
-    let transformations = this.props.selectedApiDefinition.transformations.slice()
+    let transformationsLen = this.props.selectedApiDefinition.selectedTransformations.length,
+        transformationTags = this.props.selectedApiDefinition.selectedTransformations.slice(),
+        transformations = this.props.selectedApiDefinition.transformations.slice()
 
     if (value === 'merge') {
       this.setState({showMergeModal: true})
@@ -51,8 +51,9 @@ export default class Transformations extends Component {
   }
 
   handleDelete = (index) => {
-    let transformationTags = this.props.selectedApiDefinition.selectedTransformations.slice()
-    let transformations = this.props.selectedApiDefinition.transformations.slice()
+    let transformationTags = this.props.selectedApiDefinition.selectedTransformations.slice(),
+        transformations = this.props.selectedApiDefinition.transformations.slice()
+    
     transformationTags.splice(index, 1)
     transformations.splice(index, 1)
     this.props.onChangeApiDefinition('selectedTransformations', transformationTags)
@@ -61,10 +62,9 @@ export default class Transformations extends Component {
 
   handleDrag = (val, curPos, newPos) => {
     if (curPos !== newPos) {
-      let transformationTags = this.props.selectedApiDefinition.selectedTransformations.slice()
-
-      let transformations = this.props.selectedApiDefinition.transformations.slice(),
-        draggableTransformation = transformations[curPos]
+      let transformationTags = this.props.selectedApiDefinition.selectedTransformations.slice(),
+          transformations = this.props.selectedApiDefinition.transformations.slice(),
+          draggableTransformation = transformations[curPos]
 
       transformationTags.splice(curPos, 1);
       transformationTags.splice(newPos, 0, val);
@@ -87,15 +87,16 @@ export default class Transformations extends Component {
 
   saveSplitColumnHandler = () => {
     let splitTransformationObj = {
-        name: 'split',
-        kwargs: {
-          pivot_column: this.state.selectedSplitCol.value
-        }
-      }
-    let curTransformations = this.props.selectedApiDefinition.transformations.slice()
+          name: 'split',
+          kwargs: {
+            pivot_column: this.state.selectedSplitCol.value
+          }
+        },
+        curTransformations = this.props.selectedApiDefinition.transformations.slice(),
+        transformationsLen = this.props.selectedApiDefinition.selectedTransformations.length,
+        transformationTags = this.props.selectedApiDefinition.selectedTransformations.slice()
+    
     curTransformations.push(splitTransformationObj)
-    let transformationsLen = this.props.selectedApiDefinition.selectedTransformations.length
-    let transformationTags = this.props.selectedApiDefinition.selectedTransformations.slice()
     transformationTags.push({
       id: transformationsLen + 1,
       text: 'split ('+this.state.selectedSplitCol.value+')'
@@ -107,24 +108,27 @@ export default class Transformations extends Component {
 
   saveMergeColumnHandler = () => {
     let mergeTransformationObj = {
-        name: 'merge',
-        kwargs: {
-          columns_to_merge: [],
-          new_column_name: this.refs.mergedColumnName.value
-        }
-      }
-
-    let tempMergedColumnArr = this.state.selectedMergedCol,
-      newMergedColumnArr = []
+          name: 'merge',
+          kwargs: {
+            columns_to_merge: [],
+            new_column_name: this.refs.mergedColumnName.value
+          }
+        },
+        tempMergedColumnArr = this.state.selectedMergedCol,
+    
+    newMergedColumnArr = []
 
     tempMergedColumnArr.map((data) => {
       newMergedColumnArr.push(data.value)
     })
     mergeTransformationObj.kwargs.columns_to_merge = newMergedColumnArr
-    let transformations = this.props.selectedApiDefinition.transformations.slice()
+    
+    let transformations = this.props.selectedApiDefinition.transformations.slice(),
+        transformationsLen = this.props.selectedApiDefinition.selectedTransformations.length,
+        transformationTags = this.props.selectedApiDefinition.selectedTransformations.slice()
+    
     transformations.push(mergeTransformationObj)
-    let transformationsLen = this.props.selectedApiDefinition.selectedTransformations.length
-    let transformationTags = this.props.selectedApiDefinition.selectedTransformations.slice()
+    
     transformationTags.push({
       id: transformationsLen + 1,
       text: 'merge ('+newMergedColumnArr+')'
