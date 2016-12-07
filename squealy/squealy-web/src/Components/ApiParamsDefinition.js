@@ -3,7 +3,6 @@ import ParamDefinitionModalWrapper from './ParamDefinitionModalWrapper'
 
 
 export default class ApiParamsDefinition extends Component {
-  //Reset Input field every time open modal to add new params
   constructor(props) {
     super(props)
     this.state = {
