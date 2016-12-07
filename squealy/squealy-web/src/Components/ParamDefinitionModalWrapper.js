@@ -291,10 +291,10 @@ export default class ParamDefinitionModalWrapper extends Component {
       </div>
 
     return  (<div>
-      <HidashModal modalId='addParamsModal' modalHeader='Add Parameters' 
+      <HidashModal modalId='addParamsModal' closeModal={this.props.closeParamModal} showModal={this.props.showParamModal} modalHeader='Add Parameters' 
       modalContent={addParamModalContent} saveChanges={this.saveParamHandler}/>
-      <HidashModal modalId='addValidationsModal' modalHeader='Validations' 
-      modalContent={addValidationsModalContent} modalSize="modal-lg"/>
+      <HidashModal modalId='addValidationsModal' closeModal={this.props.closeValidationModal} showModal={this.props.showValidationModal} modalHeader='Validations' 
+      modalContent={addValidationsModalContent} saveChanges={this.saveValidationHandler} modalSize="large"/>
       </div>)
   }
 }
