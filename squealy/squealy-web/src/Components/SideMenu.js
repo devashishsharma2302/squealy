@@ -49,7 +49,7 @@ export default class SideMenu extends Component {
     if (apiParams && !apiParams.hasOwnProperty(type)) {
       apiParams[type] = {}
     } 
-    apiParams[type]['newKey'] = ''
+    apiParams[type][''] = ''
     this.props.onChangeTestData(apiParams)
   }
 
@@ -83,7 +83,7 @@ export default class SideMenu extends Component {
                 Object.keys(apiParams.params).map((key) => {
                   return (
                     <tr key={key}>
-                      <td> <input value={key} onBlur={(e) => this.updateKey(e, key, 'params')} /></td>
+                      <td> <input defaultValue={key} onBlur={(e) => this.updateKey(e, key, 'params')} placeholder='Enter Key' /></td>
                       <td> <input defaultValue={apiParams.params[key]} onBlur={(e) => this.updateValue(e, key, 'params')} placeholder="Enter Value" /></td>
                       <td onClick={() => this.removeParam(key, 'params')}><i className="fa fa-trash"/></td>
                     </tr>
@@ -108,7 +108,7 @@ export default class SideMenu extends Component {
                 Object.keys(apiParams.session).map((key) => {
                   return (
                     <tr key={key}>
-                      <td> <input value={key} onBlur={(e) => this.updateKey(e, key, 'session')} /></td>
+                      <td> <input defaultValue={key} onBlur={(e) => this.updateKey(e, key, 'session')} placeholder='Enter Key' /></td>
                       <td> <input defaultValue={apiParams.session[key]} onBlur={(e) => this.updateValue(e, key, 'session')} placeholder='Enter Value' /> </td>
                       <td onClick={() => this.removeParam(key, 'session')}><i className="fa fa-trash"/></td>
                     </tr>
