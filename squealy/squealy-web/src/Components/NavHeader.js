@@ -35,11 +35,15 @@ export default class MenuBar extends Component {
             </NavDropdown>
             <MenuItem eventKey={1.2} onClick={apiAdditionHandler}>Create a new API</MenuItem>
           </NavDropdown>
-          <NavDropdown eventKey={1} title="Settings" id="basic-nav-dropdown">
-            <MenuItem eventKey={1.1}>Action</MenuItem>
-            <MenuItem divider />
-            <MenuItem eventKey={1.2}>Separated link</MenuItem>
-          </NavDropdown>
+          {//Commenting out this code as not needed as of now
+            /*
+            <NavDropdown eventKey={1} title="Settings" id="basic-nav-dropdown">
+              <MenuItem eventKey={1.1}>Action</MenuItem>
+              <MenuItem divider />
+              <MenuItem eventKey={1.2}>Separated link</MenuItem>
+            </NavDropdown>
+            */
+          }
         </Nav>
         <Nav pullRight>
           <button className="btn btn-info export-btn"
