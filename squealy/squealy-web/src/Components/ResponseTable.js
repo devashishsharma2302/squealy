@@ -4,7 +4,6 @@ import ReactTable from 'react-table'
 import Select from 'react-select'
 import 'react-table/react-table.css'
 import {Modal} from 'react-bootstrap'
-import {HidashModal} from './HidashUtilsComponents'
 import { preProcessResponse } from '../Utils'
 
 export class QueryResponseTable extends Component {

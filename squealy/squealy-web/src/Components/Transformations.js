@@ -18,11 +18,11 @@ export default class Transformations extends Component {
     }
   }
 
-  selectedColumnChangeHandler = (value) => {
-    if (value.length) {
-      this.setState({selectedMergedCol: value})
-    } else {
+  selectedColumnChangeHandler = (value, type) => {
+    if (type === 'split') {
       this.setState({selectedSplitCol: value})
+    } else if (type === 'merge') {
+      this.setState({selectedMergedCol: value})
     }
   }
 
@@ -161,7 +161,7 @@ export default class Transformations extends Component {
             options={columnOptions}
             value={this.state.selectedSplitCol}
             placeholder='Select Column name to Split'
-            onChange={this.selectedColumnChangeHandler}
+            onChange={(value) => this.selectedColumnChangeHandler(value, 'split')}
           />
         </div>
       </div>
@@ -177,7 +177,7 @@ export default class Transformations extends Component {
               multi={true}
               value={this.state.selectedMergedCol}
               placeholder='Select Column name to Merge'
-              onChange={this.selectedColumnChangeHandler}
+              onChange={(value) => this.selectedColumnChangeHandler(value, 'merge')}
             /></div>
         </div>
         <div className="row">
