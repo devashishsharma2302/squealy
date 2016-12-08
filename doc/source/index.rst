@@ -298,6 +298,8 @@ Squealy comes with an authoring interface using which you can create, test and d
 
 * URL name generation and customization for an API.
 
+.. image:: ./images/squealy.png
+
 SQL Editor
 **********
 
@@ -321,10 +323,19 @@ Using this feature the you can view the response in multiple formats. As of now,
 
 * **Highcharts**- This format displays the response in a structure desired by Highcharts charting library.
 
+Customizing the query response
+******************************
+
+Squealy provides you the flexibility to customize the column names, type(metric/dimension) and data type(string/date/datetime/number). To use this feature, select table format from the format selection section and click on the edit icon on the column which you want to customize. This will launch a modal where you can customize the columns.
+
+.. image:: ./images/cutomization.png
+
 Transformations
 ****************
 
-To apply transformation, we provide a multi-select drop-down from where you can select a transformation and the columns on which the transformations are to be applied. 
+To apply transformation, we provide a multi-select input field from where you can select a transformation and the columns on which the transformations are to be applied.
+
+.. image:: ./images/transformations.png
 
 * In order to apply a transformation, **select table as the response format**. 
 * The go to the transformations dropdown and select a transformation. In case of transpose, you will not have to select a column but in split or merge that has to be done.
@@ -340,20 +351,28 @@ Since the queries will be having parameters which will be retrieved from the URL
 
 You do not have to write the parameter names as Squealy is smart enough to identify the parameters. The parameters will keep on getting added to the parameters section as you write the query.
 
+.. image:: ./images/test-params.png
+
 Validating the format of API parameters
 ****************************************
 
 There are two ways of validating the API parameter format. The first one is the pre defined way which Squealy already has. The other one is to define you custom parameter format and give the path of the function which validates the format.
+
+.. image:: ./images/param.png
 
 Using predefined formats
 -------------------------
 
 Just above the SQL editor, you can define the desired format for all the parameters.  The supported formats are **date, datetime, number and string**.
 
+.. image:: ./images/param-format-validation.png
+
 Using custom parameter formats
 -------------------------------
 
 In the Add parameter modal enter the name of the parameter and define the path of the function which validates the parameter.
+
+.. image:: ./images/custom-param-format-validation.png
 
 
 Validating the API parameters
@@ -372,11 +391,14 @@ In the error code field, enter the error code which you want in the response in 
 
 In the query field, write the SQL query which will validate the parameters. You can even access and use the API parameters here.
 
+.. image:: ./images/default-validation.png
+
 Validation using Custom python functions
 -----------------------------------------
 
-To be continued.
+From the launched modal, select the function radio button. The first two fields are same as the sql query validation. In the validation function field, enter the path considering your app as the root path.
 
+.. image:: ./images/custom-validation.png
 
 Getting Table descriptions
 ***************************
@@ -384,3 +406,5 @@ Getting Table descriptions
 Every developer who has written SQL queries must have faced the problem of viewing the description of the tables to be used in the query again and again while designing the query. To solve this problem, Squealy provides a feature where you can select a database and tables from the selected database. On selecting the tables, you will get a full description of the table just next to the SQL editor.
 
 **Note:** In order to use this feature, you need to define the db credentials in the DATABASES parameter in settings.py.
+
+.. image:: ./images/DB-desc.png
