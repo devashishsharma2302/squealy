@@ -7,7 +7,7 @@ import {VISUALIZATION_MODES, RESPONSE_FORMATS} from '../Constant'
 import {chartData} from '../mockData'
 
 const responseElementReferenceMap = {
-  'JSON':  JSONViewer,
+  'json':  JSONViewer,
   'table': QueryResponseTable,
   'GoogleChartsFormatter': JSONViewer,
   'HighchartsFormatter': JSONViewer

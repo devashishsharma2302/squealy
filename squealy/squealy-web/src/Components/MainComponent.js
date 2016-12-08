@@ -30,7 +30,7 @@ export default class MainComponent extends Component {
     } = this.props
     let selectedAPIDefinition = apiDefinition[selectedApiIndex]
 
-    let selectedTestData = testData[selectedApiIndex], responseElem
+    let selectedTestData = testData[selectedApiIndex]
     return (
       <div className="row main-container">
         <div className="col-md-3">

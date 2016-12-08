@@ -206,29 +206,29 @@ export default class Transformations extends Component {
           </div>
         </div>
         <Modal show={this.state.showMergeModal} onHide={this.closeMergeModal}>
-            <Modal.Header closeButton>
-              <Modal.Title>Merge Column</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              {mergeColumnModal}
-            </Modal.Body>
-            <Modal.Footer>
-              <button onClick={this.closeMergeModal} className="btn btn-default">Close</button>
-              <button onClick={this.saveMergeColumnHandler} className="btn btn-info">Save</button>
-            </Modal.Footer>
-          </Modal>
-          <Modal show={this.state.showSplitModal} onHide={this.closeSplitModal}>
-            <Modal.Header closeButton>
-              <Modal.Title>Split Column</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              {splitColumnModal}
-            </Modal.Body>
-            <Modal.Footer>
-              <button onClick={this.closeSplitModal} className="btn btn-default">Close</button>
-              <button onClick={this.saveSplitColumnHandler} className="btn btn-info">Save</button>
-            </Modal.Footer>
-          </Modal>
+          <Modal.Header closeButton>
+            <Modal.Title>Merge Column</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {mergeColumnModal}
+          </Modal.Body>
+          <Modal.Footer>
+            <button onClick={this.closeMergeModal} className="btn btn-default">Close</button>
+            <button onClick={this.saveMergeColumnHandler} className="btn btn-info">Save</button>
+          </Modal.Footer>
+        </Modal>
+        <Modal show={this.state.showSplitModal} onHide={this.closeSplitModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Split Column</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {splitColumnModal}
+          </Modal.Body>
+          <Modal.Footer>
+            <button onClick={this.closeSplitModal} className="btn btn-default">Close</button>
+            <button onClick={this.saveSplitColumnHandler} className="btn btn-info">Save</button>
+          </Modal.Footer>
+        </Modal>
       </div>
     )
   }

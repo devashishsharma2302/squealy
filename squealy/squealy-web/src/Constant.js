@@ -2,21 +2,23 @@ export const SIDE_BAR_WIDTH = '21%'
 export const YAML_INDENTATION = 4
 export const YAML_CONTENT_TYPE = 'application/yaml'
 export const RESPONSE_FORMATS = {
+
+// the formatter class is the class name that is to be exported to yaml file.
   table: {
     displayName: 'Table',
-    value: 'table'
+    formatter: 'SimpleFormatter'
   },
   json: {
     displayName: 'JSON',
-    value: 'JSON'
+    formatter: 'SimpleFormatter'
   },
-  googleCharts: {
+  GoogleChartsFormatter: {
     displayName: 'Google Charts',
-    value: 'GoogleChartsFormatter'
+    formatter: 'GoogleChartsFormatter'
   },
-  highchart: {
+  HighchartsFormatter: {
     displayName: 'Highchart',
-    value: 'HighchartsFormatter'
+    formatter: 'HighchartsFormatter'
   }
 }
 
