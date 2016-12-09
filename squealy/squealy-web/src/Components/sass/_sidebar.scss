@@ -1,5 +1,15 @@
 .parameters-value-wrapper {
-  margin-top: 27px;
+
+  .database-selection-wrapper {
+    > .Select {
+      margin-bottom: 5%;
+    }
+
+    h2 {
+      margin-top: 3%;
+      margin-bottom: 10%;
+    }
+  }
 
   > table > thead > tr > th > i.fa {
     color: $blue_color;
