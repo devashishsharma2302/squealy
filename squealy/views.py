@@ -45,7 +45,7 @@ class DatabaseView(APIView):
         if table:
             query = 'select column_name, data_type from INFORMATION_SCHEMA.COLUMNS where table_name=%s'
             with conn.cursor() as cursor:
-                cursor.execute(query, [str(table['value'])])
+                cursor.execute(query, [table['value']])
                 column_metadata = []
                 for meta in cursor:
                     column_metadata.append({
