@@ -41,10 +41,11 @@ class DatabaseView(APIView):
         connection_name = request.data.get('database', None)
         conn = connections[connection_name['value']]
         table = request.data.get('table', None)
+
         if table:
-            query = 'Desc {}'.format(table['value'])
+            query = 'select column_name, data_type from INFORMATION_SCHEMA.COLUMNS where table_name=%s'
             with conn.cursor() as cursor:
-                cursor.execute(query)
+                cursor.execute(query, [str(table['value'])])
                 column_metadata = []
                 for meta in cursor:
                     column_metadata.append({
@@ -53,8 +54,12 @@ class DatabaseView(APIView):
                     })
             return Response({'schema': column_metadata})
         else:
+            table_schema = connection_name['label']
+            if conn.vendor == 'postgresql':
+                table_schema = 'public'
             with conn.cursor() as cursor:
-                cursor.execute('Show tables;')
+                cursor.execute('select TABLE_NAME from information_schema.tables a where a.table_schema=%s',
+                               [table_schema])
                 tables = []
                 for table_names in cursor:
                     tables.append({
