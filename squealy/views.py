@@ -52,7 +52,7 @@ class DatabaseView(APIView):
             return Response({'schema': column_metadata})
         else:
             with conn.cursor() as cursor:
-                cursor.execute('Show tables;')
+                cursor.execute('select TABLE_NAME from information_schema.tables where table_scheme=%s',connection_name)
                 tables = []
                 for table_names in cursor:
                     tables.append({
