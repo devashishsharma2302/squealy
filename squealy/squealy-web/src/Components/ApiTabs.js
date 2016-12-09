@@ -128,7 +128,7 @@ export default class ApiTabsToggle extends Component {
             borderColor: '#fff'
             }}
           title={
-            <div>
+            <div id="tabPlusIconWrapper">
               <i className="fa fa-plus tab-plus-icon" />&nbsp;
             </div>}
           eventKey="add_tab"
