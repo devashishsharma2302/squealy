@@ -13,10 +13,10 @@ export default class FormatSelector extends Component {
                   <label className="radio-inline" key={key}>
                     <input type="radio" 
                       name={'optradio_'+selectedApiIndex}
-                      value={RESPONSE_FORMATS[key].value}
-                      checked={RESPONSE_FORMATS[key].value===selectedFormat}
+                      value={key}
+                      checked={key===selectedFormat}
                       onClick={(e) =>
-                      apiResponseGetter(e, RESPONSE_FORMATS[key].value)} />
+                      apiResponseGetter(e, key)} />
                     {RESPONSE_FORMATS[key].displayName}
                   </label>
                 )

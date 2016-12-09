@@ -112,7 +112,7 @@ class SqlApiView(APIView):
                 table = self._run_transformations(table)
 
             # Format the table according to the format requested
-            if request.data.get('format') not in ['table', 'JSON']:
+            if request.data.get('format') not in ['table', 'json']:
                 self.format = request.data.get('format', 'SimpleFormatter')
             data = self._format(table)
             return Response(data, status.HTTP_200_OK)
