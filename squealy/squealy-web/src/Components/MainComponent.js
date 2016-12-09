@@ -13,7 +13,6 @@ import ResponseSection from './ResponseSection'
 
 export default class MainComponent extends Component {
 
-
   render () {
     const {
       onHandleTestButton,
@@ -26,11 +25,12 @@ export default class MainComponent extends Component {
       apiSelectionHandler,
       exportConfigAsYaml,
       onChangeTestData,
-      handleEditParam
+      handleEditParam,
+      dbUpdationHandler
     } = this.props
     let selectedAPIDefinition = apiDefinition[selectedApiIndex]
 
-    let selectedTestData = testData[selectedApiIndex], responseElem
+    let selectedTestData = testData[selectedApiIndex]
     return (
       <div className="row main-container">
         <div className="col-md-3">
@@ -38,6 +38,7 @@ export default class MainComponent extends Component {
             apiParams={selectedTestData.apiParams}
             onChangeTestData={onChangeTestData}
             selectedApiDefinition={selectedAPIDefinition}
+            dbUpdationHandler={dbUpdationHandler}
           />
         </div>
         <div className="col-md-9 editor-container">

@@ -39,7 +39,7 @@ export class SQLEditor extends Component {
         newApiParams.params = {}
       }
       if (param && !newApiParams.params.hasOwnProperty(param)) {
-        newApiParams.params[param] = 'value'
+        newApiParams.params[param] = ''
       }
     })
 
@@ -48,7 +48,7 @@ export class SQLEditor extends Component {
         newApiParams.session = {}
       }
       if (param && !newApiParams.session.hasOwnProperty(param)) {
-        newApiParams.session[param] = 'value'
+        newApiParams.session[param] = ''
       }
     })
     onChangeTestData(newApiParams)

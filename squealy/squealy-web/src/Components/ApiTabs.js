@@ -52,7 +52,8 @@ export default class ApiTabsToggle extends Component {
       exportConfigAsYaml,
       onChangeTestData,
       apiOpenHandler,
-      apiCloseHandler
+      apiCloseHandler,
+      dbUpdationHandler
     } = this.props
     const renameTabModalContent =
       <div className='row add-modal-content'>
@@ -104,6 +105,7 @@ export default class ApiTabsToggle extends Component {
                 apiParamToggleHandler={apiParamToggleHandler}
                 onChangeTestData={onChangeTestData}
                 exportConfigAsYaml={exportConfigAsYaml}
+                dbUpdationHandler={dbUpdationHandler}
                 />
               </div>
             </div>
@@ -126,7 +128,7 @@ export default class ApiTabsToggle extends Component {
             borderColor: '#fff'
             }}
           title={
-            <div>
+            <div id="tabPlusIconWrapper">
               <i className="fa fa-plus tab-plus-icon" />&nbsp;
             </div>}
           eventKey="add_tab"

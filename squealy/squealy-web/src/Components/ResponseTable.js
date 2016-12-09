@@ -4,7 +4,6 @@ import ReactTable from 'react-table'
 import Select from 'react-select'
 import 'react-table/react-table.css'
 import {Modal} from 'react-bootstrap'
-import {HidashModal} from './HidashUtilsComponents'
 import { preProcessResponse } from '../Utils'
 
 export class QueryResponseTable extends Component {
@@ -19,7 +18,11 @@ export class QueryResponseTable extends Component {
     response.columns.map((column, i) => {
       let newCol = {
         accessor: column.header,
-        header: <ResponseTableHeader headerName={column.header} columnDefinition={columnDefinition} colIndex={i} onChangeApiDefinition={onChangeApiDefinition}/>
+        header: <ResponseTableHeader 
+                  headerName={column.header}
+                  columnDefinition={columnDefinition}
+                  selectedColumn={column.accessor}
+                  onChangeApiDefinition={onChangeApiDefinition} />
       }
       responseColumn.push(newCol)
     })
@@ -46,18 +49,18 @@ export class ResponseTableHeader extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      selectedClmDataType: 'String',
-      selectedColumnType: 'Dimension',
+      selectedClmDataType: 'string',
+      selectedColumnType: 'dimension',
       showModal: false
     }
   }
 
-  selectedColumnDataTypeChangeHandler = (value) => {
-    this.setState({selectedClmDataType: value})
+  selectedColumnDataTypeChangeHandler = (selectedClmDataType) => {
+    this.setState({selectedClmDataType: selectedClmDataType.value})
   }
 
-  selectedColumnTypeChangeHandler = (value) => {
-    this.setState({selectedColumnType: value})
+  selectedColumnTypeChangeHandler = (selectedColumnType) => {
+    this.setState({selectedColumnType: selectedColumnType.value})
   }
   
   close = () => {
@@ -65,35 +68,35 @@ export class ResponseTableHeader extends Component {
   }
 
 
-  editColumnProperties = (e, index) => {
+  editColumnProperties = (e, selectedColumn) => {
     this.setState({ showModal: true }, () => {
-      let columnDefinition = this.props.columnDefinition.slice()
-      let selectedColumnDef = columnDefinition[index]
+      let columnDefinition = Object.assign({}, this.props.columnDefinition)
+      let selectedColumnDef = columnDefinition[selectedColumn]
       let columnType = selectedColumnDef.type || 'Dimension'
-      this.refs.colKey.value = selectedColumnDef.name
-      this.refs.colName.value = selectedColumnDef.name
-      this.setState({selectedClmDataType: selectedColumnDef.data_type, selectedColumnType: columnType})
+      this.refs.colKey.value = selectedColumn
+      this.refs.colName.value = selectedColumn
+      this.setState({
+        selectedClmDataType: selectedColumnDef.data_type,
+        selectedColumnType: columnType
+      })
       e.stopPropagation()
     });
   }
 
-  saveEditColDefHandler = (index) => {
-    let columnDefinition = this.props.columnDefinition.slice()
+  saveEditColDefHandler = (selectedColumn) => {
+    let columnDefinition = Object.assign({}, this.props.columnDefinition)
     let refObj = this.refs
-    let currentColumnDef = {
+    columnDefinition[refObj.colName.value] = {
       key: refObj.colKey.value,
-      name: refObj.colName.value,
-      type: this.state.selectedColumnType.value,
-      data_type: this.state.selectedClmDataType.value
+      type: this.state.selectedColumnType,
+      data_type: this.state.selectedClmDataType
     }
-    columnDefinition[index] = currentColumnDef
     this.props.onChangeApiDefinition('columns', columnDefinition)
     this.setState({ showModal: false });
   }
 
   render () {
-    const {headerName, colIndex, columnDefinition} = this.props
-
+    const {headerName, selectedColumn, columnDefinition} = this.props
     let editColumnModalContent = 
       <div className="edit-col-modal">
         <div className="row">
@@ -139,7 +142,7 @@ export class ResponseTableHeader extends Component {
     return (<th className="respone-table-header">
               <span>{headerName}</span>
               <i className="fa fa-pencil" 
-                onClick={(e) => this.editColumnProperties(e, colIndex)}>
+                onClick={(e) => this.editColumnProperties(e, selectedColumn)}>
               </i>
               <Modal show={this.state.showModal} onHide={this.close}>
                 <Modal.Header closeButton>
@@ -150,7 +153,7 @@ export class ResponseTableHeader extends Component {
                 </Modal.Body>
                 <Modal.Footer>
                   <button onClick={this.close} className="btn btn-default">Close</button>
-                  <button onClick={() => this.saveEditColDefHandler(colIndex)} className="btn btn-info">Save</button>
+                  <button onClick={() => this.saveEditColDefHandler(selectedColumn)} className="btn btn-info">Save</button>
                 </Modal.Footer>
               </Modal>
             </th>)

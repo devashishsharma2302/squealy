@@ -116,7 +116,8 @@ export function getEmptyApiDefinition() {
     validations: [],
     transformations: [],
     selectedTransformations: [],
-    columns: []
+    columns: {},
+    selectedDB: null
   }
 }
 
@@ -130,7 +131,8 @@ export function getDefaultApiDefinition(apiIndex) {
     validations: [],
     transformations: [],
     selectedTransformations: [],
-    columns: []
+    columns: {},
+    selectedDB: null
   }
 }
 
@@ -227,6 +229,7 @@ export function saveYamlOnServer(data) {
 }
 
 function formatApiDataToYaml(data, index) {
+  let format = data['format'] || 'table'
   let formattedData = {
     'id': index+1,
     'name': data.apiName,
@@ -236,7 +239,7 @@ function formatApiDataToYaml(data, index) {
     'validations': data.validations,
     'query': data.sqlQuery,
     'transformations': data.transformations,
-    'format': data.format
+    'format': RESPONSE_FORMATS[format].formatter
   }
   if(data.columns) {
     formattedData.columns = data.columns
