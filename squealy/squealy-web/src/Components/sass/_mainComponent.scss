@@ -66,11 +66,6 @@ div.panel.panel-default {
   padding-left: 16px;
 }
 
-.tab-plus-icon {
-  font-size: 1.6em !important;
-  color: $blue_color;
-}
-
 a:link#api-tabs-tab-add_tab {
   padding: 8.5px 19px;
   border: none;
@@ -128,16 +123,6 @@ a:link#api-tabs-tab-add_tab {
   .input-group {
     margin-top: 5px;
     margin-bottom: 10px; 
-  }
-}
-
-.database-selection-wrapper {
-  > .Select {
-    margin-bottom: 11px;
-  }
-
-  h2 {
-    margin-top: 6px;
   }
 }
 

@@ -41,3 +41,22 @@
 .api-list-item > span:hover {
   @include on-hover-style
 }
+
+#api-tabs {
+
+  #tabPlusIconWrapper{
+    padding-top: 40%;
+
+    .tab-plus-icon {
+      color: $blue_color;
+    }
+  }
+
+  .nav-tabs {
+
+    li {
+      a {
+      }
+    }
+  }
+}
