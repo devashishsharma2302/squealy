@@ -10,11 +10,12 @@ export default class ApiUrlInputBox extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    let selectedAPI = this.props.apiDefinition[this.props.selectedApiIndex]
-    let nextSelectedAPI = nextProps.apiDefinition[nextProps.selectedApiIndex]
-    let apiUrl 
+    let selectedAPI = this.props.apiDefinition[this.props.selectedApiIndex],
+        nextSelectedAPI = nextProps.apiDefinition[nextProps.selectedApiIndex],
+        apiUrl 
     if (selectedAPI.urlName === '') {
       apiUrl = nextSelectedAPI.apiName.replace(/\s+/g, '-').toLowerCase()
+      this.props.onChangeApiDefinition('urlName', apiUrl)
     }
     else {
       apiUrl = nextSelectedAPI.urlName
