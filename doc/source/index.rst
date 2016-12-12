@@ -4,29 +4,31 @@ Welcome to squealy's documentation!
 
 About Squealy
 ##############
-Squealy is a django app for auto-generating reporting APIs. All configurations are passed through a single **.yml** file, which includes sql queries to fetch report data for each API.
+Squealy is a django app for auto-generating reporting APIs. All configurations are passed through a single **Yaml** file, which includes sql queries to fetch report data for each API.
 
 There is support for auto-formatting the data to google charts and highcharts format for quick dashboard integration.
 
-Squealy also supports sql templates based on `jinjasql <https://github.com/hashedin/jinjasql>`_, hence, complex parameterized sql queries can be written.
+Squealy also supports sql templates based on `Jinjasql <https://github.com/hashedin/jinjasql>`_ which uses `Jinja2 <http://jinja.pocoo.org/>`_ under the hood, hence, complex parameterized sql queries can be written.
 
 Squealy-generated APIs are based on `Django Rest Framework <http://www.django-rest-framework.org/>`_. All APIs can be easily configured to use the authentication classes provided by django rest framework.
 
 Squealy supports parameter level and API level validation/authorization as well.
 
+Squealy also provides an `authoring interface <#squealy-authoring-interface>`_ where you can connect to your local database, write/debug/validate your queries, create multiple APIs and generate a Yaml configuration for all the created APIs with a single click.
+
 Squealy is highly customizable.
 
 
-Installation Instructions
-##########################
+Installation and Setup Instructions
+###################################
 
-From pip (recommended):
+Install from pip (recommended):
 
 .. code-block:: console
 		
      pip install squealy
 
-From the source:
+Install from the source:
 
 .. code-block:: console
      
@@ -34,10 +36,170 @@ From the source:
      cd squealy
      sudo python setup.py install
 |
+
+Configuring the routes in your urls.py file
+
+.. code-block:: python
+
+ from squealy.apigenerator import ApiGenerator
+ from os.path import dirname, abspath, join
+
+ # Generate the file path to your *.yml file
+ YAML_ROOT = join(dirname(abspath(__file__)), "yaml")
+ file_path = join(YAML_ROOT, "apis.yaml")
+
+ # Generate url objects
+ squealy_urls = ApiGenerator.generate_urls_from_yaml(file_path)
+
+ urlpatterns = [
+     url(r'^squealy/', include(squealy_urls)),
+     url(r'^', include('squealy.urls')),
+ ]
+
+Add DRF and Squealy to your INSTALLED_APPS in settings.py
+
+.. code-block:: python
+  
+  INSTALLED_APPS = [
+    '<rest of the apps>',
+    'squealy',
+    'rest_framework',
+  ]
+
+Now start the local server and go to **localhost:8000/squealy-authoring-interface/**. What you are looking at now is the squealy authoring interface using which you can start creating your APIs. Go through the next section to read about the features this interface provides you. If you do not want to use this interface to generate the API configs in a YAML file, check out the `minimalistic usage <#minimalistic-usage>`_ and `yaml configuration <yaml-configuration>`_ with YAML section to create the API configurations yourself.
+
+
+Squealy Authoring Interface
+############################
+
+Squealy comes with an authoring interface using which you can create, test and debug multiple APIs through a single page application. Here is a detailed description of all the features:
+
+* Support to view the response in various formats like tabular/JSON/Google Charts/Highcharts.
+
+* Query response visualization using Google Charts charting library.
+
+* URL name generation and customization for an API.
+
+.. image:: ./images/squealy.png
+
+SQL Editor
+**********
+
+We provide an editor with syntax highlighting to write the sql query. Squealy uses the ACE editor for this feature which has support for syntax highlighting and hence makes it easier to write complex queries.
+
+.. note ::  For each API parameter you need to append params like this - **{{params.param_name}}** and for any parapeter from the Django's request.user object, you need to append user like this - **{{user.prameter_name}}**
+
+Query Response Section
+***********************
+
+Just below the sql editor, we provide a section where you can view the response of the query. This response could be the data retrieved from the database or it could be a descriptive error.
+
+Response visualization in multiple formats
+*******************************************
+
+Using this feature the you can view the response in multiple formats. As of now, we provide the following four formats:
+
+* **Table**- Selecting this format you can view the response in a paginated table. This format can be very handy when you want to apply transformations or want to view the effects of the applied transformations.
+
+* **JSON**- Selecting this format you can view the response in JSON format. 
+
+* **Google Chart**- This format displays the response in a structure desired by Google Chart charting library.
+
+* **Highcharts**- This format displays the response in a structure desired by Highcharts charting library.
+
+Customizing the query response
+******************************
+
+Squealy provides you the flexibility to customize the column names, type(metric/dimension) and data type(string/date/datetime/number). To use this feature, select table format from the format selection section and click on the edit icon on the column which you want to customize. This will launch a modal where you can customize the columns.
+
+.. image:: ./images/cutomization.png
+
+Transformations
+****************
+
+To apply transformation, we provide a multi-select input field from where you can select a transformation and the columns on which the transformations are to be applied.
+
+.. image:: ./images/transformations.png
+
+* In order to apply a transformation, **select table as the response format**. 
+* The go to the transformations dropdown and select a transformation. In case of transpose, you will not have to select a column but in split or merge that has to be done.
+* In case of split, select a column to split from the modal generated and a column which is the metric in current response.
+* In case of merge, just select the columns to be merged from the generated modal.
+
+Once you are done which selecting and customizing the transformation, hit the run query button just below the SQL editor.
+
+Mocking the API parameters
+***************************
+
+Since the queries will be having parameters which will be retrieved from the URL/session in the real world scenario, we provide a tabular section where you can insert the values for these parameters for testing purposes.
+
+You do not have to write the parameter names as Squealy is smart enough to identify the parameters. The parameters will keep on getting added to the parameters section as you write the query.
+
+.. image:: ./images/test-params.png
 |
+.. image:: ./images/test-user-params.png
+
+.. note::  In the Test User Parameters you can put any property of Django's request.user object.
+
+Validating the format of API parameters
+****************************************
+
+There are two ways of validating the API parameter format. The first one is the pre defined way which Squealy already has. The other one is to define you custom parameter format and give the path of the function which validates the format.
+
+.. image:: ./images/param.png
+
+Using predefined formats
+-------------------------
+
+Just above the SQL editor, you can define the desired format for all the parameters.  The supported formats are **date, datetime, number and string**.
+
+.. image:: ./images/param-format-validation.png
+
+Using custom parameter formats
+-------------------------------
+
+In the Add parameter modal enter the name of the parameter and define the path of the function which validates the parameter.
+
+.. image:: ./images/custom-param-format-validation.png
+
+
+Validating the API parameters
+******************************
+
+Just next to the add parameter button above the sql editor, there is a button clicking on which launches a modal. In this modal you can define the way the API parameters are going to be validated. This feature also comes in two flavors. One way is to write another SQL query which will validate the parameters and the other way is to write a python function and provide its path. Let us discuss these in more detail.
+
+Validation using SQL query
+---------------------------
+
+From the launched modal select the query radio button. 
+
+In the error message field enter the error message that you want to show in case the validation fails.
+
+In the error code field, enter the error code which you want in the response in case the validation fails.
+
+In the query field, write the SQL query which will validate the parameters. You can even access and use the API parameters here.
+
+.. image:: ./images/default-validation.png
+
+Validation using Custom python functions
+-----------------------------------------
+
+From the launched modal, select the function radio button. The first two fields are same as the sql query validation. In the validation function field, enter the path considering your app as the root path.
+
+.. image:: ./images/custom-validation.png
+
+Getting Table descriptions
+***************************
+
+Every developer who has written SQL queries must have faced the problem of viewing the description of the tables to be used in the query again and again while designing the query. To solve this problem, Squealy provides a feature where you can select a database and tables from the selected database. On selecting the tables, you will get a full description of the table just next to the SQL editor.
+
+**Note:** In order to use this feature, you need to define the db credentials in the DATABASES parameter in settings.py.
+
+.. image:: ./images/DB-desc.png
+
 Minimalistic Usage
 ###################
-Since Squealy is based on django rest framework, you can create class based ApiViews easily.
+Since Squealy is based on django rest framework, you can create class based ApiViews easily. **Note that for each API parameter you need to append params like this - {{params.param_name}}**
 
 .. code-block:: python
     
@@ -46,6 +208,13 @@ Since Squealy is based on django rest framework, you can create class based ApiV
     class DatabaseTableReport(SqlApiView):
         query = "select name, sql from sqlite_master limit {{params.limit}};"
 
+Now register your custom ApiView class to the url patterns
+
+.. code-block:: python
+
+  urlpatterns = [
+    url(r'^table-report/', DatabaseTableReport.as_view()),
+  ]
 
 Just this much and your reporting API is ready for use.
 
@@ -78,22 +247,6 @@ Lets build some simple APIs that fetch some data from database via SQL query.
 
 3. **APIs Generation:** Use the ApiGenerator class to generate the squealy APIs inside your project's **urls.py**.
 
-.. code-block:: python
-
- from squealy.apigenerator import ApiGenerator
- from os.path import dirname, abspath, join
-
- # Generate the file path to your *.yml file
- YAML_ROOT = join(dirname(abspath(__file__)), "yaml")
- file_path = join(YAML_ROOT, "apis.yaml")
-
- # Generate url objects
- squealy_urls = ApiGenerator.generate_urls_from_yaml(file_path)
-
- urlpatterns = [
-     url(r'^squealy/', include(squealy_urls)),
- ]
-
 
 4. **Test the APIs:**
    
@@ -111,10 +264,10 @@ Lets build some simple APIs that fetch some data from database via SQL query.
 | (assuming the server running on port 8000)
 
 
-.. code-block:
+.. code-block:: console
 
-  http://localhost:8000/squealy/api1
-  http://localhost:8000/squealy/api2/?limit=10
+    http://localhost:8000/squealy/api1
+    http://localhost:8000/squealy/api2/?limit=10
 
 Yaml Configuration
 ##################
@@ -285,126 +438,3 @@ The default format is 'SimpleFormatter', which returns the data in json as a 2-D
 |
 
  You can create your **custom formatters** as well. Just extend the 'squealy.formatters.Formatter' class and implement the **format(self, table)**. In the yaml file in 'format' key, use the path to your custom formatter class, like 'myapp.somepackage.MyCustomFormatter'
-
-
-Squealy Authoring Interface
-############################
-
-Squealy comes with an authoring interface using which you can create, test and debug multiple APIs through a single page application. Here is a detailed description of all the features:
-
-* Support to view the response in various formats like tabular/JSON/Google Charts/Highcharts.
-
-* Query response visualization using Google Charts charting library.
-
-* URL name generation and customization for an API.
-
-.. image:: ./images/squealy.png
-
-SQL Editor
-**********
-
-We provide an editor with syntax highlighting to write the sql query. Squealy uses the ACE editor for this feature which has support for syntax highlighting and hence makes it easier to write complex queries.
-
-Query Response Section
-***********************
-
-Just below the sql editor, we provide a section where you can view the response of the query. This response could be the data retrieved from the database or it could be a descriptive error.
-
-Response visualization in multiple formats
-*******************************************
-
-Using this feature the you can view the response in multiple formats. As of now, we provide the following four formats:
-
-* **Table**- Selecting this format you can view the response in a paginated table. This format can be very handy when you want to apply transformations or want to view the effects of the applied transformations.
-
-* **JSON**- Selecting this format you can view the response in JSON format. 
-
-* **Google Chart**- This format displays the response in a structure desired by Google Chart charting library.
-
-* **Highcharts**- This format displays the response in a structure desired by Highcharts charting library.
-
-Customizing the query response
-******************************
-
-Squealy provides you the flexibility to customize the column names, type(metric/dimension) and data type(string/date/datetime/number). To use this feature, select table format from the format selection section and click on the edit icon on the column which you want to customize. This will launch a modal where you can customize the columns.
-
-.. image:: ./images/cutomization.png
-
-Transformations
-****************
-
-To apply transformation, we provide a multi-select input field from where you can select a transformation and the columns on which the transformations are to be applied.
-
-.. image:: ./images/transformations.png
-
-* In order to apply a transformation, **select table as the response format**. 
-* The go to the transformations dropdown and select a transformation. In case of transpose, you will not have to select a column but in split or merge that has to be done.
-* In case of split, select a column to split from the modal generated and a column which is the metric in current response.
-* In case of merge, just select the columns to be merged from the generated modal.
-
-Once you are done which selecting and customizing the transformation, hit the run query button just below the SQL editor.
-
-Mocking the API parameters
-***************************
-
-Since the queries will be having parameters which will be retrieved from the URL/session in the real world scenario, we provide a tabular section where you can insert the values for these parameters for testing purposes.
-
-You do not have to write the parameter names as Squealy is smart enough to identify the parameters. The parameters will keep on getting added to the parameters section as you write the query.
-
-.. image:: ./images/test-params.png
-
-Validating the format of API parameters
-****************************************
-
-There are two ways of validating the API parameter format. The first one is the pre defined way which Squealy already has. The other one is to define you custom parameter format and give the path of the function which validates the format.
-
-.. image:: ./images/param.png
-
-Using predefined formats
--------------------------
-
-Just above the SQL editor, you can define the desired format for all the parameters.  The supported formats are **date, datetime, number and string**.
-
-.. image:: ./images/param-format-validation.png
-
-Using custom parameter formats
--------------------------------
-
-In the Add parameter modal enter the name of the parameter and define the path of the function which validates the parameter.
-
-.. image:: ./images/custom-param-format-validation.png
-
-
-Validating the API parameters
-******************************
-
-Just next to the add parameter button above the sql editor, there is a button clicking on which launches a modal. In this modal you can define the way the API parameters are going to be validated. This feature also comes in two flavors. One way is to write another SQL query which will validate the parameters and the other way is to write a python function and provide its path. Let us discuss these in more detail.
-
-Validation using SQL query
----------------------------
-
-From the launched modal select the query radio button. 
-
-In the error message field enter the error message that you want to show in case the validation fails.
-
-In the error code field, enter the error code which you want in the response in case the validation fails.
-
-In the query field, write the SQL query which will validate the parameters. You can even access and use the API parameters here.
-
-.. image:: ./images/default-validation.png
-
-Validation using Custom python functions
------------------------------------------
-
-From the launched modal, select the function radio button. The first two fields are same as the sql query validation. In the validation function field, enter the path considering your app as the root path.
-
-.. image:: ./images/custom-validation.png
-
-Getting Table descriptions
-***************************
-
-Every developer who has written SQL queries must have faced the problem of viewing the description of the tables to be used in the query again and again while designing the query. To solve this problem, Squealy provides a feature where you can select a database and tables from the selected database. On selecting the tables, you will get a full description of the table just next to the SQL editor.
-
-**Note:** In order to use this feature, you need to define the db credentials in the DATABASES parameter in settings.py.
-
-.. image:: ./images/DB-desc.png
