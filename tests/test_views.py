@@ -73,6 +73,42 @@ class TestSessionParameterSubstitution(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data.get('data', []), [[]])
 
+'''
+Commenting the below test cases to remove dependency in MySql-python library that is currently unavailabe for python 3.4.x
+and 3.5.x
+'''
+
+# class MysqlNumberParameterSubstitutionView(SqlApiView):
+#     query = "select * from django_content_type limit {{params.limit}};"
+#     format = "SimpleFormatter"
+#     connection_name = "test"
+#     parameters = {"limit": {"type": "number"}}
+#
+#
+# class TestMysqlNumberParameterSubstitution(TestCase):
+#     def test_get(self):
+#         factory = RequestFactory()
+#         request = factory.get('/example/table-report/?limit=2')
+#         response = MysqlNumberParameterSubstitutionView.as_view()(request)
+#         response.render()
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(len(response.data.get('data')), 2)
+#
+#
+# class SqlliteNumberParameterSubstitutionView(SqlApiView):
+#     query = "select name, sql from sqlite_master limit {{params.limit}}"
+#     format = "SimpleFormatter"
+#
+#
+# class TestSqlliteNumberParameterSubstitution(TestCase):
+#     def test_get(self):
+#         factory = RequestFactory()
+#         request = factory.get('/example/table-report/?limit=2')
+#         response = SqlliteNumberParameterSubstitutionView.as_view()(request)
+#         response.render()
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(len(response.data.get('data')), 2)
+
 
 class MergeTransformationView(SqlApiView):
     query = "select name, sql, 5 as num from sqlite_master limit 2;"

@@ -66,7 +66,7 @@ export default class ApiTabsToggle extends Component {
       if(tab.open) {
         const tabTitle = (
           <div className='api-tab'>
-            {tab.apiName.includes('Untitled API') ? `Untitled API ${i}` : tab.apiName} {' '}
+            {tab.apiName} {' '}
             <DropdownButton
               bsSize="small"
               style={{

@@ -1,7 +1,7 @@
 import arrow
 import datetime
 
-from squealy.exceptions import DateParseException, DateTimeParseException
+from squealy.exceptions import DateParseException, DateTimeParseException, NumberParseException
 
 
 class Parameter():
@@ -14,7 +14,7 @@ class Parameter():
 
 class String(Parameter):
     def __init__(self, name, description=None, default_value=None, valid_values=None):
-        self.default_value = None
+        self.default_value = default_value
         self.valid_values = valid_values
         self.name = name
         self.description = description if description else ""
@@ -106,3 +106,19 @@ class Datetime(Parameter):
                 raise DateTimeParseException("Invalid DateTime: " + value)
         except ValueError as err:
                 raise DateTimeParseException(err[0]+" Recieved Value - " + value)
+
+class Number(Parameter):
+    def __init__(self, name, description=None, default_value=None, valid_values=None):
+        self.default_value = default_value
+        self.valid_values = valid_values
+        self.name = name
+        self.description = description if description else ""
+
+    def to_internal(self, value):
+        try:
+            if value.isdigit():
+                return int(value)
+            else :
+                return float(value)
+        except ValueError:
+            raise NumberParseException("Cannot parse to int or float"+ value)
