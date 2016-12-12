@@ -85,7 +85,9 @@ Squealy comes with an authoring interface using which you can create, test and d
 SQL Editor
 **********
 
-We provide an editor with syntax highlighting to write the sql query. Squealy uses the ACE editor for this feature which has support for syntax highlighting and hence makes it easier to write complex queries. **Note that for each API parameter you need to append params like this - {{params.param_name}}**
+We provide an editor with syntax highlighting to write the sql query. Squealy uses the ACE editor for this feature which has support for syntax highlighting and hence makes it easier to write complex queries.
+
+.. note ::  For each API parameter you need to append params like this - **{{params.param_name}}** and for any parapeter from the Django's request.user object, you need to append user like this - **{{user.prameter_name}}**
 
 Query Response Section
 ***********************
@@ -134,6 +136,10 @@ Since the queries will be having parameters which will be retrieved from the URL
 You do not have to write the parameter names as Squealy is smart enough to identify the parameters. The parameters will keep on getting added to the parameters section as you write the query.
 
 .. image:: ./images/test-params.png
+|
+.. image:: ./images/test-user-params.png
+
+.. note::  In the Test User Parameters you can put any property of Django's request.user object.
 
 Validating the format of API parameters
 ****************************************
