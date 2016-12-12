@@ -214,13 +214,13 @@ export class MainContainer extends Component {
   apiDeletionHandler = (index) => {
     if(this.state.apiDefinition.length > 1) {
       let newApiDefinitions = this.state.apiDefinition.slice(),
-        newTestData = this.state.testData.slice(),
-        newOpenAPIs = this.state.openAPIs.slice()
+          newTestData = this.state.testData.slice(),
+          newOpenAPIs = this.state.openAPIs.slice()
       newApiDefinitions.splice(index, 1)
       newTestData.splice(index, 1)
 
       let openAPIsIndex = newOpenAPIs.indexOf(index),
-        newSelectedApiIndex = -1
+          newSelectedApiIndex = -1
       newOpenAPIs.splice(openAPIsIndex, 1)
 
       if (newOpenAPIs.length) {
@@ -232,18 +232,30 @@ export class MainContainer extends Component {
       //Decrement the selectedApiIndex only if the selectedIndex is not zero
       let selectedApiIndex = this.state.selectedApiIndex
       selectedApiIndex = selectedApiIndex===0 ? 0 : newSelectedApiIndex
+      
+      let untitledApiIndex = 0
+      newApiDefinitions.map((api) => {
+        if(api.apiName.includes('Untitled API')) {
+          api.apiName = 'Untitled API '+ (untitledApiIndex++)
+          api.urlName = api.apiName.replace(/\s+/g, '-').toLowerCase()
+        }
+      })
+
       this.setState({
         apiDefinition: newApiDefinitions, 
         testData: newTestData,
         selectedApiIndex: selectedApiIndex,
         newOpenAPIs: newOpenAPIs
       })
+
     } else {
       let tempApiDef = [getEmptyApiDefinition()],
-        tempTestData = [getEmptyTestData()]
-        tempOpenApis = [0]
+          tempTestData = [getEmptyTestData()],
+          tempOpenApis = [0]
       this.setState({apiDefinition: tempApiDef, testData: tempTestData, openAPIs: tempOpenApis})
     }
+  
+
   }
 
   //Appends an empty API definition object to current API Definitions
