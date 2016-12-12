@@ -8,7 +8,7 @@ export default class ParamDefinitionModalWrapper extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      selectedValue: 'DateTime',
+      selectedValue: 'dateTime',
       showValidationForm: false,
       isValidationTypeQuery: true,
       query: '',
@@ -57,7 +57,7 @@ export default class ParamDefinitionModalWrapper extends Component {
       default_values: this.refs.defaultValues.value
     }
 
-    if (!this.state.isParamDefCustom && (this.state.selectedValue === 'Date' || this.state.selectedValue === 'DateTime')) {
+    if (!this.state.isParamDefCustom && (this.state.selectedValue === 'date' || this.state.selectedValue === 'dateTime')) {
       newParamObj.kwargs = {format: this.refs.selectedValueFormat.value}
     }
 
@@ -163,6 +163,7 @@ export default class ParamDefinitionModalWrapper extends Component {
     const {selectedApiDefinition, onChangeApiDefinition, editParam} = this.props
     let paramDefinition = selectedApiDefinition.paramDefinition,
       validations = selectedApiDefinition.validations
+
     //Modal body for Add Param modal
     let addParamModalContent = 
       <div className='row add-modal-content'>
@@ -194,7 +195,7 @@ export default class ParamDefinitionModalWrapper extends Component {
           </div>
         }
         {
-          (!this.state.isParamDefCustom && (this.state.selectedValue === 'DateTime' || this.state.selectedValue === 'Date')) ? <div className='col-md-12'>
+          (!this.state.isParamDefCustom && (this.state.selectedValue === 'dateTime' || this.state.selectedValue === 'date')) ? <div className='col-md-12'>
               <label htmlFor='selectedValueFormat' className='col-md-4'>Date/DateTime Format: </label>
               <input type='text' name='selectedValueFormat' id='selectedValueFormat' ref='selectedValueFormat'/>
             </div>
