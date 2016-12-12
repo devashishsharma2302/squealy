@@ -249,10 +249,11 @@ export class MainContainer extends Component {
       })
 
     } else {
-      let tempApiDef = [getEmptyApiDefinition()],
-          tempTestData = [getEmptyTestData()],
-          tempOpenApis = [0]
-      this.setState({apiDefinition: tempApiDef, testData: tempTestData, openAPIs: tempOpenApis})
+      let tempApiDef = [],
+          tempTestData = [],
+          tempOpenApis = []
+      this.setState({apiDefinition: tempApiDef, testData: tempTestData, openAPIs: tempOpenApis}, () => this.apiCloseHandler(0))
+      
     }
   
 
