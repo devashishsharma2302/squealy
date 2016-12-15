@@ -4,7 +4,7 @@ import datetime
 from django.contrib.auth.models import User
 from django.test import TestCase, RequestFactory
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, DjangoModelPermissionsOrAnonReadOnly
 
 from squealy.exceptions import RequiredParameterMissingException, DateParseException, DateTimeParseException
 from squealy.views import SqlApiView
@@ -63,6 +63,7 @@ class TestSessionParameterSubstitution(TestCase):
         self.user = User.objects.create_user(username="user001")
         self.request.user = self.user
         response = SessionParameterSubstitutionView.as_view()(self.request)
+        response.render()
         self.assertEqual(response.status_code, 200)
         self.assertGreater(len(response.data.get('data', [])), 1)
 
@@ -344,3 +345,23 @@ class TestYamlApiGeneration(TestCase):
         response = self.squealy_urls[3].resolve('api4').func(request)
         response.render()
         self.assertEqual(response.status_code, 200)
+
+    def test_default_permission_and_auth_classes(self):
+        squealy_settings = {
+            'DEFAULT_PERMISSION_CLASSES': [
+                'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+            ],
+            'DEFAULT_AUTHENTICATION_CLASSES': [
+                'rest_framework.authentication.TokenAuthentication'
+            ]
+        }
+        with self.settings(SQUEALY=squealy_settings):
+            self.setUp()
+            factory = RequestFactory()
+            request = factory.get('/example/api1/')
+            view_func = self.squealy_urls[0].resolve('api1').func
+            permission_classes = view_func.view_class.permission_classes
+            self.assertIn(DjangoModelPermissionsOrAnonReadOnly, permission_classes)
+            authentication_classes = view_func.view_class.authentication_classes
+            self.assertIn(TokenAuthentication, authentication_classes)
+
