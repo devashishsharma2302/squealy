@@ -83,11 +83,11 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
     # ,
-    # 'test': {
+    # 'default': {
     #     'ENGINE': 'django.db.backends.mysql',
     #     'NAME': 'hiway',
     #     'USER': 'root',
-    #     'PASSWORD': '',
+    #     'PASSWORD': 'root',
     #     'HOST': 'localhost',
     #     'PORT': '3306',
     # }
@@ -136,3 +136,18 @@ CORS_ORIGIN_WHITELIST = (
     'localhost:3000'
 )
 
+# REST_FRAMEWORK = {
+#                     'DEFAULT_PERMISSION_CLASSES': [
+#                         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+#                     ]
+#                 }
+
+# SQUEALY = {
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+#     ],
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'rest_framework.authentication.TokenAuthentication'
+#     ]
+#
+# }

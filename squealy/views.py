@@ -1,11 +1,15 @@
 import importlib
 
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
+import rest_framework
+
+
 from jinjasql import JinjaSql
 from django.db import connections
 from django.shortcuts import render
-from rest_framework import status
 from django.conf import settings
 
 from squealy.exceptions import RequiredParameterMissingException
@@ -93,6 +97,16 @@ class SqlApiView(APIView):
     # transformations = []
     # formatter = DefaultFormatter
     connection_name = "default"
+    permission_classes = []
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    if hasattr(settings, 'SQUEALY'):
+        if settings.SQUEALY.get('DEFAULT_PERMISSION_CLASSES'):
+            for permission_class in settings.SQUEALY.get('DEFAULT_PERMISSION_CLASSES'):
+                permission_classes.append(eval(permission_class))
+        if settings.SQUEALY.get('DEFAULT_AUTHENTICATION_CLASSES'):
+            authentication_classes = []
+            for authentication_class in settings.SQUEALY.get('DEFAULT_AUTHENTICATION_CLASSES'):
+                authentication_classes.append(eval(authentication_class))
 
     def post(self, request, *args, **kwargs):
         try:
