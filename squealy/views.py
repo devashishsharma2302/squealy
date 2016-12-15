@@ -16,6 +16,7 @@ from squealy.exceptions import RequiredParameterMissingException
 from squealy.transformers import *
 from squealy.formatters import *
 from squealy.parameters import *
+from squealy.utils import SquealySettings
 from .table import Table, Column
 from pydoc import locate
 import yaml
@@ -27,6 +28,9 @@ jinjasql = JinjaSql()
 
 
 class DatabaseView(APIView):
+    permission_classes = SquealySettings.get_default_permission_classes()
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request, *args, **kwargs):
         try:
@@ -74,6 +78,9 @@ class DatabaseView(APIView):
 
 
 class YamlGeneratorView(APIView):
+    permission_classes = SquealySettings.get_default_permission_classes()
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def post(self, request, *args, **kwargs):
         try:
@@ -97,16 +104,9 @@ class SqlApiView(APIView):
     # transformations = []
     # formatter = DefaultFormatter
     connection_name = "default"
-    permission_classes = []
+    permission_classes = SquealySettings.get_default_permission_classes()
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    if hasattr(settings, 'SQUEALY'):
-        if settings.SQUEALY.get('DEFAULT_PERMISSION_CLASSES'):
-            for permission_class in settings.SQUEALY.get('DEFAULT_PERMISSION_CLASSES'):
-                permission_classes.append(eval(permission_class))
-        if settings.SQUEALY.get('DEFAULT_AUTHENTICATION_CLASSES'):
-            authentication_classes = []
-            for authentication_class in settings.SQUEALY.get('DEFAULT_AUTHENTICATION_CLASSES'):
-                authentication_classes.append(eval(authentication_class))
+    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def post(self, request, *args, **kwargs):
         try:
