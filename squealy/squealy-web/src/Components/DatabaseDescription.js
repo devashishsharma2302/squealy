@@ -3,7 +3,7 @@ import Select from 'react-select'
 import {Table} from 'react-bootstrap'
 import 'react-select/dist/react-select.css'
 import {getApiRequest, postApiRequest} from '../Utils'
-import {apiUriHostName} from '../Containers/MainContainer'
+import {apiUriHostName} from '../Containers/ApiViewContainer'
 
 export default class DatabaseDescription extends Component {
 

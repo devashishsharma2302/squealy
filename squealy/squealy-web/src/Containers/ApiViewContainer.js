@@ -25,7 +25,7 @@ import {
 //API URL host name. For testing only. later user will define this in setup configuration.
 export const apiUriHostName = 'http://localhost:8000'
 
-export class MainContainer extends Component {
+export default class ApiViewContainer extends Component {
   constructor(props) {
     super(props)
     this.state = {

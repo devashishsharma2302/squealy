@@ -1,6 +1,8 @@
 import React, {Component} from 'react'
 import {Navbar, NavDropdown, MenuItem, Nav, DropdownButton} from 'react-bootstrap'
 import FontAwesome from 'font-awesome/css/font-awesome.css'
+import {Link} from 'react-router'
+
 import logo from '../images/logo.png'
 
 export default class MenuBar extends Component {
@@ -46,6 +48,11 @@ export default class MenuBar extends Component {
           }
         </Nav>
         <Nav pullRight>
+          <Link to='dashboard'>
+            <button className="btn btn-info export-btn">
+              Dashboard
+            </button>
+          </Link>
           <button className="btn btn-info export-btn"
             onClick={exportConfigAsYaml}>Export
           </button>
