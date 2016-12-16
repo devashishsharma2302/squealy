@@ -13,8 +13,8 @@ from jinjasql import JinjaSql
 from django.db import connections
 from django.shortcuts import render
 from django.conf import settings
-from squealy.apigenerator import ApiGenerator
 
+import squealy
 from squealy.exceptions import RequiredParameterMissingException
 from squealy.transformers import *
 from squealy.formatters import *
@@ -110,7 +110,7 @@ class DynamicApiRouter(APIView):
     def get(self, request, *args, **kwargs):
         url_path = request.get_full_path()
         file_path = join(settings.SQUEALY.get('YAML_PATH'), 'squealy-apis.yaml')
-        urls = ApiGenerator.generate_urls_from_yaml(file_path)
+        urls = squealy.apigenerator.ApiGenerator.generate_urls_from_yaml(file_path)
         response = url(r'', include(urls)).resolve(url_path.split('/squealy-apis/')[1]).func(request)
         return  response
 
