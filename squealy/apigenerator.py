@@ -2,7 +2,7 @@ from django.conf.urls import url
 from yaml import load_all
 
 from squealy.utils import SquealySettings
-from squealy.views import SqlApiView
+import views
 import rest_framework
 from rest_framework.authentication import *
 from rest_framework.permissions import *
@@ -34,4 +34,4 @@ class ApiGenerator():
 
     @staticmethod
     def _generate_api_view(config):
-        return type(config['id'], (SqlApiView, ), config)
+        return type(config['id'], (views.SqlApiView, ), config)

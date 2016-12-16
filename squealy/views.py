@@ -1,5 +1,7 @@
 import importlib
+from os.path import join
 
+from django.conf.urls import url, include
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -11,6 +13,7 @@ from jinjasql import JinjaSql
 from django.db import connections
 from django.shortcuts import render
 from django.conf import settings
+from squealy.apigenerator import ApiGenerator
 
 from squealy.exceptions import RequiredParameterMissingException
 from squealy.transformers import *
@@ -98,6 +101,18 @@ class YamlGeneratorView(APIView):
         except  Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)    
 
+
+class DynamicApiRouter(APIView):
+    permission_classes = SquealySettings.get_default_permission_classes()
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
+
+    def get(self, request, *args, **kwargs):
+        url_path = request.get_full_path()
+        file_path = join(settings.SQUEALY.get('YAML_PATH'), 'squealy-apis.yaml')
+        urls = ApiGenerator.generate_urls_from_yaml(file_path)
+        response = url(r'', include(urls)).resolve(url_path.split('/squealy-apis/')[1]).func(request)
+        return  response
 
 class SqlApiView(APIView):
     # validations = []
@@ -324,3 +339,4 @@ def squealy_interface(request):
     Renders the squealy authouring interface template
     """
     return render(request, 'index.html')
+

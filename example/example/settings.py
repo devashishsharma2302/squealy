@@ -142,12 +142,13 @@ CORS_ORIGIN_WHITELIST = (
 #                     ]
 #                 }
 
-# SQUEALY = {
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-#     ],
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework.authentication.TokenAuthentication'
-#     ]
-#
-# }
+SQUEALY = {
+    'YAML_PATH': os.path.dirname(os.path.realpath(__file__))
+    #   'DEFAULT_PERMISSION_CLASSES': [
+    #     'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    # ],
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'rest_framework.authentication.TokenAuthentication'
+    # ]
+
+}
