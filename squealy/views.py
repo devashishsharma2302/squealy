@@ -1,11 +1,15 @@
 import importlib
 
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
+import rest_framework
+
+
 from jinjasql import JinjaSql
 from django.db import connections
 from django.shortcuts import render
-from rest_framework import status
 from django.conf import settings
 
 from squealy.exceptions import RequiredParameterMissingException
@@ -41,10 +45,11 @@ class DatabaseView(APIView):
         connection_name = request.data.get('database', None)
         conn = connections[connection_name['value']]
         table = request.data.get('table', None)
+
         if table:
-            query = 'Desc {}'.format(table['value'])
+            query = 'select column_name, data_type from INFORMATION_SCHEMA.COLUMNS where table_name=%s'
             with conn.cursor() as cursor:
-                cursor.execute(query)
+                cursor.execute(query, [table['value']])
                 column_metadata = []
                 for meta in cursor:
                     column_metadata.append({
@@ -53,8 +58,12 @@ class DatabaseView(APIView):
                     })
             return Response({'schema': column_metadata})
         else:
+            table_schema = connection_name['label']
+            if conn.vendor == 'postgresql':
+                table_schema = 'public'
             with conn.cursor() as cursor:
-                cursor.execute('select TABLE_NAME from information_schema.tables where table_scheme=%s',connection_name)
+                cursor.execute('select TABLE_NAME from information_schema.tables a where a.table_schema=%s',
+                               [table_schema])
                 tables = []
                 for table_names in cursor:
                     tables.append({
@@ -66,28 +75,66 @@ class DatabaseView(APIView):
 
 class YamlGeneratorView(APIView):
 
+
     def post(self, request, *args, **kwargs):
         try:
             #FIX ME:: Remove Hardcoded Values
             json_data = json.loads(request.body).get('yamlData')
-            directory = os.path.join(os.path.dirname(os.path.dirname(__file__)),'yaml/')
+            if hasattr(settings, 'SQUEALY') and 'YAML_PATH' in settings.SQUEALY:
+                yaml_path = settings.SQUEALY['YAML_PATH']
+            else:
+                yaml_path = settings.BASE_DIR  
+            directory = os.path.join(yaml_path,'yaml/')
             if not os.path.exists(directory):
                 os.makedirs(directory)
             with open(directory+'api.yaml','w+') as f:
-                myfile = File(f)
-                myfile.write(yaml.safe_dump_all(json_data, explicit_start=True))
+                new_yaml_file = File(f)
+                new_yaml_file.write(yaml.safe_dump_all(json_data, explicit_start=True))
             f.close()
-            myfile.close()    
+            new_yaml_file.close()
             return Response({}, status.HTTP_200_OK)
         except  Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)    
 
+    def get(self, request, *args, **kwargs):
+        try:       
+            if hasattr(settings, 'SQUEALY') and 'YAML_PATH' in settings.SQUEALY:
+                yaml_path = settings.SQUEALY['YAML_PATH']
+            else:
+                yaml_path = settings.BASE_DIR
+            directory = os.path.join(yaml_path,'yaml/')
+            if os.path.isfile(directory+"api.yaml"):
+                with open(directory+"api.yaml",'r') as f:
+                    try:
+                        api_list = []
+                        api_data = yaml.safe_load_all(f)
+                        for api in api_data:
+                            api_list.append(api)
+                        return Response(api_list, status.HTTP_200_OK)    
+                    except yaml.YAMLError as exc:
+                        return Response({'yaml error': str(exc)}, status.HTTP_400_BAD_REQUEST)
+                f.close()    
+                return Response({}, status.HTTP_200_OK)
+            else:
+                return Response({'message': 'No api generated.'}, status.HTTP_204_NO_CONTENT)   
+        except  Exception as e:
+            return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
 
 class SqlApiView(APIView):
     # validations = []
     # transformations = []
     # formatter = DefaultFormatter
     connection_name = "default"
+    permission_classes = []
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    if hasattr(settings, 'SQUEALY'):
+        if settings.SQUEALY.get('DEFAULT_PERMISSION_CLASSES'):
+            for permission_class in settings.SQUEALY.get('DEFAULT_PERMISSION_CLASSES'):
+                permission_classes.append(eval(permission_class))
+        if settings.SQUEALY.get('DEFAULT_AUTHENTICATION_CLASSES'):
+            authentication_classes = []
+            for authentication_class in settings.SQUEALY.get('DEFAULT_AUTHENTICATION_CLASSES'):
+                authentication_classes.append(eval(authentication_class))
 
     def post(self, request, *args, **kwargs):
         try:

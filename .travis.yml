@@ -4,6 +4,9 @@ python:
   - "3.4"
   - "3.5"
 
+services:
+  - mysql
+
 script: sh run_tests.sh
 
 

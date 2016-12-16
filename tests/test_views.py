@@ -4,7 +4,7 @@ import datetime
 from django.contrib.auth.models import User
 from django.test import TestCase, RequestFactory
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, DjangoModelPermissionsOrAnonReadOnly
 
 from squealy.exceptions import RequiredParameterMissingException, DateParseException, DateTimeParseException
 from squealy.views import SqlApiView
@@ -63,6 +63,7 @@ class TestSessionParameterSubstitution(TestCase):
         self.user = User.objects.create_user(username="user001")
         self.request.user = self.user
         response = SessionParameterSubstitutionView.as_view()(self.request)
+        response.render()
         self.assertEqual(response.status_code, 200)
         self.assertGreater(len(response.data.get('data', [])), 1)
 
@@ -72,6 +73,42 @@ class TestSessionParameterSubstitution(TestCase):
         response = SessionParameterSubstitutionView.as_view()(self.request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data.get('data', []), [[]])
+
+'''
+Commenting the below test cases to remove dependency in MySql-python library that is currently unavailabe for python 3.4.x
+and 3.5.x
+'''
+
+# class MysqlNumberParameterSubstitutionView(SqlApiView):
+#     query = "select * from django_content_type limit {{params.limit}};"
+#     format = "SimpleFormatter"
+#     connection_name = "test"
+#     parameters = {"limit": {"type": "number"}}
+#
+#
+# class TestMysqlNumberParameterSubstitution(TestCase):
+#     def test_get(self):
+#         factory = RequestFactory()
+#         request = factory.get('/example/table-report/?limit=2')
+#         response = MysqlNumberParameterSubstitutionView.as_view()(request)
+#         response.render()
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(len(response.data.get('data')), 2)
+#
+#
+# class SqlliteNumberParameterSubstitutionView(SqlApiView):
+#     query = "select name, sql from sqlite_master limit {{params.limit}}"
+#     format = "SimpleFormatter"
+#
+#
+# class TestSqlliteNumberParameterSubstitution(TestCase):
+#     def test_get(self):
+#         factory = RequestFactory()
+#         request = factory.get('/example/table-report/?limit=2')
+#         response = SqlliteNumberParameterSubstitutionView.as_view()(request)
+#         response.render()
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(len(response.data.get('data')), 2)
 
 
 class MergeTransformationView(SqlApiView):
@@ -308,3 +345,23 @@ class TestYamlApiGeneration(TestCase):
         response = self.squealy_urls[3].resolve('api4').func(request)
         response.render()
         self.assertEqual(response.status_code, 200)
+
+    def test_default_permission_and_auth_classes(self):
+        squealy_settings = {
+            'DEFAULT_PERMISSION_CLASSES': [
+                'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+            ],
+            'DEFAULT_AUTHENTICATION_CLASSES': [
+                'rest_framework.authentication.TokenAuthentication'
+            ]
+        }
+        with self.settings(SQUEALY=squealy_settings):
+            self.setUp()
+            factory = RequestFactory()
+            request = factory.get('/example/api1/')
+            view_func = self.squealy_urls[0].resolve('api1').func
+            permission_classes = view_func.view_class.permission_classes
+            self.assertIn(DjangoModelPermissionsOrAnonReadOnly, permission_classes)
+            authentication_classes = view_func.view_class.authentication_classes
+            self.assertIn(TokenAuthentication, authentication_classes)
+

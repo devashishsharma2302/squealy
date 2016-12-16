@@ -8,6 +8,7 @@ import {
 } from '../Constant'
 import {
   postApiRequest,
+  getApiRequest,
   objectToYaml,
   saveBlobToFile,
   saveYamlOnServer,
@@ -54,17 +55,41 @@ export class MainContainer extends Component {
   }
 
   componentWillMount() {
-    let localStorageData = getDataFromLocalStorage('hidash')
-    if (localStorageData) {
-      Object.keys(localStorageData).map((key) => {
-      this.setState({[key]: localStorageData[key]}, () => {
-          this.initializeStates()
+    let url = apiUriHostName + '/yaml-generator/'
+    getApiRequest(url, null, this.loadInitialApis, ()=>{}, null)
+    googleChartLoader()
+  }
+
+  loadInitialApis = (response) => {
+    if (response) {
+      let apiDefinition = []
+      for(let index in response){
+        let apiObj = {
+          apiName: response[index].name,
+          open:false,
+          paramDefinition: response[index].parameters,
+          sqlQuery:response[index].query,
+          transformations:response[index].transformations,
+          validations:response[index].validations,
+          urlName:response[index].url
+        }
+        apiDefinition.push(apiObj)
+      }
+      this.setState({apiDefinition:apiDefinition})
+      let localStorageData = getDataFromLocalStorage('hidash')
+      if (localStorageData) {
+        Object.keys(localStorageData).map((key) => {
+          if(key!=='apiDefinition') {
+            this.setState({[key]: localStorageData[key]}, () => {
+            this.initializeStates()
+          })
+          }
         })
-      })
-    } else {
+      } 
+    }
+    else {
       this.initializeStates()
     }
-    googleChartLoader()
   }
 
   onChangeApiDefinition = (variableName, value) => {
@@ -214,13 +239,13 @@ export class MainContainer extends Component {
   apiDeletionHandler = (index) => {
     if(this.state.apiDefinition.length > 1) {
       let newApiDefinitions = this.state.apiDefinition.slice(),
-        newTestData = this.state.testData.slice(),
-        newOpenAPIs = this.state.openAPIs.slice()
+          newTestData = this.state.testData.slice(),
+          newOpenAPIs = this.state.openAPIs.slice()
       newApiDefinitions.splice(index, 1)
       newTestData.splice(index, 1)
 
       let openAPIsIndex = newOpenAPIs.indexOf(index),
-        newSelectedApiIndex = -1
+          newSelectedApiIndex = -1
       newOpenAPIs.splice(openAPIsIndex, 1)
 
       if (newOpenAPIs.length) {
@@ -232,18 +257,31 @@ export class MainContainer extends Component {
       //Decrement the selectedApiIndex only if the selectedIndex is not zero
       let selectedApiIndex = this.state.selectedApiIndex
       selectedApiIndex = selectedApiIndex===0 ? 0 : newSelectedApiIndex
+      
+      let untitledApiIndex = 0
+      newApiDefinitions.map((api) => {
+        if(api.apiName.includes('Untitled API')) {
+          api.apiName = 'Untitled API '+ (untitledApiIndex++)
+          api.urlName = api.apiName.replace(/\s+/g, '-').toLowerCase()
+        }
+      })
+
       this.setState({
         apiDefinition: newApiDefinitions, 
         testData: newTestData,
         selectedApiIndex: selectedApiIndex,
         newOpenAPIs: newOpenAPIs
       })
+
     } else {
-      let tempApiDef = [getEmptyApiDefinition()],
-        tempTestData = [getEmptyTestData()]
-        tempOpenApis = [0]
-      this.setState({apiDefinition: tempApiDef, testData: tempTestData, openAPIs: tempOpenApis})
+      let tempApiDef = [],
+          tempTestData = [],
+          tempOpenApis = []
+      this.setState({apiDefinition: tempApiDef, testData: tempTestData, openAPIs: tempOpenApis}, () => this.apiCloseHandler(0))
+      
     }
+  
+
   }
 
   //Appends an empty API definition object to current API Definitions
