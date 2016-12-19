@@ -97,12 +97,10 @@ class YamlGeneratorView(APIView):
             full_path = join(directory,file_name)
 
             with open(full_path,'w+') as f:
-                new_yaml_file = File(f)
-                new_yaml_file.write(yaml.safe_dump_all(json_data, explicit_start=True))
+                f.write(yaml.safe_dump_all(json_data, explicit_start=True))
             f.close()
-            new_yaml_file.close()
             return Response({}, status.HTTP_200_OK)
-        except  Exception as e:
+        except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)    
 
     def get(self, request, *args, **kwargs):
@@ -167,6 +165,20 @@ class DashboardApiView(APIView):
                     dashboard['widgets'][index] = widgets.get(widget_id)
                 dashboards.append(dashboard)
         return Response(dashboards)
+
+    def post(self, request):
+        dashboards = json.loads(request.body).get('dashboards', {})
+        directory = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
+
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        file_name = SquealySettings.get('dashboard_filename', 'squealy_dashboard.yaml')
+        full_path = join(directory, file_name)
+        with open(full_path, 'w+') as f:
+            f.write(yaml.safe_dump_all(dashboards, explicit_start=True, default_flow_style=False))
+        f.close()
+        return Response({}, status.HTTP_200_OK)
 
 
 class SqlApiView(APIView):

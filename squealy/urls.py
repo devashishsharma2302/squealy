@@ -7,5 +7,5 @@ urlpatterns = [
     url(r'test/$', views.SqlApiView.as_view()),
     url(r'database-details/', views.DatabaseView.as_view()),
     url(r'squealy-apis/', views.DynamicApiRouter.as_view()),
-    url(r'dashboard-design/', views.DashboardApiView.as_view())
+    url(r'squealy-dashboard-design/', views.DashboardApiView.as_view())
 ]

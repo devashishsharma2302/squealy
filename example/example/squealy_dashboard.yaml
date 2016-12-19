@@ -1,22 +1,29 @@
 ---
-id: '01'
-name: 'dash-01'
-widgets:
-  - '01'
-  - '02'
 filters:
-  -
-    name: 'start_date'
-    type: 'Date'
-    default_value: '2016/02/08'
-  -
-    name: 'project_code'
-    type: 'Dropdown'
-    api_url: 'squealy-apis/api3'
-    default_value: 'HH-XYZ01'
+- default_value: 2016/02/08
+  name: start_date
+  type: Date
+- api_url: squealy-apis/api3
+  default_value: HH-XYZ01
+  name: project_code
+  type: Dropdown
+id: '01'
+name: dash-01
+widgets:
+- api_url: squealy-apis/api1
+  chart_type: BarChart
+  id: '06'
+  name: Widget 01
+- api_url: squealy-apis/api1
+  id: '02'
+  name: Widget 02
 ---
 id: '02'
-name: 'dash-02'
+name: dash-02
 widgets:
-  - '02'
-  - '03'
+- api_url: squealy-apis/api1
+  id: '02'
+  name: Widget 02
+- api_url: squealy-apis/api1
+  id: '03'
+  name: Widget 03
