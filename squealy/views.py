@@ -156,6 +156,31 @@ class DynamicApiRouter(APIView):
         response = url(r'', include(urls)).resolve(url_path.split('/squealy-apis/')[1]).func(request)
         return  response
 
+
+class DashboardApiView(APIView):
+    permission_classes = SquealySettings.get_default_permission_classes()
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
+
+    def get(self, request):
+        file_dir = SquealySettings.get_attribute('YAML_PATH') or join(settings.BASE_DIR, 'yaml')
+        dashboard_file_name = SquealySettings.get_attribute('dashboard_filename') or 'squealy_dashboard.yaml'
+        dashboard_file_path = join(file_dir, dashboard_file_name)
+        widgets_file_name = SquealySettings.get_attribute('widgets_filename') or 'squealy_widgets.yaml'
+        widgets_file_path = join(file_dir, widgets_file_name)
+        dashboards = []
+        widgets = {}
+        with open(widgets_file_path) as f:
+            for widget in yaml.load_all(f):
+                widgets[widget.get('id', '')] = widget
+        with open(dashboard_file_path) as f:
+            for dashboard in yaml.load_all(f):
+                for index, widget_id in enumerate(dashboard.get('widgets', [])):
+                    dashboard['widgets'][index] = widgets.get(widget_id)
+                dashboards.append(dashboard)
+        return Response(dashboards)
+
+
 class SqlApiView(APIView):
     # validations = []
     # transformations = []

@@ -1,0 +1,22 @@
+---
+id: '01'
+name: 'dash-01'
+widgets:
+  - '01'
+  - '02'
+filters:
+  -
+    name: 'start_date'
+    type: 'Date'
+    default_value: '2016/02/08'
+  -
+    name: 'project_code'
+    type: 'Dropdown'
+    api_url: 'squealy-apis/api3'
+    default_value: 'HH-XYZ01'
+---
+id: '02'
+name: 'dash-02'
+widgets:
+  - '02'
+  - '03'

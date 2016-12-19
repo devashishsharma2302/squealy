@@ -25,3 +25,9 @@ class SquealySettings():
                     permission_classes.append(eval(permission_class_as_str))
         return permission_classes
 
+    @staticmethod
+    def get_attribute(key):
+        if hasattr(settings, 'SQUEALY'):
+            return settings.SQUEALY.get(key, None)
+        else:
+            return None
