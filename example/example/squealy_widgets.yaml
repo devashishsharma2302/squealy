@@ -1,0 +1,15 @@
+---
+id: '01'
+name: 'Widget 01'
+api_url: 'squealy-apis/api1'
+chart_type: 'BarChart'
+
+---
+id: '02'
+name: 'Widget 02'
+api_url: 'squealy-apis/api1'
+
+---
+id: '03'
+name: 'Widget 03'
+api_url: 'squealy-apis/api1'
