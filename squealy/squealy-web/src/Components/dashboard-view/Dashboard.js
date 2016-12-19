@@ -18,14 +18,13 @@ export default class Dashboard extends Component {
   }
 
   render() {
-    const {dashboardDefinition, widgetAdditionHandler} = this.props
-
+    const {dashboardDefinition, widgetAdditionHandler, dashboardIndex} = this.props
     const modalContent = 
       <div>Yo</div>
 
     return(
       <div id="dashboardAreaWrapper">
-        <button className="btn btn-info" onClick={() => widgetAdditionHandler(0)}>
+        <button className="btn btn-info" onClick={() => widgetAdditionHandler(dashboardIndex)}>
           Add a new widget
         </button>
         <div id="dashboardArea">

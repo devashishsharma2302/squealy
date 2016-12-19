@@ -123,7 +123,7 @@ export default class ApiTabsToggle extends Component {
         id='api-tabs'
       >
         {tabs}
-        <Tab id='add_tab_btn'
+        <Tab
           style={{
             borderColor: '#fff'
             }}
