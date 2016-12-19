@@ -39,15 +39,16 @@ export default class ApiViewContainer extends Component {
   initializeStates = () => {
     if (!this.state.apiDefinition.length) {
       let tempApiDef = [getEmptyApiDefinition()]
-      this.setState({apiDefinition: tempApiDef})
+      let testData = [getEmptyTestData()]
+      this.setState({apiDefinition: tempApiDef,testData: testData})
     }
 
     if (!this.state.testData.length) {
+
       let tempTestData = []
-      for(let index in this.state.apiDefinition) {
+      this.state.apiDefinition.map(()=>{
         tempTestData.push(getEmptyTestData())
-      }
-      
+      })
       this.setState({testData: tempTestData})
     }
 
