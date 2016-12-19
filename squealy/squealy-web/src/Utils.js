@@ -121,6 +121,19 @@ export function getEmptyApiDefinition() {
   }
 }
 
+export function getEmptyDashboardDefinition() {
+  return {
+    apiName: 'Untitled Dashboard 0',
+    widgets: []
+  }
+}
+
+export function getEmptyWidgetDefinition() {
+  return {
+    title: 'New widget'
+  }
+}
+
 export function getDefaultApiDefinition(apiIndex) {
   return {
     apiName: `Untitled API ${apiIndex}`,
