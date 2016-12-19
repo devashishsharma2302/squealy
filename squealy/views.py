@@ -92,12 +92,17 @@ class YamlGeneratorView(APIView):
             json_data = json.loads(request.body).get('yamlData')
             if hasattr(settings, 'SQUEALY') and 'YAML_PATH' in settings.SQUEALY:
                 yaml_path = settings.SQUEALY['YAML_PATH']
+                directory = yaml_path
             else:
                 yaml_path = settings.BASE_DIR  
-            directory = os.path.join(yaml_path,'yaml/')
+                directory = os.path.join(yaml_path,'yaml/')
             if not os.path.exists(directory):
                 os.makedirs(directory)
-            with open(directory+'api.yaml','w+') as f:
+            if hasattr(settings, 'SQUEALY') and 'YAML_FILE_NAME' in settings.SQUEALY:
+                file_name = settings.SQUEALY['YAML_FILE_NAME']
+            else:
+                file_name = 'squealy-api.yaml'              
+            with open(directory+file_name,'w+') as f:
                 new_yaml_file = File(f)
                 new_yaml_file.write(yaml.safe_dump_all(json_data, explicit_start=True))
             f.close()
@@ -110,11 +115,18 @@ class YamlGeneratorView(APIView):
         try:       
             if hasattr(settings, 'SQUEALY') and 'YAML_PATH' in settings.SQUEALY:
                 yaml_path = settings.SQUEALY['YAML_PATH']
+                directory = yaml_path
             else:
-                yaml_path = settings.BASE_DIR
-            directory = os.path.join(yaml_path,'yaml/')
-            if os.path.isfile(directory+"api.yaml"):
-                with open(directory+"api.yaml",'r') as f:
+                yaml_path = settings.BASE_DIR  
+                directory = os.path.join(yaml_path,'yaml/')
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+            if hasattr(settings, 'SQUEALY') and 'YAML_FILE_NAME' in settings.SQUEALY:
+                file_name = settings.SQUEALY['YAML_FILE_NAME']
+            else:
+                file_name = 'squealy-api.yaml'  
+            if os.path.isfile(directory+file_name):
+                with open(directory+file_name,'r') as f:
                     try:
                         api_list = []
                         api_data = yaml.safe_load_all(f)
