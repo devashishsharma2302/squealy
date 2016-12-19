@@ -4,8 +4,8 @@ from rest_framework.authentication import *
 from rest_framework.permissions import *
 
 
-
 class SquealySettings():
+
     @staticmethod
     def get_default_authentication_classes():
         authentication_classes = []
@@ -26,8 +26,8 @@ class SquealySettings():
         return permission_classes
 
     @staticmethod
-    def get_attribute(key):
+    def get(key, default=None):
         if hasattr(settings, 'SQUEALY'):
-            return settings.SQUEALY.get(key, None)
+            return settings.SQUEALY.get(key, default)
         else:
-            return None
+            return default

@@ -152,8 +152,8 @@ class DynamicApiRouter(APIView):
 
     def get(self, request, *args, **kwargs):
         url_path = request.get_full_path()
-        file_dir = SquealySettings.get_attribute('YAML_PATH') or join(settings.BASE_DIR, 'yaml')
-        filename = SquealySettings.get_attribute('YAML_FILE_NAME') or 'squealy-api.yaml'
+        file_dir = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
+        filename = SquealySettings.get('YAML_FILE_NAME', 'squealy-api.yaml')
         file_path = join(file_dir, filename)
         urls = squealy.apigenerator.ApiGenerator.generate_urls_from_yaml(file_path)
         response = url(r'', include(urls)).resolve(url_path.split('/squealy-apis/')[1]).func(request)
@@ -166,10 +166,10 @@ class DashboardApiView(APIView):
     authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request):
-        file_dir = SquealySettings.get_attribute('YAML_PATH') or join(settings.BASE_DIR, 'yaml')
-        dashboard_file_name = SquealySettings.get_attribute('dashboard_filename') or 'squealy_dashboard.yaml'
+        file_dir = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
+        dashboard_file_name = SquealySettings.get('dashboard_filename', 'squealy_dashboard.yaml')
         dashboard_file_path = join(file_dir, dashboard_file_name)
-        widgets_file_name = SquealySettings.get_attribute('widgets_filename') or 'squealy_widgets.yaml'
+        widgets_file_name = SquealySettings.get('widgets_filename', 'squealy_widgets.yaml')
         widgets_file_path = join(file_dir, widgets_file_name)
         dashboards = []
         widgets = {}
