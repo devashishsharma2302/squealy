@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Tabs, Tab} from 'react-bootstrap'
+import {Tabs, Tab, TabList} from 'react-bootstrap'
 import Dashboard from './Dashboard'
 import {HidashModal} from '../HidashUtilsComponents'
 
@@ -41,6 +41,7 @@ export default class DashboardNavigator extends Component {
       })
 
     return(
+
         <Tabs
         bsStyle="tabs"
         animation={true}
@@ -49,7 +50,7 @@ export default class DashboardNavigator extends Component {
         id='dashboard-tabs'
          >
         {dashboard_tabs}
-        <Tab id='add_tab_btn'
+        <Tab
           style={{
             borderColor: '#fff'
             }}
