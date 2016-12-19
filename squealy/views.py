@@ -1,5 +1,5 @@
 import importlib
-from os.path import join
+from os.path import join, isfile
 
 from django.conf.urls import url, include
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -85,24 +85,17 @@ class YamlGeneratorView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
-
     def post(self, request, *args, **kwargs):
         try:
-            #FIX ME:: Remove Hardcoded Values
             json_data = json.loads(request.body).get('yamlData')
-            if hasattr(settings, 'SQUEALY') and 'YAML_PATH' in settings.SQUEALY:
-                yaml_path = settings.SQUEALY['YAML_PATH']
-                directory = yaml_path
-            else:
-                yaml_path = settings.BASE_DIR  
-                directory = os.path.join(yaml_path,'yaml/')
+            directory = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
+
             if not os.path.exists(directory):
                 os.makedirs(directory)
-            if hasattr(settings, 'SQUEALY') and 'YAML_FILE_NAME' in settings.SQUEALY:
-                file_name = settings.SQUEALY['YAML_FILE_NAME']
-            else:
-                file_name = 'squealy-api.yaml' 
-            full_path = os.path.join(directory,file_name)
+
+            file_name = SquealySettings.get('YAML_FILE_NAME', 'squealy-api.yaml')
+            full_path = join(directory,file_name)
+
             with open(full_path,'w+') as f:
                 new_yaml_file = File(f)
                 new_yaml_file.write(yaml.safe_dump_all(json_data, explicit_start=True))
@@ -113,21 +106,13 @@ class YamlGeneratorView(APIView):
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)    
 
     def get(self, request, *args, **kwargs):
-        try:       
-            if hasattr(settings, 'SQUEALY') and 'YAML_PATH' in settings.SQUEALY:
-                yaml_path = settings.SQUEALY['YAML_PATH']
-                directory = yaml_path
-            else:
-                yaml_path = settings.BASE_DIR  
-                directory = os.path.join(yaml_path,'yaml/')
+        try:
+            directory = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
             if not os.path.exists(directory):
                 os.makedirs(directory)
-            if hasattr(settings, 'SQUEALY') and 'YAML_FILE_NAME' in settings.SQUEALY:
-                file_name = settings.SQUEALY['YAML_FILE_NAME']
-            else:
-                file_name = 'squealy-api.yaml' 
-            full_path = os.path.join(directory,file_name)
-            if os.path.isfile(full_path):
+            file_name = SquealySettings.get('YAML_FILE_NAME', 'squealy-api.yaml')
+            full_path = join(directory,file_name)
+            if isfile(full_path):
                 with open(full_path,'r') as f:
                     try:
                         api_list = []
@@ -141,7 +126,7 @@ class YamlGeneratorView(APIView):
                 return Response({}, status.HTTP_200_OK)
             else:
                 return Response({'message': 'No api generated.'}, status.HTTP_204_NO_CONTENT)   
-        except  Exception as e:
+        except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
 
 
