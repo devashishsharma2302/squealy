@@ -1,17 +1,25 @@
 import importlib
+from os.path import join
 
+from django.conf.urls import url, include
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
+import rest_framework
+
+
 from jinjasql import JinjaSql
 from django.db import connections
 from django.shortcuts import render
-from rest_framework import status
 from django.conf import settings
 
+import squealy
 from squealy.exceptions import RequiredParameterMissingException
 from squealy.transformers import *
 from squealy.formatters import *
 from squealy.parameters import *
+from squealy.utils import SquealySettings
 from .table import Table, Column
 from pydoc import locate
 import yaml
@@ -23,6 +31,9 @@ jinjasql = JinjaSql()
 
 
 class DatabaseView(APIView):
+    permission_classes = SquealySettings.get_default_permission_classes()
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request, *args, **kwargs):
         try:
@@ -70,29 +81,79 @@ class DatabaseView(APIView):
 
 
 class YamlGeneratorView(APIView):
+    permission_classes = SquealySettings.get_default_permission_classes()
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
+
 
     def post(self, request, *args, **kwargs):
         try:
             #FIX ME:: Remove Hardcoded Values
             json_data = json.loads(request.body).get('yamlData')
-            directory = os.path.join(os.path.dirname(os.path.dirname(__file__)),'yaml/')
+            if hasattr(settings, 'SQUEALY') and 'YAML_PATH' in settings.SQUEALY:
+                yaml_path = settings.SQUEALY['YAML_PATH']
+                directory = yaml_path
+            else:
+                yaml_path = settings.BASE_DIR  
+                directory = os.path.join(yaml_path,'yaml/')
             if not os.path.exists(directory):
                 os.makedirs(directory)
-            with open(directory+'api.yaml','w+') as f:
-                myfile = File(f)
-                myfile.write(yaml.safe_dump_all(json_data, explicit_start=True))
+            with open(directory,'w+') as f:
+                new_yaml_file = File(f)
+                new_yaml_file.write(yaml.safe_dump_all(json_data, explicit_start=True))
             f.close()
-            myfile.close()    
+            new_yaml_file.close()
             return Response({}, status.HTTP_200_OK)
         except  Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)    
 
+    def get(self, request, *args, **kwargs):
+        try:       
+            if hasattr(settings, 'SQUEALY') and 'YAML_PATH' in settings.SQUEALY:
+                yaml_path = settings.SQUEALY['YAML_PATH']
+                directory = yaml_path
+            else:
+                yaml_path = settings.BASE_DIR  
+                directory = os.path.join(yaml_path,'yaml/')
+            if not os.path.exists(directory):
+                os.makedirs(directory) 
+            if os.path.isfile(directory):
+                with open(full_path,'r') as f:
+                    try:
+                        api_list = []
+                        api_data = yaml.safe_load_all(f)
+                        for api in api_data:
+                            api_list.append(api)
+                        return Response(api_list, status.HTTP_200_OK)    
+                    except yaml.YAMLError as exc:
+                        return Response({'yaml error': str(exc)}, status.HTTP_400_BAD_REQUEST)
+                f.close()    
+                return Response({}, status.HTTP_200_OK)
+            else:
+                return Response({'message': 'No api generated.'}, status.HTTP_204_NO_CONTENT)   
+        except  Exception as e:
+            return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
+
+class DynamicApiRouter(APIView):
+    permission_classes = SquealySettings.get_default_permission_classes()
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
+
+    def get(self, request, *args, **kwargs):
+        url_path = request.get_full_path()
+        file_path = join(settings.SQUEALY.get('YAML_PATH'), 'squealy-apis.yaml')
+        urls = squealy.apigenerator.ApiGenerator.generate_urls_from_yaml(file_path)
+        response = url(r'', include(urls)).resolve(url_path.split('/squealy-apis/')[1]).func(request)
+        return  response
 
 class SqlApiView(APIView):
     # validations = []
     # transformations = []
     # formatter = DefaultFormatter
     connection_name = "default"
+    permission_classes = SquealySettings.get_default_permission_classes()
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def post(self, request, *args, **kwargs):
         try:
@@ -310,3 +371,4 @@ def squealy_interface(request):
     Renders the squealy authouring interface template
     """
     return render(request, 'index.html')
+
