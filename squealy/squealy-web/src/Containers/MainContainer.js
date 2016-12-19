@@ -44,7 +44,11 @@ export class MainContainer extends Component {
     }
 
     if (!this.state.testData.length) {
-      let tempTestData = [getEmptyTestData()]
+      let tempTestData = []
+      for(let index in this.state.apiDefinition) {
+        tempTestData.push(getEmptyTestData())
+      }
+      
       this.setState({testData: tempTestData})
     }
 

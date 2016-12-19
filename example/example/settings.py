@@ -144,7 +144,7 @@ CORS_ORIGIN_WHITELIST = (
 
 SQUEALY = {
         'YAML_PATH': os.path.dirname(os.path.realpath(__file__)),
-        'YAML_PATH': 'squealy-api.yaml'
+        'YAML_FILE_NAME': 'squealy-api.yaml'
         #     'DEFAULT_PERMISSION_CLASSES': [
 #         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
 #     ],
