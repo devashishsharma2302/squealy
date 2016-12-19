@@ -98,12 +98,7 @@ class YamlGeneratorView(APIView):
                 directory = os.path.join(yaml_path,'yaml/')
             if not os.path.exists(directory):
                 os.makedirs(directory)
-            if hasattr(settings, 'SQUEALY') and 'YAML_FILE_NAME' in settings.SQUEALY:
-                file_name = settings.SQUEALY['YAML_FILE_NAME']
-            else:
-                file_name = 'squealy-api.yaml' 
-            full_path = os.path.join(directory,file_name)
-            with open(full_path,'w+') as f:
+            with open(directory,'w+') as f:
                 new_yaml_file = File(f)
                 new_yaml_file.write(yaml.safe_dump_all(json_data, explicit_start=True))
             f.close()
@@ -121,13 +116,8 @@ class YamlGeneratorView(APIView):
                 yaml_path = settings.BASE_DIR  
                 directory = os.path.join(yaml_path,'yaml/')
             if not os.path.exists(directory):
-                os.makedirs(directory)
-            if hasattr(settings, 'SQUEALY') and 'YAML_FILE_NAME' in settings.SQUEALY:
-                file_name = settings.SQUEALY['YAML_FILE_NAME']
-            else:
-                file_name = 'squealy-api.yaml' 
-            full_path = os.path.join(directory,file_name)
-            if os.path.isfile(full_path):
+                os.makedirs(directory) 
+            if os.path.isfile(directory):
                 with open(full_path,'r') as f:
                     try:
                         api_list = []
