@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Navbar, NavDropdown, MenuItem, Nav, DropdownButton} from 'react-bootstrap'
+import {Navbar, NavDropdown, MenuItem, Nav, NavItem, DropdownButton} from 'react-bootstrap'
 import FontAwesome from 'font-awesome/css/font-awesome.css'
 import {Link} from 'react-router'
 
@@ -12,7 +12,7 @@ export default class MenuBar extends Component {
     const closedApi=[]
     apiDefinition.map((api, index) => {
       if(!api.open) {
-       closedApi.push(<MenuItem eventKey={index} onClick={() => {apiOpenHandler(index)}}>{api.apiName}</MenuItem>)
+       closedApi.push(<MenuItem key={index} eventKey={index} onClick={() => {apiOpenHandler(index)}}>{api.apiName}</MenuItem>)
       }
     })
     return (
@@ -27,7 +27,7 @@ export default class MenuBar extends Component {
         <Nav pullLeft>
           <NavDropdown eventKey={1} title="File" id="file_menu">
             <NavDropdown
-              bsSize="small"
+              key={1}
               eventKey={1.1}
               title="Open existing API"
               id="dropdown-size-small">
@@ -35,7 +35,7 @@ export default class MenuBar extends Component {
                 closedApi.length ? closedApi : <MenuItem>No Api Available</MenuItem>
               }
             </NavDropdown>
-            <MenuItem eventKey={1.2} onClick={apiAdditionHandler}>Create a new API</MenuItem>
+            <MenuItem eventKey={1.2}  key={2} onClick={apiAdditionHandler}>Create a new API</MenuItem>
           </NavDropdown>
           {//Commenting out this code as not needed as of now
             /*
@@ -48,14 +48,16 @@ export default class MenuBar extends Component {
           }
         </Nav>
         <Nav pullRight>
-          <Link to='dashboard'>
-            <button className="btn btn-info export-btn">
-              Dashboard
+          <NavItem href='dashboard'>
+              <button className="btn btn-info export-btn">
+                Dashboard
+              </button>
+            </NavItem>
+          <NavItem>
+            <button className="btn btn-info export-btn"
+              onClick={exportConfigAsYaml}>Export
             </button>
-          </Link>
-          <button className="btn btn-info export-btn"
-            onClick={exportConfigAsYaml}>Export
-          </button>
+          </NavItem>
         </Nav>
       </Navbar>
     )
