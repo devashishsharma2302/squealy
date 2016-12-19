@@ -42,8 +42,15 @@ export const AVAILABLE_TRANSFORMATIONS = ['transpose', 'merge', 'split']
 
 export const GRID_WIDTH_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
-export const GOOGLE_CHART_TYPE_OPTIONS = ['Table', 'LineChart', 'BarChart', 'AreaChart', 'PieChart',
-'ScatterChart', 'SteppedAreaChart', 'ComboChart', 'ColumnChart']
+export const GOOGLE_CHART_TYPE_OPTIONS = [
+  {label: 'Table', value: 'Table'},
+  {label: 'Line', value: 'LineChart'},
+  {label: 'Bar', value: 'BarChart'},
+  {label: 'Area', value:'AreaChart'},
+  {label: 'Pie', value: 'PieChart'},
+  {label: 'Scatter', value:'ScatterChart'},
+  {label: 'Stepped', value:'SteppedAreaChart'},
+  {label: 'Column', value: 'ColumnChart'}]
 
 
 export let TEST_STATE = {

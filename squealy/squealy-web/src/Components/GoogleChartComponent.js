@@ -12,12 +12,11 @@ export default class GoogleChartWrapper extends Component {
     var wrapper = new google.visualization.ChartWrapper({
       chartType: 'ColumnChart',
       dataTable: config,
-      containerId: 'widget',
+      containerId: 'widget' + config.index,
       options: {
-        'height': '400',
-        'width': '100%',
-        'backgroundColor': '#ffffff',
-        'chartArea': {'width': '100%', 'height': '80%'}
+        'height': config.height,
+        'width': config.width,
+        'legend': {'position': 'bottom'}
       }
     });
     wrapper.draw();
@@ -27,17 +26,10 @@ export default class GoogleChartWrapper extends Component {
     this.renderChart(this.props.config)
   }
 
-
-  shouldComponentUpdate(nextProps) {
-    return !equal(this.props, nextProps)
-  }
-
   render() {
     const { config } = this.props
-    return( 
-      <div>
-        <div id="widget" />
-      </div>
+    return(
+      <div id={'widget' + config.index} />
     )
   }
 }
