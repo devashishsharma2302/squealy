@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import DashboardNavigator from '../Components/dashboard-view/DashboardNavigator'
 import {getEmptyDashboardDefinition, getEmptyWidgetDefinition} from '../Utils'
+import DashboardHeader from '../Components/dashboard-view/DashboardHeader'
 
 
 export default class DashboardContainer extends Component {
@@ -41,13 +42,15 @@ export default class DashboardContainer extends Component {
 
   render() {
     const {dashboardDefinitions} = this.state
-    return (
-      <DashboardNavigator
-        selectDashboard={this.selectDashboard}
-        selectedDashboardIndex={this.state.selectedDashboardIndex}
-        dashboardDefinition={dashboardDefinitions}
-        dashboardAdditionHandler={this.dashboardAdditionHandler}
-        widgetAdditionHandler={this.widgetAdditionHandler}/>
+    return (<div>
+        <DashboardHeader />
+        <DashboardNavigator
+          selectDashboard={this.selectDashboard}
+          selectedDashboardIndex={this.state.selectedDashboardIndex}
+          dashboardDefinition={dashboardDefinitions}
+          dashboardAdditionHandler={this.dashboardAdditionHandler}
+          widgetAdditionHandler={this.widgetAdditionHandler}/>
+      </div>
     )
   }
 }
