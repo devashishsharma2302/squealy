@@ -8,6 +8,7 @@ import {
 } from '../Constant'
 import {
   postApiRequest,
+  getApiRequest,
   objectToYaml,
   saveBlobToFile,
   saveYamlOnServer,
@@ -43,7 +44,11 @@ export class MainContainer extends Component {
     }
 
     if (!this.state.testData.length) {
-      let tempTestData = [getEmptyTestData()]
+      let tempTestData = []
+      for(let index in this.state.apiDefinition) {
+        tempTestData.push(getEmptyTestData())
+      }
+      
       this.setState({testData: tempTestData})
     }
 
@@ -54,17 +59,41 @@ export class MainContainer extends Component {
   }
 
   componentWillMount() {
-    let localStorageData = getDataFromLocalStorage('hidash')
-    if (localStorageData) {
-      Object.keys(localStorageData).map((key) => {
-      this.setState({[key]: localStorageData[key]}, () => {
-          this.initializeStates()
+    let url = apiUriHostName + '/yaml-generator/'
+    getApiRequest(url, null, this.loadInitialApis, ()=>{}, null)
+    googleChartLoader()
+  }
+
+  loadInitialApis = (response) => {
+    if (response) {
+      let apiDefinition = []
+      for(let index in response){
+        let apiObj = {
+          apiName: response[index].name,
+          open:false,
+          paramDefinition: response[index].parameters,
+          sqlQuery:response[index].query,
+          transformations:response[index].transformations,
+          validations:response[index].validations,
+          urlName:response[index].url
+        }
+        apiDefinition.push(apiObj)
+      }
+      this.setState({apiDefinition:apiDefinition})
+      let localStorageData = getDataFromLocalStorage('hidash')
+      if (localStorageData) {
+        Object.keys(localStorageData).map((key) => {
+          if(key!=='apiDefinition') {
+            this.setState({[key]: localStorageData[key]}, () => {
+            this.initializeStates()
+          })
+          }
         })
-      })
-    } else {
+      } 
+    }
+    else {
       this.initializeStates()
     }
-    googleChartLoader()
   }
 
   onChangeApiDefinition = (variableName, value) => {
