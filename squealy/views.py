@@ -144,6 +144,7 @@ class YamlGeneratorView(APIView):
         except  Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
 
+
 class DynamicApiRouter(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
     authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -151,10 +152,12 @@ class DynamicApiRouter(APIView):
 
     def get(self, request, *args, **kwargs):
         url_path = request.get_full_path()
-        file_path = join(settings.SQUEALY.get('YAML_PATH'), 'squealy-apis.yaml')
+        file_dir = SquealySettings.get_attribute('YAML_PATH') or join(settings.BASE_DIR, 'yaml')
+        filename = SquealySettings.get_attribute('YAML_FILE_NAME') or 'squealy-api.yaml'
+        file_path = join(file_dir, filename)
         urls = squealy.apigenerator.ApiGenerator.generate_urls_from_yaml(file_path)
         response = url(r'', include(urls)).resolve(url_path.split('/squealy-apis/')[1]).func(request)
-        return  response
+        return response
 
 
 class DashboardApiView(APIView):
@@ -259,6 +262,8 @@ class SqlApiView(APIView):
                 module_name, class_name = self.format.rsplit('.',1)
                 module = importlib.import_module(module_name)
                 formatter = getattr(module, class_name)()
+            elif self.format in ['table', 'json']:
+                formatter = SimpleFormatter()
             else:
                 formatter = eval(self.format)()
             return formatter.format(table)
