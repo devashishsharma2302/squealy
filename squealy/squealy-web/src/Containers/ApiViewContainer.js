@@ -18,15 +18,14 @@ import {
   parseObjectAsYamlConfig,
   getEmptyTestData,
   setDataInLocalStorage,
-  getDataFromLocalStorage,
-  googleChartLoader
+  getDataFromLocalStorage
 } from '../Utils'
 
 
 //API URL host name. For testing only. later user will define this in setup configuration.
 export const apiUriHostName = 'http://localhost:8000'
 
-export class MainContainer extends Component {
+export default class ApiViewContainer extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -40,15 +39,16 @@ export class MainContainer extends Component {
   initializeStates = () => {
     if (!this.state.apiDefinition.length) {
       let tempApiDef = [getEmptyApiDefinition()]
-      this.setState({apiDefinition: tempApiDef})
+      let testData = [getEmptyTestData()]
+      this.setState({apiDefinition: tempApiDef,testData: testData})
     }
 
     if (!this.state.testData.length) {
+
       let tempTestData = []
-      for(let index in this.state.apiDefinition) {
+      this.state.apiDefinition.map(()=>{
         tempTestData.push(getEmptyTestData())
-      }
-      
+      })
       this.setState({testData: tempTestData})
     }
 
