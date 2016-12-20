@@ -43,8 +43,7 @@ export default class ApiViewContainer extends Component {
       this.setState({apiDefinition: tempApiDef,testData: testData})
     }
 
-    if (!this.state.testData.length) {
-
+    if (this.state.apiDefinition.length) {
       let tempTestData = []
       this.state.apiDefinition.map(()=>{
         tempTestData.push(getEmptyTestData())
@@ -280,7 +279,7 @@ export default class ApiViewContainer extends Component {
       let tempApiDef = [],
           tempTestData = [],
           tempOpenApis = []
-      this.setState({apiDefinition: tempApiDef, testData: tempTestData, openAPIs: tempOpenApis}, () => this.apiCloseHandler(0))
+      this.setState({apiDefinition: tempApiDef, testData: tempTestData, openAPIs: tempOpenApis})
       
     }
   
