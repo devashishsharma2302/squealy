@@ -1,4 +1,8 @@
-import { YAML_INDENTATION, RESPONSE_FORMATS } from './Constant'
+import {
+  YAML_INDENTATION,
+  RESPONSE_FORMATS,
+  GOOGLE_CHART_TYPE_OPTIONS
+} from './Constant'
 import FileSaver from 'filesaver.js-npm'
 import jsyaml from 'js-yaml'
 /*!*************************************************************************
@@ -124,13 +128,21 @@ export function getEmptyApiDefinition() {
 export function getEmptyDashboardDefinition() {
   return {
     apiName: 'Untitled Dashboard 0',
+    styles: {background: '#e6e6e6'},
     widgets: []
   }
 }
 
 export function getEmptyWidgetDefinition() {
   return {
-    title: 'New widget'
+    width: 434,
+    height: 300,
+    top:20,
+    left: 20,
+    title: 'Chart Title',
+    editMode: false,
+    chartType: GOOGLE_CHART_TYPE_OPTIONS[7].value,
+    chartStyles: null
   }
 }
 
@@ -145,7 +157,7 @@ export function getDefaultApiDefinition(apiIndex) {
     transformations: [],
     selectedTransformations: [],
     columns: {},
-    selectedDB: null
+    selectedDB: ''
   }
 }
 
@@ -236,7 +248,7 @@ export function preProcessResponse(response) {
 export function saveYamlOnServer(data) {
   let yamlArray = []
   for (let index in data) {
-     yamlArray.push(formattedData(data[index],index))
+    yamlArray.push(formattedData(data[index],index))
   }
   return yamlArray
 }
@@ -244,7 +256,7 @@ export function saveYamlOnServer(data) {
 function formatApiDataToYaml(data, index) {
   let format = data['format'] || 'table'
   let formattedData = {
-    'id': index+1,
+    'id': parseInt(index)+1,
     'name': data.apiName,
     'url': data.urlName,
     'parameters': data.paramDefinition,
@@ -262,7 +274,7 @@ function formatApiDataToYaml(data, index) {
 
 function formattedData(data, index) {
   let formattedData = {
-    'id': index+1,
+    'id': parseInt(index)+1,
     'name': data.apiName,
     'url': data.urlName,
     'parameters': data.paramDefinition,
@@ -332,4 +344,13 @@ export function fetchSessionParamsFromQuery(text) {
   paramsArray = execRegexGroupedMulValues(regExpForExp, text, paramsArray)
 
   return paramsArray
+}
+
+export function isJsonString(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
 }
