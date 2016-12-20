@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import DashboardNavigator from '../Components/dashboard-view/DashboardNavigator'
-import {getEmptyDashboardDefinition, getEmptyWidgetDefinition} from '../Utils'
+import {getEmptyDashboardDefinition, getEmptyWidgetDefinition, getApiRequest, postApiRequest} from '../Utils'
 import DashboardHeader from '../Components/dashboard-view/DashboardHeader'
 
 
