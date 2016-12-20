@@ -10,13 +10,13 @@ export default class GoogleChartWrapper extends Component {
 
   renderChart = (config) => {
     var wrapper = new google.visualization.ChartWrapper({
-      chartType: 'ColumnChart',
+      chartType: config.chartType,
       dataTable: config,
       containerId: 'widget' + config.index,
       options: {
+        ...config.chartStyles,
         'height': config.height,
         'width': config.width,
-        'legend': {'position': 'bottom'}
       }
     });
     wrapper.draw();

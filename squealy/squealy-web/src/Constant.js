@@ -77,3 +77,5 @@ export const VISUALIZATION_MODES = {
   raw: 'Raw',
   widget: 'Widget'
 }
+
+export const INCORRECT_JSON_ERROR = 'You have not entered a valid json'

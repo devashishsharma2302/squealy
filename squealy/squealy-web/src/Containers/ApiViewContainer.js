@@ -18,7 +18,7 @@ import {
   parseObjectAsYamlConfig,
   getEmptyTestData,
   setDataInLocalStorage,
-  getDataFromLocalStorage
+  getDataFromLocalStorage,
 } from '../Utils'
 
 
