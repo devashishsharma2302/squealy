@@ -18,7 +18,7 @@ import {
   parseObjectAsYamlConfig,
   getEmptyTestData,
   setDataInLocalStorage,
-  getDataFromLocalStorage
+  getDataFromLocalStorage,
 } from '../Utils'
 
 
@@ -61,7 +61,6 @@ export default class ApiViewContainer extends Component {
   componentWillMount() {
     let url = apiUriHostName + '/yaml-generator/'
     getApiRequest(url, null, this.loadInitialApis, ()=>{}, null)
-    googleChartLoader()
   }
 
   loadInitialApis = (response) => {
