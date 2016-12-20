@@ -8,7 +8,7 @@ import logo from '../images/logo.png'
 export default class MenuBar extends Component {
   render() {
     //Pass links to nav bar using props later
-    const {apiAdditionHandler, apiDefinition, apiOpenHandler, exportConfigAsYaml} = this.props
+    const {apiAdditionHandler, apiDefinition, apiOpenHandler, exportConfigAsYaml, saveFileOnServer} = this.props
     const closedApi=[]
     apiDefinition.map((api, index) => {
       if(!api.open) {
@@ -49,13 +49,18 @@ export default class MenuBar extends Component {
         </Nav>
         <Nav pullRight>
           <NavItem href='dashboard'>
-              <button className="btn btn-info export-btn">
+              <button className="btn btn-info">
                 Dashboard
               </button>
             </NavItem>
           <NavItem>
             <button className="btn btn-info export-btn"
               onClick={exportConfigAsYaml}>Export
+            </button>
+          </NavItem>
+          <NavItem>
+            <button className="btn btn-success" id='save-btn' onClick={saveFileOnServer}>
+              Save API
             </button>
           </NavItem>
         </Nav>
