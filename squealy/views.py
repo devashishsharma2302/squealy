@@ -1,5 +1,5 @@
 import importlib
-from os.path import join
+from os.path import join, isfile
 
 from django.conf.urls import url, include
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -85,49 +85,32 @@ class YamlGeneratorView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
-
     def post(self, request, *args, **kwargs):
         try:
-            #FIX ME:: Remove Hardcoded Values
             json_data = json.loads(request.body).get('yamlData')
-            if hasattr(settings, 'SQUEALY') and 'YAML_PATH' in settings.SQUEALY:
-                yaml_path = settings.SQUEALY['YAML_PATH']
-                directory = yaml_path
-            else:
-                yaml_path = settings.BASE_DIR  
-                directory = os.path.join(yaml_path,'yaml/')
+            directory = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
+
             if not os.path.exists(directory):
                 os.makedirs(directory)
-            if hasattr(settings, 'SQUEALY') and 'YAML_FILE_NAME' in settings.SQUEALY:
-                file_name = settings.SQUEALY['YAML_FILE_NAME']
-            else:
-                file_name = 'squealy-api.yaml' 
-            full_path = os.path.join(directory,file_name)
+
+            file_name = SquealySettings.get('YAML_FILE_NAME', 'squealy-api.yaml')
+            full_path = join(directory,file_name)
+
             with open(full_path,'w+') as f:
-                new_yaml_file = File(f)
-                new_yaml_file.write(yaml.safe_dump_all(json_data, explicit_start=True))
+                f.write(yaml.safe_dump_all(json_data, explicit_start=True))
             f.close()
-            new_yaml_file.close()
             return Response({}, status.HTTP_200_OK)
-        except  Exception as e:
+        except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)    
 
     def get(self, request, *args, **kwargs):
-        try:       
-            if hasattr(settings, 'SQUEALY') and 'YAML_PATH' in settings.SQUEALY:
-                yaml_path = settings.SQUEALY['YAML_PATH']
-                directory = yaml_path
-            else:
-                yaml_path = settings.BASE_DIR  
-                directory = os.path.join(yaml_path,'yaml/')
+        try:
+            directory = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
             if not os.path.exists(directory):
                 os.makedirs(directory)
-            if hasattr(settings, 'SQUEALY') and 'YAML_FILE_NAME' in settings.SQUEALY:
-                file_name = settings.SQUEALY['YAML_FILE_NAME']
-            else:
-                file_name = 'squealy-api.yaml' 
-            full_path = os.path.join(directory,file_name)
-            if os.path.isfile(full_path):
+            file_name = SquealySettings.get('YAML_FILE_NAME', 'squealy-api.yaml')
+            full_path = join(directory,file_name)
+            if isfile(full_path):
                 with open(full_path,'r') as f:
                     try:
                         api_list = []
@@ -141,8 +124,9 @@ class YamlGeneratorView(APIView):
                 return Response({}, status.HTTP_200_OK)
             else:
                 return Response({'message': 'No api generated.'}, status.HTTP_204_NO_CONTENT)   
-        except  Exception as e:
+        except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
+
 
 class DynamicApiRouter(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
@@ -151,10 +135,51 @@ class DynamicApiRouter(APIView):
 
     def get(self, request, *args, **kwargs):
         url_path = request.get_full_path()
-        file_path = join(settings.SQUEALY.get('YAML_PATH'), 'squealy-apis.yaml')
+        file_dir = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
+        filename = SquealySettings.get('YAML_FILE_NAME', 'squealy-api.yaml')
+        file_path = join(file_dir, filename)
         urls = squealy.apigenerator.ApiGenerator.generate_urls_from_yaml(file_path)
         response = url(r'', include(urls)).resolve(url_path.split('/squealy-apis/')[1]).func(request)
-        return  response
+        return response
+
+
+class DashboardApiView(APIView):
+    permission_classes = SquealySettings.get_default_permission_classes()
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
+
+    def get(self, request):
+        file_dir = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
+        dashboard_file_name = SquealySettings.get('dashboard_filename', 'squealy_dashboard.yaml')
+        dashboard_file_path = join(file_dir, dashboard_file_name)
+        widgets_file_name = SquealySettings.get('widgets_filename', 'squealy_widgets.yaml')
+        widgets_file_path = join(file_dir, widgets_file_name)
+        dashboards = []
+        widgets = {}
+        with open(widgets_file_path) as f:
+            for widget in yaml.load_all(f):
+                widgets[widget.get('id', '')] = widget
+        with open(dashboard_file_path) as f:
+            for dashboard in yaml.load_all(f):
+                for index, widget_id in enumerate(dashboard.get('widgets', [])):
+                    dashboard['widgets'][index] = widgets.get(widget_id)
+                dashboards.append(dashboard)
+        return Response(dashboards)
+
+    def post(self, request):
+        dashboards = json.loads(request.body).get('dashboards', {})
+        directory = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
+
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        file_name = SquealySettings.get('dashboard_filename', 'squealy_dashboard.yaml')
+        full_path = join(directory, file_name)
+        with open(full_path, 'w+') as f:
+            f.write(yaml.safe_dump_all(dashboards, explicit_start=True, default_flow_style=False))
+        f.close()
+        return Response({}, status.HTTP_200_OK)
+
 
 class SqlApiView(APIView):
     # validations = []
@@ -234,6 +259,8 @@ class SqlApiView(APIView):
                 module_name, class_name = self.format.rsplit('.',1)
                 module = importlib.import_module(module_name)
                 formatter = getattr(module, class_name)()
+            elif self.format in ['table', 'json']:
+                formatter = SimpleFormatter()
             else:
                 formatter = eval(self.format)()
             return formatter.format(table)

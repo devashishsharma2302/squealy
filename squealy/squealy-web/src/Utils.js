@@ -248,7 +248,7 @@ export function preProcessResponse(response) {
 export function saveYamlOnServer(data) {
   let yamlArray = []
   for (let index in data) {
-     yamlArray.push(formattedData(data[index],index))
+    yamlArray.push(formattedData(data[index],index))
   }
   return yamlArray
 }
@@ -256,7 +256,7 @@ export function saveYamlOnServer(data) {
 function formatApiDataToYaml(data, index) {
   let format = data['format'] || 'table'
   let formattedData = {
-    'id': index+1,
+    'id': parseInt(index)+1,
     'name': data.apiName,
     'url': data.urlName,
     'parameters': data.paramDefinition,
@@ -274,7 +274,7 @@ function formatApiDataToYaml(data, index) {
 
 function formattedData(data, index) {
   let formattedData = {
-    'id': index+1,
+    'id': parseInt(index)+1,
     'name': data.apiName,
     'url': data.urlName,
     'parameters': data.paramDefinition,

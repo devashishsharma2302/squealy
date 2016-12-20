@@ -66,11 +66,11 @@ export default class Dashboard extends Component {
       widgetAdditionHandler,
       widgetResizeHandler,
       widgetRepositionHandler,
-      updateDashboardDefinition
+      updateDashboardDefinition,
+      selectedDashboardIndex
     } = this.props
 
     const {selectedWidget, editorContent} = this.state
-
     const modalContent = 
       selectedWidget?
         <div className="row">
@@ -118,7 +118,7 @@ export default class Dashboard extends Component {
         null
     return(
       <div id="dashboardAreaWrapper">
-        <button className="btn btn-info" onClick={() => widgetAdditionHandler(0)}>
+        <button className="btn btn-info" onClick={() => widgetAdditionHandler(selectedDashboardIndex)}>
           Add a new widget
         </button>
         <input
@@ -137,6 +137,7 @@ export default class Dashboard extends Component {
                 widgetResizeHandler={widgetResizeHandler}
                 widgetRepositionHandler={widgetRepositionHandler}
                 widgetData={widget}
+                selectedDashboardIndex={selectedDashboardIndex}
               />
             )
           }

@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
-
-import Dashboard from '../Components/dashboard-view/Dashboard'
-import {getEmptyDashboardDefinition, getEmptyWidgetDefinition} from '../Utils'
+import DashboardNavigator from '../Components/dashboard-view/DashboardNavigator'
+import {getEmptyDashboardDefinition, getEmptyWidgetDefinition, getApiRequest, postApiRequest} from '../Utils'
+import DashboardHeader from '../Components/dashboard-view/DashboardHeader'
 
 
 export default class DashboardContainer extends Component {
@@ -16,15 +16,31 @@ export default class DashboardContainer extends Component {
   // empty database definition
   componentWillMount() {
     // TODO: Get dashboard definitions from local storage
-    this.setState({dashboardDefinitions: [getEmptyDashboardDefinition()]})
+    this.setState({
+      dashboardDefinitions: [getEmptyDashboardDefinition()],
+      selectedDashboardIndex: 0
+    })
   }
+
+  dashboardAdditionHandler = () => {
+    let dashboardList = this.state.dashboardDefinitions.slice()
+    dashboardList.push(getEmptyDashboardDefinition())
+    this.setState({dashboardDefinitions: dashboardList,
+      selectedDashboardIndex: dashboardList.length-1
+    })
+  }
+
+  selectDashboard = (index) => {
+    this.setState({selectedDashboardIndex: index})
+  }
+
 
   // Adds an empty widget definition to a certain dashboard definition
   widgetAdditionHandler = (dashboardDefinitionIndex) => {
     let newdashboardDefinitions = this.state.dashboardDefinitions.slice()
     newdashboardDefinitions[dashboardDefinitionIndex].widgets.push(getEmptyWidgetDefinition())
     this.setState({
-      dashboardDefinitions: newdashboardDefinitions
+      dashboardDefinitions: newdashboardDefinitions,
     })
   }
 
@@ -62,16 +78,22 @@ export default class DashboardContainer extends Component {
   }
 
   render() {
-    const {dashboardDefinitions} = this.state
+    const {dashboardDefinitions, selectedDashboardIndex} = this.state
     return (
-      <Dashboard
-        dashboardDefinition={dashboardDefinitions[0]}
-        widgetAdditionHandler={this.widgetAdditionHandler}
-        widgetRepositionHandler={this.widgetRepositionHandler}
-        widgetResizeHandler={this.widgetResizeHandler}
-        updateWidgetDefinition={this.updateWidgetDefinition}
-        updateDashboardDefinition={this.updateDashboardDefinition}
-      />
+      <div>
+        <DashboardHeader />
+        <DashboardNavigator
+          selectDashboard={this.selectDashboard}
+          selectedDashboardIndex={selectedDashboardIndex}
+          dashboardDefinition={dashboardDefinitions}
+          dashboardAdditionHandler={this.dashboardAdditionHandler}
+          widgetAdditionHandler={this.widgetAdditionHandler}
+          widgetRepositionHandler={this.widgetRepositionHandler}
+          widgetResizeHandler={this.widgetResizeHandler}
+          updateWidgetDefinition={this.updateWidgetDefinition}
+          updateDashboardDefinition={this.updateDashboardDefinition}
+        />
+      </div>
     )
   }
 }

@@ -49,7 +49,8 @@ export default class Widget extends Component {
       left: uiState.position.left
     }, () => {
       // Update the position of the widget in the state of dashboard container
-      this.props.widgetRepositionHandler(0, this.props.index, this.state.top, this.state.left)
+      const {selectedDashboardIndex, index} = this.props
+      this.props.widgetRepositionHandler(selectedDashboardIndex, index, this.state.top, this.state.left)
     })
   }
 
@@ -60,13 +61,18 @@ export default class Widget extends Component {
 
   // Updates the size of the widget in the state of dashboard container
   widgetSizeUpdator = () => {
-    this.props.widgetResizeHandler(0, this.props.index, this.state.width, this.state.height)
+    const {selectedDashboardIndex, index} = this.props
+    this.props.widgetResizeHandler(selectedDashboardIndex, index, this.state.width, this.state.height)
   }
 
 
   render() {
     const {top, left, height, width} = this.state
-    const {modalVisibilityEnabler, index, widgetData} = this.props
+    const {
+      modalVisibilityEnabler,
+      index,
+      widgetData
+    } = this.props
     return(
       <Rnd
         ref={'widget'+index}
