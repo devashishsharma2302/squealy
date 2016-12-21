@@ -14,31 +14,43 @@ export default class DashboardNavigator extends Component {
       this.props.dashboardAdditionHandler()
     }
     else {
-        this.props.selectDashboard(key)
+      this.props.selectDashboard(key)
     }
   }
   
   render() {
-    const {dashboardDefinition, widgetAdditionHandler, selectedDashboardIndex} = this.props
-
-      const dashboard_tabs = dashboardDefinition.map((dashboard, i)=>{
-        return (
-          <Tab
-            key={i}
-            title={'Dashboard-'+i}
-            eventKey={i}
-          >
-            <div className="panel panel-default">
-              <div className="panel-body">
-                <Dashboard dashboardDefinition={dashboard}
+    const {
+      dashboardDefinition,
+      widgetAdditionHandler,
+      selectedDashboardIndex,
+      widgetResizeHandler,
+      widgetRepositionHandler,
+      updateDashboardDefinition,
+      updateWidgetDefinition
+    } = this.props
+    const dashboard_tabs = dashboardDefinition.map((dashboard, i)=>{
+      return (
+        <Tab
+          key={i}
+          title={'Dashboard-'+i}
+          eventKey={i}
+        >
+          <div className="panel panel-default">
+            <div className="panel-body">
+              <Dashboard 
+                dashboardDefinition={dashboard}
                 widgetAdditionHandler={widgetAdditionHandler}
-                dashboardIndex={i}
-                />
-              </div>
+                widgetRepositionHandler={widgetRepositionHandler}
+                widgetResizeHandler={widgetResizeHandler}
+                updateWidgetDefinition={updateWidgetDefinition}
+                updateDashboardDefinition={updateDashboardDefinition}
+                selectedDashboardIndex={selectedDashboardIndex}
+              />
             </div>
-           </Tab>
-        )
-      })
+          </div>
+        </Tab>
+      )
+    })
 
     return(
 
