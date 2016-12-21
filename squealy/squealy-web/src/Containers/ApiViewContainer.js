@@ -69,6 +69,7 @@ export default class ApiViewContainer extends Component {
         let apiObj = {
           apiName: response[index].name,
           open:false,
+          format:response[index].format,
           paramDefinition: response[index].parameters,
           sqlQuery:response[index].query,
           transformations:response[index].transformations,
@@ -87,7 +88,7 @@ export default class ApiViewContainer extends Component {
           })
           }
         })
-      } 
+      }
     }
     else {
       this.initializeStates()
@@ -255,11 +256,11 @@ export default class ApiViewContainer extends Component {
       } else {
         newSelectedApiIndex = 0
       }
-      
+
       //Decrement the selectedApiIndex only if the selectedIndex is not zero
       let selectedApiIndex = this.state.selectedApiIndex
       selectedApiIndex = selectedApiIndex===0 ? 0 : newSelectedApiIndex
-      
+
       let untitledApiIndex = 0
       newApiDefinitions.map((api) => {
         if(api.apiName.includes('Untitled API')) {
@@ -269,7 +270,7 @@ export default class ApiViewContainer extends Component {
       })
 
       this.setState({
-        apiDefinition: newApiDefinitions, 
+        apiDefinition: newApiDefinitions,
         testData: newTestData,
         selectedApiIndex: selectedApiIndex,
         newOpenAPIs: newOpenAPIs
@@ -280,9 +281,9 @@ export default class ApiViewContainer extends Component {
           tempTestData = [],
           tempOpenApis = []
       this.setState({apiDefinition: tempApiDef, testData: tempTestData, openAPIs: tempOpenApis})
-      
+
     }
-  
+
 
   }
 
@@ -320,17 +321,28 @@ export default class ApiViewContainer extends Component {
     this.setState({selectedDB: selectedDB.value})
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  saveFileOnServer = () => {
     let apiDefinition =this.state.apiDefinition.slice()
     let yamlData = saveYamlOnServer(apiDefinition)
     let data = {yamlData: yamlData}
-    postApiRequest(apiUriHostName+'/yaml-generator/', data, ()=>{},()=>{}, null) 
+    postApiRequest(apiUriHostName+'/yaml-generator/', data, ()=>{
+      document.getElementById('save-btn').classList.remove('btn-danger');
+      document.getElementById('save-btn').classList.add('btn-success');
+    },()=>{}, null)
+
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if(this.state.apiDefinition!==prevState.apiDefinition) {
+      document.getElementById('save-btn').classList.add('btn-danger');
+      document.getElementById('save-btn').classList.remove('btn-success');
+    }
   }
 
   render () {
     return (
       <div>
-      <NavHeader apiDefinition={this.state.apiDefinition} apiOpenHandler={this.apiOpenHandler} apiAdditionHandler={this.apiAdditionHandler} exportConfigAsYaml={this.exportConfigAsYaml}/>
+      <NavHeader saveFileOnServer={this.saveFileOnServer} apiDefinition={this.state.apiDefinition} apiOpenHandler={this.apiOpenHandler} apiAdditionHandler={this.apiAdditionHandler} exportConfigAsYaml={this.exportConfigAsYaml}/>
       <ApiTabs
         {...this.state}
         apiCloseHandler={this.apiCloseHandler}
