@@ -35,7 +35,7 @@ export default class Widget extends Component {
     }
   }
   componentWillMount() {
-    const url = 'http://localhost:8000/example/squealy/'+this.props.widgetData.api_url
+    const url = 'http://localhost:8000/squealy-apis/'+this.props.widgetData.api_url
     getApiRequest(url, null, (data)=> this.setState({chartData: data}), ()=>{}, null)
   }
   // Sets the width and height of the widget and rnd component in widget's state
