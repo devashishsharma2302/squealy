@@ -69,6 +69,7 @@ export default class ApiViewContainer extends Component {
         let apiObj = {
           apiName: response[index].name,
           open:false,
+          format:response[index].format,
           paramDefinition: response[index].parameters,
           sqlQuery:response[index].query,
           transformations:response[index].transformations,

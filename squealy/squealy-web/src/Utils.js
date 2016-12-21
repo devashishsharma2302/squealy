@@ -261,6 +261,7 @@ function formatApiDataToYaml(data, index) {
 }
 
 function formattedData(data, index) {
+  let format = data['format'] || 'table'
   let formattedData = {
     'id': parseInt(index)+1,
     'name': data.apiName,
@@ -270,7 +271,7 @@ function formattedData(data, index) {
     'validations': data.validations,
     'query': data.sqlQuery,
     'transformations': data.transformations,
-    'format': data.format
+    'format': RESPONSE_FORMATS[format].formatter
   }
   if(data.columns) {
     formattedData.columns = data.columns
