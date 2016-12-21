@@ -20,11 +20,30 @@ export default class Dashboard extends Component {
       showAddWidgetModal: false,
       selectedWidget:  null,
       editorContent: null,
-      newWidget: null
+      newWidget: null,
+      widgetApiParams: []
     }
   }
 
   selectedWidgetIndex = null
+
+  addParam = () => {
+    let widgetParam = this.state.widgetApiParams.slice()
+    widgetParam[this.selectedWidgetIndex].push({})
+    this.setState({widgetApiParams: widgetParam})
+  }
+
+  updateParam = (index, key) => {
+    let widgetParam = this.state.widgetApiParams.slice()
+    widgetParam[this.selectedWidgetIndex][index][key] = this.refs[key].value
+    this.setState({widgetApiParams: widgetParam})
+  }
+
+  deleteParam = (index) => {
+    let widgetParam = this.state.widgetApiParams.slice()
+    widgetParam[this.selectedWidgetIndex].splice(index,1)
+    this.setState({widgetApiParams: widgetParam})
+  }
 
   // Launches the edit widget modal and sets the selected widget in the state
   modalVisibilityEnabler = (widgetIndex) => {
@@ -53,8 +72,11 @@ export default class Dashboard extends Component {
 
   saveNewWidget = () => {
     this.props.widgetAdditionHandler(this.props.selectedDashboardIndex, this.state.newWidget)
+    let widgetApiParams = this.state.widgetApiParams.slice()
+    widgetApiParams.push([])
     this.setState({
-      'showAddWidgetModal': false
+      showAddWidgetModal: false,
+      widgetApiParams: widgetApiParams
     })
   }
 
@@ -91,9 +113,9 @@ export default class Dashboard extends Component {
       updateDashboardDefinition,
       selectedDashboardIndex
     } = this.props
-
+    let currentWidgetParams = this.state.widgetApiParams[this.selectedWidgetIndex]
     const {selectedWidget, editorContent, newWidget} = this.state
-    const modalContent = 
+    const modalContent =
       selectedWidget?
         <div className="row">
           <div className="col-md-12">
@@ -114,6 +136,34 @@ export default class Dashboard extends Component {
                 onChange={(chartType)=>this.updateWidgetData('chartType', chartType.value)}
               />
             </div>
+          </div>
+          <div className="col-md-12">
+          <h5>API Testing Parameters:</h5>
+          <table className="table table-bordered">
+
+            <thead>
+              <tr>
+                <th>Parameter Name</th>
+                <th>Value</th>
+                <th onClick={this.addParam}><i className="fa fa-plus"></i></th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                currentWidgetParams ?
+                  currentWidgetParams.map((data, index) => {
+                    return (
+                      <tr key={index}>
+                        <td> <input defaultValue={data.param} onBlur={() => this.updateParam(index,'paramName')} ref='paramName'  placeholder='Enter Parameter' /></td>
+                        <td> <input defaultValue={data.value} onBlur={() => this.updateParam(index,'paramValue')} ref='paramValue' placeholder="Enter Value" /></td>
+                        <td onClick={()=>{this.deleteParam(index)}}><i className="fa fa-trash"/></td>
+                      </tr>
+                    )
+                  })
+                  : null
+              }
+            </tbody>
+          </table>
           </div>
           <div className="col-md-12">
             <label className='col-md-4'>Chart Styles: </label>
@@ -138,7 +188,7 @@ export default class Dashboard extends Component {
         </div>
       :
         null
-    const addWidgetModalContent = 
+    const addWidgetModalContent =
       newWidget?
       <div className="row">
           <div className="col-md-12">
@@ -201,7 +251,7 @@ export default class Dashboard extends Component {
             modalId='EditWidgetModal'
             closeModal={()=>this.setState({showEditWidgetModal: false})}
             showModal={this.state.showEditWidgetModal}
-            modalHeader='Edit Widget Definition' 
+            modalHeader='Edit Widget Definition'
             modalContent={modalContent}
             saveChanges={this.saveUpdatedWidgetData}
           />
@@ -209,7 +259,7 @@ export default class Dashboard extends Component {
             modalId='AddWidgetModal'
             closeModal={()=>this.setState({showAddWidgetModal: false})}
             showModal={this.state.showAddWidgetModal}
-            modalHeader='Add new widget' 
+            modalHeader='Add new widget'
             modalContent={addWidgetModalContent}
             saveChanges={this.saveNewWidget}
           />
