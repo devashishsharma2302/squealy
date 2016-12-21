@@ -87,6 +87,8 @@ export default class Widget extends Component {
         onResize={this.widgetResizeHandler}
         onResizeStop={this.widgetSizeUpdator}
         onDragStop={this.widgetPositionHandler}
+        resizeGrid={[10,10]}
+        moveGrid={[10,10]}
       >
         <div
           onMouseEnter={this.editModeToggler}
