@@ -124,6 +124,7 @@ class YamlGeneratorView(APIView):
                 return Response({}, status.HTTP_200_OK)
             else:
                 return Response({'message': 'No api generated.'}, status.HTTP_204_NO_CONTENT)
+
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
 
@@ -191,29 +192,32 @@ class SqlApiView(APIView):
     authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def post(self, request, *args, **kwargs):
-        params = request.data.get('params', {})
-        if request.data.get('connection'):
-            self.connection_name = request.data.get('connection')
-        # TODO: handle no query exception  here
-        user = request.data.get('user', None)
-        if request.data.get('parameters'):
-            self.parameters = request.data.get('parameters')
-            params = self.parse_params(params)
-        if request.data.get('validations'):
-            self.validations = request.data.get('validations')
-            self.run_validations(params, user)
-        self.query = request.data.get('config').get('query', '')
-        self.columns = request.data.get('columns')
-        # Execute the SQL Query, and return a Table
-        table = self._execute_query(params, user)
-        if request.data.get('transformations'):
-            # Perform basic transformations on the table
-            self.transformations = request.data.get('transformations', [])
-            table = self._run_transformations(table)
-        # Format the table according to the format requested
-        self.format = request.data.get('format', 'SimpleFormatter')
-        data = self._format(table)
-        return Response(data, status.HTTP_200_OK)
+        try:
+            params = request.data.get('params', {})
+            if request.data.get('connection'):
+                self.connection_name = request.data.get('connection')
+            # TODO: handle no query exception  here
+            user = request.data.get('user', None)
+            if request.data.get('parameters'):
+                self.parameters = request.data.get('parameters')
+                params = self.parse_params(params)
+            if request.data.get('validations'):
+                self.validations = request.data.get('validations')
+                self.run_validations(params, user)
+            self.query = request.data.get('config').get('query', '')
+            self.columns = request.data.get('columns')
+            # Execute the SQL Query, and return a Table
+            table = self._execute_query(params, user)
+            if request.data.get('transformations'):
+                # Perform basic transformations on the table
+                self.transformations = request.data.get('transformations', [])
+                table = self._run_transformations(table)
+            # Format the table according to the format requested
+            self.format = request.data.get('format', 'SimpleFormatter')
+            data = self._format(table)
+            return Response(data, status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, *args, **kwargs):
         # When this function is called, DRF has already done:
