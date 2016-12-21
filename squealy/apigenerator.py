@@ -34,4 +34,4 @@ class ApiGenerator():
 
     @staticmethod
     def _generate_api_view(config):
-        return type(config['id'], (SqlApiView, ), config)
+        return type(str(config['id']), (SqlApiView, ), config)

@@ -142,7 +142,8 @@ export function getEmptyWidgetDefinition() {
     title: 'Chart Title',
     editMode: false,
     chartType: GOOGLE_CHART_TYPE_OPTIONS[7].value,
-    chartStyles: null
+    chartStyles: null,
+    api_url: ''
   }
 }
 

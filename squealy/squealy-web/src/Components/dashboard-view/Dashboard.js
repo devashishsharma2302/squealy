@@ -8,7 +8,7 @@ import 'brace/ext/language_tools'
 import Widget from './Widget'
 import {HidashModal} from '../HidashUtilsComponents'
 import {GOOGLE_CHART_TYPE_OPTIONS, INCORRECT_JSON_ERROR} from '../../Constant'
-import {isJsonString} from '../../Utils'
+import {isJsonString, getEmptyWidgetDefinition} from '../../Utils'
 
 
 export default class Dashboard extends Component {
@@ -17,8 +17,10 @@ export default class Dashboard extends Component {
     super(props)
     this.state = {
       showEditWidgetModal: false,
+      showAddWidgetModal: false,
       selectedWidget:  null,
-      editorContent: null
+      editorContent: null,
+      newWidget: null
     }
   }
 
@@ -33,6 +35,26 @@ export default class Dashboard extends Component {
       showEditWidgetModal: true,
       selectedWidget: this.props.dashboardDefinition.widgets[widgetIndex],
       editorContent: newEditorContent
+    })
+  }
+
+  addWidgetModalenabler = () => {
+    this.setState({
+      showAddWidgetModal: true,
+      newWidget: getEmptyWidgetDefinition()
+    })
+  }
+
+  newWidgetChangeHandler = (keyToUpdate, updatedValue) => {
+    let updatedNewWidget = Object.assign({}, this.state.newWidget)
+    updatedNewWidget[keyToUpdate] = updatedValue
+    this.setState({newWidget: updatedNewWidget})
+  }
+
+  saveNewWidget = () => {
+    this.props.widgetAdditionHandler(this.props.selectedDashboardIndex, this.state.newWidget)
+    this.setState({
+      'showAddWidgetModal': false
     })
   }
 
@@ -70,7 +92,7 @@ export default class Dashboard extends Component {
       selectedDashboardIndex
     } = this.props
 
-    const {selectedWidget, editorContent} = this.state
+    const {selectedWidget, editorContent, newWidget} = this.state
     const modalContent = 
       selectedWidget?
         <div className="row">
@@ -116,9 +138,43 @@ export default class Dashboard extends Component {
         </div>
       :
         null
+    const addWidgetModalContent = 
+      newWidget?
+      <div className="row">
+          <div className="col-md-12">
+            <label className='col-md-4'>API url: </label>
+            <input
+              type='text'
+              ref='widgetTitle'
+              value={newWidget.api_url}
+              onChange={(event)=>this.newWidgetChangeHandler('api_url', event.target.value)}
+            />
+          </div>
+          <div className="col-md-12">
+            <label className='col-md-4'>Widget Title: </label>
+            <input
+              type='text'
+              ref='widgetTitle'
+              value={newWidget.title}
+              onChange={(event)=>this.newWidgetChangeHandler('title', event.target.value)}
+            />
+          </div>
+          <div className="col-md-12">
+            <label className='col-md-4'>Chart type: </label>
+            <div className="col-md-5" style={{paddingLeft: '0', paddingRight: '35px'}}>
+              <Select
+                options={GOOGLE_CHART_TYPE_OPTIONS}
+                value={newWidget.chartType}
+                onChange={(chartType)=>this.newWidgetChangeHandler('chartType', chartType.value)}
+              />
+            </div>
+          </div>
+        </div>
+        :
+          null
     return(
       <div id="dashboardAreaWrapper">
-        <button className="btn btn-info" onClick={() => widgetAdditionHandler(selectedDashboardIndex)}>
+        <button className="btn btn-info" onClick={() => this.addWidgetModalenabler()}>
           Add a new widget
         </button>
         <input
@@ -148,6 +204,14 @@ export default class Dashboard extends Component {
             modalHeader='Edit Widget Definition' 
             modalContent={modalContent}
             saveChanges={this.saveUpdatedWidgetData}
+          />
+          <HidashModal
+            modalId='AddWidgetModal'
+            closeModal={()=>this.setState({showAddWidgetModal: false})}
+            showModal={this.state.showAddWidgetModal}
+            modalHeader='Add new widget' 
+            modalContent={addWidgetModalContent}
+            saveChanges={this.saveNewWidget}
           />
         </div>
       </div>

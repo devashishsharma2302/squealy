@@ -35,3 +35,22 @@ validations:
 
 query: >
     select name, sql, 5 as num, {{params.name}} as some_column from sqlite_master limit 10;
+---
+format: GoogleChartsFormatter
+id: 5
+name: Untitled API 0
+parameters: []
+query: "select a.name,sum(b.hrs) as \"Spent Hours\"\nfrom(\n   select * from timesheet_timesheet\
+  \ \n   where day between '2016-01-01' and '2016-12-01' \n) b \njoin timesheet_timesheettype\
+  \ a on a.id=b.type_id \nwhere b.project_code = 'HIN-HWAY-DEL' group by a.name;"
+transformations: []
+url: test-chart
+validations: []
+columns:
+  name:
+    type: dimension
+    data_type: string
+  'Spent Hours':
+    type: dimension
+    data_type: number
+
