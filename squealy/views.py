@@ -101,7 +101,7 @@ class YamlGeneratorView(APIView):
             f.close()
             return Response({}, status.HTTP_200_OK)
         except Exception as e:
-            return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)    
+            return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, *args, **kwargs):
         try:
@@ -117,13 +117,14 @@ class YamlGeneratorView(APIView):
                         api_data = yaml.safe_load_all(f)
                         for api in api_data:
                             api_list.append(api)
-                        return Response(api_list, status.HTTP_200_OK)    
+                        return Response(api_list, status.HTTP_200_OK)
                     except yaml.YAMLError as exc:
                         return Response({'yaml error': str(exc)}, status.HTTP_400_BAD_REQUEST)
-                f.close()    
+                f.close()
                 return Response({}, status.HTTP_200_OK)
             else:
-                return Response({'message': 'No api generated.'}, status.HTTP_204_NO_CONTENT)   
+                return Response({'message': 'No api generated.'}, status.HTTP_204_NO_CONTENT)
+
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
 
@@ -203,10 +204,8 @@ class SqlApiView(APIView):
                 # Perform basic transformations on the table
                 self.transformations = request.data.get('transformations', [])
                 table = self._run_transformations(table)
-
             # Format the table according to the format requested
-            if request.data.get('format') not in ['table', 'json']:
-                self.format = request.data.get('format', 'SimpleFormatter')
+            self.format = request.data.get('format', 'SimpleFormatter')
             data = self._format(table)
             return Response(data, status.HTTP_200_OK)
         except Exception as e:
@@ -303,6 +302,7 @@ class SqlApiView(APIView):
         return params
 
     def _execute_query(self, params, user):
+
         query, bind_params = jinjasql.prepare_query(self.query,
                                                     {
                                                      "params": params,
@@ -315,7 +315,7 @@ class SqlApiView(APIView):
             rows = []
             for desc in cursor.description:
                 # if column definition is provided
-                if hasattr(self, 'columns') and self.columns.get(desc[0]):
+                if hasattr(self, 'columns') and self.columns and self.columns.get(desc[0]):
                     column = self.columns.get(desc[0])
                     cols.append(
                         Column(
@@ -400,4 +400,3 @@ def squealy_interface(request):
     Renders the squealy authouring interface template
     """
     return render(request, 'index.html')
-

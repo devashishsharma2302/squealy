@@ -6,11 +6,11 @@ export const RESPONSE_FORMATS = {
 // the formatter class is the class name that is to be exported to yaml file.
   table: {
     displayName: 'Table',
-    formatter: 'SimpleFormatter'
+    formatter: 'table'
   },
   json: {
     displayName: 'JSON',
-    formatter: 'SimpleFormatter'
+    formatter: 'json'
   },
   GoogleChartsFormatter: {
     displayName: 'Google Charts',
