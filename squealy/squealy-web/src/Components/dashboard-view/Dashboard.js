@@ -174,7 +174,7 @@ export default class Dashboard extends Component {
           null
     return(
       <div id="dashboardAreaWrapper">
-        <button className="btn btn-info" onClick={() => this.addWidgetModalenabler()}>
+        <button className="btn btn-info" onClick={this.addWidgetModalenabler}>
           Add a new widget
         </button>
         <input
