@@ -12,18 +12,14 @@ name: dash-01
 widgets:
 - api_url: squealy-apis/api1
   chart_type: BarChart
-  id: '06'
   name: Widget 01
 - api_url: squealy-apis/api1
-  id: '02'
   name: Widget 02
 ---
 id: '02'
 name: dash-02
 widgets:
 - api_url: squealy-apis/api1
-  id: '02'
   name: Widget 02
 - api_url: squealy-apis/api1
-  id: '03'
   name: Widget 03

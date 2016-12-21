@@ -3,6 +3,7 @@ import React, {Component} from 'react'
 import GoogleChartComponent from '../GoogleChartComponent'
 import Rnd from 'react-resizable-and-movable'
 import EditIcon from '../../images/Edit_icon.png'
+import {getApiRequest} from '../../Utils'
 
 const style = {
   textAlign: 'center',
@@ -33,7 +34,10 @@ export default class Widget extends Component {
       left: props.widgetData.left
     }
   }
-
+  componentWillMount() {
+    const url = 'http://localhost:8000/example/squealy/'+this.props.widgetData.api_url
+    getApiRequest(url, null, (data)=> this.setState({chartData: data}), ()=>{}, null)
+  }
   // Sets the width and height of the widget and rnd component in widget's state
   widgetResizeHandler = (direction, styleSize) => {
     this.setState({
@@ -67,7 +71,7 @@ export default class Widget extends Component {
 
 
   render() {
-    const {top, left, height, width} = this.state
+    const {top, left, height, width, chartData} = this.state
     const {
       modalVisibilityEnabler,
       index,
@@ -101,7 +105,7 @@ export default class Widget extends Component {
           }
         </div>
         <GoogleChartComponent config={{
-            ...tempChartData,
+            ...chartData,
             index: index,
             width: width,
             height: height,

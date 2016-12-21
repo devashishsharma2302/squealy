@@ -36,10 +36,10 @@ export default class DashboardContainer extends Component {
   }
 
 
-  // Adds an empty widget definition to a certain dashboard definition
-  widgetAdditionHandler = (dashboardDefinitionIndex) => {
+  // Adds a new widget definition to a certain dashboard definition
+  widgetAdditionHandler = (dashboardDefinitionIndex, newWidget) => {
     let newdashboardDefinitions = this.state.dashboardDefinitions.slice()
-    newdashboardDefinitions[dashboardDefinitionIndex].widgets.push(getEmptyWidgetDefinition())
+    newdashboardDefinitions[dashboardDefinitionIndex].widgets.push(newWidget)
     this.setState({
       dashboardDefinitions: newdashboardDefinitions,
     })
