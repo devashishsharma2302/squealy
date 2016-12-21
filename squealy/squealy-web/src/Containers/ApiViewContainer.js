@@ -64,21 +64,6 @@ export default class ApiViewContainer extends Component {
 
   loadInitialApis = (response) => {
     if (response) {
-      let apiDefinition = []
-      for(let index in response){
-        let apiObj = {
-          apiName: response[index].name,
-          open:false,
-          format:response[index].format,
-          paramDefinition: response[index].parameters,
-          sqlQuery:response[index].query,
-          transformations:response[index].transformations,
-          validations:response[index].validations,
-          urlName:response[index].url
-        }
-        apiDefinition.push(apiObj)
-      }
-      this.setState({apiDefinition:apiDefinition})
       let localStorageData = getDataFromLocalStorage('hidash')
       if (localStorageData) {
         Object.keys(localStorageData).map((key) => {
@@ -89,6 +74,27 @@ export default class ApiViewContainer extends Component {
           }
         })
       }
+      else {
+        let testData = []
+        response.forEach(()=>{testData.push(getEmptyTestData())})
+        this.setState({testData: testData})
+      }
+      let apiDefinition = []
+
+      response.map((data)=>{
+        let apiObj = {
+          apiName: data.name,
+          open: true,
+          format: data.format,
+          paramDefinition: data.parameters,
+          sqlQuery: data.query,
+          transformations: data.transformations,
+          validations: data.validations,
+          urlName: data.url
+        }
+        apiDefinition.push(apiObj)
+      })
+      this.setState({apiDefinition:apiDefinition})
     }
     else {
       this.initializeStates()
