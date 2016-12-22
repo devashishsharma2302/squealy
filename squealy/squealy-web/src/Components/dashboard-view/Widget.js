@@ -45,6 +45,10 @@ export default class Widget extends Component {
       height: styleSize.height
     })
   }
+  
+  shouldComponentUpdate() {
+    return false
+  }
 
   // Sets the position of the widget in its state
   widgetPositionHandler = (event, uiState) => {
@@ -75,7 +79,8 @@ export default class Widget extends Component {
     const {
       modalVisibilityEnabler,
       index,
-      widgetData
+      widgetData,
+      selectedDashboardIndex
     } = this.props
     return(
       <Rnd
@@ -106,7 +111,7 @@ export default class Widget extends Component {
         </div>
         <GoogleChartComponent config={{
             ...chartData,
-            index: index,
+            index: index+''+selectedDashboardIndex,
             width: width,
             height: height,
             chartType: widgetData.chartType,
