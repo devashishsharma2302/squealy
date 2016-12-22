@@ -47,7 +47,7 @@ export default class DashboardContainer extends Component {
 
   saveDashboard = () => {
     let apiUrl = APIURI+'/squealy-dashboard-design/'
-    let requestData = {dashboards: this.state.dashboardDefinitions.slice()}
+    let requestData = this.state.dashboardDefinitions.slice()
     postApiRequest(apiUrl, requestData, ()=>{
       document.getElementById('save-dashboard-btn').classList.remove('btn-danger')
       document.getElementById('save-dashboard-btn').classList.add('btn-success')},
@@ -75,6 +75,7 @@ export default class DashboardContainer extends Component {
     let dashboardDefinitions= this.state.dashboardDefinitions.slice()
     let definitionToUpdate = dashboardDefinitions[dashboardIndex].widgets[widgetIndex]
     definitionToUpdate.title = updatedDefinition.title
+    definitionToUpdate.apiParams = updatedDefinition.apiParams
     definitionToUpdate.chartType = updatedDefinition.chartType
     definitionToUpdate.chartStyles = updatedDefinition.chartStyles
     this.setState({dashboardDefinitions: dashboardDefinitions})

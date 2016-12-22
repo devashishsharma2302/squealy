@@ -38,6 +38,7 @@ export default class Dashboard extends Component {
 
     selectedWidgetIndex = null
 
+    //Add a new parameter
     addParam = () => {
         let widgetParam = this.state.widgetApiParams.slice()
         widgetParam[this.selectedWidgetIndex][''] = ''
@@ -47,6 +48,7 @@ export default class Dashboard extends Component {
         })
     }
 
+    //Update Parameter For API
     updateParam = (index) => {
         let widgetParam = this.state.widgetApiParams.slice()
         if (!widgetParam[this.selectedWidgetIndex].hasOwnProperty(this.refs['paramName' + index].value)) {
@@ -72,6 +74,7 @@ export default class Dashboard extends Component {
         }
     }
 
+    //Delete Api parameter
     deleteParam = (index) => {
         let widgetParam = this.state.widgetApiParams.slice()
         delete widgetParam[this.selectedWidgetIndex][this.refs['paramName' + index].value]
@@ -132,7 +135,9 @@ export default class Dashboard extends Component {
         if (isJsonString(this.state.editorContent)) {
             let updatedWidgetDefinition = Object.assign({}, this.state.selectedWidget)
             updatedWidgetDefinition.chartStyles = JSON.parse(this.state.editorContent)
-            this.props.updateWidgetDefinition(0, this.selectedWidgetIndex, updatedWidgetDefinition)
+            let widgetApiParams = this.state.widgetApiParams.slice()
+            updatedWidgetDefinition.apiParams = widgetApiParams[this.selectedWidgetIndex]
+            this.props.updateWidgetDefinition(this.props.selectedDashboardIndex, this.selectedWidgetIndex, updatedWidgetDefinition)
             this.setState({
                 showEditWidgetModal: false
             })
@@ -203,7 +208,7 @@ export default class Dashboard extends Component {
                     return (
                       <tr key={index}>
                         <td> <input defaultValue={key} onBlur={() => this.updateParam(index)} ref={'paramName'+index}  placeholder='Enter Parameter' /></td>
-                        <td> <input defaultValue={currentWidgetParams.key} onBlur={() => this.updateParam(index)} ref={'paramValue'+index} placeholder="Enter Value" /></td>
+                        <td> <input defaultValue={currentWidgetParams[key]} onBlur={() => this.updateParam(index)} ref={'paramValue'+index} placeholder="Enter Value" /></td>
                         <td onClick={()=>{this.deleteParam(index)}}><i className="fa fa-trash"/></td>
                       </tr>
                     )
