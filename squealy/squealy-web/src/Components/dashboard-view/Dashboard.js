@@ -40,7 +40,7 @@ export default class Dashboard extends Component {
 
     addParam = () => {
         let widgetParam = this.state.widgetApiParams.slice()
-        widgetParam[this.selectedWidgetIndex]['key'] = 'value'
+        widgetParam[this.selectedWidgetIndex][''] = ''
         this.setState({
             widgetApiParams: widgetParam,
             apiParamMessage: ''
@@ -50,7 +50,7 @@ export default class Dashboard extends Component {
     updateParam = (index) => {
         let widgetParam = this.state.widgetApiParams.slice()
         if (!widgetParam[this.selectedWidgetIndex].hasOwnProperty(this.refs['paramName' + index].value)) {
-            delete widgetParam[this.selectedWidgetIndex]['key']
+            delete widgetParam[this.selectedWidgetIndex]['']
             widgetParam[this.selectedWidgetIndex][this.refs['paramName' + index].value] = null
             this.setState({
                 widgetApiParams: widgetParam,
