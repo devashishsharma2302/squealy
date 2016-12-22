@@ -89,6 +89,7 @@ export default class ApiViewContainer extends Component {
           paramDefinition: data.parameters,
           sqlQuery: data.query,
           transformations: data.transformations,
+          selectedTransformations: data.selectedTransformations,
           validations: data.validations,
           urlName: data.url
         }
@@ -168,8 +169,8 @@ export default class ApiViewContainer extends Component {
     if(format === RESPONSE_FORMATS.table.value){
       response.columns.map((column) => {
         newAPIdef[this.state.selectedApiIndex].columns[column.name] = {
-          type: (column.col_type)?column.col_type:'dimension',
-          data_type: (column.data_type)?column.data_type:'string'
+          type: column.col_type || 'dimension',
+          data_type: column.data_type || 'string'
         }
       })
     }
