@@ -33,6 +33,7 @@ export default class Widget extends Component {
       top: props.widgetData.top,
       left: props.widgetData.left
     }
+    this.dashboardIndex = this.props.selectedDashboardIndex
   }
   componentWillMount() {
     const url = 'http://localhost:8000/squealy-apis/'+this.props.widgetData.api_url
@@ -46,10 +47,6 @@ export default class Widget extends Component {
     })
   }
   
-  shouldComponentUpdate() {
-    return false
-  }
-
   // Sets the position of the widget in its state
   widgetPositionHandler = (event, uiState) => {
     this.setState({
@@ -79,8 +76,7 @@ export default class Widget extends Component {
     const {
       modalVisibilityEnabler,
       index,
-      widgetData,
-      selectedDashboardIndex
+      widgetData
     } = this.props
     return(
       <Rnd
@@ -111,7 +107,7 @@ export default class Widget extends Component {
         </div>
         <GoogleChartComponent config={{
             ...chartData,
-            index: index+''+selectedDashboardIndex,
+            index: index+''+this.dashboardIndex,
             width: width,
             height: height,
             chartType: widgetData.chartType,
