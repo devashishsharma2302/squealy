@@ -9,17 +9,17 @@ export default class GoogleChartWrapper extends Component {
   }
 
   renderChart = (config) => {
-        let wrapper = new google.visualization.ChartWrapper({
-        chartType: config.chartType,
-        dataTable: config,
-        containerId: 'widget' + config.index,
-        options: {
-          ...config.chartStyles,
-          'height': config.height,
-          'width': config.width,
-        }
-      });
-      wrapper.draw();
+    let wrapper = new google.visualization.ChartWrapper({
+      chartType: config.chartType,
+      dataTable: config,
+      containerId: 'widget' + config.index,
+      options: {
+        ...config.chartStyles,
+        'height': config.height,
+        'width': config.width,
+      }
+    });
+    wrapper.draw();
   }
 
   componentDidUpdate() {

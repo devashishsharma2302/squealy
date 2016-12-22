@@ -45,7 +45,7 @@ export default class DashboardNavigator extends Component {
            />
          </div>
        </div>
-    const dashboard_tabs = dashboardDefinition.map((dashboard, i)=>{
+    const dashboardTabs = dashboardDefinition.map((dashboard, i)=>{
       const tabTitle = (
         <div className='dashboard-tab'>
           {dashboard.apiName}
@@ -99,7 +99,7 @@ export default class DashboardNavigator extends Component {
         onSelect={this.handleSelect}
         id='dashboard-tabs'
          >
-        {dashboard_tabs}
+        {dashboardTabs}
         <Tab
           style={{
             borderColor: '#fff'
