@@ -203,7 +203,7 @@ export default class Dashboard extends Component {
                     return (
                       <tr key={index}>
                         <td> <input defaultValue={key} onBlur={() => this.updateParam(index)} ref={'paramName'+index}  placeholder='Enter Parameter' /></td>
-                        <td> <input defaultValue={currentWidgetParams.key} onBlur={() => this.updateParam(index)} ref={'paramValue'+index} placeholder="Enter Value" /></td>
+                        <td> <input defaultValue={currentWidgetParams[key]} onBlur={() => this.updateParam(index)} ref={'paramValue'+index} placeholder="Enter Value" /></td>
                         <td onClick={()=>{this.deleteParam(index)}}><i className="fa fa-trash"/></td>
                       </tr>
                     )
