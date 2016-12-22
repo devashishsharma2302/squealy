@@ -18,10 +18,10 @@ export class SQLEditor extends Component {
     this.setState({editorContent: text})
   }
 
-  componentWillMount() {
+  componentWillReceiveProps(nextProps) {
     //Set editor content on mount only if user has already wrriten a query
-    if(this.props.sqlQuery && this.props.sqlQuery !== '') {
-      this.setState({editorContent: this.props.sqlQuery})
+    if(nextProps.sqlQuery && nextProps.sqlQuery !== '') {
+      this.setState({editorContent: nextProps.sqlQuery})
     }
   }
 
