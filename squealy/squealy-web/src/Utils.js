@@ -284,6 +284,7 @@ function formattedData(data, index) {
     'validations': data.validations,
     'query': data.sqlQuery,
     'transformations': data.transformations,
+    'selectedTransformations': data.selectedTransformations || [],
     'format': RESPONSE_FORMATS[format].formatter
   }
   if(data.columns) {
