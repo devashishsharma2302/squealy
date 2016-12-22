@@ -20,6 +20,7 @@ export default class DashboardNavigator extends Component {
   
   render() {
     const {
+      saveDashboard,
       dashboardDefinition,
       widgetAdditionHandler,
       selectedDashboardIndex,
@@ -37,7 +38,7 @@ export default class DashboardNavigator extends Component {
         >
           <div className="panel panel-default">
             <div className="panel-body">
-              <Dashboard 
+              <Dashboard
                 dashboardDefinition={dashboard}
                 widgetAdditionHandler={widgetAdditionHandler}
                 widgetRepositionHandler={widgetRepositionHandler}

@@ -3,6 +3,7 @@ import DashboardNavigator from '../Components/dashboard-view/DashboardNavigator'
 import {getEmptyDashboardDefinition, getEmptyWidgetDefinition, getApiRequest, postApiRequest} from '../Utils'
 import DashboardHeader from '../Components/dashboard-view/DashboardHeader'
 
+export const APIURI = 'http://localhost:8000'
 
 export default class DashboardContainer extends Component {
   constructor() {
@@ -12,7 +13,7 @@ export default class DashboardContainer extends Component {
     }
   }
 
-  // If no definitions are present in the local storage, fill in an 
+  // If no definitions are present in the local storage, fill in an
   // empty database definition
   componentWillMount() {
     // TODO: Get dashboard definitions from local storage
@@ -42,6 +43,15 @@ export default class DashboardContainer extends Component {
     this.setState({
       dashboardDefinitions: newdashboardDefinitions,
     })
+  }
+
+  saveDashboard = () => {
+    let apiUrl = APIURI+'/squealy-dashboard-design/'
+    let requestData = {dashboards: this.state.dashboardDefinitions.slice()}
+    postApiRequest(apiUrl, requestData, ()=>{
+      document.getElementById('save-dashboard-btn').classList.remove('btn-danger')
+      document.getElementById('save-dashboard-btn').classList.add('btn-success')},
+      ()=>{},null)
   }
 
   // Updates the widget's postion in the main state
@@ -77,11 +87,18 @@ export default class DashboardContainer extends Component {
     this.setState({dashboardDefinitions: newDashboardDefinitions})
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if(this.state.dashboardDefinitions!==prevState.dashboardDefinitions) {
+      document.getElementById('save-dashboard-btn').classList.add('btn-danger');
+      document.getElementById('save-dashboard-btn').classList.remove('btn-success');
+    }
+  }
+
   render() {
     const {dashboardDefinitions, selectedDashboardIndex} = this.state
     return (
       <div>
-        <DashboardHeader />
+        <DashboardHeader saveDashboard={this.saveDashboard}/>
         <DashboardNavigator
           selectDashboard={this.selectDashboard}
           selectedDashboardIndex={selectedDashboardIndex}

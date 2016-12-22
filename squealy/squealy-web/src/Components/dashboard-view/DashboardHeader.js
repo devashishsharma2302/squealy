@@ -1,10 +1,11 @@
 import React, {Component} from 'react'
-import {Navbar} from 'react-bootstrap'
+import {Navbar, Nav, NavItem} from 'react-bootstrap'
 
 import logo from '../../images/logo.png'
 
 export default class DashboardHeader extends Component {
   render() {
+    const {saveDashboard} = this.props
     return (
       <Navbar bsStyle='default' fluid>
         <Navbar.Header>
@@ -14,6 +15,13 @@ export default class DashboardHeader extends Component {
             </a>
           </Navbar.Brand>
         </Navbar.Header>
+        <Nav pullRight>
+          <NavItem>
+            <button className="btn btn-success" id='save-dashboard-btn' onClick={saveDashboard}>
+              Save Dashboards
+            </button>
+          </NavItem>
+        </Nav>
       </Navbar>
     )
   }
