@@ -31,7 +31,7 @@ export default class Dashboard extends Component {
             selectedWidget: null,
             editorContent: null,
             newWidget: null,
-            widgetApiParams: [],
+            widgetApiParams: this.props.dashboardDefinition.widgetsParams?this.props.dashboardDefinition.widgetsParams:[],
             apiParamMessage: ''
         }
     }

@@ -17,10 +17,19 @@ export default class DashboardContainer extends Component {
   // empty database definition
   componentWillMount() {
     // TODO: Get dashboard definitions from local storage
-    this.setState({
-      dashboardDefinitions: [getEmptyDashboardDefinition()],
-      selectedDashboardIndex: 0
-    })
+    let apiUrl = APIURI+'/squealy-dashboard-design/'
+    getApiRequest(apiUrl, null, this.setDashboardDefinitions, this.setDefaultDashboardDef, null)
+  }
+
+  setDashboardDefinitions = (response) => {
+    this.setState({dashboardDefinitions: response, selectedDashboardIndex: response.length-1})
+  }
+
+  setDefaultDashboardDef = (response) => {
+     this.setState({
+       dashboardDefinitions: [getEmptyDashboardDefinition()],
+       selectedDashboardIndex: 0
+     })
   }
 
   dashboardAdditionHandler = () => {
@@ -29,6 +38,14 @@ export default class DashboardContainer extends Component {
     this.setState({dashboardDefinitions: dashboardList,
       selectedDashboardIndex: dashboardList.length-1
     })
+  }
+
+  deleteDashboard = (index) => {
+    let dashboards = this.state.dashboardDefinitions.slice()
+    dashboards.splice(index,1)
+    let selectedDashboard = this.state.selectedDashboardIndex
+    selectedDashboard = selectedDashboard===0 ? 0 : selectedDashboard-1
+    this.setState({dashboardDefinitions: dashboards},()=>{this.setState({selectedDashboardIndex: selectedDashboard})})
   }
 
   selectDashboard = (index) => {
@@ -40,6 +57,7 @@ export default class DashboardContainer extends Component {
   widgetAdditionHandler = (dashboardDefinitionIndex, newWidget) => {
     let newdashboardDefinitions = this.state.dashboardDefinitions.slice()
     newdashboardDefinitions[dashboardDefinitionIndex].widgets.push(newWidget)
+    newdashboardDefinitions[dashboardDefinitionIndex].widgetsParams.push({})
     this.setState({
       dashboardDefinitions: newdashboardDefinitions,
     })
@@ -75,7 +93,7 @@ export default class DashboardContainer extends Component {
     let dashboardDefinitions= this.state.dashboardDefinitions.slice()
     let definitionToUpdate = dashboardDefinitions[dashboardIndex].widgets[widgetIndex]
     definitionToUpdate.title = updatedDefinition.title
-    definitionToUpdate.apiParams = updatedDefinition.apiParams
+    dashboardDefinitions[dashboardIndex].widgetsParams[widgetIndex] = updatedDefinition.apiParams
     definitionToUpdate.chartType = updatedDefinition.chartType
     definitionToUpdate.chartStyles = updatedDefinition.chartStyles
     this.setState({dashboardDefinitions: dashboardDefinitions})
@@ -102,6 +120,7 @@ export default class DashboardContainer extends Component {
         <DashboardHeader saveDashboard={this.saveDashboard}/>
         <DashboardNavigator
           selectDashboard={this.selectDashboard}
+          deleteDashboard={this.deleteDashboard}
           selectedDashboardIndex={selectedDashboardIndex}
           dashboardDefinition={dashboardDefinitions}
           dashboardAdditionHandler={this.dashboardAdditionHandler}
