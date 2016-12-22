@@ -1,4 +1,6 @@
-import React, {Component} from 'react'
+import React, {
+    Component
+} from 'react'
 import Select from 'react-select'
 import AceEditor from 'react-ace'
 import 'brace/mode/json'
@@ -6,103 +8,144 @@ import 'brace/theme/tomorrow'
 import 'brace/ext/language_tools'
 
 import Widget from './Widget'
-import {HidashModal} from '../HidashUtilsComponents'
-import {GOOGLE_CHART_TYPE_OPTIONS, INCORRECT_JSON_ERROR} from '../../Constant'
-import {isJsonString, getEmptyWidgetDefinition} from '../../Utils'
+import {
+    HidashModal
+} from '../HidashUtilsComponents'
+import {
+    GOOGLE_CHART_TYPE_OPTIONS,
+    INCORRECT_JSON_ERROR
+} from '../../Constant'
+import {
+    isJsonString,
+    getEmptyWidgetDefinition
+} from '../../Utils'
 
 
 export default class Dashboard extends Component {
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      showEditWidgetModal: false,
-      showAddWidgetModal: false,
-      selectedWidget:  null,
-      editorContent: null,
-      newWidget: null,
-      widgetApiParams: []
+    constructor(props) {
+        super(props)
+        this.state = {
+            showEditWidgetModal: false,
+            showAddWidgetModal: false,
+            selectedWidget: null,
+            editorContent: null,
+            newWidget: null,
+            widgetApiParams: [],
+            apiParamMessage: ''
+        }
     }
-  }
 
-  selectedWidgetIndex = null
+    selectedWidgetIndex = null
 
-  addParam = () => {
-    let widgetParam = this.state.widgetApiParams.slice()
-    widgetParam[this.selectedWidgetIndex].push({})
-    this.setState({widgetApiParams: widgetParam})
-  }
-
-  updateParam = (index, key) => {
-    let widgetParam = this.state.widgetApiParams.slice()
-    widgetParam[this.selectedWidgetIndex][index][key] = this.refs[key].value
-    this.setState({widgetApiParams: widgetParam})
-  }
-
-  deleteParam = (index) => {
-    let widgetParam = this.state.widgetApiParams.slice()
-    widgetParam[this.selectedWidgetIndex].splice(index,1)
-    this.setState({widgetApiParams: widgetParam})
-  }
-
-  // Launches the edit widget modal and sets the selected widget in the state
-  modalVisibilityEnabler = (widgetIndex) => {
-    this.selectedWidgetIndex = widgetIndex
-    let newEditorContent = JSON.stringify(this.props.dashboardDefinition.widgets[widgetIndex].chartStyles)
-    newEditorContent = JSON.stringify(JSON.parse(newEditorContent), null, '\t')
-    this.setState({
-      showEditWidgetModal: true,
-      selectedWidget: this.props.dashboardDefinition.widgets[widgetIndex],
-      editorContent: newEditorContent
-    })
-  }
-
-  addWidgetModalenabler = () => {
-    this.setState({
-      showAddWidgetModal: true,
-      newWidget: getEmptyWidgetDefinition()
-    })
-  }
-
-  newWidgetChangeHandler = (keyToUpdate, updatedValue) => {
-    let updatedNewWidget = Object.assign({}, this.state.newWidget)
-    updatedNewWidget[keyToUpdate] = updatedValue
-    this.setState({newWidget: updatedNewWidget})
-  }
-
-  saveNewWidget = () => {
-    this.props.widgetAdditionHandler(this.props.selectedDashboardIndex, this.state.newWidget)
-    let widgetApiParams = this.state.widgetApiParams.slice()
-    widgetApiParams.push([])
-    this.setState({
-      showAddWidgetModal: false,
-      widgetApiParams: widgetApiParams
-    })
-  }
-
-  // Updates the definition of selected widget
-  updateWidgetData = (keyToUpdate, updatedValue) => {
-    let selectedWidgetNewDefinition = Object.assign({}, this.state.selectedWidget)
-    selectedWidgetNewDefinition[keyToUpdate] = updatedValue
-    this.setState({selectedWidget: selectedWidgetNewDefinition})
-  }
-
-  // Passes the updated widget data saved in the state to the dashboard container
-  // and closes the edit widget modal
-  saveUpdatedWidgetData = () => {
-    if(isJsonString(this.state.editorContent)) {
-      let updatedWidgetDefinition = Object.assign({}, this.state.selectedWidget)
-      updatedWidgetDefinition.chartStyles = JSON.parse(this.state.editorContent)
-      this.props.updateWidgetDefinition(0, this.selectedWidgetIndex, updatedWidgetDefinition)
-      this.setState({showEditWidgetModal: false})
-    }else {
-      console.error(INCORRECT_JSON_ERROR)
+    addParam = () => {
+        let widgetParam = this.state.widgetApiParams.slice()
+        widgetParam[this.selectedWidgetIndex]['key'] = 'value'
+        this.setState({
+            widgetApiParams: widgetParam,
+            apiParamMessage: ''
+        })
     }
-  }
 
-  updateEditorContent = (updatedEditorContent) => {
-    this.setState({editorContent: updatedEditorContent})
-  }
+    updateParam = (index) => {
+        let widgetParam = this.state.widgetApiParams.slice()
+        if (!widgetParam[this.selectedWidgetIndex].hasOwnProperty(this.refs['paramName' + index].value)) {
+            delete widgetParam[this.selectedWidgetIndex]['key']
+            widgetParam[this.selectedWidgetIndex][this.refs['paramName' + index].value] = null
+            this.setState({
+                widgetApiParams: widgetParam,
+                apiParamMessage: ''
+            })
+        } else {
+            if(widgetParam[this.selectedWidgetIndex][this.refs['paramName' + index].value] === null){
+              widgetParam[this.selectedWidgetIndex][this.refs['paramName' + index].value] = this.refs['paramValue' + index].value
+              this.setState({
+                  widgetApiParams: widgetParam,
+                  apiParamMessage: ''
+              })
+            }
+            else {
+              this.setState({
+                  apiParamMessage: 'Parameter names cannot be repeated.'
+              })
+            }
+        }
+    }
+
+    deleteParam = (index) => {
+        let widgetParam = this.state.widgetApiParams.slice()
+        delete widgetParam[this.selectedWidgetIndex][this.refs['paramName' + index].value]
+        this.setState({
+            widgetApiParams: widgetParam
+        })
+    }
+
+    // Launches the edit widget modal and sets the selected widget in the state
+    modalVisibilityEnabler = (widgetIndex) => {
+        this.selectedWidgetIndex = widgetIndex
+        let newEditorContent = JSON.stringify(this.props.dashboardDefinition.widgets[widgetIndex].chartStyles)
+        newEditorContent = JSON.stringify(JSON.parse(newEditorContent), null, '\t')
+        this.setState({
+            showEditWidgetModal: true,
+            selectedWidget: this.props.dashboardDefinition.widgets[widgetIndex],
+            editorContent: newEditorContent
+        })
+    }
+
+    addWidgetModalenabler = () => {
+        this.setState({
+            showAddWidgetModal: true,
+            newWidget: getEmptyWidgetDefinition()
+        })
+    }
+
+    newWidgetChangeHandler = (keyToUpdate, updatedValue) => {
+        let updatedNewWidget = Object.assign({}, this.state.newWidget)
+        updatedNewWidget[keyToUpdate] = updatedValue
+        this.setState({
+            newWidget: updatedNewWidget
+        })
+    }
+
+    saveNewWidget = () => {
+        this.props.widgetAdditionHandler(this.props.selectedDashboardIndex, this.state.newWidget)
+        let widgetApiParams = this.state.widgetApiParams.slice()
+        widgetApiParams.push({})
+        this.setState({
+            showAddWidgetModal: false,
+            widgetApiParams: widgetApiParams
+        })
+    }
+
+    // Updates the definition of selected widget
+    updateWidgetData = (keyToUpdate, updatedValue) => {
+        let selectedWidgetNewDefinition = Object.assign({}, this.state.selectedWidget)
+        selectedWidgetNewDefinition[keyToUpdate] = updatedValue
+        this.setState({
+            selectedWidget: selectedWidgetNewDefinition
+        })
+    }
+
+    // Passes the updated widget data saved in the state to the dashboard container
+    // and closes the edit widget modal
+    saveUpdatedWidgetData = () => {
+        if (isJsonString(this.state.editorContent)) {
+            let updatedWidgetDefinition = Object.assign({}, this.state.selectedWidget)
+            updatedWidgetDefinition.chartStyles = JSON.parse(this.state.editorContent)
+            this.props.updateWidgetDefinition(0, this.selectedWidgetIndex, updatedWidgetDefinition)
+            this.setState({
+                showEditWidgetModal: false
+            })
+        } else {
+            console.error(INCORRECT_JSON_ERROR)
+        }
+    }
+
+    updateEditorContent = (updatedEditorContent) => {
+        this.setState({
+            editorContent: updatedEditorContent
+        })
+    }
 
   render() {
     const {
@@ -139,6 +182,11 @@ export default class Dashboard extends Component {
           </div>
           <div className="col-md-12">
           <h5>API Testing Parameters:</h5>
+          { this.state.apiParamMessage ? <div className="alert alert-info">
+              <strong>Info!</strong> {this.state.apiParamMessage}
+              </div> :
+            null
+          }
           <table className="table table-bordered">
 
             <thead>
@@ -151,11 +199,11 @@ export default class Dashboard extends Component {
             <tbody>
               {
                 currentWidgetParams ?
-                  currentWidgetParams.map((data, index) => {
+                  Object.keys(currentWidgetParams).map((key, index) => {
                     return (
                       <tr key={index}>
-                        <td> <input defaultValue={data.param} onBlur={() => this.updateParam(index,'paramName')} ref='paramName'  placeholder='Enter Parameter' /></td>
-                        <td> <input defaultValue={data.value} onBlur={() => this.updateParam(index,'paramValue')} ref='paramValue' placeholder="Enter Value" /></td>
+                        <td> <input defaultValue={key} onBlur={() => this.updateParam(index)} ref={'paramName'+index}  placeholder='Enter Parameter' /></td>
+                        <td> <input defaultValue={currentWidgetParams.key} onBlur={() => this.updateParam(index)} ref={'paramValue'+index} placeholder="Enter Value" /></td>
                         <td onClick={()=>{this.deleteParam(index)}}><i className="fa fa-trash"/></td>
                       </tr>
                     )
