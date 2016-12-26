@@ -155,11 +155,12 @@ export default class Dashboard extends Component {
   render() {
     const {
       dashboardDefinition,
-      widgetAdditionHandler,
+      widgetDeletionHandler,
       widgetResizeHandler,
       widgetRepositionHandler,
       updateDashboardDefinition,
-      selectedDashboardIndex
+      selectedDashboardIndex,
+      dashboardIndex
     } = this.props
     let currentWidgetParams = this.state.widgetApiParams[this.selectedWidgetIndex]
     const {selectedWidget, editorContent, newWidget} = this.state
@@ -296,7 +297,8 @@ export default class Dashboard extends Component {
                 widgetResizeHandler={widgetResizeHandler}
                 widgetRepositionHandler={widgetRepositionHandler}
                 widgetData={widget}
-                selectedDashboardIndex={selectedDashboardIndex}
+                dashboardIndex={dashboardIndex}
+                widgetDeletionHandler={widgetDeletionHandler}
               />
             )
           }

@@ -23,18 +23,19 @@ export default class DashboardNavigator extends Component {
       saveDashboard,
       dashboardDefinition,
       widgetAdditionHandler,
+      widgetDeletionHandler,
       selectedDashboardIndex,
       widgetResizeHandler,
       widgetRepositionHandler,
       updateDashboardDefinition,
       updateWidgetDefinition
     } = this.props
-    const dashboard_tabs = dashboardDefinition.map((dashboard, i)=>{
+    const dashboard_tabs = dashboardDefinition.map((dashboard, index)=>{
       return (
         <Tab
-          key={i}
-          title={'Dashboard-'+i}
-          eventKey={i}
+          key={index}
+          title={'Dashboard-'+index}
+          eventKey={index}
         >
           <div className="panel panel-default">
             <div className="panel-body">
@@ -46,6 +47,8 @@ export default class DashboardNavigator extends Component {
                 updateWidgetDefinition={updateWidgetDefinition}
                 updateDashboardDefinition={updateDashboardDefinition}
                 selectedDashboardIndex={selectedDashboardIndex}
+                widgetDeletionHandler={widgetDeletionHandler}
+                dashboardIndex={index}
               />
             </div>
           </div>

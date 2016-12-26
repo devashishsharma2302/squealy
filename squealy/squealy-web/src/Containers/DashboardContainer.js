@@ -38,16 +38,34 @@ export default class DashboardContainer extends Component {
 
   // Adds a new widget definition to a certain dashboard definition
   widgetAdditionHandler = (dashboardDefinitionIndex, newWidget) => {
-    let newdashboardDefinitions = this.state.dashboardDefinitions.slice()
-    newdashboardDefinitions[dashboardDefinitionIndex].widgets.push(newWidget)
+    let newDashboardDefinitions = this.state.dashboardDefinitions.slice()
+    newDashboardDefinitions[dashboardDefinitionIndex].widgets.push(newWidget)
     this.setState({
-      dashboardDefinitions: newdashboardDefinitions,
+      dashboardDefinitions: newDashboardDefinitions,
     })
+  }
+
+  widgetDeletionHandler = (dashboardDefinitionIndex, widgetIndex) => {
+    let newDashboardDefinitions = JSON.parse(JSON.stringify(this.state.dashboardDefinitions))
+    delete newDashboardDefinitions[dashboardDefinitionIndex].widgets[widgetIndex]
+
+    //newdashboardDefinitions[dashboardDefinitionIndex] = newDashboardDef
+    this.setState({
+      dashboardDefinitions: newDashboardDefinitions,
+      })
   }
 
   saveDashboard = () => {
     let apiUrl = APIURI+'/squealy-dashboard-design/'
-    let requestData = this.state.dashboardDefinitions.slice()
+    let requestData = JSON.parse(JSON.stringify(this.state.dashboardDefinitions))
+    requestData.map(dashboard => {
+      dashboard.widgets.map((widget, index) => {
+        if (!widget) {
+          dashboard.widgets.splice(index, 1)
+        }
+      })
+    })
+
     postApiRequest(apiUrl, requestData, ()=>{
       document.getElementById('save-dashboard-btn').classList.remove('btn-danger')
       document.getElementById('save-dashboard-btn').classList.add('btn-success')},
@@ -96,6 +114,7 @@ export default class DashboardContainer extends Component {
   }
 
   render() {
+
     const {dashboardDefinitions, selectedDashboardIndex} = this.state
     return (
       <div>
@@ -106,6 +125,7 @@ export default class DashboardContainer extends Component {
           dashboardDefinition={dashboardDefinitions}
           dashboardAdditionHandler={this.dashboardAdditionHandler}
           widgetAdditionHandler={this.widgetAdditionHandler}
+          widgetDeletionHandler={this.widgetDeletionHandler}
           widgetRepositionHandler={this.widgetRepositionHandler}
           widgetResizeHandler={this.widgetResizeHandler}
           updateWidgetDefinition={this.updateWidgetDefinition}
