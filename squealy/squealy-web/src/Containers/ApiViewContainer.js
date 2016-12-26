@@ -67,7 +67,7 @@ export default class ApiViewContainer extends Component {
       let localStorageData = getDataFromLocalStorage('hidash')
       if (localStorageData) {
         Object.keys(localStorageData).map((key) => {
-          if(key!=='apiDefinition') {
+          if(key!=='apiDefinition'&&key!=='selectedApiIndex') {
             this.setState({[key]: localStorageData[key]}, () => {
             this.initializeStates()
           })
@@ -94,7 +94,7 @@ export default class ApiViewContainer extends Component {
         }
         apiDefinition.push(apiObj)
       })
-      this.setState({apiDefinition:apiDefinition})
+      this.setState({apiDefinition:apiDefinition, selectedApiIndex:response.length-1})
     }
     else {
       this.initializeStates()
