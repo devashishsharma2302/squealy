@@ -58,14 +58,10 @@ export default class DashboardContainer extends Component {
   saveDashboard = () => {
     let apiUrl = APIURI+'/squealy-dashboard-design/'
     let requestData = JSON.parse(JSON.stringify(this.state.dashboardDefinitions))
-    requestData.map(dashboard => {
-      dashboard.widgets.map((widget, index) => {
-        if (!widget) {
-          dashboard.widgets.splice(index, 1)
-        }
-      })
+    requestData.map((dashboard, dashboardIndex) => {
+      requestData[dashboardIndex].widgets = dashboard.widgets.filter(widget => widget!=null)
     })
-
+    
     postApiRequest(apiUrl, requestData, ()=>{
       document.getElementById('save-dashboard-btn').classList.remove('btn-danger')
       document.getElementById('save-dashboard-btn').classList.add('btn-success')},
