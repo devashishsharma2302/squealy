@@ -127,9 +127,10 @@ export function getEmptyApiDefinition() {
 
 export function getEmptyDashboardDefinition() {
   return {
-    apiName: 'Untitled Dashboard 0',
+    apiName: 'Untitled Dashboard',
     styles: {background: '#e6e6e6'},
-    widgets: []
+    widgets: [],
+    widgetsParams: []
   }
 }
 

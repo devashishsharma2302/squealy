@@ -31,7 +31,7 @@ export default class Dashboard extends Component {
             selectedWidget: null,
             editorContent: null,
             newWidget: null,
-            widgetApiParams: [],
+            widgetApiParams: this.props.dashboardDefinition.widgetsParams?this.props.dashboardDefinition.widgetsParams:[],
             apiParamMessage: ''
         }
     }
@@ -41,11 +41,16 @@ export default class Dashboard extends Component {
     //Add a new parameter
     addParam = () => {
         let widgetParam = this.state.widgetApiParams.slice()
-        widgetParam[this.selectedWidgetIndex][''] = ''
-        this.setState({
-            widgetApiParams: widgetParam,
-            apiParamMessage: ''
-        })
+        if (widgetParam[this.selectedWidgetIndex].hasOwnProperty('')) {
+          this.setState({apiParamMessage:'Parameter name cannot be empty.'})
+        }
+        else {
+          widgetParam[this.selectedWidgetIndex][''] = ''
+          this.setState({
+              widgetApiParams: widgetParam,
+              apiParamMessage: ''
+          })
+        }
     }
 
     //Update Parameter For API
@@ -79,7 +84,8 @@ export default class Dashboard extends Component {
         let widgetParam = this.state.widgetApiParams.slice()
         delete widgetParam[this.selectedWidgetIndex][this.refs['paramName' + index].value]
         this.setState({
-            widgetApiParams: widgetParam
+            widgetApiParams: widgetParam,
+            apiParamMessage: ''
         })
     }
 

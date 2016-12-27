@@ -9,7 +9,7 @@ export default class GoogleChartWrapper extends Component {
   }
 
   renderChart = (config) => {
-    var wrapper = new google.visualization.ChartWrapper({
+    let wrapper = new google.visualization.ChartWrapper({
       chartType: config.chartType,
       dataTable: config,
       containerId: 'widget' + config.index,
@@ -22,7 +22,7 @@ export default class GoogleChartWrapper extends Component {
     wrapper.draw();
   }
 
-  componentDidUpdate(nextProps) {
+  componentDidUpdate() {
     this.renderChart(this.props.config)
   }
 
