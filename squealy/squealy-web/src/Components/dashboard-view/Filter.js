@@ -1,12 +1,31 @@
 import React, {Component} from 'react'
 import Select from 'react-select'
 import Rnd from 'react-resizable-and-movable'
+import Datetime from 'react-datetime'
 
 import {apiUriHostName} from '../../Containers/ApiViewContainer'
 import {RND_FILTER_RESIZEABILITY_CONSTRAINTS, FILTER_TYPES} from '../../Constant'
 import {getApiRequest} from '../../Utils'
 import EditIcon from '../../images/Edit_icon.png'
+import 'react-datetime/css/react-datetime.css'
 
+
+class HidashDatePicker extends Component {
+  render() {
+    const {
+      value,
+      onChangeHandler
+    } = this.props
+    console.log(value)
+    return(
+      <Datetime
+        value={value}
+        onChange={
+          (value, formattedValue)=>console.log('date',value, formattedValue)}
+      />
+    )
+  }
+}
 
 class HidashDropdown extends Component {
   render() {
@@ -55,7 +74,8 @@ class HidashInput extends Component {
 
 const filterTypes = {
   'dropdown': HidashDropdown,
-  'string': HidashInput
+  'string': HidashInput,
+  'dateTime': HidashDatePicker
 }
 
 

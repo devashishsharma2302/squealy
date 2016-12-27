@@ -110,7 +110,3 @@ export const RND_FILTER_RESIZEABILITY_CONSTRAINTS = {
   topLeft:false
 }
 
-export const DEFAULT_FILTER_VALUES = {
-  [FILTER_TYPES[1].value]: '',
-  [FILTER_TYPES[4].value]: ''
-}
