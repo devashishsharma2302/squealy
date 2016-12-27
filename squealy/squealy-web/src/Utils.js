@@ -144,7 +144,8 @@ export function getEmptyWidgetDefinition() {
     editMode: false,
     chartType: GOOGLE_CHART_TYPE_OPTIONS[7].value,
     chartStyles: null,
-    api_url: ''
+    api_url: '',
+    apiParams: {}
   }
 }
 
@@ -296,7 +297,7 @@ function formattedData(data, index) {
 
 
 // The following function loads the google charts JS files
-export function googleChartLoader(version, packages) {
+export function googleChartLoader(onSuccess, version, packages) {
   var options = {
     dataType: 'script',
     cache: true,
@@ -304,7 +305,8 @@ export function googleChartLoader(version, packages) {
   };
   jQuery.ajax(options).done(function(){
     google.charts.load(version || 'current', {
-      packages: packages || ['corechart']
+      packages: packages || ['corechart'],
+      'callback': onSuccess
     });
   });
 }
