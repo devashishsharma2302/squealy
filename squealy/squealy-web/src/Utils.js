@@ -130,6 +130,7 @@ export function getEmptyDashboardDefinition() {
     apiName: 'Untitled Dashboard',
     styles: {background: '#e6e6e6'},
     widgets: [],
+    filters: [],
     widgetsParams: []
   }
 }
@@ -138,14 +139,27 @@ export function getEmptyWidgetDefinition() {
   return {
     width: 434,
     height: 300,
-    top:20,
-    left: 20,
+    top:40,
+    left: 40,
     title: 'Chart Title',
     editMode: false,
     chartType: GOOGLE_CHART_TYPE_OPTIONS[7].value,
     chartStyles: null,
     api_url: '',
     apiParams: {}
+  }
+}
+
+export function getEmptyFilterDefinition() {
+  return {
+    width: 300,
+    height: 50,
+    top:20,
+    left: 20,
+    label: 'Fliter Label',
+    editMode: false,
+    type: null,
+    apiUrl: ''
   }
 }
 

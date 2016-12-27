@@ -79,3 +79,38 @@ export const VISUALIZATION_MODES = {
 }
 
 export const INCORRECT_JSON_ERROR = 'You have not entered a valid json'
+
+export const FILTER_TYPES = [
+  {
+    label: 'DateTime',
+    value: 'dateTime'
+  }, {
+    label: 'String',
+    value: 'string'
+  }, {
+    label: 'Date',
+    value: 'date'
+  }, {
+    label: 'Number',
+    value: 'number'
+  }, {
+    label: 'Dropdown',
+    'value': 'dropdown'
+  }
+]
+
+export const RND_FILTER_RESIZEABILITY_CONSTRAINTS = { 
+  top:false,
+  right:true,
+  bottom:false,
+  left:true,
+  topRight:false,
+  bottomRight:false,
+  bottomLeft:false,
+  topLeft:false
+}
+
+export const DEFAULT_FILTER_VALUES = {
+  [FILTER_TYPES[1].value]: '',
+  [FILTER_TYPES[4].value]: null
+}
