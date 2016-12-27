@@ -455,7 +455,7 @@ export default class Dashboard extends Component {
           onChange={(event)=>updateDashboardDefinition(dashboardIndex, 'styles', {background:event.target.value})}
         />
         <div id="dashboardArea" style={dashboardDefinition.styles}>
-            dashboardDefinition.filters.map((filter, index) => 
+          {dashboardDefinition.filters.map((filter, index) => 
               <Filter
                 key={index}
                 index={index}
