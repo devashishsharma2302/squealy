@@ -115,14 +115,15 @@ export default class Filter extends Component {
       updateFilterValues,
       deleteFilter,
       selectedDashboardIndex,
-      modalVisibilityEnabler
+      modalVisibilityEnabler,
+      value
     } = this.props
     let filterToBeRendered = null
     if(filterDefinition.type) {
       const FilterReference = filterTypes[filterDefinition.type]
       filterToBeRendered = 
           <FilterReference
-            value=''
+            value={value}
             onChangeHandler={(newValue)=>updateFilterValues(filterDefinition.label, newValue)}
             dragDisableHandler={this.disableDragging}
             dragEnableHandler={this.enableDragging}
