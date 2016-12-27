@@ -15,7 +15,8 @@ import {
 import {
     GOOGLE_CHART_TYPE_OPTIONS,
     INCORRECT_JSON_ERROR,
-    FILTER_TYPES
+    FILTER_TYPES,
+    DEFAULT_FILTER_VALUES
 } from '../../Constant'
 import {
     isJsonString,
@@ -160,7 +161,7 @@ export default class Dashboard extends Component {
     saveNewFilter = () => {
       const {selectedFilter} = this.state
       let newFilterValues = this.state.filterValues
-      newFilterValues[selectedFilter.label] = ''
+      newFilterValues[selectedFilter.label] = DEFAULT_FILTER_VALUES[selectedFilter.type]
       this.setState({
         showFilterModal: false,
         filterValues: newFilterValues
@@ -232,6 +233,7 @@ export default class Dashboard extends Component {
       filterResizeHandler,
       filterRepositionHandler,
     } = this.props
+
     const {
       selectedWidget,
       editorContent,
@@ -240,6 +242,7 @@ export default class Dashboard extends Component {
       selectedFilter,
       filterValues
     } = this.state
+
     const filterModalContent =
       selectedFilter?
       <div className="row">
@@ -441,7 +444,7 @@ export default class Dashboard extends Component {
               <Filter
                 key={index}
                 index={index}
-                value={(filter.label in filterValues)?filterValues[filter.label]:''}
+                value={(filter.label in filterValues)?filterValues[filter.label]:DEFAULT_FILTER_VALUES[filter.type]}
                 filterDefinition={filter}
                 updateFilterValues={this.updateFilterValues}
                 deleteFilter={deleteFilter}

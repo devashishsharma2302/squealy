@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import Select from 'react-select'
 import Rnd from 'react-resizable-and-movable'
 import Datetime from 'react-datetime'
+import moment from 'moment'
 
 import {apiUriHostName} from '../../Containers/ApiViewContainer'
 import {RND_FILTER_RESIZEABILITY_CONSTRAINTS, FILTER_TYPES} from '../../Constant'
@@ -20,7 +21,7 @@ class HidashDatePicker extends Component {
       <Datetime
         value={value}
         onChange={
-          (value, formattedValue)=>console.log('date',value, formattedValue)}
+          (value)=>onChangeHandler(moment(value).format('YYYY-MM-DD'))}
       />
     )
   }

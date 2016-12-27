@@ -1,3 +1,6 @@
+import moment from 'moment'
+
+
 export const SIDE_BAR_WIDTH = '21%'
 export const YAML_INDENTATION = 4
 export const YAML_CONTENT_TYPE = 'application/yaml'
@@ -110,3 +113,8 @@ export const RND_FILTER_RESIZEABILITY_CONSTRAINTS = {
   topLeft:false
 }
 
+export const DEFAULT_FILTER_VALUES = {
+  [FILTER_TYPES[0].value]: moment(new Date().toISOString()).format('YYYY-MM-DD'),
+  [FILTER_TYPES[1].value]: '',
+  [FILTER_TYPES[4].value]: ''
+}
