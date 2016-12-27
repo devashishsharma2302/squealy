@@ -64,7 +64,7 @@ export default class DashboardNavigator extends Component {
             id={'ddbtn-tab-' + index}
             title=""
           >
-            <MenuItem eventKey="1" onClick={() => {deleteDashboard(i)}}>
+            <MenuItem eventKey="1" onClick={() => {deleteDashboard(index)}}>
               <i className="fa fa-trash" /> Delete Dashboard
             </MenuItem>
             <MenuItem eventKey="2"  onClick={()=>{this.setState({showRenameModal: true})}}>

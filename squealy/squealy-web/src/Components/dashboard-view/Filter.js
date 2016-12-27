@@ -7,6 +7,7 @@ import moment from 'moment'
 import {apiUriHostName} from '../../Containers/ApiViewContainer'
 import {RND_FILTER_RESIZEABILITY_CONSTRAINTS, FILTER_TYPES} from '../../Constant'
 import {getApiRequest} from '../../Utils'
+import {DATE_FORMAT, DATETIME_FORMAT} from '../../Constant'
 import EditIcon from '../../images/Edit_icon.png'
 import 'react-datetime/css/react-datetime.css'
 
@@ -21,7 +22,23 @@ class HidashDatePicker extends Component {
       <Datetime
         value={value}
         onChange={
-          (value)=>onChangeHandler(moment(value).format('YYYY-MM-DD'))}
+          (value)=>onChangeHandler(moment(value).format(DATE_FORMAT))}
+      />
+    )
+  }
+}
+
+class HidashDatetimePicker extends Component {
+  render() {
+    const {
+      value,
+      onChangeHandler
+    } = this.props
+    return(
+      <Datetime
+        value={value}
+        onChange={
+          (value)=>onChangeHandler(moment(value).format(DATETIME_FORMAT))}
       />
     )
   }
@@ -59,14 +76,15 @@ class HidashDropdown extends Component {
 }
 
 class HidashInput extends Component {
+
+
   render() {
     const {value, onChangeHandler} = this.props
     return(
       <input
         className="rnd-filter"
         type="text"
-        value={value}
-        onChange={(e) => onChangeHandler(e.target.value)}
+        onBlur={(e) => onChangeHandler(e.target.value)}
       />
     )
   }
@@ -74,8 +92,9 @@ class HidashInput extends Component {
 
 const filterTypes = {
   'dropdown': HidashDropdown,
-  'string': HidashInput,
-  'dateTime': HidashDatePicker
+  'input': HidashInput,
+  'dateTime': HidashDatetimePicker,
+  'date': HidashDatePicker
 }
 
 
@@ -141,14 +160,14 @@ export default class Filter extends Component {
     let filterToBeRendered = null
     if(filterDefinition.type) {
       const FilterReference = filterTypes[filterDefinition.type]
-      filterToBeRendered = 
-          <FilterReference
-            value={value}
-            onChangeHandler={(newValue)=>updateFilterValues(filterDefinition.label, newValue)}
-            dragDisableHandler={this.disableDragging}
-            dragEnableHandler={this.enableDragging}
-            filterData={filterData}
-          />
+      filterToBeRendered =
+        <FilterReference
+          value={value}
+          onChangeHandler={(newValue)=>updateFilterValues(filterDefinition.label, newValue)}
+          dragDisableHandler={this.disableDragging}
+          dragEnableHandler={this.enableDragging}
+          filterData={filterData}
+        />
     }
     return(
       <Rnd

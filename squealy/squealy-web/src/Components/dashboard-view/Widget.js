@@ -19,7 +19,9 @@ export default class Widget extends Component {
   constructor(props) {
     super(props)
     this.widgetIndex = this.props.dashboardIndex + '' + this.props.index
-    this.state = {}
+    this.state = {
+      headerHeight: 50
+    }
   }
   
   componentWillMount() {
@@ -34,6 +36,11 @@ export default class Widget extends Component {
       getApiRequest(url, params, (data)=> this.setState({chartData: data}), ()=>{}, null)
     }
   }
+
+  componentDidMount() {
+    this.setState({headerHeight: this.refs.header.offsetHeight})
+  }
+
   // Sets the width and height of the widget and rnd component in widget's state
   widgetResizeHandler = (direction, styleSize) => {
     const {dashboardIndex, index} = this.props
@@ -81,7 +88,7 @@ export default class Widget extends Component {
             onMouseEnter={() => this.setState({editMode: true})}
             onMouseLeave={() => this.setState({editMode: false})}
           >
-            <h3>
+            <h3 ref='header'>
               {widgetData.title}
             </h3>
             <img src={EditIcon}
@@ -90,14 +97,14 @@ export default class Widget extends Component {
                   />
             <img src={DeleteIcon}
                  className='delete-icon'
-                 onClick={()=>widgetDeletionHandler(dashboardIndex, index)}
+                 onClick={()=>(dashboardIndex, index)}
             />
           </div>
           <GoogleChartComponent config={{
               ...chartData,
               index: this.widgetIndex,
               width: widgetData.width,
-              height: widgetData.height,
+              height: widgetData.height - this.state.headerHeight,
               chartType: widgetData.chartType,
               chartStyles: widgetData.chartStyles
             }}
