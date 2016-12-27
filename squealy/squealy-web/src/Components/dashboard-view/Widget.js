@@ -23,9 +23,15 @@ export default class Widget extends Component {
   }
   
   componentWillMount() {
+    this.refreshChartData({})
+  }
+
+  refreshChartData = (filterValues) => {
     if (this.props.widgetData) {
+      //TODO: remove localhost
       const url = 'http://localhost:8000/squealy-apis/'+this.props.widgetData.api_url
-      getApiRequest(url, null, (data)=> this.setState({chartData: data}), ()=>{}, null)
+      const params = {...filterValues, ...this.props.widgetData.apiParams}
+      getApiRequest(url, params, (data)=> this.setState({chartData: data}), ()=>{}, null)
     }
   }
   // Sets the width and height of the widget and rnd component in widget's state
@@ -41,7 +47,14 @@ export default class Widget extends Component {
     const {dashboardIndex, index} = this.props
     this.props.widgetRepositionHandler(dashboardIndex, index, uiState.position.top, uiState.position.left)
   }
-
+  
+  //Check for filter changes
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.filterValues !== this.props.filterValues) {
+      this.refreshChartData(nextProps.filterValues)
+    }
+  }
+  
   render() {
     const {chartData} = this.state
     const {
@@ -52,6 +65,7 @@ export default class Widget extends Component {
       widgetDeletionHandler,
       dashboardIndex,
       googleDefined,
+      filterValues
     } = this.props
     return(
       (widgetData && googleDefined)?
