@@ -1,12 +1,31 @@
 import React, {Component} from 'react'
 import Select from 'react-select'
 import Rnd from 'react-resizable-and-movable'
+import Datetime from 'react-datetime'
+import moment from 'moment'
 
 import {apiUriHostName} from '../../Containers/ApiViewContainer'
 import {RND_FILTER_RESIZEABILITY_CONSTRAINTS, FILTER_TYPES} from '../../Constant'
 import {getApiRequest} from '../../Utils'
 import EditIcon from '../../images/Edit_icon.png'
+import 'react-datetime/css/react-datetime.css'
 
+
+class HidashDatePicker extends Component {
+  render() {
+    const {
+      value,
+      onChangeHandler
+    } = this.props
+    return(
+      <Datetime
+        value={value}
+        onChange={
+          (value)=>onChangeHandler(moment(value).format('YYYY-MM-DD'))}
+      />
+    )
+  }
+}
 
 class HidashDropdown extends Component {
   render() {
@@ -55,7 +74,8 @@ class HidashInput extends Component {
 
 const filterTypes = {
   'dropdown': HidashDropdown,
-  'string': HidashInput
+  'string': HidashInput,
+  'dateTime': HidashDatePicker
 }
 
 
@@ -115,14 +135,15 @@ export default class Filter extends Component {
       updateFilterValues,
       deleteFilter,
       selectedDashboardIndex,
-      modalVisibilityEnabler
+      modalVisibilityEnabler,
+      value
     } = this.props
     let filterToBeRendered = null
     if(filterDefinition.type) {
       const FilterReference = filterTypes[filterDefinition.type]
       filterToBeRendered = 
           <FilterReference
-            value=''
+            value={value}
             onChangeHandler={(newValue)=>updateFilterValues(filterDefinition.label, newValue)}
             dragDisableHandler={this.disableDragging}
             dragEnableHandler={this.enableDragging}

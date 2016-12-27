@@ -51,7 +51,7 @@ export default class Widget extends Component {
       deleteWidget,
       widgetDeletionHandler,
       dashboardIndex,
-      googleDefined
+      googleDefined,
     } = this.props
     return(
       (widgetData && googleDefined)?

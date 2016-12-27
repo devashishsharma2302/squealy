@@ -252,15 +252,18 @@ export default class Dashboard extends Component {
       googleDefined,
       deleteFilter,
       filterResizeHandler,
-      filterRepositionHandler
+      filterRepositionHandler,
     } = this.props
+
     const {
       selectedWidget,
       editorContent,
       newWidget,
       newWidgetApiParams,
-      selectedFilter
+      selectedFilter,
+      filterValues
     } = this.state
+
     const filterModalContent =
       selectedFilter?
       <div className="row">
@@ -457,6 +460,7 @@ export default class Dashboard extends Component {
               <Filter
                 key={index}
                 index={index}
+                value={(filter.label in filterValues)?filterValues[filter.label]:DEFAULT_FILTER_VALUES[filter.type]}
                 filterDefinition={filter}
                 updateFilterValues={this.updateFilterValues}
                 deleteFilter={deleteFilter}
@@ -472,6 +476,7 @@ export default class Dashboard extends Component {
           {
             dashboardDefinition.widgets.map((widget, index) =>
               <Widget
+                filterValues={filterValues}
                 key={index}
                 index={index}
                 modalVisibilityEnabler={this.modalVisibilityEnabler}
