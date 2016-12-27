@@ -3,6 +3,7 @@ import React, {Component} from 'react'
 import GoogleChartComponent from '../GoogleChartComponent'
 import Rnd from 'react-resizable-and-movable'
 import EditIcon from '../../images/Edit_icon.png'
+import DeleteIcon from '../../images/Delete_icon.png'
 import {getApiRequest} from '../../Utils'
 
 const style = {
@@ -17,101 +18,79 @@ export default class Widget extends Component {
 
   constructor(props) {
     super(props)
-    this.state = {
-      width: props.widgetData.width,
-      height: props.widgetData.height,
-      top: props.widgetData.top,
-      left: props.widgetData.left
-    }
-    this.dashboardIndex = this.props.selectedDashboardIndex
+    this.widgetIndex = this.props.dashboardIndex + '' + this.props.index
+    this.state = {}
   }
+  
   componentWillMount() {
-    const url = 'http://localhost:8000/squealy-apis/'+this.props.widgetData.api_url
-    getApiRequest(url, null, (data)=> this.setState({chartData: data}), ()=>{}, null)
+    if (this.props.widgetData) {
+      const url = 'http://localhost:8000/squealy-apis/'+this.props.widgetData.api_url
+      getApiRequest(url, null, (data)=> this.setState({chartData: data}), ()=>{}, null)
+    }
   }
   // Sets the width and height of the widget and rnd component in widget's state
   widgetResizeHandler = (direction, styleSize) => {
-    this.setState({
-      width: styleSize.width,
-      height: styleSize.height
-    })
+    const {dashboardIndex, index} = this.props
+    this.props.widgetResizeHandler(dashboardIndex, index, styleSize.width, styleSize.height)
+
   }
   
   // Sets the position of the widget in its state
   widgetPositionHandler = (event, uiState) => {
-    this.setState({
-      top: uiState.position.top,
-      left: uiState.position.left
-    }, () => {
-      // Update the position of the widget in the state of dashboard container
-      const {selectedDashboardIndex, index} = this.props
-      this.props.widgetRepositionHandler(selectedDashboardIndex, index, this.state.top, this.state.left)
-    })
+    // Update the position of the widget in the state of dashboard container
+    const {dashboardIndex, index} = this.props
+    this.props.widgetRepositionHandler(dashboardIndex, index, uiState.position.top, uiState.position.left)
   }
-
-  // Toggles the edit mode of this component
-  editModeToggler = () => {
-    this.setState({editMode: !this.state.editMode})
-  }
-
-  // Updates the size of the widget in the state of dashboard container
-  widgetSizeUpdator = () => {
-    const {selectedDashboardIndex, index} = this.props
-    this.props.widgetResizeHandler(
-      selectedDashboardIndex,
-      index,
-      this.state.width,
-      this.state.height
-    )
-  }
-
 
   render() {
-    const {top, left, height, width, chartData} = this.state
+    const {chartData} = this.state
     const {
       modalVisibilityEnabler,
       index,
-      widgetData
+      widgetData,
+      deleteWidget,
+      widgetDeletionHandler,
+      dashboardIndex,
+      googleDefined
     } = this.props
     return(
-      <Rnd
-        ref={'widget'+index}
-        x={left}
-        y={top}
-        width={width}
-        height={height}
-        onResize={this.widgetResizeHandler}
-        onResizeStop={this.widgetSizeUpdator}
-        onDragStop={this.widgetPositionHandler}
-        resizeGrid={[10,10]}
-        moveGrid={[10,10]}
-      >
-        <div
-          onMouseEnter={this.editModeToggler}
-          onMouseLeave={this.editModeToggler}
+      (widgetData && googleDefined)?
+        <Rnd
+          x={widgetData.left}
+          y={widgetData.top}
+          width={widgetData.width}
+          height={widgetData.height}
+          onResize={this.widgetResizeHandler}
+          onDragStop={this.widgetPositionHandler}
         >
-          <h3>
-            {widgetData.title}
-          </h3>
-          {this.state.editMode?
+          <div
+            onMouseEnter={() => this.setState({editMode: true})}
+            onMouseLeave={() => this.setState({editMode: false})}
+          >
+            <h3>
+              {widgetData.title}
+            </h3>
             <img src={EditIcon}
-             className='edit-icon'
-             onClick={()=>modalVisibilityEnabler(index)}
+                    className='edit-icon'
+                   onClick={()=>modalVisibilityEnabler(index)}
+                  />
+            <img src={DeleteIcon}
+                 className='delete-icon'
+                 onClick={()=>widgetDeletionHandler(dashboardIndex, index)}
             />
-            :
-            null
-          }
-        </div>
-        <GoogleChartComponent config={{
-            ...chartData,
-            index: index+''+this.dashboardIndex,
-            width: width,
-            height: height,
-            chartType: widgetData.chartType,
-            chartStyles: widgetData.chartStyles
-          }}
-        />
-      </Rnd>
+          </div>
+          <GoogleChartComponent config={{
+              ...chartData,
+              index: this.widgetIndex,
+              width: widgetData.width,
+              height: widgetData.height,
+              chartType: widgetData.chartType,
+              chartStyles: widgetData.chartStyles
+            }}
+          />
+        </Rnd>
+        :
+          null
     )
   }
 }

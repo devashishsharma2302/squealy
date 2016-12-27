@@ -27,6 +27,7 @@ export default class DashboardNavigator extends Component {
       saveDashboard,
       dashboardDefinition,
       widgetAdditionHandler,
+      widgetDeletionHandler,
       selectedDashboardIndex,
       deleteDashboard,
       widgetResizeHandler,
@@ -36,8 +37,10 @@ export default class DashboardNavigator extends Component {
       filterAdditionHandler,
       filterResizeHandler,
       filterRepositionHandler,
-      deleteFilter
+      deleteFilter,
+      googleDefined
     } = this.props
+
     const RenameModalContent =  <div className="row">
          <div className="col-md-12">
            <label className='col-md-4'>Dashboard Name: </label>
@@ -49,7 +52,7 @@ export default class DashboardNavigator extends Component {
            />
          </div>
        </div>
-    const dashboardTabs = dashboardDefinition.map((dashboard, i)=>{
+    const dashboardTabs = dashboardDefinition.map((dashboard, index)=>{
       const tabTitle = (
         <div className='dashboard-tab'>
           {dashboard.apiName}
@@ -58,7 +61,7 @@ export default class DashboardNavigator extends Component {
             style={{
             borderColor: '#fff'
             }}
-            id={'ddbtn-tab-' + i}
+            id={'ddbtn-tab-' + index}
             title=""
           >
             <MenuItem eventKey="1" onClick={() => {deleteDashboard(i)}}>
@@ -75,9 +78,9 @@ export default class DashboardNavigator extends Component {
       )
       return (
         <Tab
-          key={i}
-          title={selectedDashboardIndex==i?tabTitle:dashboard.apiName}
-          eventKey={i}
+          key={index}
+          title={selectedDashboardIndex==index?tabTitle:dashboard.apiName}
+          eventKey={index}
         >
           <div className="panel panel-default">
             <div className="panel-body">
@@ -93,6 +96,9 @@ export default class DashboardNavigator extends Component {
                 deleteFilter={deleteFilter}
                 filterResizeHandler={filterResizeHandler}
                 filterRepositionHandler={filterRepositionHandler}
+                widgetDeletionHandler={widgetDeletionHandler}
+                dashboardIndex={index}
+                googleDefined={googleDefined}
               />
             </div>
           </div>

@@ -55,11 +55,10 @@ export default class DashboardContainer extends Component {
 
   // Adds a new widget definition to a certain dashboard definition
   widgetAdditionHandler = (dashboardDefinitionIndex, newWidget) => {
-    let newdashboardDefinitions = this.state.dashboardDefinitions.slice()
-    newdashboardDefinitions[dashboardDefinitionIndex].widgets.push(newWidget)
-    newdashboardDefinitions[dashboardDefinitionIndex].widgetsParams.push({})
+    let newDashboardDefinitions = this.state.dashboardDefinitions.slice()
+    newDashboardDefinitions[dashboardDefinitionIndex].widgets.push(newWidget)
     this.setState({
-      dashboardDefinitions: newdashboardDefinitions,
+      dashboardDefinitions: newDashboardDefinitions,
     })
   }
 
@@ -71,9 +70,23 @@ export default class DashboardContainer extends Component {
     })
   }
 
+  widgetDeletionHandler = (dashboardDefinitionIndex, widgetIndex) => {
+    let newDashboardDefinitions = JSON.parse(JSON.stringify(this.state.dashboardDefinitions))
+    delete newDashboardDefinitions[dashboardDefinitionIndex].widgets[widgetIndex]
+
+    //newdashboardDefinitions[dashboardDefinitionIndex] = newDashboardDef
+    this.setState({
+      dashboardDefinitions: newDashboardDefinitions,
+      })
+  }
+
   saveDashboard = () => {
     let apiUrl = APIURI+'/squealy-dashboard-design/'
-    let requestData = this.state.dashboardDefinitions.slice()
+    let requestData = JSON.parse(JSON.stringify(this.state.dashboardDefinitions))
+    requestData.map((dashboard, dashboardIndex) => {
+      requestData[dashboardIndex].widgets = dashboard.widgets.filter(widget => widget!=null)
+    })
+    
     postApiRequest(apiUrl, requestData, ()=>{
       document.getElementById('save-dashboard-btn').classList.remove('btn-danger')
       document.getElementById('save-dashboard-btn').classList.add('btn-success')},
@@ -99,11 +112,7 @@ export default class DashboardContainer extends Component {
   // Updates the widget Definition in the state
   updateWidgetDefinition = (dashboardIndex, widgetIndex, updatedDefinition) => {
     let dashboardDefinitions= this.state.dashboardDefinitions.slice()
-    let definitionToUpdate = dashboardDefinitions[dashboardIndex].widgets[widgetIndex]
-    definitionToUpdate.title = updatedDefinition.title
-    dashboardDefinitions[dashboardIndex].widgetsParams[widgetIndex] = updatedDefinition.apiParams
-    definitionToUpdate.chartType = updatedDefinition.chartType
-    definitionToUpdate.chartStyles = updatedDefinition.chartStyles
+    dashboardDefinitions[dashboardIndex].widgets[widgetIndex] = updatedDefinition
     this.setState({dashboardDefinitions: dashboardDefinitions})
   }
 
@@ -142,8 +151,11 @@ export default class DashboardContainer extends Component {
   }
 
   render() {
+
     const {dashboardDefinitions, selectedDashboardIndex} = this.state
+    const {googleDefined} = this.props
     return (
+
       <div>
         <DashboardHeader saveDashboard={this.saveDashboard}/>
         <DashboardNavigator
@@ -153,6 +165,7 @@ export default class DashboardContainer extends Component {
           dashboardDefinition={dashboardDefinitions}
           dashboardAdditionHandler={this.dashboardAdditionHandler}
           widgetAdditionHandler={this.widgetAdditionHandler}
+          widgetDeletionHandler={this.widgetDeletionHandler}
           widgetRepositionHandler={this.widgetRepositionHandler}
           widgetResizeHandler={this.widgetResizeHandler}
           updateWidgetDefinition={this.updateWidgetDefinition}
@@ -161,6 +174,7 @@ export default class DashboardContainer extends Component {
           deleteFilter={this.deleteFilter}
           filterRepositionHandler={this.filterRepositionHandler}
           filterResizeHandler={this.filterResizeHandler}
+          googleDefined={googleDefined}
         />
       </div>
     )

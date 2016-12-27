@@ -28,35 +28,31 @@ import {
 export default class Dashboard extends Component {
 
     constructor(props) {
-        super(props)
-        this.state = {
-          showEditWidgetModal: false,
-          showAddWidgetModal: false,
-          showFilterModal: false,
-          selectedWidget: null,
-          editorContent: null,
-          newWidget: null,
-          widgetApiParams: this.props.dashboardDefinition.widgetsParams?this.props.dashboardDefinition.widgetsParams:[],
-          apiParamMessage: '',
-          filterValues: {}
-        }
+      super(props)
+      this.state = {
+        showEditWidgetModal: false,
+        showAddWidgetModal: false,
+        showFilterModal: false,
+        selectedWidget: null,
+        editorContent: null,
+        newWidget: null,
+        newWidgetApiParams: {},
+        apiParamMessage: '',
+        filterValues: {}
+      }
     }
 
     selectedWidgetIndex = null
 
     //Add a new parameter
     addParam = () => {
-        let widgetParam = this.state.widgetApiParams.slice()
-        if (widgetParam[this.selectedWidgetIndex].hasOwnProperty('')) {
-          this.setState({apiParamMessage:'Parameter name cannot be empty.'})
-        }
-        else {
-          widgetParam[this.selectedWidgetIndex][''] = ''
-          this.setState({
-              widgetApiParams: widgetParam,
-              apiParamMessage: ''
-          })
-        }
+        const { dashboardDefinition, dashboardIndex, updateWidgetDefinition } = this.props
+        let newWidgetDefinition = dashboardDefinition.widgets[this.selectedWidgetIndex]
+        newWidgetDefinition.apiParams[''] = ''
+        updateWidgetDefinition(dashboardIndex, this.selectedWidgetIndex, newWidgetDefinition)
+        this.setState({
+            selectedWidget: newWidgetDefinition
+        })
     }
 
     updateFilterValues = (name, value) => {
@@ -66,32 +62,57 @@ export default class Dashboard extends Component {
     }
 
     //Update Parameter For API
-    updateParam = (index) => {
-      let widgetParam = this.state.widgetApiParams.slice()
-      if (!widgetParam[this.selectedWidgetIndex].hasOwnProperty(this.refs['paramName' + index].value)) {
-          delete widgetParam[this.selectedWidgetIndex]['']
-          widgetParam[this.selectedWidgetIndex][this.refs['paramName' + index].value] = null
-          this.setState({
-              widgetApiParams: widgetParam,
-              apiParamMessage: ''
-          })
+    updateParam = (currentKey, newKey, newValue) => {
+        const { dashboardDefinition, dashboardIndex, updateWidgetDefinition } = this.props
+        let newWidgetDefinition = dashboardDefinition.widgets[this.selectedWidgetIndex]
+        let newParams = JSON.parse(JSON.stringify(newWidgetDefinition.apiParams))
+
+        if (currentKey == '') {
+          delete newParams['']
         }
-        else {
-          this.setState({
-              apiParamMessage: 'Parameter names cannot be repeated.'
-          })
-        }
+        newParams[newKey] = newValue
+        newWidgetDefinition.apiParams = newParams
+        updateWidgetDefinition(dashboardIndex, this.selectedWidgetIndex, newWidgetDefinition)
+        this.setState({
+            selectedWidget: newWidgetDefinition
+        })
     }
-    
 
     //Delete Api parameter
-    deleteParam = (index) => {
-        let widgetParam = this.state.widgetApiParams.slice()
-        delete widgetParam[this.selectedWidgetIndex][this.refs['paramName' + index].value]
+    deleteParam = (key) => {
+        const { dashboardDefinition, dashboardIndex, updateWidgetDefinition } = this.props
+        let newWidgetDefinition = dashboardDefinition.widgets[this.selectedWidgetIndex]
+        let newParams = newWidgetDefinition.apiParams
+        delete newParams[key]
+        newWidgetDefinition.apiParams = newParams
+        updateWidgetDefinition(dashboardIndex, this.selectedWidgetIndex, newWidgetDefinition)
         this.setState({
-            widgetApiParams: widgetParam,
-            apiParamMessage: ''
+            selectedWidget: newWidgetDefinition
         })
+    }
+
+    updateNewParam = (currentKey, newKey, newValue) => {
+        let newParams = JSON.parse(JSON.stringify(this.state.newWidgetApiParams))
+        if (currentKey == '') {
+          delete newParams['']
+        }
+        newParams[newKey] = newValue
+        this.setState({newWidgetApiParams: newParams})
+        this.newWidgetChangeHandler('apiParams', newParams)
+    }
+    
+    addParamToNewWidget = () => {
+        let newParams = Object.assign({}, this.state.newWidgetApiParams)
+        newParams[''] = ''
+        this.setState({newWidgetApiParams: newParams})
+        this.newWidgetChangeHandler('apiParams', newParams)
+    }
+
+    deleteNewParam = (key) => {
+        let newParams = Object.assign({}, this.state.newWidgetApiParams)
+        delete newParams[key]
+        this.setState({newWidgetApiParams: newParams})
+        this.newWidgetChangeHandler('apiParams', newParams)
     }
 
     // Launches the edit widget modal and sets the selected widget in the state
@@ -108,8 +129,9 @@ export default class Dashboard extends Component {
 
     addWidgetModalenabler = () => {
       this.setState({
-          showAddWidgetModal: true,
-          newWidget: getEmptyWidgetDefinition()
+        showAddWidgetModal: true,
+        newWidget: getEmptyWidgetDefinition(),
+        newWidgetApiParams: {}
       })
     }
 
@@ -153,11 +175,9 @@ export default class Dashboard extends Component {
 
     saveNewWidget = () => {
       this.props.widgetAdditionHandler(this.props.selectedDashboardIndex, this.state.newWidget)
-      let widgetApiParams = this.state.widgetApiParams.slice()
-      widgetApiParams.push({})
       this.setState({
           showAddWidgetModal: false,
-          widgetApiParams: widgetApiParams
+          newWidget: {}
       })
     }
 
@@ -176,9 +196,7 @@ export default class Dashboard extends Component {
       if (isJsonString(this.state.editorContent)) {
           let updatedWidgetDefinition = Object.assign({}, this.state.selectedWidget)
           updatedWidgetDefinition.chartStyles = JSON.parse(this.state.editorContent)
-          let widgetApiParams = this.state.widgetApiParams.slice()
-          updatedWidgetDefinition.apiParams = widgetApiParams[this.selectedWidgetIndex]
-          this.props.updateWidgetDefinition(this.props.selectedDashboardIndex, this.selectedWidgetIndex, updatedWidgetDefinition)
+          this.props.updateWidgetDefinition(this.props.dashboardIndex, this.selectedWidgetIndex, updatedWidgetDefinition)
           this.setState({
               showEditWidgetModal: false
           })
@@ -204,17 +222,24 @@ export default class Dashboard extends Component {
   render() {
     const {
       dashboardDefinition,
-      widgetAdditionHandler,
+      widgetDeletionHandler,
       widgetResizeHandler,
       widgetRepositionHandler,
       updateDashboardDefinition,
       selectedDashboardIndex,
+      dashboardIndex,
+      googleDefined,
       deleteFilter,
       filterResizeHandler,
       filterRepositionHandler
     } = this.props
-    let currentWidgetParams = this.state.widgetApiParams[this.selectedWidgetIndex]
-    const {selectedWidget, editorContent, newWidget, selectedFilter} = this.state
+    const {
+      selectedWidget,
+      editorContent,
+      newWidget,
+      newWidgetApiParams,
+      selectedFilter
+    } = this.state
     const filterModalContent =
       selectedFilter?
       <div className="row">
@@ -279,7 +304,7 @@ export default class Dashboard extends Component {
             </div>
           </div>
           <div className="col-md-12">
-          <h5>API Testing Parameters:</h5>
+          <h5>API Parameters:</h5>
           { this.state.apiParamMessage ? <div className="alert alert-info">
               <strong>Info!</strong> {this.state.apiParamMessage}
               </div> :
@@ -296,13 +321,13 @@ export default class Dashboard extends Component {
             </thead>
             <tbody>
               {
-                currentWidgetParams ?
-                  Object.keys(currentWidgetParams).map((key, index) => {
+                selectedWidget.apiParams ?
+                  Object.keys(selectedWidget.apiParams).map((key, index) => {
                     return (
                       <tr key={index}>
-                        <td> <input defaultValue={key} onBlur={() => this.updateParam(index)} ref={'paramName'+index}  placeholder='Enter Parameter' /></td>
-                        <td> <input defaultValue={currentWidgetParams[key]} onBlur={() => this.updateParam(index)} ref={'paramValue'+index} placeholder="Enter Value" /></td>
-                        <td onClick={()=>{this.deleteParam(index)}}><i className="fa fa-trash"/></td>
+                        <td> <input value={key} onChange={(e) => this.updateParam(key, e.target.value, selectedWidget.apiParams[key])} placeholder='Enter Parameter' /></td>
+                        <td> <input value={selectedWidget.apiParams[key]} onChange={(e) => this.updateParam(key, key, e.target.value)} placeholder="Enter Value" /></td>
+                        <td onClick={()=>{this.deleteParam(key)}}><i className="fa fa-trash"/></td>
                       </tr>
                     )
                   })
@@ -365,6 +390,34 @@ export default class Dashboard extends Component {
               />
             </div>
           </div>
+          <div className="col-md-12">
+          <h5>API Parameters:</h5>
+          <table className="table table-bordered">
+
+            <thead>
+              <tr>
+                <th>Parameter Name</th>
+                <th>Value</th>
+                <th onClick={this.addParamToNewWidget}><i className="fa fa-plus"></i></th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                newWidgetApiParams ?
+                  Object.keys(newWidgetApiParams).map((key, index) => {
+                    return (
+                      <tr key={index}>
+                        <td> <input value={key} onChange={(e) => this.updateNewParam(key, e.target.value, newWidgetApiParams[key])} placeholder='Enter Parameter' /></td>
+                        <td> <input value={newWidgetApiParams[key]} onChange={(e) => this.updateNewParam(key, key, e.target.value)} placeholder="Enter Value" /></td>
+                        <td onClick={()=>{this.deleteNewParam(key)}}><i className="fa fa-trash"/></td>
+                      </tr>
+                    )
+                  })
+                  : null
+              }
+            </tbody>
+          </table>
+          </div>
         </div>
         :
           null
@@ -380,7 +433,7 @@ export default class Dashboard extends Component {
           type='text'
           ref='widgetTitle'
           value={dashboardDefinition.styles.background}
-          onChange={(event)=>updateDashboardDefinition(0, 'styles', {background:event.target.value})}
+          onChange={(event)=>updateDashboardDefinition(dashboardIndex, 'styles', {background:event.target.value})}
         />
         <div id="dashboardArea" style={dashboardDefinition.styles}>
           {
@@ -406,7 +459,9 @@ export default class Dashboard extends Component {
                 widgetResizeHandler={widgetResizeHandler}
                 widgetRepositionHandler={widgetRepositionHandler}
                 widgetData={widget}
-                selectedDashboardIndex={selectedDashboardIndex}
+                dashboardIndex={dashboardIndex}
+                widgetDeletionHandler={widgetDeletionHandler}
+                googleDefined={googleDefined}
               />
             )
           }
