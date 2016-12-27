@@ -88,14 +88,11 @@ export const FILTER_TYPES = [
     label: 'DateTime',
     value: 'dateTime'
   }, {
-    label: 'String',
-    value: 'string'
+    label: 'Input',
+    value: 'input'
   }, {
     label: 'Date',
     value: 'date'
-  }, {
-    label: 'Number',
-    value: 'number'
   }, {
     label: 'Dropdown',
     'value': 'dropdown'
@@ -113,8 +110,12 @@ export const RND_FILTER_RESIZEABILITY_CONSTRAINTS = {
   topLeft:false
 }
 
+export const DATE_FORMAT = 'YYYY-MM-DD'
+export const DATETIME_FORMAT = 'YYYY-MM-DD, hh:mm:ss'
+
 export const DEFAULT_FILTER_VALUES = {
-  [FILTER_TYPES[0].value]: moment(new Date().toISOString()).format('YYYY-MM-DD'),
+  [FILTER_TYPES[0].value]: moment(new Date().toISOString()).format(DATETIME_FORMAT),
   [FILTER_TYPES[1].value]: '',
-  [FILTER_TYPES[4].value]: ''
+  [FILTER_TYPES[2].value]: moment(new Date().toISOString()).format(DATE_FORMAT),
+  [FILTER_TYPES[3].value]: ''
 }
