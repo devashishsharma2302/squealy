@@ -16,7 +16,6 @@ class HidashDatePicker extends Component {
       value,
       onChangeHandler
     } = this.props
-    console.log(value)
     return(
       <Datetime
         value={value}
