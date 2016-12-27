@@ -8,16 +8,20 @@ import 'brace/theme/tomorrow'
 import 'brace/ext/language_tools'
 
 import Widget from './Widget'
+import Filter from './Filter'
 import {
     HidashModal
 } from '../HidashUtilsComponents'
 import {
     GOOGLE_CHART_TYPE_OPTIONS,
-    INCORRECT_JSON_ERROR
+    INCORRECT_JSON_ERROR,
+    FILTER_TYPES,
+    DEFAULT_FILTER_VALUES
 } from '../../Constant'
 import {
     isJsonString,
-    getEmptyWidgetDefinition
+    getEmptyWidgetDefinition,
+    getEmptyFilterDefinition
 } from '../../Utils'
 
 
@@ -26,13 +30,15 @@ export default class Dashboard extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            showEditWidgetModal: false,
-            showAddWidgetModal: false,
-            selectedWidget: null,
-            editorContent: null,
-            newWidget: null,
-            widgetApiParams: [],
-            apiParamMessage: ''
+          showEditWidgetModal: false,
+          showAddWidgetModal: false,
+          showFilterModal: false,
+          selectedWidget: null,
+          editorContent: null,
+          newWidget: null,
+          widgetApiParams: [],
+          apiParamMessage: '',
+          filterValues: {}
         }
     }
 
@@ -47,104 +53,148 @@ export default class Dashboard extends Component {
         })
     }
 
+    updateFilterValues = (name, value) => {
+      let newFilterValues = Object.assign({}, this.state.filterValues)
+      newFilterValues[name] = value
+      this.setState({filterValues: newFilterValues})
+    }
+
     updateParam = (index) => {
-        let widgetParam = this.state.widgetApiParams.slice()
-        if (!widgetParam[this.selectedWidgetIndex].hasOwnProperty(this.refs['paramName' + index].value)) {
-            delete widgetParam[this.selectedWidgetIndex]['key']
-            widgetParam[this.selectedWidgetIndex][this.refs['paramName' + index].value] = null
+      let widgetParam = this.state.widgetApiParams.slice()
+      if (!widgetParam[this.selectedWidgetIndex].hasOwnProperty(this.refs['paramName' + index].value)) {
+          delete widgetParam[this.selectedWidgetIndex]['key']
+          widgetParam[this.selectedWidgetIndex][this.refs['paramName' + index].value] = null
+          this.setState({
+              widgetApiParams: widgetParam,
+              apiParamMessage: ''
+          })
+      } else {
+          if(widgetParam[this.selectedWidgetIndex][this.refs['paramName' + index].value] === null){
+            widgetParam[this.selectedWidgetIndex][this.refs['paramName' + index].value] = this.refs['paramValue' + index].value
             this.setState({
                 widgetApiParams: widgetParam,
                 apiParamMessage: ''
             })
-        } else {
-            if(widgetParam[this.selectedWidgetIndex][this.refs['paramName' + index].value] === null){
-              widgetParam[this.selectedWidgetIndex][this.refs['paramName' + index].value] = this.refs['paramValue' + index].value
-              this.setState({
-                  widgetApiParams: widgetParam,
-                  apiParamMessage: ''
-              })
-            }
-            else {
-              this.setState({
-                  apiParamMessage: 'Parameter names cannot be repeated.'
-              })
-            }
-        }
+          }
+          else {
+            this.setState({
+                apiParamMessage: 'Parameter names cannot be repeated.'
+            })
+          }
+      }
     }
 
     deleteParam = (index) => {
-        let widgetParam = this.state.widgetApiParams.slice()
-        delete widgetParam[this.selectedWidgetIndex][this.refs['paramName' + index].value]
-        this.setState({
-            widgetApiParams: widgetParam
-        })
+      let widgetParam = this.state.widgetApiParams.slice()
+      delete widgetParam[this.selectedWidgetIndex][this.refs['paramName' + index].value]
+      this.setState({
+          widgetApiParams: widgetParam
+      })
     }
 
     // Launches the edit widget modal and sets the selected widget in the state
     modalVisibilityEnabler = (widgetIndex) => {
-        this.selectedWidgetIndex = widgetIndex
-        let newEditorContent = JSON.stringify(this.props.dashboardDefinition.widgets[widgetIndex].chartStyles)
-        newEditorContent = JSON.stringify(JSON.parse(newEditorContent), null, '\t')
-        this.setState({
-            showEditWidgetModal: true,
-            selectedWidget: this.props.dashboardDefinition.widgets[widgetIndex],
-            editorContent: newEditorContent
-        })
+      this.selectedWidgetIndex = widgetIndex
+      let newEditorContent = JSON.stringify(this.props.dashboardDefinition.widgets[widgetIndex].chartStyles)
+      newEditorContent = JSON.stringify(JSON.parse(newEditorContent), null, '\t')
+      this.setState({
+          showEditWidgetModal: true,
+          selectedWidget: this.props.dashboardDefinition.widgets[widgetIndex],
+          editorContent: newEditorContent
+      })
     }
 
     addWidgetModalenabler = () => {
-        this.setState({
-            showAddWidgetModal: true,
-            newWidget: getEmptyWidgetDefinition()
-        })
+      this.setState({
+          showAddWidgetModal: true,
+          newWidget: getEmptyWidgetDefinition()
+      })
+    }
+
+    filterModalEnabler = () => {
+      this.setState({
+        showFilterModal: true,
+        selectedFilter: getEmptyFilterDefinition()
+      })
     }
 
     newWidgetChangeHandler = (keyToUpdate, updatedValue) => {
-        let updatedNewWidget = Object.assign({}, this.state.newWidget)
-        updatedNewWidget[keyToUpdate] = updatedValue
-        this.setState({
-            newWidget: updatedNewWidget
-        })
+      let updatedNewWidget = Object.assign({}, this.state.newWidget)
+      updatedNewWidget[keyToUpdate] = updatedValue
+      this.setState({
+          newWidget: updatedNewWidget
+      })
+    }
+
+    // Updates the filter definition in this component's state
+    // called by fields in filter modal
+    updateFilterDefinition = (keyToUpdate, updatedValue) => {
+      let newFilterDefinition = Object.assign({}, this.state.selectedFilter)
+      newFilterDefinition[keyToUpdate] = updatedValue
+      this.setState({selectedFilter: newFilterDefinition})
+    }
+
+    saveNewFilter = () => {
+      const {selectedFilter} = this.state
+      let newFilterValues = this.state.filterValues
+      newFilterValues[selectedFilter.label] = DEFAULT_FILTER_VALUES[selectedFilter.type]
+      this.setState({
+        showFilterModal: false,
+        filterValues: newFilterValues
+      },() => {
+        this.props.filterAdditionHandler(
+          this.props.selectedDashboardIndex,
+          this.state.selectedFilter
+        )
+      })
     }
 
     saveNewWidget = () => {
-        this.props.widgetAdditionHandler(this.props.selectedDashboardIndex, this.state.newWidget)
-        let widgetApiParams = this.state.widgetApiParams.slice()
-        widgetApiParams.push({})
-        this.setState({
-            showAddWidgetModal: false,
-            widgetApiParams: widgetApiParams
-        })
+      this.props.widgetAdditionHandler(this.props.selectedDashboardIndex, this.state.newWidget)
+      let widgetApiParams = this.state.widgetApiParams.slice()
+      widgetApiParams.push({})
+      this.setState({
+          showAddWidgetModal: false,
+          widgetApiParams: widgetApiParams
+      })
     }
 
     // Updates the definition of selected widget
     updateWidgetData = (keyToUpdate, updatedValue) => {
-        let selectedWidgetNewDefinition = Object.assign({}, this.state.selectedWidget)
-        selectedWidgetNewDefinition[keyToUpdate] = updatedValue
-        this.setState({
-            selectedWidget: selectedWidgetNewDefinition
-        })
+      let selectedWidgetNewDefinition = Object.assign({}, this.state.selectedWidget)
+      selectedWidgetNewDefinition[keyToUpdate] = updatedValue
+      this.setState({
+          selectedWidget: selectedWidgetNewDefinition
+      })
     }
 
     // Passes the updated widget data saved in the state to the dashboard container
     // and closes the edit widget modal
     saveUpdatedWidgetData = () => {
-        if (isJsonString(this.state.editorContent)) {
-            let updatedWidgetDefinition = Object.assign({}, this.state.selectedWidget)
-            updatedWidgetDefinition.chartStyles = JSON.parse(this.state.editorContent)
-            this.props.updateWidgetDefinition(0, this.selectedWidgetIndex, updatedWidgetDefinition)
-            this.setState({
-                showEditWidgetModal: false
-            })
-        } else {
-            console.error(INCORRECT_JSON_ERROR)
-        }
+      if (isJsonString(this.state.editorContent)) {
+          let updatedWidgetDefinition = Object.assign({}, this.state.selectedWidget)
+          updatedWidgetDefinition.chartStyles = JSON.parse(this.state.editorContent)
+          this.props.updateWidgetDefinition(0, this.selectedWidgetIndex, updatedWidgetDefinition)
+          this.setState({
+              showEditWidgetModal: false
+          })
+      } else {
+          console.error(INCORRECT_JSON_ERROR)
+      }
     }
 
     updateEditorContent = (updatedEditorContent) => {
-        this.setState({
-            editorContent: updatedEditorContent
-        })
+      this.setState({
+          editorContent: updatedEditorContent
+      })
+    }
+
+    filterModalVisibilityEnabler = (filterIndex) => {
+      const {dashboardDefinition} = this.props
+      this.setState({
+        selectedFilter: dashboardDefinition.filters[filterIndex],
+        showFilterModal: true
+      })
     }
 
   render() {
@@ -154,10 +204,54 @@ export default class Dashboard extends Component {
       widgetResizeHandler,
       widgetRepositionHandler,
       updateDashboardDefinition,
-      selectedDashboardIndex
+      selectedDashboardIndex,
+      deleteFilter,
+      filterResizeHandler,
+      filterRepositionHandler
     } = this.props
     let currentWidgetParams = this.state.widgetApiParams[this.selectedWidgetIndex]
-    const {selectedWidget, editorContent, newWidget} = this.state
+    const {selectedWidget, editorContent, newWidget, selectedFilter} = this.state
+    const filterModalContent =
+      selectedFilter?
+      <div className="row">
+        <div className="col-md-12">
+          <label className="col-md-4">Filter Label: </label>
+          <input 
+            type="text"
+            ref="filterLabel"
+            value={selectedFilter.label}
+            onChange={(event)=>this.updateFilterDefinition('label', event.target.value)}
+          />
+        </div>
+        <div className="col-md-12">
+          <label className="col-md-4">Filter Type: </label>
+          <div className="col-md-5" style={{paddingLeft: '0', paddingRight: '35px'}}>
+            <Select
+              options={FILTER_TYPES}
+              value={selectedFilter.type}
+              onChange={(format)=>this.updateFilterDefinition(
+                'type',
+                format?format.value:null
+              )}
+            />
+          </div>
+        </div>
+        {(selectedFilter.type === 'dropdown')?
+          <div className="col-md-12">
+            <label className="col-md-4">Api Url: </label>
+            <input 
+              type="text"
+              ref="filterLabel"
+              value={selectedFilter.apiUrl}
+              onChange={(event)=>this.updateFilterDefinition('apiUrl', event.target.value)}
+            />
+          </div>
+        :
+          null
+        }
+      </div>
+      :
+      null
     const modalContent =
       selectedWidget?
         <div className="row">
@@ -275,6 +369,9 @@ export default class Dashboard extends Component {
         <button className="btn btn-info" onClick={this.addWidgetModalenabler}>
           Add a new widget
         </button>
+        <button className="btn btn-info" onClick={this.filterModalEnabler}>
+          Add a new filter
+        </button>
         <input
           type='text'
           ref='widgetTitle'
@@ -282,6 +379,20 @@ export default class Dashboard extends Component {
           onChange={(event)=>updateDashboardDefinition(0, 'styles', {background:event.target.value})}
         />
         <div id="dashboardArea" style={dashboardDefinition.styles}>
+          {
+            dashboardDefinition.filters.map((filter, index) => 
+              <Filter
+                key={index}
+                index={index}
+                filterDefinition={filter}
+                updateFilterValues={this.updateFilterValues}
+                deleteFilter={deleteFilter}
+                selectedDashboardIndex={selectedDashboardIndex}
+                filterResizeHandler={filterResizeHandler}
+                filterRepositionHandler={filterRepositionHandler}
+                modalVisibilityEnabler={this.filterModalVisibilityEnabler}
+              />
+            )}
           {
             dashboardDefinition.widgets.map((widget, index) =>
               <Widget
@@ -310,6 +421,14 @@ export default class Dashboard extends Component {
             modalHeader='Add new widget'
             modalContent={addWidgetModalContent}
             saveChanges={this.saveNewWidget}
+          />
+          <HidashModal
+            modalId='filterModal'
+            closeModal={()=>this.setState({showFilterModal: false})}
+            showModal={this.state.showFilterModal}
+            modalHeader='Filter'
+            modalContent={filterModalContent}
+            saveChanges={this.saveNewFilter}
           />
         </div>
       </div>

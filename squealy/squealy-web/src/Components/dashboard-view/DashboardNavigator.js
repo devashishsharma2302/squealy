@@ -27,7 +27,11 @@ export default class DashboardNavigator extends Component {
       widgetResizeHandler,
       widgetRepositionHandler,
       updateDashboardDefinition,
-      updateWidgetDefinition
+      updateWidgetDefinition,
+      filterAdditionHandler,
+      filterResizeHandler,
+      filterRepositionHandler,
+      deleteFilter
     } = this.props
     const dashboard_tabs = dashboardDefinition.map((dashboard, i)=>{
       return (
@@ -46,6 +50,10 @@ export default class DashboardNavigator extends Component {
                 updateWidgetDefinition={updateWidgetDefinition}
                 updateDashboardDefinition={updateDashboardDefinition}
                 selectedDashboardIndex={selectedDashboardIndex}
+                filterAdditionHandler={filterAdditionHandler}
+                deleteFilter={deleteFilter}
+                filterResizeHandler={filterResizeHandler}
+                filterRepositionHandler={filterRepositionHandler}
               />
             </div>
           </div>

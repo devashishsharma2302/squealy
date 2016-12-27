@@ -45,6 +45,14 @@ export default class DashboardContainer extends Component {
     })
   }
 
+  filterAdditionHandler = (dashboardDefinitionIndex, newFilter) => {
+    let newDashboardDefinitions = this.state.dashboardDefinitions.slice()
+    newDashboardDefinitions[dashboardDefinitionIndex].filters.push(newFilter)
+    this.setState({
+      dashboardDefinitions: newDashboardDefinitions
+    })
+  }
+
   saveDashboard = () => {
     let apiUrl = APIURI+'/squealy-dashboard-design/'
     let requestData = {dashboards: this.state.dashboardDefinitions.slice()}
@@ -64,7 +72,7 @@ export default class DashboardContainer extends Component {
 
   // Updates the widget's size in the main state
   widgetResizeHandler = (dashboardIndex, widgetIndex, width, height) => {
-    let newDashboardDefinitions = this.state.dashboardDefinitions
+    let newDashboardDefinitions = this.state.dashboardDefinitions.slice()
     newDashboardDefinitions[dashboardIndex].widgets[widgetIndex].width = width
     newDashboardDefinitions[dashboardIndex].widgets[widgetIndex].height = height
     this.setState({dashboardDefinitions: newDashboardDefinitions})
@@ -84,6 +92,26 @@ export default class DashboardContainer extends Component {
   updateDashboardDefinition = (dashboardIndex, keyToUpdate, updatedValue) => {
     let newDashboardDefinitions = this.state.dashboardDefinitions.slice()
     newDashboardDefinitions[dashboardIndex][keyToUpdate] = updatedValue
+    this.setState({dashboardDefinitions: newDashboardDefinitions})
+  }
+
+  filterRepositionHandler = (dashboardIndex, filterIndex, top, left) => {
+    let newDashboardDefinitions = this.state.dashboardDefinitions.slice()
+    newDashboardDefinitions[dashboardIndex].filters[filterIndex].top = top
+    newDashboardDefinitions[dashboardIndex].filters[filterIndex].left = left
+    this.setState({dashboardDefinitions: newDashboardDefinitions})
+  }
+
+  filterResizeHandler = (dashboardIndex, filterIndex, width, height) => {
+    let newDashboardDefinitions = this.state.dashboardDefinitions.slice()
+    newDashboardDefinitions[dashboardIndex].filters[filterIndex].width = width
+    newDashboardDefinitions[dashboardIndex].filters[filterIndex].height = height
+    this.setState({dashboardDefinitions: newDashboardDefinitions})
+  }
+
+  deleteFilter = (dashboardIndex, filterIndex) => {
+    let newDashboardDefinitions = JSON.parse(JSON.stringify(this.state.dashboardDefinitions.slice()))
+    newDashboardDefinitions[dashboardIndex].filters.splice(filterIndex,1)
     this.setState({dashboardDefinitions: newDashboardDefinitions})
   }
 
@@ -109,6 +137,10 @@ export default class DashboardContainer extends Component {
           widgetResizeHandler={this.widgetResizeHandler}
           updateWidgetDefinition={this.updateWidgetDefinition}
           updateDashboardDefinition={this.updateDashboardDefinition}
+          filterAdditionHandler={this.filterAdditionHandler}
+          deleteFilter={this.deleteFilter}
+          filterRepositionHandler={this.filterRepositionHandler}
+          filterResizeHandler={this.filterResizeHandler}
         />
       </div>
     )

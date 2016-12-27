@@ -12,16 +12,6 @@ const style = {
   justifyContent: 'center',
 };
 
-const tempChartData = {
-    cols: [{id: 'task', label: 'Task', type: 'string'},
-           {id: 'hours', label: 'Hours', type: 'number'},
-           {id: 'revenue', label: 'Amount', type: 'number'}],
-    rows: [{c:[{v: 'Work'}, {v: 11}, {v: 8}]},
-           {c:[{v: 'Eat'}, {v: 2}, {v: 6}]},
-           {c:[{v: 'Commute'}, {v: 6}, {v: 4}]},
-           {c:[{v: 'Watch TV'}, {v:8}, {v: 2}]},
-           {c:[{v: 'Sleep'}, {v:7}, {v: 10}]}]
-    }
 
 export default class Widget extends Component {
 
@@ -66,7 +56,12 @@ export default class Widget extends Component {
   // Updates the size of the widget in the state of dashboard container
   widgetSizeUpdator = () => {
     const {selectedDashboardIndex, index} = this.props
-    this.props.widgetResizeHandler(selectedDashboardIndex, index, this.state.width, this.state.height)
+    this.props.widgetResizeHandler(
+      selectedDashboardIndex,
+      index,
+      this.state.width,
+      this.state.height
+    )
   }
 
 
