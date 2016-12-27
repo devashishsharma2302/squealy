@@ -32,9 +32,9 @@ export function postApiRequest(uri, data, onSuccessCallback,
  * @params {Object} data - The object that represents the contents of the
  * request being sent
  */
-export function getApiRequest(uri, id, onSuccessCallback, onFailureCallback,
+export function getApiRequest(uri, data, onSuccessCallback, onFailureCallback,
                               interval) {
-  postData(uri, id, 'GET', onSuccessCallback, onFailureCallback, interval)
+  postData(uri, data, 'GET', onSuccessCallback, onFailureCallback, interval)
 }
 
 /**
