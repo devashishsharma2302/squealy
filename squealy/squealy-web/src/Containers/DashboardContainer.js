@@ -73,10 +73,8 @@ export default class DashboardContainer extends Component {
   widgetDeletionHandler = (dashboardDefinitionIndex, widgetIndex) => {
     let newDashboardDefinitions = JSON.parse(JSON.stringify(this.state.dashboardDefinitions))
     delete newDashboardDefinitions[dashboardDefinitionIndex].widgets[widgetIndex]
-
-    //newdashboardDefinitions[dashboardDefinitionIndex] = newDashboardDef
     this.setState({
-      dashboardDefinitions: newDashboardDefinitions,
+      dashboardDefinitions: newDashboardDefinitions
       })
   }
 

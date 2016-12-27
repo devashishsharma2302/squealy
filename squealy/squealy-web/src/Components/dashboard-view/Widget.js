@@ -97,7 +97,7 @@ export default class Widget extends Component {
                   />
             <img src={DeleteIcon}
                  className='delete-icon'
-                 onClick={()=>(dashboardIndex, index)}
+                 onClick={()=>widgetDeletionHandler(dashboardIndex, index)}
             />
           </div>
           <GoogleChartComponent config={{
