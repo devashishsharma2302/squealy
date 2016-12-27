@@ -127,10 +127,11 @@ export function getEmptyApiDefinition() {
 
 export function getEmptyDashboardDefinition() {
   return {
-    apiName: 'Untitled Dashboard 0',
+    apiName: 'Untitled Dashboard',
     styles: {background: '#e6e6e6'},
     widgets: [],
-    filters: []
+    filters: [],
+    widgetsParams: []
   }
 }
 
@@ -298,6 +299,7 @@ function formattedData(data, index) {
     'validations': data.validations,
     'query': data.sqlQuery,
     'transformations': data.transformations,
+    'selectedTransformations': data.selectedTransformations || [],
     'format': RESPONSE_FORMATS[format].formatter
   }
   if(data.columns) {
