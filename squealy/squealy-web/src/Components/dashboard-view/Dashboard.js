@@ -32,7 +32,6 @@ export default class Dashboard extends Component {
             editorContent: null,
             newWidget: null,
             newWidgetApiParams: {},
-            widgetApiParams: [],
             apiParamMessage: ''
         }
     }
@@ -156,7 +155,7 @@ export default class Dashboard extends Component {
         if (isJsonString(this.state.editorContent)) {
             let updatedWidgetDefinition = Object.assign({}, this.state.selectedWidget)
             updatedWidgetDefinition.chartStyles = JSON.parse(this.state.editorContent)
-            this.props.updateWidgetDefinition(this.props.selectedDashboardIndex, this.selectedWidgetIndex, updatedWidgetDefinition)
+            this.props.updateWidgetDefinition(this.props.dashboardIndex, this.selectedWidgetIndex, updatedWidgetDefinition)
             this.setState({
                 showEditWidgetModal: false
             })
@@ -179,7 +178,8 @@ export default class Dashboard extends Component {
       widgetRepositionHandler,
       updateDashboardDefinition,
       selectedDashboardIndex,
-      dashboardIndex
+      dashboardIndex,
+      googleDefined
     } = this.props
     const {selectedWidget, editorContent, newWidget, newWidgetApiParams} = this.state
     const modalContent =
@@ -345,6 +345,7 @@ export default class Dashboard extends Component {
                 widgetData={widget}
                 dashboardIndex={dashboardIndex}
                 widgetDeletionHandler={widgetDeletionHandler}
+                googleDefined={googleDefined}
               />
             )
           }

@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Tabs, Tab, TabList} from 'react-bootstrap'
+import {Tabs, Tab, TabList, DropdownButton, MenuItem} from 'react-bootstrap'
 import Dashboard from './Dashboard'
 import {HidashModal} from '../HidashUtilsComponents'
 
@@ -7,6 +7,10 @@ import {HidashModal} from '../HidashUtilsComponents'
 export default class DashboardNavigator extends Component {
   constructor() {
     super()
+    this.state = {
+      showRenameModal: false,
+      currentName: ''
+    }
   }
 
   handleSelect = (key, e) => {
@@ -17,7 +21,7 @@ export default class DashboardNavigator extends Component {
       this.props.selectDashboard(key)
     }
   }
-  
+
   render() {
     const {
       saveDashboard,
@@ -25,16 +29,53 @@ export default class DashboardNavigator extends Component {
       widgetAdditionHandler,
       widgetDeletionHandler,
       selectedDashboardIndex,
+      deleteDashboard,
       widgetResizeHandler,
       widgetRepositionHandler,
       updateDashboardDefinition,
-      updateWidgetDefinition
+      updateWidgetDefinition,
+      googleDefined
     } = this.props
-    const dashboard_tabs = dashboardDefinition.map((dashboard, index)=>{
+
+    const RenameModalContent =  <div className="row">
+         <div className="col-md-12">
+           <label className='col-md-4'>Dashboard Name: </label>
+           <input
+             type='text'
+             ref='dashboardRenameModal'
+             value={this.state.currentName}
+             onChange={()=>{this.setState({currentName: this.refs.dashboardRenameModal.value})}}
+           />
+         </div>
+       </div>
+    const dashboardTabs = dashboardDefinition.map((dashboard, index)=>{
+      const tabTitle = (
+        <div className='dashboard-tab'>
+          {dashboard.apiName}
+          <DropdownButton
+            bsSize="small"
+            style={{
+            borderColor: '#fff'
+            }}
+            id={'ddbtn-tab-' + index}
+            title=""
+          >
+            <MenuItem eventKey="1" onClick={() => {deleteDashboard(i)}}>
+              <i className="fa fa-trash" /> Delete Dashboard
+            </MenuItem>
+            <MenuItem eventKey="2"  onClick={()=>{this.setState({showRenameModal: true})}}>
+              <i className="fa fa-i-cursor" /> Rename Dashboard
+            </MenuItem>
+            <MenuItem eventKey="3" onClick={() => {}}>
+              <i className="fa fa-close" /> Close Dashboard
+            </MenuItem>
+          </DropdownButton>
+        </div>
+      )
       return (
         <Tab
           key={index}
-          title={'Dashboard-'+index}
+          title={selectedDashboardIndex==index?tabTitle:dashboard.apiName}
           eventKey={index}
         >
           <div className="panel panel-default">
@@ -49,15 +90,14 @@ export default class DashboardNavigator extends Component {
                 selectedDashboardIndex={selectedDashboardIndex}
                 widgetDeletionHandler={widgetDeletionHandler}
                 dashboardIndex={index}
+                googleDefined={googleDefined}
               />
             </div>
           </div>
         </Tab>
       )
     })
-
-    return(
-
+    return(<div>
         <Tabs
         bsStyle="tabs"
         animation={true}
@@ -65,7 +105,7 @@ export default class DashboardNavigator extends Component {
         onSelect={this.handleSelect}
         id='dashboard-tabs'
          >
-        {dashboard_tabs}
+        {dashboardTabs}
         <Tab
           style={{
             borderColor: '#fff'
@@ -77,6 +117,16 @@ export default class DashboardNavigator extends Component {
           eventKey="add_tab"
         />
       </Tabs>
+      <HidashModal
+        modalId='RenameDashboardModal'
+        closeModal={()=>this.setState({showRenameModal: false})}
+        showModal={this.state.showRenameModal}
+        modalHeader='Rename Dashboard'
+        modalContent={RenameModalContent}
+        saveChanges={()=>{updateDashboardDefinition(selectedDashboardIndex,'apiName',this.state.currentName);
+          this.setState({showRenameModal: false})}}
+      />
+      </div>
     )
   }
 }

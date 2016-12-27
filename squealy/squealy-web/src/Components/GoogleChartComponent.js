@@ -9,20 +9,22 @@ export default class GoogleChartWrapper extends Component {
   }
 
   renderChart = (config) => {
-    var wrapper = new google.visualization.ChartWrapper({
-      chartType: config.chartType,
-      dataTable: config,
-      containerId: 'widget' + config.index,
-      options: {
-        ...config.chartStyles,
-        'height': config.height,
-        'width': config.width,
-      }
-    });
-    wrapper.draw();
+    if(typeof google !== 'undefined' && typeof google.visualization !== 'undefined' && typeof google.visualization.ChartWrapper !== 'undefined') {
+      let wrapper = new google.visualization.ChartWrapper({
+        chartType: config.chartType,
+        dataTable: config,
+        containerId: 'widget' + config.index,
+        options: {
+          ...config.chartStyles,
+          'height': config.height,
+          'width': config.width,
+        }
+      });
+      wrapper.draw();
+    }
   }
 
-  componentDidUpdate(nextProps) {
+  componentDidUpdate() {
     this.renderChart(this.props.config)
   }
 

@@ -127,9 +127,10 @@ export function getEmptyApiDefinition() {
 
 export function getEmptyDashboardDefinition() {
   return {
-    apiName: 'Untitled Dashboard 0',
+    apiName: 'Untitled Dashboard',
     styles: {background: '#e6e6e6'},
-    widgets: []
+    widgets: [],
+    widgetsParams: []
   }
 }
 
@@ -296,7 +297,7 @@ function formattedData(data, index) {
 
 
 // The following function loads the google charts JS files
-export function googleChartLoader(version, packages) {
+export function googleChartLoader(onSuccess, version, packages) {
   var options = {
     dataType: 'script',
     cache: true,
@@ -304,7 +305,8 @@ export function googleChartLoader(version, packages) {
   };
   jQuery.ajax(options).done(function(){
     google.charts.load(version || 'current', {
-      packages: packages || ['corechart']
+      packages: packages || ['corechart'],
+      'callback': onSuccess
     });
   });
 }

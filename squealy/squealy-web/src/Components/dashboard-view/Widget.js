@@ -61,9 +61,10 @@ export default class Widget extends Component {
       deleteWidget,
       widgetDeletionHandler,
       dashboardIndex,
+      googleDefined
     } = this.props
     return(
-      (widgetData)?
+      (widgetData && googleDefined)?
         <Rnd
           x={widgetData.left}
           y={widgetData.top}
