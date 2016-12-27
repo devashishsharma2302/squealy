@@ -455,7 +455,6 @@ export default class Dashboard extends Component {
           onChange={(event)=>updateDashboardDefinition(dashboardIndex, 'styles', {background:event.target.value})}
         />
         <div id="dashboardArea" style={dashboardDefinition.styles}>
-          {dashboardDefinition.filters?
             dashboardDefinition.filters.map((filter, index) => 
               <Filter
                 key={index}
@@ -470,8 +469,6 @@ export default class Dashboard extends Component {
                 modalVisibilityEnabler={this.filterModalVisibilityEnabler}
               />
             )
-            :
-            null
           }
           {
             dashboardDefinition.widgets.map((widget, index) =>
