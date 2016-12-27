@@ -31,8 +31,7 @@ export default class Dashboard extends Component {
             selectedWidget: null,
             editorContent: null,
             newWidget: null,
-            newWidgetApiParams: {},
-            apiParamMessage: ''
+            newWidgetApiParams: {}
         }
     }
 
@@ -40,55 +39,78 @@ export default class Dashboard extends Component {
 
     //Add a new parameter
     addParam = () => {
-        const { dashboardDefinition, dashboardIndex, updateWidgetDefinition } = this.props
-        let newWidgetDefinition = dashboardDefinition.widgets[this.selectedWidgetIndex]
+        let newWidgetDefinition = JSON.parse(JSON.stringify(this.state.selectedWidget))
         newWidgetDefinition.apiParams[''] = ''
-        updateWidgetDefinition(dashboardIndex, this.selectedWidgetIndex, newWidgetDefinition)
         this.setState({
             selectedWidget: newWidgetDefinition
         })
     }
 
     //Update Parameter For API
-    updateParam = (currentKey, newKey, newValue) => {
-        const { dashboardDefinition, dashboardIndex, updateWidgetDefinition } = this.props
-        let newWidgetDefinition = dashboardDefinition.widgets[this.selectedWidgetIndex]
-        let newParams = JSON.parse(JSON.stringify(newWidgetDefinition.apiParams))
-
-        if (currentKey == '') {
-          delete newParams['']
+    updateParamKey = (currentKey, newKey) => {
+        let newWidgetDefinition = JSON.parse(JSON.stringify(this.state.selectedWidget))
+        let newParams = newWidgetDefinition.apiParams
+        
+        if (currentKey !== newKey) {
+          if(!newParams.hasOwnProperty(newKey)) {
+            newParams[newKey] = newParams[currentKey]
+            delete newParams[currentKey]
+          }
+          else {
+            delete newParams[currentKey]
+          }
         }
-        newParams[newKey] = newValue
         newWidgetDefinition.apiParams = newParams
-        updateWidgetDefinition(dashboardIndex, this.selectedWidgetIndex, newWidgetDefinition)
         this.setState({
             selectedWidget: newWidgetDefinition
         })
-  }
+    }
+
+    updateParamValue = (key, newValue) => {
+        let newWidgetDefinition = JSON.parse(JSON.stringify(this.state.selectedWidget))
+        let newParams = newWidgetDefinition.apiParams
+        if (newParams.hasOwnProperty(key)) {
+          newParams[key] = newValue
+        }
+        newWidgetDefinition.apiParams = newParams
+        this.setState({
+            selectedWidget: newWidgetDefinition
+        })
+    }
 
     //Delete Api parameter
     deleteParam = (key) => {
-        const { dashboardDefinition, dashboardIndex, updateWidgetDefinition } = this.props
-        let newWidgetDefinition = dashboardDefinition.widgets[this.selectedWidgetIndex]
+        let newWidgetDefinition = JSON.parse(JSON.stringify(this.state.selectedWidget))
         let newParams = newWidgetDefinition.apiParams
         delete newParams[key]
         newWidgetDefinition.apiParams = newParams
-        updateWidgetDefinition(dashboardIndex, this.selectedWidgetIndex, newWidgetDefinition)
         this.setState({
             selectedWidget: newWidgetDefinition
         })
     }
 
-    updateNewParam = (currentKey, newKey, newValue) => {
+    updateNewParamKey = (currentKey, newKey) => {
         let newParams = JSON.parse(JSON.stringify(this.state.newWidgetApiParams))
-        if (currentKey == '') {
-          delete newParams['']
+        if (currentKey !== newKey) {
+          if(!newParams.hasOwnProperty(newKey)) {
+            newParams[newKey] = newParams[currentKey]
+            delete newParams[currentKey]
+          }
+          else {
+            delete newParams[currentKey]
+          }
         }
-        newParams[newKey] = newValue
         this.setState({newWidgetApiParams: newParams})
         this.newWidgetChangeHandler('apiParams', newParams)
     }
-    
+    updateNewParamValue = (key, newValue) => {
+        let newParams = JSON.parse(JSON.stringify(this.state.newWidgetApiParams))
+        if (newParams.hasOwnProperty(key)) {
+          newParams[key] = newValue
+        }
+        this.setState({newWidgetApiParams: newParams})
+        this.newWidgetChangeHandler('apiParams', newParams)
+    }
     addParamToNewWidget = () => {
         let newParams = Object.assign({}, this.state.newWidgetApiParams)
         newParams[''] = ''
@@ -142,7 +164,7 @@ export default class Dashboard extends Component {
 
     // Updates the definition of selected widget
     updateWidgetData = (keyToUpdate, updatedValue) => {
-        let selectedWidgetNewDefinition = Object.assign({}, this.state.selectedWidget)
+        let selectedWidgetNewDefinition = JSON.parse(JSON.stringify(this.state.selectedWidget))
         selectedWidgetNewDefinition[keyToUpdate] = updatedValue
         this.setState({
             selectedWidget: selectedWidgetNewDefinition
@@ -153,7 +175,7 @@ export default class Dashboard extends Component {
     // and closes the edit widget modal
     saveUpdatedWidgetData = () => {
         if (isJsonString(this.state.editorContent)) {
-            let updatedWidgetDefinition = Object.assign({}, this.state.selectedWidget)
+            let updatedWidgetDefinition = JSON.parse(JSON.stringify(this.state.selectedWidget))
             updatedWidgetDefinition.chartStyles = JSON.parse(this.state.editorContent)
             this.props.updateWidgetDefinition(this.props.dashboardIndex, this.selectedWidgetIndex, updatedWidgetDefinition)
             this.setState({
@@ -206,11 +228,6 @@ export default class Dashboard extends Component {
           </div>
           <div className="col-md-12">
           <h5>API Parameters:</h5>
-          { this.state.apiParamMessage ? <div className="alert alert-info">
-              <strong>Info!</strong> {this.state.apiParamMessage}
-              </div> :
-            null
-          }
           <table className="table table-bordered">
 
             <thead>
@@ -225,9 +242,9 @@ export default class Dashboard extends Component {
                 selectedWidget.apiParams ?
                   Object.keys(selectedWidget.apiParams).map((key, index) => {
                     return (
-                      <tr key={index}>
-                        <td> <input value={key} onChange={(e) => this.updateParam(key, e.target.value, selectedWidget.apiParams[key])} placeholder='Enter Parameter' /></td>
-                        <td> <input value={selectedWidget.apiParams[key]} onChange={(e) => this.updateParam(key, key, e.target.value)} placeholder="Enter Value" /></td>
+                      <tr key={key}>
+                        <td> <input defaultValue={key} onBlur={(e) => this.updateParamKey(key, e.target.value)} placeholder='Enter Parameter' /></td>
+                        <td> <input defaultValue={selectedWidget.apiParams[key]} onBlur={(e) => this.updateParamValue(key, e.target.value)} placeholder="Enter Value" /></td>
                         <td onClick={()=>{this.deleteParam(key)}}><i className="fa fa-trash"/></td>
                       </tr>
                     )
@@ -307,9 +324,9 @@ export default class Dashboard extends Component {
                 newWidgetApiParams ?
                   Object.keys(newWidgetApiParams).map((key, index) => {
                     return (
-                      <tr key={index}>
-                        <td> <input value={key} onChange={(e) => this.updateNewParam(key, e.target.value, newWidgetApiParams[key])} placeholder='Enter Parameter' /></td>
-                        <td> <input value={newWidgetApiParams[key]} onChange={(e) => this.updateNewParam(key, key, e.target.value)} placeholder="Enter Value" /></td>
+                      <tr key={key}>
+                        <td> <input defaultValue={key} onBlur={(e) => this.updateNewParamKey(key, e.target.value)} placeholder='Enter Parameter' /></td>
+                        <td> <input defaultValue={newWidgetApiParams[key]} onBlur={(e) => this.updateNewParamValue(key, e.target.value)} placeholder="Enter Value" /></td>
                         <td onClick={()=>{this.deleteNewParam(key)}}><i className="fa fa-trash"/></td>
                       </tr>
                     )
