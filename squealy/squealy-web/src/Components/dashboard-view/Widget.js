@@ -38,8 +38,16 @@ export default class Widget extends Component {
   }
 
   componentDidMount() {
-    this.setState({headerHeight: this.refs.header.offsetHeight})
-  }
+   if(this.refs.header && this.refs.header.offsetHeight) {
+     this.setHeaderHeight()
+   } else {
+     setTimeout(this.setHeaderHeight, 2000)
+   }
+ }
+
+ setHeaderHeight = () => {
+   this.setState({headerHeight: this.refs.header.offsetHeight})
+ }
 
   // Sets the width and height of the widget and rnd component in widget's state
   widgetResizeHandler = (direction, styleSize) => {

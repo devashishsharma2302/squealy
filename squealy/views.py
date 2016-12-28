@@ -15,7 +15,7 @@ from django.shortcuts import render
 from django.conf import settings
 
 import squealy
-from squealy.exceptions import RequiredParameterMissingException
+from squealy.exceptions import RequiredParameterMissingException, DashboardNotFoundException
 from squealy.transformers import *
 from squealy.formatters import *
 from squealy.parameters import *
@@ -143,6 +143,25 @@ class DynamicApiRouter(APIView):
         response = url(r'', include(urls)).resolve(url_path.split('/squealy-apis/')[1]).func(request)
         return response
 
+class DashboardTemplateView(APIView):
+    permission_classes = SquealySettings.get_default_permission_classes()
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
+
+    def get(self, request, api_name=None):
+        if not api_name:
+            raise DashboardNotFoundException('Parameter Required - dashboard api-name not provided in url')
+        file_dir = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
+        filename = SquealySettings.get('DASHBOARD_FILE_NAME', 'squealy_dashboard.yaml')
+        file_path = join(file_dir, filename)
+        dashboard = {}
+        with open(file_path) as f:
+            dashboards_config = yaml.load_all(f)
+            for config in dashboards_config:
+                if config.get('apiName', '').lower().replace(' ', '-') == api_name:
+                    dashboard = config
+
+        return render(request, 'squealy-dashboard.html', {'dashboard': json.dumps(dashboard)})
 
 class DashboardApiView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
