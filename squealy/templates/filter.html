@@ -1,0 +1,71 @@
+{% extends 'squealy-dashboard-base.html' %}
+{% block body %}
+
+{% block css %}
+<style>
+    .filter-wrapper {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+
+    }
+
+    .filter-label {
+        font-weight: bold;
+        margin-right: 5px;
+        margin-top: 5px;
+    }
+</style>
+{% endblock %}
+<div>
+    <div class="filter-wrapper"
+         style="position: absolute;
+                width: {{filter.width}};
+                height: {{filter.height}};
+                top: {{filter.top}};
+                left: {{filter.left}}" >
+        <label class="filter-label">
+        {{filter.label}}
+        </label>
+        {% if filter.type == 'date' %}
+            <input type="date" id="{{filter.label}}"/>
+        {% elif filter.type == 'input'%}
+            <input type="text" id="{{filter.label}}"/>
+        {% elif filter.type == 'dateTime'%}
+            <input type="datetime-local" id="{{filter.label}}"/>
+        {% elif filter.type == 'dropdown'%}
+            <select id="filter_{{forloop.counter}}">
+            </select>
+            <script>
+                getOptions('{{filter.apiUrl}}', 'filter_{{forloop.counter}}')
+            </script>
+
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+
+{% block custom_scripts %}
+<script>
+    getOptions = function(url, id) {
+    console.log(url, id)
+    var apiUrl = window.location.origin + '/squealy-apis/'+ url
+    console.log(apiUrl)
+    $.ajax({
+    url: apiUrl,
+    method: 'GET',
+    contentType: 'application/json',
+    success: function (response) {
+        $.each(response.data, function(index, item) {
+            $('#'+id).append(
+                $('<option></option>').text(item[0]).val(item[0])
+            )
+        })
+      }
+  })
+
+    }
+</script>
+{% endblock %}
