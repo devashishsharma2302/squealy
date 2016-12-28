@@ -38,6 +38,15 @@ export default class Widget extends Component {
   }
 
   componentDidMount() {
+    if(this.refs.header && this.refs.header.offsetHeight) {
+      this.setHeaderHeight()
+    } else {
+      // FIXME: Find a work around to avoid timeout
+      setTimeout(this.setHeaderHeight, 2000)
+    }
+  }
+
+  setHeaderHeight = () => {
     this.setState({headerHeight: this.refs.header.offsetHeight})
   }
 
