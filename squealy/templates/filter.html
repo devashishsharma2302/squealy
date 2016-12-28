@@ -35,7 +35,7 @@
         {% elif filter.type == 'dateTime'%}
             <input type="datetime-local" id="{{filter.label}}"/>
         {% elif filter.type == 'dropdown'%}
-            <select id="filter_{{forloop.counter}}">
+            <select onchange='updateFilterValues(event)' id="filter_{{forloop.counter}}">
             </select>
             <script>
                 getOptions('{{filter.apiUrl}}', 'filter_{{forloop.counter}}')
@@ -49,7 +49,11 @@
 
 {% block custom_scripts %}
 <script>
-    getOptions = function(url, id) {
+    var updateFilterValues = function(e) {
+        filterValues['{{filter.label}}'] = e.target.value
+        loadCharts()
+    }
+    var getOptions = function(url, id) {
     var apiUrl = window.location.origin + '/squealy-apis/'+ url
     $.ajax({
     url: apiUrl,

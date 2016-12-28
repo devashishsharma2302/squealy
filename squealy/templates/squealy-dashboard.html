@@ -16,7 +16,50 @@
     {% for filter in dashboard.filters %}
     {% include 'filter.html' %}
     {% endfor %}
+    <div id="widget_container">
     {% for widget in dashboard.widgets %}
     	{% include 'widget.html' %}
     {% endfor %}
+    </div>
 </div>
+
+
+{% block custom_scripts %}
+<script type="text/javascript">
+    loadCharts()
+    function extend(obj, src) {
+       for (var key in src) {
+           if (src.hasOwnProperty(key)) obj[key] = src[key];
+       }
+       return obj;
+    }
+
+    function loadCharts() {
+        google.charts.setOnLoadCallback(drawChart);
+        var params = filterValues
+        function drawChart() {
+          $.each({{dashboard.widgets| safe}}, function(index, widget) {
+            var params = extend(filterValues,widget.apiParams)
+            var apiUrl = window.location.origin + '/squealy-apis/'+ widget.api_url
+                $.ajax({
+                   url: apiUrl,
+                   method: 'GET',
+                   data: params,
+                   contentType: 'application/json',
+                   success: function (response) {
+
+                       var wrapper = new google.visualization.ChartWrapper({
+                            chartType: widget.chartType,
+                            dataTable: response,
+                            containerId: widget.title,
+
+                       });
+                        wrapper.draw();
+                   }
+                })
+          })
+	    }
+    }
+
+</script>
+{% endblock %}
