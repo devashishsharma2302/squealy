@@ -25,3 +25,8 @@ class NumberParseException(APIException):
 class ValidationFailedException(APIException):
     status_code = status.HTTP_403_FORBIDDEN
     pass
+
+
+class DashboardNotFoundException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    pass

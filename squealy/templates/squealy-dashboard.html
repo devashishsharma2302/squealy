@@ -1,0 +1,28 @@
+{% block css %}
+<style>
+    body {
+        margin: 0;
+    }
+</style>
+
+{% endblock %}
+<div style="background: {{dashboard.styles.background}}; height: 100%;width: 100%;">
+    {% for filter in dashboard.filters %}
+    {{filter}}  {{forloop.counter0}}</br>    {% if filter.type == 'dropdown' %}
+    <select id='filter_{{forloop.counter0}}'>
+        <option>
+        </option>>
+    </select>
+    {% endif %}
+    {% endfor %}
+</div>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="   crossorigin="anonymous"></script>
+<script>
+
+    a = {{dashboard.filters}}
+    console.log(typeof a)
+    <!--for (filter in JSON.parse({{dashboard.filters}})) {-->
+    <!--console.log(filter)-->
+    <!--}-->
+
+</script>
