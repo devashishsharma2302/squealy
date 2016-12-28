@@ -1,0 +1,19 @@
+{% block css %}
+<style>
+    body {
+        margin: 0;
+    }
+</style>
+
+{% endblock %}
+<div 
+	style="
+	background: {{dashboard.styles.background}};
+	min-height: 100%;
+	width: 100%;
+	overflow-y: auto"
+>
+    {% for widget in dashboard.widgets %}
+    	{% include 'widget.html' %}
+    {% endfor %}
+</div>
