@@ -50,9 +50,7 @@
 {% block custom_scripts %}
 <script>
     getOptions = function(url, id) {
-    console.log(url, id)
     var apiUrl = window.location.origin + '/squealy-apis/'+ url
-    console.log(apiUrl)
     $.ajax({
     url: apiUrl,
     method: 'GET',
