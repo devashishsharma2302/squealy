@@ -1,0 +1,52 @@
+{% extends 'squealy-dashboard-base.html' %}
+{% block custom_scripts %}
+<script type="text/javascript">
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+	  var apiUrl = window.location.origin + '/squealy-apis/'+ '{{widget.api_url}}'
+	   $.ajax({
+		   url: apiUrl,
+		   method: 'GET',
+		   contentType: 'application/json',
+		   success: function (response) {
+			   var wrapper = new google.visualization.ChartWrapper({
+				    chartType: '{{widget.chartType}}',
+				    dataTable: response,
+				    containerId: '{{widget.title}}',
+				    		    
+				});
+				wrapper.draw();
+		     }
+		 })
+	}
+</script>
+{% endblock %}
+
+{% block body %}
+<div 
+	style="
+	position: absolute;
+	height: {{widget.height}};
+	width: {{widget.width}};
+	top: {{widget.top}};
+	left: {{widget.left}}"
+>
+	<h3 
+		style="
+		background: white;
+        text-align: center;
+        margin: 0;
+        padding: 15px 0 15px 0;
+        display: inline-block;
+        width: 100%;"
+     >
+        {{widget.title}}
+     </h3>
+	<div
+		id='{{widget.title}}'
+		style="height: {{widget.height|add:'-50'}}; width: {{widget.width}}"
+	>
+		
+	</div>
+</div>
+{% endblock %}

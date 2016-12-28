@@ -6,8 +6,17 @@
 </style>
 
 {% endblock %}
-<div style="background: {{dashboard.styles.background}}; height: 100%;width: 100%;">
+<div 
+	style="
+	background: {{dashboard.styles.background}};
+	min-height: 100%;
+	width: 100%;
+	overflow-y: auto"
+>
     {% for filter in dashboard.filters %}
     {% include 'filter.html' %}
+    {% endfor %}
+    {% for widget in dashboard.widgets %}
+    	{% include 'widget.html' %}
     {% endfor %}
 </div>

@@ -38,16 +38,17 @@ export default class Widget extends Component {
   }
 
   componentDidMount() {
-   if(this.refs.header && this.refs.header.offsetHeight) {
-     this.setHeaderHeight()
-   } else {
-     setTimeout(this.setHeaderHeight, 2000)
-   }
- }
+    if(this.refs.header && this.refs.header.offsetHeight) {
+      this.setHeaderHeight()
+    } else {
+      // FIXME: Find a work around to avoid timeout
+      setTimeout(this.setHeaderHeight, 2000)
+    }
+  }
 
- setHeaderHeight = () => {
-   this.setState({headerHeight: this.refs.header.offsetHeight})
- }
+  setHeaderHeight = () => {
+    this.setState({headerHeight: this.refs.header.offsetHeight})
+  }
 
   // Sets the width and height of the widget and rnd component in widget's state
   widgetResizeHandler = (direction, styleSize) => {
