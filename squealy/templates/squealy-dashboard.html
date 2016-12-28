@@ -13,6 +13,9 @@
 	width: 100%;
 	overflow-y: auto"
 >
+    {% for filter in dashboard.filters %}
+    {% include 'filter.html' %}
+    {% endfor %}
     {% for widget in dashboard.widgets %}
     	{% include 'widget.html' %}
     {% endfor %}

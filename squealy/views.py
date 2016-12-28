@@ -161,7 +161,7 @@ class DashboardTemplateView(APIView):
                 if config.get('apiName', '').lower().replace(' ', '-') == api_name:
                     dashboard = config
 
-        return render(request, 'squealy-dashboard.html', {'dashboard': json.dumps(dashboard)})
+        return render(request, 'squealy-dashboard.html', {'dashboard': dashboard})
 
 class DashboardApiView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
