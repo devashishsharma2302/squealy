@@ -29,13 +29,13 @@
         {{filter.label}}
         </label>
         {% if filter.type == 'date' %}
-            <input type="date" id="{{filter.label}}"/>
+            <input type="date" onchange="updateFilterValues('{{filter.label}}', event)" id="{{filter.label}}"/>
         {% elif filter.type == 'input'%}
-            <input type="text" id="{{filter.label}}"/>
+            <input type="text" onchange="updateFilterValues('{{filter.label}}', event)" id="{{filter.label}}"/>
         {% elif filter.type == 'dateTime'%}
-            <input type="datetime-local" id="{{filter.label}}"/>
+            <input type="datetime-local" onchange="updateFilterValues('{{filter.label}}', event)" id="{{filter.label}}"/>
         {% elif filter.type == 'dropdown'%}
-            <select onchange='updateFilterValues(event)' id="filter_{{forloop.counter}}">
+            <select onchange="updateFilterValues('{{filter.label}}', event)" id="filter_{{forloop.counter}}">
             </select>
             <script>
                 getOptions('{{filter.apiUrl}}', 'filter_{{forloop.counter}}')
@@ -49,8 +49,8 @@
 
 {% block custom_scripts %}
 <script>
-    var updateFilterValues = function(e) {
-        filterValues['{{filter.label}}'] = e.target.value
+    var updateFilterValues = function(key, e) {
+        filterValues[key] = e.target.value
         loadCharts()
     }
     var getOptions = function(url, id) {
