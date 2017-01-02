@@ -247,11 +247,9 @@ export default class Dashboard extends Component {
     }
 
     closeChartApiModal = (newApiUrl) => {
-      console.log(newApiUrl)
       let newWidget = JSON.parse(JSON.stringify(this.state.newWidget))
       newWidget.api_url = newApiUrl
-      console.log(newWidget)
-      this.setState({newWidget: newWidget, showChartApiModal: false}, console.log(JSON.stringify(this.state.newWidget)))
+      this.setState({newWidget: newWidget, showChartApiModal: false})
 
     }
 
