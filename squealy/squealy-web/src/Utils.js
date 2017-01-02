@@ -137,10 +137,10 @@ export function getEmptyDashboardDefinition() {
 
 export function getEmptyWidgetDefinition() {
   return {
-    width: 434,
-    height: 300,
-    top:40,
-    left: 40,
+    width: 4,
+    height: 20,
+    top: 7,
+    left: 1,
     title: 'Chart Title',
     chartType: GOOGLE_CHART_TYPE_OPTIONS[7].value,
     chartStyles: {},
@@ -151,10 +151,10 @@ export function getEmptyWidgetDefinition() {
 
 export function getEmptyFilterDefinition() {
   return {
-    width: 300,
+    width: 3,
     height: 50,
-    top:20,
-    left: 20,
+    top:1,
+    left: 1,
     label: 'Fliter Label',
     type: {},
     apiUrl: ''
