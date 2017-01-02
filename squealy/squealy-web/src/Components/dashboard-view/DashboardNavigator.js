@@ -38,7 +38,8 @@ export default class DashboardNavigator extends Component {
       filterResizeHandler,
       filterRepositionHandler,
       deleteFilter,
-      googleDefined
+      googleDefined,
+      saveChartApi
     } = this.props
 
     const RenameModalContent =  <div className="row">
@@ -99,6 +100,7 @@ export default class DashboardNavigator extends Component {
                 widgetDeletionHandler={widgetDeletionHandler}
                 dashboardIndex={index}
                 googleDefined={googleDefined}
+                saveChartApi={saveChartApi}
               />
             </div>
           </div>

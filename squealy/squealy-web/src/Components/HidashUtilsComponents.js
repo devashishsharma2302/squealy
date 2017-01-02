@@ -11,12 +11,13 @@ export class HidashModal extends Component {
       saveChanges,
       showModal,
       modalSize,
-      closeModal
+      closeModal,
+      dialogClassName
     } = this.props
 
 
     return (
-      <Modal show={showModal} onHide={closeModal} key={modalId} bsSize={modalSize}>
+      <Modal dialogClassName={dialogClassName} show={showModal} onHide={closeModal} key={modalId} bsSize={modalSize}>
         <Modal.Header closeButton>
           <Modal.Title>{modalHeader}</Modal.Title>
         </Modal.Header>

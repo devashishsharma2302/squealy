@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import DashboardNavigator from '../Components/dashboard-view/DashboardNavigator'
-import {getEmptyDashboardDefinition, getEmptyWidgetDefinition, getApiRequest, postApiRequest} from '../Utils'
+import {getEmptyDashboardDefinition, getEmptyWidgetDefinition, getApiRequest, postApiRequest, saveYamlOnServer} from '../Utils'
 import DashboardHeader from '../Components/dashboard-view/DashboardHeader'
 
 export const APIURI = 'http://localhost:8000'
@@ -148,6 +148,12 @@ export default class DashboardContainer extends Component {
     }
   }
 
+  saveChartApi = (chartApi, onSuccess) => {
+    let apiUrl = APIURI+'/squealy-apis/'
+    let yamlData = saveYamlOnServer([chartApi])
+    postApiRequest(apiUrl, yamlData[0], ()=>{onSuccess()}, ()=>{},null)
+  }
+
   render() {
 
     const {dashboardDefinitions, selectedDashboardIndex} = this.state
@@ -173,6 +179,7 @@ export default class DashboardContainer extends Component {
           filterRepositionHandler={this.filterRepositionHandler}
           filterResizeHandler={this.filterResizeHandler}
           googleDefined={googleDefined}
+          saveChartApi={this.saveChartApi}
         />
       </div>
     )
