@@ -82,8 +82,8 @@ export default class Widget extends Component {
           y={widgetData.top*GRID_HEIGHT}
           width={widgetData.width*GRID_WIDTH}
           height={widgetData.height*GRID_HEIGHT}
-          resizeGrid={[92, 10]}
-          moveGrid={[92, 10]}
+          resizeGrid={[GRID_WIDTH, GRID_HEIGHT]}
+          moveGrid={[GRID_WIDTH, GRID_HEIGHT]}
           bounds={'parent'}
           onResize={this.widgetResizeHandler}
           onDragStop={this.widgetPositionHandler}

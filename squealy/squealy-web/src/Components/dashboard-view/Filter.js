@@ -178,8 +178,8 @@ export default class Filter extends Component {
         width={width*GRID_WIDTH}
         onResize={this.widgetResizeHandler}
         onDragStop={this.filterPositionHandler}
-        resizeGrid={[92, 10]}
-        moveGrid={[92, 10]}
+        resizeGrid={[GRID_WIDTH, GRID_HEIGHT]}
+        moveGrid={[GRID_WIDTH, GRID_HEIGHT]}
         isResizable={RND_FILTER_RESIZEABILITY_CONSTRAINTS}
         bounds={'parent'}
         moveAxis={draggable?'x':'none'}
