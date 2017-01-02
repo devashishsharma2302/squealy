@@ -5,6 +5,7 @@ import Rnd from 'react-resizable-and-movable'
 import EditIcon from '../../images/Edit_icon.png'
 import DeleteIcon from '../../images/Delete_icon.png'
 import {getApiRequest} from '../../Utils'
+import {GRID_WIDTH, GRID_HEIGHT, GRID_PADDING, GRID_WIDTH_OPTIONS}from '../../Constant'
 
 const style = {
   textAlign: 'center',
@@ -37,33 +38,24 @@ export default class Widget extends Component {
     }
   }
 
-  componentDidMount() {
-    if(this.refs.header && this.refs.header.offsetHeight) {
-      this.setHeaderHeight()
-    } else {
-      // FIXME: Find a work around to avoid timeout
-      setTimeout(this.setHeaderHeight, 2000)
-    }
-  }
-
-  setHeaderHeight = () => {
-    this.setState({headerHeight: this.refs.header.offsetHeight})
-  }
-
   // Sets the width and height of the widget and rnd component in widget's state
   widgetResizeHandler = (direction, styleSize) => {
     const {dashboardIndex, index} = this.props
-    this.props.widgetResizeHandler(dashboardIndex, index, styleSize.width, styleSize.height)
+    const newWidth = styleSize.width/GRID_WIDTH
+    const newHeight = styleSize.height/GRID_HEIGHT
+    this.props.widgetResizeHandler(dashboardIndex, index, newWidth, newHeight)
 
   }
-  
+
   // Sets the position of the widget in its state
   widgetPositionHandler = (event, uiState) => {
     // Update the position of the widget in the state of dashboard container
     const {dashboardIndex, index} = this.props
-    this.props.widgetRepositionHandler(dashboardIndex, index, uiState.position.top, uiState.position.left)
+    const newTop = uiState.position.top/GRID_HEIGHT
+    const newLeft = uiState.position.left/GRID_WIDTH
+    this.props.widgetRepositionHandler(dashboardIndex, index, newTop, newLeft)
   }
-  
+
   //Check for filter changes
   componentWillReceiveProps(nextProps) {
     if (nextProps.filterValues !== this.props.filterValues) {
@@ -86,12 +78,16 @@ export default class Widget extends Component {
     return(
       (widgetData && googleDefined)?
         <Rnd
-          x={widgetData.left}
-          y={widgetData.top}
-          width={widgetData.width}
-          height={widgetData.height}
+          x={widgetData.left*GRID_WIDTH}
+          y={widgetData.top*GRID_HEIGHT}
+          width={widgetData.width*GRID_WIDTH}
+          height={widgetData.height*GRID_HEIGHT}
+          resizeGrid={[92, 10]}
+          moveGrid={[92, 10]}
+          bounds={'parent'}
           onResize={this.widgetResizeHandler}
           onDragStop={this.widgetPositionHandler}
+          bounds={'parent'}
         >
           <div
             onMouseEnter={() => this.setState({editMode: true})}
@@ -112,8 +108,8 @@ export default class Widget extends Component {
           <GoogleChartComponent config={{
               ...chartData,
               index: this.widgetIndex,
-              width: widgetData.width,
-              height: widgetData.height - this.state.headerHeight,
+              width: widgetData.width*GRID_WIDTH,
+              height: widgetData.height*GRID_HEIGHT - this.state.headerHeight,
               chartType: widgetData.chartType,
               chartStyles: widgetData.chartStyles
             }}

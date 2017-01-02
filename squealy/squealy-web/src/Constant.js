@@ -43,8 +43,6 @@ export const PARAM_FORMAT_OPTIONS = [
 
 export const AVAILABLE_TRANSFORMATIONS = ['transpose', 'merge', 'split']
 
-export const GRID_WIDTH_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-
 export const GOOGLE_CHART_TYPE_OPTIONS = [
   {label: 'Table', value: 'Table'},
   {label: 'Line', value: 'LineChart'},
@@ -119,3 +117,9 @@ export const DEFAULT_FILTER_VALUES = {
   [FILTER_TYPES[2].value]: moment(new Date().toISOString()).format(DATE_FORMAT),
   [FILTER_TYPES[3].value]: ''
 }
+
+export const GRID_WIDTH = 92
+export const GRID_PADDING = 15
+export const GRID_HEIGHT = 20
+
+export const GRID_WIDTH_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]

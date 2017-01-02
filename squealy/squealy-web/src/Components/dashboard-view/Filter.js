@@ -10,6 +10,7 @@ import {getApiRequest} from '../../Utils'
 import {DATE_FORMAT, DATETIME_FORMAT} from '../../Constant'
 import EditIcon from '../../images/Edit_icon.png'
 import 'react-datetime/css/react-datetime.css'
+import {GRID_WIDTH, GRID_PADDING, GRID_HEIGHT}from '../../Constant'
 
 
 class HidashDatePicker extends Component {
@@ -172,18 +173,24 @@ export default class Filter extends Component {
     return(
       <Rnd
         ref={'filter'+index}
-        x={left}
-        y={top}
-        width={width}
+        x={left*GRID_WIDTH}
+        y={top*GRID_HEIGHT}
+        width={width*GRID_WIDTH}
         onResize={this.widgetResizeHandler}
-        //onResizeStop={this.widgetSizeUpdator}
         onDragStop={this.filterPositionHandler}
-        resizeGrid={[10,10]}
-        moveGrid={[10,10]}
+        resizeGrid={[92, 10]}
+        moveGrid={[92, 10]}
         isResizable={RND_FILTER_RESIZEABILITY_CONSTRAINTS}
-        moveAxis={draggable?'both':'none'}
+        bounds={'parent'}
+        moveAxis={draggable?'x':'none'}
       >
-      <div className="rnd-filter-wrapper">
+      <div
+        className="rnd-filter-wrapper"
+        style={{
+          paddingLeft: GRID_PADDING,
+          paddingRight: GRID_PADDING
+        }}
+      >
         <label
           className="rnd-filter-label"
           onClick={()=>deleteFilter(selectedDashboardIndex, index)}>
