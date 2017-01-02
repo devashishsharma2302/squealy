@@ -1,3 +1,8 @@
+import os
+from os.path import join
+
+import yaml
+from django.conf import settings
 from django.conf.urls import url
 from yaml import load_all
 
@@ -35,3 +40,17 @@ class ApiGenerator():
     @staticmethod
     def _generate_api_view(config):
         return type(str(config['id']), (SqlApiView, ), config)
+
+    @staticmethod
+    def _save_apis_to_file(json_data):
+        directory = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
+
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        file_name = SquealySettings.get('YAML_FILE_NAME', 'squealy-api.yaml')
+        full_path = join(directory, file_name)
+
+        with open(full_path, 'w+') as f:
+            f.write(yaml.safe_dump_all(json_data, explicit_start=True))
+        f.close()

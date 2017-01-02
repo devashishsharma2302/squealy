@@ -142,9 +142,8 @@ export function getEmptyWidgetDefinition() {
     top:40,
     left: 40,
     title: 'Chart Title',
-    editMode: false,
     chartType: GOOGLE_CHART_TYPE_OPTIONS[7].value,
-    chartStyles: null,
+    chartStyles: {},
     api_url: '',
     apiParams: {}
   }
@@ -157,8 +156,7 @@ export function getEmptyFilterDefinition() {
     top:20,
     left: 20,
     label: 'Fliter Label',
-    editMode: false,
-    type: null,
+    type: {},
     apiUrl: ''
   }
 }
