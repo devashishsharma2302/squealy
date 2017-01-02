@@ -106,6 +106,7 @@ export default class ApiTabsToggle extends Component {
                 onChangeTestData={onChangeTestData}
                 exportConfigAsYaml={exportConfigAsYaml}
                 dbUpdationHandler={dbUpdationHandler}
+                showFormatSelector={true}
                 />
               </div>
             </div>

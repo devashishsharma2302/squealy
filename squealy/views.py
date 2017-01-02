@@ -88,17 +88,7 @@ class YamlGeneratorView(APIView):
     def post(self, request, *args, **kwargs):
         try:
             json_data = json.loads(request.body).get('yamlData')
-            directory = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
-
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-
-            file_name = SquealySettings.get('YAML_FILE_NAME', 'squealy-api.yaml')
-            full_path = join(directory,file_name)
-
-            with open(full_path,'w+') as f:
-                f.write(yaml.safe_dump_all(json_data, explicit_start=True))
-            f.close()
+            squealy.apigenerator.ApiGenerator._save_apis_to_file(json_data)
             return Response({}, status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
@@ -142,6 +132,21 @@ class DynamicApiRouter(APIView):
         urls = squealy.apigenerator.ApiGenerator.generate_urls_from_yaml(file_path)
         response = url(r'', include(urls)).resolve(url_path.split('/squealy-apis/')[1]).func(request)
         return response
+
+    def post(self, request):
+        file_dir = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
+        filename = SquealySettings.get('YAML_FILE_NAME', 'squealy-api.yaml')
+        file_path = join(file_dir, filename)
+        apis = []
+        with open(file_path) as f:
+            api_config = yaml.load_all(f)
+            for api in api_config:
+                apis.append(api)
+        new_api = json.loads(request.body)
+        new_api['id'] = len(apis)+1
+        apis.append(new_api)
+        squealy.apigenerator.ApiGenerator._save_apis_to_file(apis)
+        return Response({}, status.HTTP_200_OK)
 
 class DashboardTemplateView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()

@@ -24,6 +24,8 @@ import {
     getEmptyFilterDefinition
 } from '../../Utils'
 
+import AddIcon from '../../images/Add_icon.png'
+import ChartApiModal from './ChartApiModal'
 
 export default class Dashboard extends Component {
 
@@ -36,7 +38,8 @@ export default class Dashboard extends Component {
             editorContent: null,
             newWidget: null,
             newWidgetApiParams: {},
-            filterValues: {}
+            filterValues: {},
+            showChartApiModal: false
         }
     }
 
@@ -239,6 +242,19 @@ export default class Dashboard extends Component {
         showFilterModal: true
       })
     }
+    chartApiModalVisibilityEnabler = () => {
+      this.setState ({showChartApiModal: true})
+    }
+
+    closeChartApiModal = (newApiUrl) => {
+      console.log(newApiUrl)
+      let newWidget = JSON.parse(JSON.stringify(this.state.newWidget))
+      newWidget.api_url = newApiUrl
+      console.log(newWidget)
+      this.setState({newWidget: newWidget, showChartApiModal: false}, console.log(JSON.stringify(this.state.newWidget)))
+
+    }
+
 
   render() {
     const {
@@ -253,6 +269,7 @@ export default class Dashboard extends Component {
       deleteFilter,
       filterResizeHandler,
       filterRepositionHandler,
+      saveChartApi
     } = this.props
 
     const {
@@ -261,7 +278,8 @@ export default class Dashboard extends Component {
       newWidget,
       newWidgetApiParams,
       selectedFilter,
-      filterValues
+      filterValues,
+      showChartApiModal
     } = this.state
 
     const filterModalContent =
@@ -388,7 +406,10 @@ export default class Dashboard extends Component {
               ref='widgetTitle'
               value={newWidget.api_url}
               onChange={(event)=>this.newWidgetChangeHandler('api_url', event.target.value)}
-            />
+            /> <img src={AddIcon}
+                    className='add-icon'
+                   onClick={()=>this.chartApiModalVisibilityEnabler()}
+                  />
           </div>
           <div className="col-md-12">
             <label className='col-md-4'>Widget Title: </label>
@@ -509,6 +530,11 @@ export default class Dashboard extends Component {
             modalHeader='Filter'
             modalContent={filterModalContent}
             saveChanges={this.saveNewFilter}
+          />
+          <ChartApiModal
+            showModal={showChartApiModal}
+            closeChartApiModal={this.closeChartApiModal}
+            saveChartApi={saveChartApi}
           />
         </div>
       </div>

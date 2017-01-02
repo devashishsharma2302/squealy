@@ -26,10 +26,10 @@ export default class MainComponent extends Component {
       exportConfigAsYaml,
       onChangeTestData,
       handleEditParam,
-      dbUpdationHandler
+      dbUpdationHandler, 
+      showFormatSelector
     } = this.props
     let selectedAPIDefinition = apiDefinition[selectedApiIndex]
-
     let selectedTestData = testData[selectedApiIndex]
     return (
       <div className="row main-container">
@@ -71,6 +71,7 @@ export default class MainComponent extends Component {
               selectedApiDefinition={selectedAPIDefinition}
               apiResponse={selectedTestData}
             />
+            {showFormatSelector?
             <div className="response-format">
               <FormatSelector
                 selectedFormat={selectedTestData.selectedFormat}
@@ -78,6 +79,8 @@ export default class MainComponent extends Component {
                 selectedApiIndex={selectedApiIndex}
                 />
             </div>
+            :
+            null}
           </div>
           <ResponseSection
             selectedTestData={selectedTestData}
