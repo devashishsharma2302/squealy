@@ -16,7 +16,7 @@ export default class GoogleChartWrapper extends Component {
       options: {
         ...config.chartStyles,
         'height': config.height,
-        'width': config.width,
+        'width': '100%',
       }
     });
     wrapper.draw();

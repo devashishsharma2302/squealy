@@ -64,21 +64,10 @@ export default class ApiViewContainer extends Component {
 
   loadInitialApis = (response) => {
     if (response) {
-      let localStorageData = getDataFromLocalStorage('hidash')
-      if (localStorageData) {
-        Object.keys(localStorageData).map((key) => {
-          if(key!=='apiDefinition' && key!=='selectedApiIndex') {
-            this.setState({[key]: localStorageData[key]}, () => {
-            this.initializeStates()
-          })
-          }
-        })
-      }
-      else {
-        let testData = []
-        response.forEach(()=>{testData.push(getEmptyTestData())})
-        this.setState({testData: testData})
-      }
+      let testData = []
+      response.forEach(()=>{testData.push(getEmptyTestData())})
+      this.setState({testData: testData})
+
       let apiDefinition = []
 
       response.map((data)=>{
@@ -319,7 +308,6 @@ export default class ApiViewContainer extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     if (nextState !== nextProps) {
       //FIXME: Need to change hardcode localstorage key name. Later we will save as project name
-      setDataInLocalStorage('hidash', nextState)
       return true
     }
   }
