@@ -95,12 +95,11 @@ export default class ApiViewContainer extends Component {
 
   setApiAccess = (key, value, classType, action) => {
     let apiDefinition = this.state.apiDefinition.slice()
-    if(action=='add') {
-      console.log(apiDefinition)
+    if(action==='add') {
       apiDefinition[this.state.selectedApiIndex][classType].push(value)
-    } else if(action=='del') {
+    } else if(action==='del') {
       apiDefinition[this.state.selectedApiIndex][classType].splice(key,1)
-    } else if (action=='update') {
+    } else if (action==='update') {
       apiDefinition[this.state.selectedApiIndex][classType][key] = value
     }
     this.setState({apiDefinition: apiDefinition})
