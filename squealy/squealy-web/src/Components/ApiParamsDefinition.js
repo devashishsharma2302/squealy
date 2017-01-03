@@ -18,6 +18,9 @@ export default class ApiParamsDefinition extends Component {
     this.setState({editParam: bool, paramIndex:index})
     let selectedApiParamDef = this.props.selectedApiDefinition.paramDefinition
     this.setState({selectedApiParamDef: selectedApiParamDef[index]})
+    if(bool) {
+      this.setState({showParamModal: bool})
+    }
   }
 
   resetParams = () => {
@@ -52,7 +55,7 @@ export default class ApiParamsDefinition extends Component {
     const {selectedApiDefinition, onChangeApiDefinition, handleEditParam} = this.props
     let paramDefinition = selectedApiDefinition.paramDefinition,
       validations = selectedApiDefinition.validations
-    
+
     return (
       <div className="api-param-def-wrapper">
         <table className="table table-hover api-param-def-table">
@@ -65,15 +68,15 @@ export default class ApiParamsDefinition extends Component {
           </thead>
           <tbody>
             {
-              paramDefinition.length ? 
+              paramDefinition.length ?
                 paramDefinition.map((param, i) => {
                   return (
                     <tr key={'param_row_'+i}>
-                      <td onClick={() => this.handleEditParam(true, i)} 
-                        data-toggle="modal" data-target={'#addParamsModal'} className='param-name'>{param.name}</td>
+                      <td onClick={() => this.handleEditParam(true, i)}
+                        className='param-name'>{param.name}</td>
                       <td>{param.type}</td>
                       <td><i className="fa fa-trash-o" aria-hidden="true" onClick={() =>this.deleteEntry(i, 'paramDefinition')}/></td>
-                    </tr> 
+                    </tr>
                   )
                 })
               : null
@@ -82,11 +85,11 @@ export default class ApiParamsDefinition extends Component {
           <tfoot>
             <tr>
               <td>
-                <button type="button" className="btn btn-info" data-toggle="modal" 
+                <button type="button" className="btn btn-info" data-toggle="modal"
                  onClick={this.toggleParamModalState}>Add</button>
               </td>
               <td>
-                <button type="button" className="btn btn-default" data-toggle="modal" 
+                <button type="button" className="btn btn-default" data-toggle="modal"
                   onClick={this.toggleValidationModalState}>
                   Validations</button>
               </td>
@@ -94,9 +97,9 @@ export default class ApiParamsDefinition extends Component {
             </tr>
           </tfoot>
         </table>
-        <ParamDefinitionModalWrapper 
+        <ParamDefinitionModalWrapper
           editParamState={this.state}
-          selectedApiDefinition={selectedApiDefinition} 
+          selectedApiDefinition={selectedApiDefinition}
           onChangeApiDefinition= {onChangeApiDefinition}
           handleEditParam={this.handleEditParam}
           closeParamModal={this.toggleParamModalState}
