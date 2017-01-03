@@ -104,7 +104,6 @@ export default class Filter extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      height: props.filterDefinition.height,
       width: props.filterDefinition.width,
       top: props.filterDefinition.top,
       left: props.filterDefinition.left,
@@ -131,16 +130,15 @@ export default class Filter extends Component {
   // Sets the width and height of the widget and rnd component in filter's state
   filterResizeHandler = (direction, styleSize) => {
     this.setState({
-      width: styleSize.width,
-      height: styleSize.height
+      width: styleSize.width/GRID_WIDTH,
     })
   }
 
   // Sets the position of the filter in its state
   filterPositionHandler = (event, uiState) => {
     this.setState({
-      top: uiState.position.top,
-      left: uiState.position.left
+      top: uiState.position.top/GRID_HEIGHT,
+      left: uiState.position.left/GRID_WIDTH
     }, () => {
       // Update the position of the widget in the state of dashboard container
       const {selectedDashboardIndex, index} = this.props
