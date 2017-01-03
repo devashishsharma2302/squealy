@@ -432,7 +432,26 @@ export default class Dashboard extends Component {
       newWidget?
       <div className="row">
           <div className="col-md-12">
-            <label className='col-md-4'>API url: </label>
+            <label className='col-md-4'>Title: </label>
+            <input
+              type='text'
+              ref='widgetTitle'
+              value={newWidget.title}
+              onChange={(event)=>this.newWidgetChangeHandler('title', event.target.value)}
+            />
+          </div>
+          <div className="col-md-12">
+            <label className='col-md-4'>Type: </label>
+            <div className="col-md-5" style={{paddingLeft: '0', paddingRight: '35px'}}>
+              <Select
+                options={GOOGLE_CHART_TYPE_OPTIONS}
+                value={newWidget.chartType}
+                onChange={(chartType)=>this.newWidgetChangeHandler('chartType', chartType.value)}
+              />
+            </div>
+          </div>
+          <div className="col-md-12">
+            <label className='col-md-4'>URL: </label>
             <input
               type='text'
               ref='widgetTitle'
@@ -444,26 +463,7 @@ export default class Dashboard extends Component {
                   />
           </div>
           <div className="col-md-12">
-            <label className='col-md-4'>Widget Title: </label>
-            <input
-              type='text'
-              ref='widgetTitle'
-              value={newWidget.title}
-              onChange={(event)=>this.newWidgetChangeHandler('title', event.target.value)}
-            />
-          </div>
-          <div className="col-md-12">
-            <label className='col-md-4'>Chart type: </label>
-            <div className="col-md-5" style={{paddingLeft: '0', paddingRight: '35px'}}>
-              <Select
-                options={GOOGLE_CHART_TYPE_OPTIONS}
-                value={newWidget.chartType}
-                onChange={(chartType)=>this.newWidgetChangeHandler('chartType', chartType.value)}
-              />
-            </div>
-          </div>
-          <div className="col-md-12">
-          <h5>API Parameters:</h5>
+          <h5>Parameters:</h5>
           <table className="table table-bordered">
 
             <thead>
