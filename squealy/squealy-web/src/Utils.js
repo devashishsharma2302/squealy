@@ -121,7 +121,9 @@ export function getEmptyApiDefinition() {
     transformations: [],
     selectedTransformations: [],
     columns: {},
-    selectedDB: null
+    selectedDB: null,
+    permission_classes: [],
+    authentication_classes: []
   }
 }
 
@@ -172,7 +174,9 @@ export function getDefaultApiDefinition(apiIndex) {
     transformations: [],
     selectedTransformations: [],
     columns: {},
-    selectedDB: ''
+    selectedDB: '',
+    permission_classes: [],
+    authentication_classes: []
   }
 }
 

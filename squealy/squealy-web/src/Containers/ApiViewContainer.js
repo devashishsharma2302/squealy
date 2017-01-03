@@ -91,6 +91,18 @@ export default class ApiViewContainer extends Component {
     }
   }
 
+  setApiAccess = (key, value, classType, action) => {
+    let apiDefinition = this.state.apiDefinition.slice()
+    if(action=='add') {
+      apiDefinition[this.state.selectedApiIndex][classType].push(value)
+    } else if(action=='del') {
+      apiDefinition[this.state.selectedApiIndex][classType].splice(key,1)
+    } else if (action=='update') {
+      apiDefinition[this.state.selectedApiIndex][classType][key] = value
+    }
+    this.setState({apiDefinition: apiDefinition})
+  }
+
   onChangeApiDefinition = (variableName, value) => {
     let tempAPIDef = this.state.apiDefinition.slice()
     tempAPIDef[this.state.selectedApiIndex][variableName] = value
@@ -277,10 +289,7 @@ export default class ApiViewContainer extends Component {
           tempTestData = [],
           tempOpenApis = []
       this.setState({apiDefinition: tempApiDef, testData: tempTestData, openAPIs: tempOpenApis})
-
     }
-
-
   }
 
   //Appends an empty API definition object to current API Definitions
@@ -340,6 +349,7 @@ export default class ApiViewContainer extends Component {
       <NavHeader saveFileOnServer={this.saveFileOnServer} apiDefinition={this.state.apiDefinition} apiOpenHandler={this.apiOpenHandler} apiAdditionHandler={this.apiAdditionHandler} exportConfigAsYaml={this.exportConfigAsYaml}/>
       <ApiTabs
         {...this.state}
+        setApiAccess={this.setApiAccess}
         apiCloseHandler={this.apiCloseHandler}
         apiTabRenameHandler={this.apiTabRenameHandler}
         onChangeApiDefinition={this.onChangeApiDefinition}

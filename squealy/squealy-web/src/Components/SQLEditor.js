@@ -25,10 +25,6 @@ export class SQLEditor extends Component {
     }
   }
 
-  componentDidUpdate(prevState, prevProps) {
-    this.refs['ace'+this.props.selectedApiIndex].editor.focus()
-  }
-
   onBlur = () => {
     const {onChangeApiDefinition, onChangeTestData, apiParams} = this.props
     let {editorContent} = this.state,
@@ -86,6 +82,7 @@ export class SQLEditor extends Component {
             editorProps={{$blockScrolling: true}}
             onChange={this.textChangeHandler}
             onBlur={this.onBlur}
+            onLoad={editor=>editor.focus()}
           />
         </div>
       </div>

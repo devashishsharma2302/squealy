@@ -20,13 +20,14 @@ export default class MainComponent extends Component {
       apiDefinition,
       selectedApiIndex,
       testData,
+      setApiAccess,
       apiDeletionHandler,
       apiAdditionHandler,
       apiSelectionHandler,
       exportConfigAsYaml,
       onChangeTestData,
       handleEditParam,
-      dbUpdationHandler, 
+      dbUpdationHandler,
       showFormatSelector
     } = this.props
     let selectedAPIDefinition = apiDefinition[selectedApiIndex]
@@ -37,7 +38,8 @@ export default class MainComponent extends Component {
           <SideMenu
             apiParams={selectedTestData.apiParams}
             onChangeTestData={onChangeTestData}
-            selectedApiDefinition={selectedAPIDefinition}
+            setApiAccess={setApiAccess}
+            selectedAPIDefinition={selectedAPIDefinition}
             dbUpdationHandler={dbUpdationHandler}
           />
         </div>

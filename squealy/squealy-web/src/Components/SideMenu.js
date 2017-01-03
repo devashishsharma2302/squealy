@@ -8,6 +8,27 @@ import Transformations from './Transformations'
 import DatabaseDescription from './DatabaseDescription'
 
 export default class SideMenu extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      authentication_classes:[],
+      permission_classes: []
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.selectedAPIDefinition.permission_classes!=this.props.permission_classes || nextProps.selectedAPIDefinition.authentication_classes!=this.props.authentication_classes) {
+      this.setState({authentication_classes: nextProps.selectedAPIDefinition.authentication_classes,
+        permission_classes: nextProps.selectedAPIDefinition.permission_classes
+      })
+    }
+  }
+
+  updateState = (type, key, value) => {
+    let stateCopy = this.state[type].slice()
+    stateCopy[key] = value
+    this.setState({[type] :stateCopy})
+  }
 
   static propTypes = {
     apiParams: PropTypes.object.isRequired,
@@ -48,7 +69,7 @@ export default class SideMenu extends Component {
     let apiParams = Object.assign({}, this.props.apiParams)
     if (apiParams && !apiParams.hasOwnProperty(type)) {
       apiParams[type] = {}
-    } 
+    }
     apiParams[type][''] = ''
     this.props.onChangeTestData(apiParams)
   }
@@ -63,10 +84,11 @@ export default class SideMenu extends Component {
     const {
       apiParams,
       onChangeTestData,
-      onChangeApiDefinition,
-      dbUpdationHandler
+      setApiAccess,
+      dbUpdationHandler,
+      selectedAPIDefinition
     } = this.props
-
+    console.log(this.state,this.props.selectedAPIDefinition)
     return(
       <div className="parameters-value-wrapper">
         <DatabaseDescription dbUpdationHandler={dbUpdationHandler}/>
@@ -113,6 +135,52 @@ export default class SideMenu extends Component {
                       <td> <input defaultValue={key} onBlur={(e) => this.updateKey(e, key, 'session')} placeholder='Enter Key' /></td>
                       <td> <input defaultValue={apiParams.session[key]} onBlur={(e) => this.updateValue(e, key, 'session')} placeholder='Enter Value' /> </td>
                       <td onClick={() => this.removeParam(key, 'session')}><i className="fa fa-trash"/></td>
+                    </tr>
+                  )
+                })
+                : null
+            }
+          </tbody>
+        </table>
+        <h2>Add Permission Classes: </h2>
+        <table className="table table-bordered">
+          <thead>
+            <tr>
+              <th>DRF Permission Class Name</th>
+              <th onClick={() => setApiAccess(null,'','permission_classes','add')}><i className="fa fa-plus"></i></th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              this.state.hasOwnProperty('permission_classes') ?
+                this.state.permission_classes.map((value, key) => {
+                  return (
+                    <tr key={key}>
+                      <td> <input value={value} onChange={(e)=>{this.updateState('permission_classes',key,e.target.value)}} onBlur={() => setApiAccess(key, this.state.permission_classes[key], 'permission_classes', 'update')} placeholder='Enter Class Name' /> </td>
+                      <td onClick={() => setApiAccess(key, '', 'permission_classes', 'del')}><i className="fa fa-trash"/></td>
+                    </tr>
+                  )
+                })
+                : null
+            }
+          </tbody>
+        </table>
+        <h2>Add Authentication Classes: </h2>
+        <table className="table table-bordered">
+          <thead>
+            <tr>
+              <th>DRF Auth Class Name</th>
+              <th onClick={() => setApiAccess(null, '', 'authentication_classes', 'add')}><i className="fa fa-plus"></i></th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              this.state.hasOwnProperty('authentication_classes') ?
+                this.state.authentication_classes.map((value, key) => {
+                  return (
+                    <tr key={key}>
+                      <td> <input value={value} onChange={(e)=>{this.updateState('authentication_classes',key,e.target.value)}} onBlur={() => setApiAccess(key, this.state.authentication_classes[key], 'authentication_classes', 'update')} placeholder='Enter Class Name' /> </td>
+                      <td onClick={() => setApiAccess(key, '', 'authentication_classes', 'del')}><i className="fa fa-trash"/></td>
                     </tr>
                   )
                 })
