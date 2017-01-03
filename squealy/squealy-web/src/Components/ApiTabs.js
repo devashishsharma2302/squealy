@@ -48,6 +48,7 @@ export default class ApiTabsToggle extends Component {
       apiDefinition,
       selectedApiIndex,
       testData,
+      setApiAccess,
       apiParamToggleHandler,
       exportConfigAsYaml,
       onChangeTestData,
@@ -96,6 +97,7 @@ export default class ApiTabsToggle extends Component {
             <div className="panel panel-default">
               <div className="panel-body">
                 <MainComponent
+                setApiAccess={setApiAccess}
                 apiDefinition={apiDefinition}
                 selectedApiIndex={selectedApiIndex}
                 testData={testData}

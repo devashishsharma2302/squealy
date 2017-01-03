@@ -121,7 +121,9 @@ export function getEmptyApiDefinition() {
     transformations: [],
     selectedTransformations: [],
     columns: {},
-    selectedDB: null
+    selectedDB: null,
+    permission_classes: [],
+    authentication_classes: []
   }
 }
 
@@ -172,7 +174,9 @@ export function getDefaultApiDefinition(apiIndex) {
     transformations: [],
     selectedTransformations: [],
     columns: {},
-    selectedDB: ''
+    selectedDB: '',
+    permission_classes: [],
+    authentication_classes: []
   }
 }
 
@@ -275,6 +279,8 @@ function formatApiDataToYaml(data, index) {
     'name': data.apiName,
     'url': data.urlName,
     'parameters': data.paramDefinition,
+    'permission_classes': data.permission_classes,
+    'authentication_classes': data.authentication_classes,
     // 'access_control':data.access_control,
     'validations': data.validations,
     'query': data.sqlQuery,
@@ -295,6 +301,8 @@ function formattedData(data, index) {
     'url': data.urlName,
     'parameters': data.paramDefinition,
     // 'access_control':data.access_control,
+    'permission_classes': data.permission_classes,
+    'authentication_classes': data.authentication_classes,
     'validations': data.validations,
     'query': data.sqlQuery,
     'transformations': data.transformations,
