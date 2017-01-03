@@ -473,7 +473,7 @@ export default class Dashboard extends Component {
           value={dashboardDefinition.styles.background}
           onChange={(event)=>updateDashboardDefinition(dashboardIndex, 'styles', {background:event.target.value})}
         />
-        <div id="dashboardArea" style={dashboardDefinition.styles}>
+        <div ref="dashboardArea" id="dashboardArea" style={dashboardDefinition.styles}>
           {dashboardDefinition.filters.map((filter, index) => 
               <Filter
                 key={index}
@@ -502,6 +502,7 @@ export default class Dashboard extends Component {
                 dashboardIndex={dashboardIndex}
                 widgetDeletionHandler={widgetDeletionHandler}
                 googleDefined={googleDefined}
+                containerNode={this.refs.dashboardArea}
               />
             )
           }
