@@ -148,6 +148,14 @@ export default class Filter extends Component {
     })
   }
 
+  resizeStartHandler = (direction, styleSize, clientSize, e) => {
+    if(e.preventDefault) e.preventDefault();
+  }
+
+  dragStartHandler = (e) => {
+    if(e.preventDefault) e.preventDefault();
+  }
+
   render() {
     const {top, left, width, height, draggable, filterData} = this.state
     const {
@@ -178,6 +186,8 @@ export default class Filter extends Component {
         y={top*GRID_HEIGHT}
         width={width*GRID_WIDTH}
         onResize={this.widgetResizeHandler}
+        onResizeStart={this.resizeStartHandler}
+        onDragStart={this.dragStartHandler}
         onDragStop={this.filterPositionHandler}
         resizeGrid={[GRID_WIDTH, GRID_HEIGHT]}
         moveGrid={[GRID_WIDTH, GRID_HEIGHT]}
