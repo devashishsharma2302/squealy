@@ -118,7 +118,7 @@ export const DEFAULT_FILTER_VALUES = {
   [FILTER_TYPES[3].value]: ''
 }
 
-export const GRID_WIDTH = 92
+export const GRID_WIDTH = 104
 export const GRID_PADDING = 15
 export const GRID_HEIGHT = 20
 
