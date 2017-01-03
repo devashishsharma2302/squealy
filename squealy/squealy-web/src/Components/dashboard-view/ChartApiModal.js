@@ -12,20 +12,27 @@ import {
 } from '../HidashUtilsComponents'
 
 export default class ChartApiModal extends Component {
-	constructor() {
-		super()
-		let testData = getEmptyTestData()
-		testData.selectedFormat = 'GoogleChartsFormatter'
-		testData.showFormatSelector = false
-		let emptyApiDefinition = getEmptyApiDefinition()
-		emptyApiDefinition.format = 'GoogleChartsFormatter'
-
+	constructor(props) {
+		super(props)
 		this.state = {
-			apiDefinition: [emptyApiDefinition],	
+			apiDefinition: [getEmptyApiDefinition()],	
 			testData: [getEmptyTestData()],
 			selectedApiIndex: 0,
 		}
 	}
+
+  componentWillReceiveProps(nextProps) {
+    if (this.state.props !== nextProps) {
+      let testData = JSON.parse(JSON.stringify(this.state.testData))
+      let apiDefinition = JSON.parse(JSON.stringify(this.state.apiDefinition))
+      testData[0].selectedFormat = (nextProps.newApiType === 'filter')?'table': 'GoogleChartsFormatter'
+      apiDefinition[0].format = (nextProps.newApiType === 'filter')?'table': 'GoogleChartsFormatter'
+      this.setState({
+        apiDefinition: apiDefinition,  
+        testData: testData
+      })
+    }
+  }
 
 	onChangeApiDefinition = (variableName, value) => {
     let tempAPIDef = this.state.apiDefinition.slice()
@@ -70,7 +77,7 @@ export default class ChartApiModal extends Component {
     this.setState({testData: tempTestData})
   }
 	
-	onHandleTestButton = (event, format='GoogleChartsFormatter') => {
+	onHandleTestButton = (event) => {
     let tempParam = this.state.testData[this.state.selectedApiIndex].apiParams || {}
     let paramObj = {}
     try {
@@ -79,9 +86,9 @@ export default class ChartApiModal extends Component {
       console.log(e)
       console.log('please check your object syntax. Object key and value should be wrapped up in double quotes. Expected input: {"objKey": "objVal"}')
     }
-    let paramDef = this.processParamDef(this.state.apiDefinition[this.state.selectedApiIndex].paramDefinition)
-    format = format || 'table'
-    let payloadObj = {
+    let paramDef = this.processParamDef(this.state.apiDefinition[this.state.selectedApiIndex].paramDefinition),
+    format = this.state.testData[0].selectedFormat || 'table',
+    payloadObj = {
       config: {
         query: this.state.apiDefinition[this.state.selectedApiIndex].sqlQuery
       },
@@ -125,9 +132,17 @@ export default class ChartApiModal extends Component {
     return appliedDef
   }
   
+  closeModal = () => {
+    this.props.closeChartApiModal(this.state.apiDefinition[0].urlName)
+    this.setState({
+      apiDefinition: [getEmptyApiDefinition()],  
+      testData: [getEmptyTestData()]
+    })
+  }
+
 	render() {
 	const {showModal, closeChartApiModal, saveChartApi} = this.props
-	const modalContent = 
+  const modalContent = 
 		<div>
 			<MainComponent
 		    apiDefinition={this.state.apiDefinition}
@@ -150,7 +165,7 @@ export default class ChartApiModal extends Component {
       showModal={showModal}
       modalHeader='Create Chart API'
       modalContent={modalContent}
-      saveChanges={()=> saveChartApi(this.state.apiDefinition[0], () => closeChartApiModal(this.state.apiDefinition[0].urlName))}
+      saveChanges={()=> saveChartApi(this.state.apiDefinition[0], this.closeModal)}
     />
 		)
 	}
