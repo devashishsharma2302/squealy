@@ -39,7 +39,8 @@ export default class Dashboard extends Component {
             newWidget: null,
             newWidgetApiParams: {},
             filterValues: {},
-            showChartApiModal: false
+            showChartApiModal: false,
+            newApiType: null
         }
     }
 
@@ -146,6 +147,7 @@ export default class Dashboard extends Component {
       newEditorContent = JSON.stringify(JSON.parse(newEditorContent), null, '\t')
       this.setState({
           showEditWidgetModal: true,
+          newApiType: 'chart',
           selectedWidget: this.props.dashboardDefinition.widgets[widgetIndex],
           editorContent: newEditorContent
       })
@@ -154,6 +156,7 @@ export default class Dashboard extends Component {
     addWidgetModalenabler = () => {
       this.setState({
         showAddWidgetModal: true,
+        newApiType: 'chart',
         newWidget: getEmptyWidgetDefinition(),
         newWidgetApiParams: {}
       })
@@ -162,6 +165,7 @@ export default class Dashboard extends Component {
     filterModalEnabler = () => {
       this.setState({
         showFilterModal: true,
+        newApiType: 'filter',
         selectedFilter: getEmptyFilterDefinition()
       })
     }
@@ -239,20 +243,26 @@ export default class Dashboard extends Component {
       const {dashboardDefinition} = this.props
       this.setState({
         selectedFilter: dashboardDefinition.filters[filterIndex],
-        showFilterModal: true
+        showFilterModal: true,
+        newApiType: 'filter'
       })
     }
     chartApiModalVisibilityEnabler = () => {
       this.setState ({showChartApiModal: true})
     }
 
-    closeChartApiModal = (newApiUrl) => {
-      let newWidget = JSON.parse(JSON.stringify(this.state.newWidget))
-      newWidget.api_url = newApiUrl
-      this.setState({newWidget: newWidget, showChartApiModal: false})
-
+    closeChartApiModal = (newApiUrl, newApiType) => {
+      if (this.state.newApiType === 'chart') {
+        let newWidget = JSON.parse(JSON.stringify(this.state.newWidget))
+        newWidget.api_url = newApiUrl
+        this.setState({newWidget: newWidget, showChartApiModal: false})
+      }
+      else {
+        let newFilter = JSON.parse(JSON.stringify(this.state.selectedFilter))
+        newFilter.apiUrl = newApiUrl
+        this.setState({selectedFilter: newFilter, showChartApiModal: false})
+      }
     }
-
 
   render() {
     const {
@@ -264,7 +274,7 @@ export default class Dashboard extends Component {
       selectedDashboardIndex,
       dashboardIndex,
       googleDefined,
-      deleteFilter,
+      filterDeletionHandler,
       filterResizeHandler,
       filterRepositionHandler,
       saveChartApi
@@ -277,7 +287,8 @@ export default class Dashboard extends Component {
       newWidgetApiParams,
       selectedFilter,
       filterValues,
-      showChartApiModal
+      showChartApiModal,
+      newApiType
     } = this.state
 
     const filterModalContent =
@@ -313,6 +324,11 @@ export default class Dashboard extends Component {
               ref="filterLabel"
               value={selectedFilter.apiUrl}
               onChange={(event)=>this.updateFilterDefinition('apiUrl', event.target.value)}
+            />
+            <img  
+              src={AddIcon}
+              className='add-icon'
+              onClick={()=>this.chartApiModalVisibilityEnabler()}
             />
           </div>
         :
@@ -406,7 +422,7 @@ export default class Dashboard extends Component {
               onChange={(event)=>this.newWidgetChangeHandler('api_url', event.target.value)}
             /> <img src={AddIcon}
                     className='add-icon'
-                   onClick={()=>this.chartApiModalVisibilityEnabler()}
+                   onClick={this.chartApiModalVisibilityEnabler}
                   />
           </div>
           <div className="col-md-12">
@@ -481,7 +497,7 @@ export default class Dashboard extends Component {
                 value={(filter.label in filterValues)?filterValues[filter.label]:DEFAULT_FILTER_VALUES[filter.type]}
                 filterDefinition={filter}
                 updateFilterValues={this.updateFilterValues}
-                deleteFilter={deleteFilter}
+                filterDeletionHandler={filterDeletionHandler}
                 selectedDashboardIndex={selectedDashboardIndex}
                 filterResizeHandler={filterResizeHandler}
                 filterRepositionHandler={filterRepositionHandler}
@@ -534,6 +550,7 @@ export default class Dashboard extends Component {
             showModal={showChartApiModal}
             closeChartApiModal={this.closeChartApiModal}
             saveChartApi={saveChartApi}
+            newApiType={newApiType}
           />
         </div>
       </div>

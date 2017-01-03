@@ -9,6 +9,7 @@ import {RND_FILTER_RESIZEABILITY_CONSTRAINTS, FILTER_TYPES} from '../../Constant
 import {getApiRequest} from '../../Utils'
 import {DATE_FORMAT, DATETIME_FORMAT} from '../../Constant'
 import EditIcon from '../../images/Edit_icon.png'
+import DeleteIcon from '../../images/Delete_icon.png'
 import 'react-datetime/css/react-datetime.css'
 import {GRID_WIDTH, GRID_PADDING, GRID_HEIGHT}from '../../Constant'
 
@@ -153,7 +154,7 @@ export default class Filter extends Component {
       index,
       filterDefinition,
       updateFilterValues,
-      deleteFilter,
+      filterDeletionHandler,
       selectedDashboardIndex,
       modalVisibilityEnabler,
       value
@@ -192,8 +193,7 @@ export default class Filter extends Component {
         }}
       >
         <label
-          className="rnd-filter-label"
-          onClick={()=>deleteFilter(selectedDashboardIndex, index)}>
+          className="rnd-filter-label">
           {filterDefinition.label}
         </label>
         {filterToBeRendered?
@@ -201,8 +201,15 @@ export default class Filter extends Component {
         :
           <span>Filter type not selected</span>
         }
-        <img src={EditIcon}
+        <img  
+          src={EditIcon}
+          className='filter-edit-icon'
           onClick={()=>modalVisibilityEnabler(index)}
+        />
+        <img 
+          src={DeleteIcon}
+          className='filter-delete-icon'
+          onClick={()=>filterDeletionHandler(selectedDashboardIndex, index)}
         />
       </div>
       </Rnd>

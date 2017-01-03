@@ -77,12 +77,21 @@ export default class DashboardContainer extends Component {
       dashboardDefinitions: newDashboardDefinitions
       })
   }
+ 
+  filterDeletionHandler = (dashboardDefinitionIndex, filterIndex) => {
+    let newDashboardDefinitions = JSON.parse(JSON.stringify(this.state.dashboardDefinitions))
+    delete newDashboardDefinitions[dashboardDefinitionIndex].filters[filterIndex]
+    this.setState({
+      dashboardDefinitions: newDashboardDefinitions
+      })
+  }
 
   saveDashboard = () => {
     let apiUrl = APIURI+'/squealy-dashboard-design/'
     let requestData = JSON.parse(JSON.stringify(this.state.dashboardDefinitions))
     requestData.map((dashboard, dashboardIndex) => {
       requestData[dashboardIndex].widgets = dashboard.widgets.filter(widget => widget!=null)
+      requestData[dashboardIndex].filters = dashboard.filters.filter(filter => filter!=null)
     })
     
     postApiRequest(apiUrl, requestData, ()=>{
@@ -135,12 +144,6 @@ export default class DashboardContainer extends Component {
     this.setState({dashboardDefinitions: newDashboardDefinitions})
   }
 
-  deleteFilter = (dashboardIndex, filterIndex) => {
-    let newDashboardDefinitions = JSON.parse(JSON.stringify(this.state.dashboardDefinitions.slice()))
-    newDashboardDefinitions[dashboardIndex].filters.splice(filterIndex,1)
-    this.setState({dashboardDefinitions: newDashboardDefinitions})
-  }
-
   componentDidUpdate(prevProps, prevState) {
     if(this.state.dashboardDefinitions!==prevState.dashboardDefinitions) {
       document.getElementById('save-dashboard-btn').classList.add('btn-danger');
@@ -175,7 +178,7 @@ export default class DashboardContainer extends Component {
           updateWidgetDefinition={this.updateWidgetDefinition}
           updateDashboardDefinition={this.updateDashboardDefinition}
           filterAdditionHandler={this.filterAdditionHandler}
-          deleteFilter={this.deleteFilter}
+          filterDeletionHandler={this.filterDeletionHandler}
           filterRepositionHandler={this.filterRepositionHandler}
           filterResizeHandler={this.filterResizeHandler}
           googleDefined={googleDefined}
