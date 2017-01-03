@@ -491,18 +491,21 @@ export default class Dashboard extends Component {
         />
         <div id="dashboardArea" style={dashboardDefinition.styles}>
           {dashboardDefinition.filters.map((filter, index) => 
-              <Filter
-                key={index}
-                index={index}
-                value={(filter.label in filterValues)?filterValues[filter.label]:DEFAULT_FILTER_VALUES[filter.type]}
-                filterDefinition={filter}
-                updateFilterValues={this.updateFilterValues}
-                filterDeletionHandler={filterDeletionHandler}
-                selectedDashboardIndex={selectedDashboardIndex}
-                filterResizeHandler={filterResizeHandler}
-                filterRepositionHandler={filterRepositionHandler}
-                modalVisibilityEnabler={this.filterModalVisibilityEnabler}
-              />
+              (filter)?
+                <Filter
+                  key={index}
+                  index={index}
+                  value={(filter.label in filterValues)?filterValues[filter.label]:DEFAULT_FILTER_VALUES[filter.type]}
+                  filterDefinition={filter}
+                  updateFilterValues={this.updateFilterValues}
+                  filterDeletionHandler={filterDeletionHandler}
+                  selectedDashboardIndex={selectedDashboardIndex}
+                  filterResizeHandler={filterResizeHandler}
+                  filterRepositionHandler={filterRepositionHandler}
+                  modalVisibilityEnabler={this.filterModalVisibilityEnabler}
+                />
+              :
+                null
             )
           }
           {
