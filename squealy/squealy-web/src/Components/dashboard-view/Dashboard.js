@@ -274,7 +274,7 @@ export default class Dashboard extends Component {
       selectedDashboardIndex,
       dashboardIndex,
       googleDefined,
-      deleteFilter,
+      filterDeletionHandler,
       filterResizeHandler,
       filterRepositionHandler,
       saveChartApi
@@ -325,10 +325,11 @@ export default class Dashboard extends Component {
               value={selectedFilter.apiUrl}
               onChange={(event)=>this.updateFilterDefinition('apiUrl', event.target.value)}
             />
-            <img src={AddIcon}
-                    className='add-icon'
-                   onClick={()=>this.chartApiModalVisibilityEnabler()}
-                  />
+            <img  
+              src={AddIcon}
+              className='add-icon'
+              onClick={()=>this.chartApiModalVisibilityEnabler()}
+            />
           </div>
         :
           null
@@ -421,7 +422,7 @@ export default class Dashboard extends Component {
               onChange={(event)=>this.newWidgetChangeHandler('api_url', event.target.value)}
             /> <img src={AddIcon}
                     className='add-icon'
-                   onClick={()=>this.chartApiModalVisibilityEnabler()}
+                   onClick={this.chartApiModalVisibilityEnabler}
                   />
           </div>
           <div className="col-md-12">
@@ -496,7 +497,7 @@ export default class Dashboard extends Component {
                 value={(filter.label in filterValues)?filterValues[filter.label]:DEFAULT_FILTER_VALUES[filter.type]}
                 filterDefinition={filter}
                 updateFilterValues={this.updateFilterValues}
-                deleteFilter={deleteFilter}
+                filterDeletionHandler={filterDeletionHandler}
                 selectedDashboardIndex={selectedDashboardIndex}
                 filterResizeHandler={filterResizeHandler}
                 filterRepositionHandler={filterRepositionHandler}
