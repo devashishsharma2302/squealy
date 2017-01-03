@@ -77,12 +77,12 @@ export class SQLEditor extends Component {
             maxLines={20}
             minLines={15}
             highlightActiveLine={true}
-            ref="ace"
+            ref={'ace' + selectedApiIndex}
             value={this.state.editorContent}
             editorProps={{$blockScrolling: true}}
             onChange={this.textChangeHandler}
             onBlur={this.onBlur}
-            onLoad={(editor => editor.focus())}
+            onLoad={editor => editor.focus()}
           />
         </div>
       </div>

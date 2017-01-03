@@ -64,21 +64,10 @@ export default class ApiViewContainer extends Component {
 
   loadInitialApis = (response) => {
     if (response) {
-      let localStorageData = getDataFromLocalStorage('hidash')
-      if (localStorageData) {
-        Object.keys(localStorageData).map((key) => {
-          if(key!=='apiDefinition' && key!=='selectedApiIndex') {
-            this.setState({[key]: localStorageData[key]}, () => {
-            this.initializeStates()
-          })
-          }
-        })
-      }
-      else {
-        let testData = []
-        response.forEach(()=>{testData.push(getEmptyTestData())})
-        this.setState({testData: testData})
-      }
+      let testData = []
+      response.forEach(()=>{testData.push(getEmptyTestData())})
+      this.setState({testData: testData})
+
       let apiDefinition = []
 
       response.map((data)=>{
@@ -88,6 +77,8 @@ export default class ApiViewContainer extends Component {
           format: data.format,
           paramDefinition: data.parameters,
           sqlQuery: data.query,
+          permission_classes: data.permission_classes,
+          authentication_classes: data.authentication_classes,
           transformations: data.transformations,
           selectedTransformations: data.selectedTransformations,
           validations: data.validations,
@@ -100,6 +91,18 @@ export default class ApiViewContainer extends Component {
     else {
       this.initializeStates()
     }
+  }
+
+  setApiAccess = (key, value, classType, action) => {
+    let apiDefinition = this.state.apiDefinition.slice()
+    if(action==='add') {
+      apiDefinition[this.state.selectedApiIndex][classType].push(value)
+    } else if(action==='del') {
+      apiDefinition[this.state.selectedApiIndex][classType].splice(key,1)
+    } else if (action==='update') {
+      apiDefinition[this.state.selectedApiIndex][classType][key] = value
+    }
+    this.setState({apiDefinition: apiDefinition})
   }
 
   onChangeApiDefinition = (variableName, value) => {
@@ -288,10 +291,7 @@ export default class ApiViewContainer extends Component {
           tempTestData = [],
           tempOpenApis = []
       this.setState({apiDefinition: tempApiDef, testData: tempTestData, openAPIs: tempOpenApis})
-
     }
-
-
   }
 
   //Appends an empty API definition object to current API Definitions
@@ -319,7 +319,6 @@ export default class ApiViewContainer extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     if (nextState !== nextProps) {
       //FIXME: Need to change hardcode localstorage key name. Later we will save as project name
-      setDataInLocalStorage('hidash', nextState)
       return true
     }
   }
@@ -352,6 +351,7 @@ export default class ApiViewContainer extends Component {
       <NavHeader saveFileOnServer={this.saveFileOnServer} apiDefinition={this.state.apiDefinition} apiOpenHandler={this.apiOpenHandler} apiAdditionHandler={this.apiAdditionHandler} exportConfigAsYaml={this.exportConfigAsYaml}/>
       <ApiTabs
         {...this.state}
+        setApiAccess={this.setApiAccess}
         apiCloseHandler={this.apiCloseHandler}
         apiTabRenameHandler={this.apiTabRenameHandler}
         onChangeApiDefinition={this.onChangeApiDefinition}
