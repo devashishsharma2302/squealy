@@ -77,44 +77,50 @@ export default class Widget extends Component {
     } = this.props
     return(
       (widgetData && googleDefined)?
-        <Rnd
-          x={widgetData.left*GRID_WIDTH}
-          y={widgetData.top*GRID_HEIGHT}
-          width={widgetData.width*GRID_WIDTH}
-          height={widgetData.height*GRID_HEIGHT}
-          resizeGrid={[GRID_WIDTH, GRID_HEIGHT]}
-          moveGrid={[GRID_WIDTH, GRID_HEIGHT]}
-          bounds={'parent'}
-          onResize={this.widgetResizeHandler}
-          onDragStop={this.widgetPositionHandler}
-          bounds={'parent'}
-        >
-          <div
-            onMouseEnter={() => this.setState({editMode: true})}
-            onMouseLeave={() => this.setState({editMode: false})}
-          >
-            <h3 ref='header'>
-              {widgetData.title}
-            </h3>
-            <img src={EditIcon}
-                    className='edit-icon'
-                   onClick={()=>modalVisibilityEnabler(index)}
-                  />
-            <img src={DeleteIcon}
-                 className='delete-icon'
-                 onClick={()=>widgetDeletionHandler(dashboardIndex, index)}
-            />
-          </div>
-          <GoogleChartComponent config={{
-              ...chartData,
-              index: this.widgetIndex,
-              width: widgetData.width*GRID_WIDTH,
-              height: widgetData.height*GRID_HEIGHT - this.state.headerHeight,
-              chartType: widgetData.chartType,
-              chartStyles: widgetData.chartStyles
+          <Rnd
+            x={widgetData.left*GRID_WIDTH}
+            y={widgetData.top*GRID_HEIGHT}
+            width={widgetData.width*GRID_WIDTH}
+            height={widgetData.height*GRID_HEIGHT}
+            resizeGrid={[GRID_WIDTH, GRID_HEIGHT]}
+            moveGrid={[GRID_WIDTH, GRID_HEIGHT]}
+            onResize={this.widgetResizeHandler}
+            onDragStop={this.widgetPositionHandler}
+            bounds={{
+              left: 0,
+              right: 830
             }}
-          />
-        </Rnd>
+          >
+            <div
+              onMouseEnter={() => this.setState({editMode: true})}
+              onMouseLeave={() => this.setState({editMode: false})}
+              style={{
+                paddingLeft: GRID_PADDING,
+                paddingRight: GRID_PADDING,
+              }}
+            >
+              <h3 ref='header'>
+                {widgetData.title}
+              </h3>
+              <img src={EditIcon}
+                      className='edit-icon'
+                     onClick={()=>modalVisibilityEnabler(index)}
+                    />
+              <img src={DeleteIcon}
+                   className='delete-icon'
+                   onClick={()=>widgetDeletionHandler(dashboardIndex, index)}
+              />
+            <GoogleChartComponent config={{
+                ...chartData,
+                index: this.widgetIndex,
+                width: widgetData.width*GRID_WIDTH,
+                height: widgetData.height*GRID_HEIGHT - this.state.headerHeight,
+                chartType: widgetData.chartType,
+                chartStyles: widgetData.chartStyles
+              }}
+            />
+            </div>
+          </Rnd>
         :
           null
     )
