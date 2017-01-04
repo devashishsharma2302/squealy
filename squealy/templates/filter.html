@@ -5,19 +5,21 @@
   <label class="filter-label">
     {{filter.label}}
   </label>
-  {% if filter.type == 'date' %}
-    <div class='input-group date filter' id='datetimepicker1'>
+  {% if filter.type == 'dateTime' %}
+    <div class='input-group date filter' id='datetimepicker_{{forloop.counter}}'>
         <input
           type='text'
           class="form-control"
           onchange="updateFilterValues('{{filter.label}}', event)"
+          id="{{filter.label}}"
         />
         <span class="input-group-addon">
             <span class="glyphicon glyphicon-calendar"></span>
         </span>
         <script type="text/javascript">
             $(function () {
-                $('#datetimepicker1').datetimepicker();
+                $('#datetimepicker_{{forloop.counter}}').datetimepicker();
+                $('#datetimepicker_{{forloop.counter}}').on('dp.change', function(event) {updateDatetimeFilterValues('{{filter.label}}', event)})
             });
         </script>
     </div>
@@ -25,16 +27,23 @@
     <input
       type="text"
       class="filter"
-      onchange="updateFilterValues('{{filter.label}}', event)"
-      id="{{filter.label}}"
     />
-  {% elif filter.type == 'dateTime'%}
-    <input
-      type="datetime-local"
-      class="filter"
-      onchange="updateFilterValues('{{filter.label}}', event)"
-      id="{{filter.label}}"
-    />
+  {% elif filter.type == 'date'%}
+    <div class='input-group date filter' id='datepicker_{{forloop.counter}}'>
+        <input
+          type='text'
+          class="form-control"
+        />
+        <span class="input-group-addon">
+            <span class="glyphicon glyphicon-calendar"></span>
+        </span>
+        <script type="text/javascript">
+            $(function () {
+                $('#datepicker_{{forloop.counter}}').datetimepicker({format: 'YYYY-MM-DD'});
+                $('#datepicker_{{forloop.counter}}').on('dp.change', function(event) {updateDateFilterValues('{{filter.label}}', event)})
+            });
+        </script>
+    </div>
   {% elif filter.type == 'dropdown'%}
     <select
       onchange="updateFilterValues('{{filter.label}}', event)"
