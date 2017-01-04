@@ -210,3 +210,9 @@ a[aria-selected="true"] > div.api-tab > div.dropdown {
 .modal-body {
   overflow: visible;
 }
+
+#save-btn, #save-dashboard-btn {
+  border-radius: 2px;
+  width: 100%;
+}
+

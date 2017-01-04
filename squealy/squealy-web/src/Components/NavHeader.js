@@ -19,7 +19,7 @@ export default class MenuBar extends Component {
       <Navbar bsStyle='default' fluid>
         <Navbar.Header>
           <Navbar.Brand>
-            <a href="#">
+            <a href="/">
               <img src={logo} />
             </a>
           </Navbar.Brand>
@@ -49,12 +49,12 @@ export default class MenuBar extends Component {
         </Nav>
         <Nav pullRight>
           <NavItem href='dashboard'>
-              <button className="btn btn-info">
+              <button className="btn btn-info hidash-btn">
                 Dashboard
               </button>
             </NavItem>
           <NavItem>
-            <button className="btn btn-info export-btn"
+            <button className="btn btn-info export-btn hidash-btn"
               onClick={exportConfigAsYaml}>Export
             </button>
           </NavItem>
