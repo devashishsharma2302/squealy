@@ -5,7 +5,7 @@ import Rnd from 'react-resizable-and-movable'
 import EditIcon from '../../images/Edit_icon.png'
 import DeleteIcon from '../../images/Delete_icon.png'
 import {getApiRequest} from '../../Utils'
-import {GRID_WIDTH, GRID_HEIGHT, GRID_PADDING, GRID_WIDTH_OPTIONS}from '../../Constant'
+import {GRID_WIDTH, GRID_HEIGHT, GRID_PADDING, GRID_WIDTH_OPTIONS, DOMAIN_NAME}from '../../Constant'
 
 const style = {
   textAlign: 'center',
@@ -31,8 +31,7 @@ export default class Widget extends Component {
 
   refreshChartData = (filterValues) => {
     if (this.props.widgetData) {
-      //TODO: remove localhost
-      const url = 'http://localhost:8000/squealy-apis/'+this.props.widgetData.api_url
+      const url = DOMAIN_NAME+'squealy-apis/'+this.props.widgetData.api_url
       const params = {...filterValues, ...this.props.widgetData.apiParams}
       getApiRequest(url, params, (data)=> this.setState({chartData: data}), ()=>{}, null)
     }

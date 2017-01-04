@@ -4,7 +4,8 @@ import NavHeader from '../Components/NavHeader'
 import {
   SIDE_BAR_WIDTH,
   YAML_CONTENT_TYPE,
-  RESPONSE_FORMATS
+  RESPONSE_FORMATS,
+  DOMAIN_NAME
 } from '../Constant'
 import {
   postApiRequest,
@@ -23,7 +24,6 @@ import {
 
 
 //API URL host name. For testing only. later user will define this in setup configuration.
-export const apiUriHostName = 'http://localhost:8000'
 
 export default class ApiViewContainer extends Component {
   constructor(props) {
@@ -58,7 +58,7 @@ export default class ApiViewContainer extends Component {
   }
 
   componentWillMount() {
-    let url = apiUriHostName + '/yaml-generator/'
+    let url = DOMAIN_NAME + 'yaml-generator/'
     getApiRequest(url, null, this.loadInitialApis, ()=>{}, null)
   }
 
@@ -245,7 +245,7 @@ export default class ApiViewContainer extends Component {
       columns: this.state.apiDefinition[this.state.selectedApiIndex].columns,
       connection: this.state.selectedDB
     }
-    postApiRequest(apiUriHostName+'/test/', payloadObj,
+    postApiRequest(DOMAIN_NAME+'test/', payloadObj,
                    this.onSuccessTest, this.onErrorTest, format)
   }
 
@@ -332,7 +332,7 @@ export default class ApiViewContainer extends Component {
     let apiDefinition =this.state.apiDefinition.slice()
     let yamlData = saveYamlOnServer(apiDefinition)
     let data = {yamlData: yamlData}
-    postApiRequest(apiUriHostName+'/yaml-generator/', data, ()=>{
+    postApiRequest(DOMAIN_NAME+'yaml-generator/', data, ()=>{
       document.getElementById('save-btn').classList.remove('btn-danger');
       document.getElementById('save-btn').classList.add('btn-success');
     },()=>{}, null)

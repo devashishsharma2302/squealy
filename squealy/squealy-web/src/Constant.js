@@ -1,6 +1,6 @@
 import moment from 'moment'
 
-
+export const DOMAIN_NAME = 'http://localhost:8000/'
 export const SIDE_BAR_WIDTH = '21%'
 export const YAML_INDENTATION = 4
 export const YAML_CONTENT_TYPE = 'application/yaml'

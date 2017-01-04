@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import MainComponent from '../MainComponent'
 import {getEmptyApiDefinition, getEmptyTestData, postApiRequest} from '../../Utils'
-import {apiUriHostName} from '../../Containers/ApiViewContainer'
+import {DOMAIN_NAME} from '../../Constant'
 import {
   SIDE_BAR_WIDTH,
   YAML_CONTENT_TYPE,
@@ -101,7 +101,7 @@ export default class ChartApiModal extends Component {
       columns: this.state.apiDefinition[this.state.selectedApiIndex].columns,
       connection: this.state.selectedDB
     }
-    postApiRequest(apiUriHostName+'/test/', payloadObj,
+    postApiRequest(DOMAIN_NAME+'test/', payloadObj,
                    this.onSuccessTest, this.onErrorTest, format)
   }
 
