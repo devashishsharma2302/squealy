@@ -17,7 +17,7 @@ export default class DashboardHeader extends Component {
         </Navbar.Header>
         <Nav pullRight>
           <NavItem>
-            <button className="btn btn-success hidas" id='save-dashboard-btn' onClick={saveDashboard}>
+            <button className="btn btn-success" id='save-dashboard-btn' onClick={saveDashboard}>
               Save Dashboards
             </button>
           </NavItem>
