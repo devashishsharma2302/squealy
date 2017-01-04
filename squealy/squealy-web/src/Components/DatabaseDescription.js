@@ -3,7 +3,7 @@ import Select from 'react-select'
 import {Table} from 'react-bootstrap'
 import 'react-select/dist/react-select.css'
 import {getApiRequest, postApiRequest} from '../Utils'
-import {apiUriHostName} from '../Containers/ApiViewContainer'
+import {DOMAIN_NAME} from '../Constant'
 
 export default class DatabaseDescription extends Component {
 
@@ -19,7 +19,7 @@ export default class DatabaseDescription extends Component {
   }
 
   componentWillMount() {
-    getApiRequest(apiUriHostName+'/database-details/', null,
+    getApiRequest(DOMAIN_NAME+'database-details/', null,
                    this.setDatabaseState, this.onError)
   }
 
@@ -27,7 +27,7 @@ export default class DatabaseDescription extends Component {
     if (value) {
       this.setState({selectedDB: value},() => {
           let payloadObj = {database: this.state.selectedDB}
-          postApiRequest(apiUriHostName+'/database-details/', payloadObj,
+          postApiRequest(DOMAIN_NAME+'database-details/', payloadObj,
                       this.setDatabaseState, this.onError)
           this.props.dbUpdationHandler(this.state.selectedDB)
       })
@@ -62,7 +62,7 @@ export default class DatabaseDescription extends Component {
     this.setState({selectedTable: value},() => {
       let payloadObj = {database: this.state.selectedDB,
         table: this.state.selectedTable}
-      postApiRequest(apiUriHostName+'/database-details/', payloadObj,
+      postApiRequest(DOMAIN_NAME+'database-details/', payloadObj,
                    this.setDatabaseState, this.onError)
     })
   }

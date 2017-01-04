@@ -4,10 +4,9 @@ import Rnd from 'react-resizable-and-movable'
 import Datetime from 'react-datetime'
 import moment from 'moment'
 
-import {apiUriHostName} from '../../Containers/ApiViewContainer'
 import {RND_FILTER_RESIZEABILITY_CONSTRAINTS, FILTER_TYPES} from '../../Constant'
 import {getApiRequest} from '../../Utils'
-import {DATE_FORMAT, DATETIME_FORMAT} from '../../Constant'
+import {DATE_FORMAT, DATETIME_FORMAT, DOMAIN_NAME} from '../../Constant'
 import EditIcon from '../../images/Edit_icon.png'
 import DeleteIcon from '../../images/Delete_icon.png'
 import 'react-datetime/css/react-datetime.css'
@@ -118,7 +117,7 @@ export default class Filter extends Component {
   componentWillMount() {
     const {filterDefinition} = this.props
     if(filterDefinition.apiUrl) {
-      const url = apiUriHostName + '/squealy-apis/' + filterDefinition.apiUrl
+      const url = DOMAIN_NAME + 'squealy-apis/' + filterDefinition.apiUrl
       getApiRequest(url, null, (data)=>this.setState({filterData: data}), ()=>{}, null)
     }
   }
