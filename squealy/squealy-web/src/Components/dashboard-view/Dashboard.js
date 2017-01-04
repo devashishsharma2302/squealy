@@ -514,7 +514,7 @@ export default class Dashboard extends Component {
           </div>
         :
           null}
-        <div id="dashboardArea" style={dashboardDefinition.styles}>
+        <div ref="dashboardArea" id="dashboardArea" style={dashboardDefinition.styles}>
           {dashboardDefinition.filters.map((filter, index) => 
               (filter)?
                 <Filter
