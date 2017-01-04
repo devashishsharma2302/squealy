@@ -165,7 +165,6 @@ class DashboardTemplateView(APIView):
             for config in dashboards_config:
                 if config.get('apiName', '').lower().replace(' ', '-') == api_name:
                     dashboard = config
-
         return render(request, 'squealy-dashboard.html', {'dashboard': dashboard})
 
 class DashboardApiView(APIView):

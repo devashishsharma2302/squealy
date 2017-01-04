@@ -23,6 +23,8 @@ class HidashDatePicker extends Component {
     return(
       <Datetime
         value={value}
+        className="rnd-filter"
+        timeFormat={false}
         onChange={
           (value)=>onChangeHandler(moment(value).format(DATE_FORMAT))}
       />
@@ -39,6 +41,7 @@ class HidashDatetimePicker extends Component {
     return(
       <Datetime
         value={value}
+        className="rnd-filter"
         onChange={
           (value)=>onChangeHandler(moment(value).format(DATETIME_FORMAT))}
       />
@@ -137,13 +140,17 @@ export default class Filter extends Component {
   // Sets the position of the filter in its state
   filterPositionHandler = (event, uiState) => {
     this.setState({
-      top: uiState.position.top/GRID_HEIGHT,
       left: uiState.position.left/GRID_WIDTH
     }, () => {
       // Update the position of the widget in the state of dashboard container
       const {selectedDashboardIndex, index} = this.props
-      this.props.filterRepositionHandler(selectedDashboardIndex, index, this.state.top, this.state.left)
+      this.props.filterRepositionHandler(selectedDashboardIndex, index, this.state.left)
     })
+  }
+
+  updateFilterSize = () => {
+    const {selectedDashboardIndex, index} = this.props
+    this.props.filterResizeHandler(selectedDashboardIndex, index, this.state.width)
   }
 
   render() {
@@ -175,7 +182,8 @@ export default class Filter extends Component {
         x={left*GRID_WIDTH}
         y={top*GRID_HEIGHT}
         width={width*GRID_WIDTH}
-        onResize={this.widgetResizeHandler}
+        onResize={this.filterResizeHandler}
+        onResizeStop={this.updateFilterSize}
         onDragStop={this.filterPositionHandler}
         resizeGrid={[GRID_WIDTH, GRID_HEIGHT]}
         moveGrid={[GRID_WIDTH, GRID_HEIGHT]}

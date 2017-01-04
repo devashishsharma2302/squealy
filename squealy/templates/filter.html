@@ -1,73 +1,58 @@
-{% extends 'squealy-dashboard-base.html' %}
-{% block body %}
-
-{% block css %}
-<style>
-    .filter-wrapper {
-        height: 100%;
-        width: 100%;
-        display: flex;
-        align-items: center;
-
-    }
-
-    .filter-label {
-        font-weight: bold;
-        margin-right: 5px;
-        margin-top: 5px;
-    }
-</style>
-{% endblock %}
-<div>
-    <div class="filter-wrapper"
-         style="position: absolute;
-                width: {{filter.width}};
-                height: {{filter.height}};
-                top: {{filter.top}};
-                left: {{filter.left}}" >
-        <label class="filter-label">
-        {{filter.label}}
-        </label>
-        {% if filter.type == 'date' %}
-            <input type="date" onchange="updateFilterValues('{{filter.label}}', event)" id="{{filter.label}}"/>
-        {% elif filter.type == 'input'%}
-            <input type="text" onchange="updateFilterValues('{{filter.label}}', event)" id="{{filter.label}}"/>
-        {% elif filter.type == 'dateTime'%}
-            <input type="datetime-local" onchange="updateFilterValues('{{filter.label}}', event)" id="{{filter.label}}"/>
-        {% elif filter.type == 'dropdown'%}
-            <select onchange="updateFilterValues('{{filter.label}}', event)" id="filter_{{forloop.counter}}">
-            </select>
-            <script>
-                getOptions('{{filter.apiUrl}}', 'filter_{{forloop.counter}}')
-            </script>
-
-        {% endif %}
+<div 
+  class="filter-wrapper"
+  id="{{ forloop.counter }}"
+>
+  <label class="filter-label">
+    {{filter.label}}
+  </label>
+  {% if filter.type == 'date' %}
+    <div class='input-group date filter' id='datetimepicker1'>
+        <input
+          type='text'
+          class="form-control"
+          onchange="updateFilterValues('{{filter.label}}', event)"
+        />
+        <span class="input-group-addon">
+            <span class="glyphicon glyphicon-calendar"></span>
+        </span>
+        <script type="text/javascript">
+            $(function () {
+                $('#datetimepicker1').datetimepicker();
+            });
+        </script>
     </div>
+  {% elif filter.type == 'input'%}
+    <input
+      type="text"
+      class="filter"
+      onchange="updateFilterValues('{{filter.label}}', event)"
+      id="{{filter.label}}"
+    />
+  {% elif filter.type == 'dateTime'%}
+    <input
+      type="datetime-local"
+      class="filter"
+      onchange="updateFilterValues('{{filter.label}}', event)"
+      id="{{filter.label}}"
+    />
+  {% elif filter.type == 'dropdown'%}
+    <select
+      onchange="updateFilterValues('{{filter.label}}', event)"
+      class="filter"
+      id="filter_{{forloop.counter}}"
+    />
+    <script>
+      getOptions('{{filter.apiUrl}}', 'filter_{{forloop.counter}}')
+    </script>
+  {% endif %}
 </div>
-{% endblock %}
 
-
-{% block custom_scripts %}
 <script>
-    var updateFilterValues = function(key, e) {
-        filterValues[key] = e.target.value
-        loadCharts()
+  $("#{{ forloop.counter }}").css(
+    {
+      top: {{filter.top}}*GRID_HEIGHT + 'px',
+      left: {{filter.left}}*GRID_WIDTH+ 'px',
+      width: {{filter.width}}*GRID_WIDTH + 'px'
     }
-    var getOptions = function(url, id) {
-    var apiUrl = window.location.origin + '/squealy-apis/'+ url
-    $.ajax({
-    url: apiUrl,
-    method: 'GET',
-    contentType: 'application/json',
-    success: function (response) {
-        $.each(response.data, function(index, item) {
-            $('#'+id).append(
-                $('<option></option>').text(item[0]).val(item[0])
-            )
-        })
-      }
-  })
-
-    }
+  )
 </script>
-{% endblock %}

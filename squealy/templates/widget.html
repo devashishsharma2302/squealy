@@ -1,7 +1,3 @@
-{% extends 'squealy-dashboard-base.html' %}
-
-
-{% block body %}
 <div 
 	style="
 	position: absolute;
@@ -10,22 +6,20 @@
 	top: {{widget.top}};
 	left: {{widget.left}}"
 >
-	<h3 
-		style="
-		background: white;
-        text-align: center;
-        margin: 0;
-        padding: 15px 0 15px 0;
-        display: inline-block;
-        width: 100%;"
-     >
-        {{widget.title}}
-     </h3>
-	<div
-		id='{{widget.title}}'
-		style="height: {{widget.height|add:'-50'}}; width: {{widget.width}}"
-	>
-		
-	</div>
+  <h3 
+    style="
+    background: white;
+    text-align: center;
+    margin: 0;
+    padding: 15px 0 15px 0;
+    display: inline-block;
+    width: 100%;"
+  >
+    {{widget.title}}
+  </h3>
+  <div
+    id='{{widget.title}}'
+    style="height: {{widget.height|add:'-50'}}; width: {{widget.width}}"
+  >
+  </div>
 </div>
-{% endblock %}

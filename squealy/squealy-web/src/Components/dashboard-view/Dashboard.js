@@ -6,6 +6,7 @@ import AceEditor from 'react-ace'
 import 'brace/mode/json'
 import 'brace/theme/tomorrow'
 import 'brace/ext/language_tools'
+import Datetime from 'react-datetime'
 
 import Widget from './Widget'
 import Filter from './Filter'
@@ -56,6 +57,7 @@ export default class Dashboard extends Component {
     }
 
     updateFilterValues = (name, value) => {
+      console.log(value._d)
       let newFilterValues = Object.assign({}, this.state.filterValues)
       newFilterValues[name] = value
       this.setState({filterValues: newFilterValues})

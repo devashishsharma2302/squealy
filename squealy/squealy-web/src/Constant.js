@@ -112,7 +112,7 @@ export const DATE_FORMAT = 'YYYY-MM-DD'
 export const DATETIME_FORMAT = 'YYYY-MM-DD, hh:mm:ss'
 
 export const DEFAULT_FILTER_VALUES = {
-  [FILTER_TYPES[0].value]: moment(new Date().toISOString()).format(DATETIME_FORMAT),
+  [FILTER_TYPES[0].value]: new Date(),
   [FILTER_TYPES[1].value]: '',
   [FILTER_TYPES[2].value]: moment(new Date().toISOString()).format(DATE_FORMAT),
   [FILTER_TYPES[3].value]: ''
