@@ -44,7 +44,14 @@ export default class Widget extends Component {
     const newWidth = styleSize.width/GRID_WIDTH
     const newHeight = styleSize.height/GRID_HEIGHT
     this.props.widgetResizeHandler(dashboardIndex, index, newWidth, newHeight)
+  }
 
+  resizeStartHandler = (direction, styleSize, clientSize, e) => {
+    if(e.preventDefault) e.preventDefault();
+  }
+
+  dragStartHandler = (e) => {
+    if(e.preventDefault) e.preventDefault();
   }
 
   // Sets the position of the widget in its state
@@ -85,6 +92,8 @@ export default class Widget extends Component {
             resizeGrid={[GRID_WIDTH, GRID_HEIGHT]}
             moveGrid={[GRID_WIDTH, GRID_HEIGHT]}
             onResize={this.widgetResizeHandler}
+            onResizeStart={this.resizeStartHandler}
+            onDragStart={this.dragStartHandler}
             onDragStop={this.widgetPositionHandler}
             bounds={{
               left: 0,
