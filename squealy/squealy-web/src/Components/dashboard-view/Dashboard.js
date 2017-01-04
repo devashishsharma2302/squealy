@@ -495,14 +495,30 @@ export default class Dashboard extends Component {
           null
     return(
       <div id="dashboardAreaWrapper">
-        <button className="btn btn-info" onClick={this.addWidgetModalenabler}>
-          Add a new widget
-        </button>
-        <button className="btn btn-info" onClick={this.filterModalEnabler}>
-          Add a new filter
-        </button>
-        <div className='color-picker-button' onClick={()=> this.setState({displayColorPicker: true})}>
-          <div className='color-picker-content' style={dashboardDefinition.styles}/>
+        <div className="dashboard-btn-wrapper">
+          <button
+            className="btn btn-info hidash-btn"
+            onClick={this.addWidgetModalenabler}
+          >
+            Add a new widget
+          </button>
+        </div>
+        <div className="dashboard-btn-wrapper">
+          <button
+            className="btn btn-info hidash-btn"
+            onClick={this.filterModalEnabler}
+          >
+            Add a new filter
+          </button>
+        </div>
+        <div 
+          className='color-picker-button'
+          onClick={()=> this.setState({displayColorPicker: true})}
+        >
+          <div 
+            className='color-picker-content'
+            style={dashboardDefinition.styles}
+          />
         </div>
         {(displayColorPicker)?
           <div className='color-picker'
@@ -513,7 +529,8 @@ export default class Dashboard extends Component {
                           onChange={(color)=>updateDashboardDefinition(dashboardIndex, 'styles', {background:color.hex})}/>
           </div>
         :
-          null}
+          null
+        }
         <div id="dashboardArea" style={dashboardDefinition.styles}>
           {dashboardDefinition.filters.map((filter, index) => 
               (filter)?

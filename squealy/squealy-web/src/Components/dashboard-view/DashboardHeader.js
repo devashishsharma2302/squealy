@@ -10,14 +10,14 @@ export default class DashboardHeader extends Component {
       <Navbar bsStyle='default' fluid>
         <Navbar.Header>
           <Navbar.Brand>
-            <a href="#">
+            <a href="/">
               <img src={logo} />
             </a>
           </Navbar.Brand>
         </Navbar.Header>
         <Nav pullRight>
           <NavItem>
-            <button className="btn btn-success" id='save-dashboard-btn' onClick={saveDashboard}>
+            <button className="btn btn-success hidas" id='save-dashboard-btn' onClick={saveDashboard}>
               Save Dashboards
             </button>
           </NavItem>
