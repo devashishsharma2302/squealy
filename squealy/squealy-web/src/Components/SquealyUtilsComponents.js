@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Modal} from 'react-bootstrap'
 
-export class HidashModal extends Component {
+export class SquealyModal extends Component {
 
   render () {
     const {
@@ -33,7 +33,7 @@ export class HidashModal extends Component {
   }
 }
 
-export class HidashDropdown extends Component {
+export class SquealyDropdown extends Component {
 
   render () {
     const {name, options, selectedValue, onChangeHandler} = this.props

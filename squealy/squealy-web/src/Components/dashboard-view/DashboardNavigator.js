@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Tabs, Tab, TabList, DropdownButton, MenuItem} from 'react-bootstrap'
 import Dashboard from './Dashboard'
-import {HidashModal} from '../HidashUtilsComponents'
+import {SquealyModal} from '../SquealyUtilsComponents'
 
 
 export default class DashboardNavigator extends Component {
@@ -127,7 +127,7 @@ export default class DashboardNavigator extends Component {
           eventKey="add_tab"
         />
       </Tabs>
-      <HidashModal
+      <SquealyModal
         modalId='RenameDashboardModal'
         closeModal={()=>this.setState({showRenameModal: false})}
         showModal={this.state.showRenameModal}

@@ -2,7 +2,6 @@ import React, {Component} from 'react'
 import Select from 'react-select'
 import {Modal} from 'react-bootstrap'
 import 'react-select/dist/react-select.css'
-import {HidashModal} from './HidashUtilsComponents'
 import { AVAILABLE_TRANSFORMATIONS } from '../Constant'
 import { WithContext as ReactTags } from './ReactTags/ReactTags'
 
