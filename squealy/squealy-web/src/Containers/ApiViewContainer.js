@@ -348,6 +348,7 @@ export default class ApiViewContainer extends Component {
 
   render () {
     return (
+      <div className="parent-div container-fluid">
       <div>
       <NavHeader saveFileOnServer={this.saveFileOnServer} apiDefinition={this.state.apiDefinition} apiOpenHandler={this.apiOpenHandler} apiAdditionHandler={this.apiAdditionHandler} exportConfigAsYaml={this.exportConfigAsYaml}/>
       <ApiTabs
@@ -364,6 +365,7 @@ export default class ApiViewContainer extends Component {
         onChangeTestData={this.onChangeTestData}
         dbUpdationHandler={this.dbUpdationHandler}
       />
+      </div>
       </div>
     )
   }
