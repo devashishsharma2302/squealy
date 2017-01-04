@@ -153,6 +153,14 @@ export default class Filter extends Component {
     this.props.filterResizeHandler(selectedDashboardIndex, index, this.state.width)
   }
 
+  resizeStartHandler = (direction, styleSize, clientSize, e) => {
+    if(e.preventDefault) e.preventDefault();
+  }
+
+  dragStartHandler = (e) => {
+    if(e.preventDefault) e.preventDefault();
+  }
+
   render() {
     const {top, left, width, height, draggable, filterData} = this.state
     const {
@@ -184,6 +192,9 @@ export default class Filter extends Component {
         width={width*GRID_WIDTH}
         onResize={this.filterResizeHandler}
         onResizeStop={this.updateFilterSize}
+        onResize={this.widgetResizeHandler}
+        onResizeStart={this.resizeStartHandler}
+        onDragStart={this.dragStartHandler}
         onDragStop={this.filterPositionHandler}
         resizeGrid={[GRID_WIDTH, GRID_HEIGHT]}
         moveGrid={[GRID_WIDTH, GRID_HEIGHT]}

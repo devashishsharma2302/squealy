@@ -3,10 +3,10 @@ import React, {
 } from 'react'
 import Select from 'react-select'
 import AceEditor from 'react-ace'
+import { ChromePicker } from 'react-color';
 import 'brace/mode/json'
 import 'brace/theme/tomorrow'
 import 'brace/ext/language_tools'
-import Datetime from 'react-datetime'
 
 import Widget from './Widget'
 import Filter from './Filter'
@@ -41,11 +41,27 @@ export default class Dashboard extends Component {
             newWidgetApiParams: {},
             filterValues: {},
             showChartApiModal: false,
-            newApiType: null
+            newApiType: null,
+            displayColorPicker: false
         }
     }
 
     selectedWidgetIndex = null
+    mouseIsDownOnPicker = false
+
+    componentDidMount() {
+      window.addEventListener('mousedown', this.pageClick, false)
+    }
+
+    // To show/hide color picker
+    pageClick = (e) => {
+      if (this.mouseIsDownOnPicker) {
+        return
+      }
+      this.setState({
+          displayColorPicker: false
+      })
+    }
 
     //Add a new parameter
     addParam = () => {
@@ -57,7 +73,6 @@ export default class Dashboard extends Component {
     }
 
     updateFilterValues = (name, value) => {
-      console.log(value._d)
       let newFilterValues = Object.assign({}, this.state.filterValues)
       newFilterValues[name] = value
       this.setState({filterValues: newFilterValues})
@@ -290,7 +305,8 @@ export default class Dashboard extends Component {
       selectedFilter,
       filterValues,
       showChartApiModal,
-      newApiType
+      newApiType,
+      displayColorPicker
     } = this.state
 
     const filterModalContent =
@@ -416,7 +432,26 @@ export default class Dashboard extends Component {
       newWidget?
       <div className="row">
           <div className="col-md-12">
-            <label className='col-md-4'>API url: </label>
+            <label className='col-md-4'>Title: </label>
+            <input
+              type='text'
+              ref='widgetTitle'
+              value={newWidget.title}
+              onChange={(event)=>this.newWidgetChangeHandler('title', event.target.value)}
+            />
+          </div>
+          <div className="col-md-12">
+            <label className='col-md-4'>Type: </label>
+            <div className="col-md-5" style={{paddingLeft: '0', paddingRight: '35px'}}>
+              <Select
+                options={GOOGLE_CHART_TYPE_OPTIONS}
+                value={newWidget.chartType}
+                onChange={(chartType)=>this.newWidgetChangeHandler('chartType', chartType.value)}
+              />
+            </div>
+          </div>
+          <div className="col-md-12">
+            <label className='col-md-4'>URL: </label>
             <input
               type='text'
               ref='widgetTitle'
@@ -428,26 +463,7 @@ export default class Dashboard extends Component {
                   />
           </div>
           <div className="col-md-12">
-            <label className='col-md-4'>Widget Title: </label>
-            <input
-              type='text'
-              ref='widgetTitle'
-              value={newWidget.title}
-              onChange={(event)=>this.newWidgetChangeHandler('title', event.target.value)}
-            />
-          </div>
-          <div className="col-md-12">
-            <label className='col-md-4'>Chart type: </label>
-            <div className="col-md-5" style={{paddingLeft: '0', paddingRight: '35px'}}>
-              <Select
-                options={GOOGLE_CHART_TYPE_OPTIONS}
-                value={newWidget.chartType}
-                onChange={(chartType)=>this.newWidgetChangeHandler('chartType', chartType.value)}
-              />
-            </div>
-          </div>
-          <div className="col-md-12">
-          <h5>API Parameters:</h5>
+          <h5>Parameters:</h5>
           <table className="table table-bordered">
 
             <thead>
@@ -485,26 +501,36 @@ export default class Dashboard extends Component {
         <button className="btn btn-info" onClick={this.filterModalEnabler}>
           Add a new filter
         </button>
-        <input
-          type='text'
-          ref='widgetTitle'
-          value={dashboardDefinition.styles.background}
-          onChange={(event)=>updateDashboardDefinition(dashboardIndex, 'styles', {background:event.target.value})}
-        />
-        <div ref="dashboardArea" id="dashboardArea" style={dashboardDefinition.styles}>
+        <div className='color-picker-button' onClick={()=> this.setState({displayColorPicker: true})}>
+          <div className='color-picker-content' style={dashboardDefinition.styles}/>
+        </div>
+        {(displayColorPicker)?
+          <div className='color-picker'
+               onMouseDown={() => {this.mouseIsDownOnPicker = true}}
+               onMouseUp={() => {this.mouseIsDownOnPicker = false}}
+          >
+            <ChromePicker color={dashboardDefinition.styles.background}
+                          onChange={(color)=>updateDashboardDefinition(dashboardIndex, 'styles', {background:color.hex})}/>
+          </div>
+        :
+          null}
+        <div id="dashboardArea" style={dashboardDefinition.styles}>
           {dashboardDefinition.filters.map((filter, index) => 
-              <Filter
-                key={index}
-                index={index}
-                value={(filter.label in filterValues)?filterValues[filter.label]:DEFAULT_FILTER_VALUES[filter.type]}
-                filterDefinition={filter}
-                updateFilterValues={this.updateFilterValues}
-                filterDeletionHandler={filterDeletionHandler}
-                selectedDashboardIndex={selectedDashboardIndex}
-                filterResizeHandler={filterResizeHandler}
-                filterRepositionHandler={filterRepositionHandler}
-                modalVisibilityEnabler={this.filterModalVisibilityEnabler}
-              />
+              (filter)?
+                <Filter
+                  key={index}
+                  index={index}
+                  value={(filter.label in filterValues)?filterValues[filter.label]:DEFAULT_FILTER_VALUES[filter.type]}
+                  filterDefinition={filter}
+                  updateFilterValues={this.updateFilterValues}
+                  filterDeletionHandler={filterDeletionHandler}
+                  selectedDashboardIndex={selectedDashboardIndex}
+                  filterResizeHandler={filterResizeHandler}
+                  filterRepositionHandler={filterRepositionHandler}
+                  modalVisibilityEnabler={this.filterModalVisibilityEnabler}
+                />
+              :
+                null
             )
           }
           {

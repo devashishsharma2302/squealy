@@ -163,7 +163,7 @@ export default class ChartApiModal extends Component {
       modalId='chartApiModal'
       closeModal={() => closeChartApiModal('')}
       showModal={showModal}
-      modalHeader='Create Chart API'
+      modalHeader='Create New API'
       modalContent={modalContent}
       saveChanges={()=> saveChartApi(this.state.apiDefinition[0], this.closeModal)}
     />
