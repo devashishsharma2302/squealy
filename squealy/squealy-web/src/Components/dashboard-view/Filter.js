@@ -157,12 +157,12 @@ export default class Filter extends Component {
   }
 
   resizeStartHandler = (direction, styleSize, clientSize, e) => {
-    if(e.preventDefault) e.preventDefault();
+     e.preventDefault();
   }
 
   dragStartHandler = (e) => {
     if (!['INPUT', 'SELECT'].includes(e.target.tagName)) {
-      if(e.preventDefault) e.preventDefault();
+      e.preventDefault();
     }
   }
 
@@ -194,6 +194,7 @@ export default class Filter extends Component {
         ref={'filter'+index}
         x={left*GRID_WIDTH}
         y={top*GRID_HEIGHT}
+        zIndex={500}
         width={width*GRID_WIDTH}
         onResize={this.filterResizeHandler}
         onResizeStop={this.updateFilterSize}
