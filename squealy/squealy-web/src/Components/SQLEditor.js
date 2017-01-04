@@ -75,7 +75,6 @@ export class SQLEditor extends Component {
             editorProps={{$blockScrolling: true}}
             onChange={this.textChangeHandler}
             onBlur={this.onBlur}
-            onLoad={editor=>{editor.focus()}}
           />
         </div>
       </div>
