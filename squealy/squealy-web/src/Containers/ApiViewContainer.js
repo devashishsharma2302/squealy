@@ -179,7 +179,7 @@ export default class ApiViewContainer extends Component {
       })
     }
     this.setState({testData: newTestData, apiDefinition: newAPIdef},()=>{
-      this.onChangeApiDefinition('format', format);console.log(this.state)
+      this.onChangeApiDefinition('format', format)
     })
   }
 
