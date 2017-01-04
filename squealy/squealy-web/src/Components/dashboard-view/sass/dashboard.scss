@@ -12,7 +12,7 @@ div.parent-div.container-fluid.dashboard-container {
   }
   
   #dashboardAreaWrapper {
-    height: 100vh;
+    height: 80vh;
     overflow: hidden;
     
     .background-color-picker {
@@ -51,9 +51,9 @@ div.parent-div.container-fluid.dashboard-container {
     }
 
     #dashboardArea {
-        height: 90vh;
+        height: 100%;
         position: relative;
-        overflow: scroll;
+        overflow: auto;
 
         .rnd-filter-wrapper {
           height: 100%;
