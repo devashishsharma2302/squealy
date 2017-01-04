@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import MainComponent from './MainComponent'
 import { DropdownButton, MenuItem, Tab, Tabs } from 'react-bootstrap'
-import {HidashModal} from './HidashUtilsComponents'
+import {SquealyModal} from './SquealyUtilsComponents'
 
 
 export default class ApiTabsToggle extends Component {
@@ -137,7 +137,7 @@ export default class ApiTabsToggle extends Component {
           eventKey="add_tab"
         />
       </Tabs>
-      <HidashModal
+      <SquealyModal
         modalId='renameTabModal' modalHeader='Rename API' showModal={this.state.showRenameModal}
         modalContent={renameTabModalContent} saveChanges={this.renameTab}
         closeModal={this.closeModal}

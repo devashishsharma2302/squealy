@@ -14,7 +14,7 @@ import 'react-datetime/css/react-datetime.css'
 import {GRID_WIDTH, GRID_PADDING, GRID_HEIGHT}from '../../Constant'
 
 
-class HidashDatePicker extends Component {
+class SquealyDatePicker extends Component {
   render() {
     const {
       value,
@@ -32,7 +32,7 @@ class HidashDatePicker extends Component {
   }
 }
 
-class HidashDatetimePicker extends Component {
+class SquealyDatetimePicker extends Component {
   render() {
     const {
       value,
@@ -49,7 +49,7 @@ class HidashDatetimePicker extends Component {
   }
 }
 
-class HidashDropdown extends Component {
+class SquealyDropdown extends Component {
   render() {
     const {
       value,
@@ -80,13 +80,14 @@ class HidashDropdown extends Component {
   }
 }
 
-class HidashInput extends Component {
+class SquealyInput extends Component {
 
 
   render() {
     const {value, onChangeHandler} = this.props
     return(
       <input
+        defaultValue={value}
         className="rnd-filter"
         type="text"
         onBlur={(e) => onChangeHandler(e.target.value)}
@@ -96,10 +97,10 @@ class HidashInput extends Component {
 }
 
 const filterTypes = {
-  'dropdown': HidashDropdown,
-  'input': HidashInput,
-  'dateTime': HidashDatetimePicker,
-  'date': HidashDatePicker
+  'dropdown': SquealyDropdown,
+  'input': SquealyInput,
+  'dateTime': SquealyDatetimePicker,
+  'date': SquealyDatePicker
 }
 
 
@@ -159,7 +160,9 @@ export default class Filter extends Component {
   }
 
   dragStartHandler = (e) => {
-    if(e.preventDefault) e.preventDefault();
+    if (!['INPUT', 'SELECT'].includes(e.target.tagName)) {
+      if(e.preventDefault) e.preventDefault();
+    }
   }
 
   render() {

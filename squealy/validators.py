@@ -7,7 +7,7 @@ jinjasql = JinjaSql()
 
 
 def run_query(api, params, user, query, error_message="Validation Failed"):
-    query, bind_params = jinjasql.prepare_query(query, {"params": params})
+    query, bind_params = jinjasql.prepare_query(query, {"params": params, 'user': user})
     conn = connections[api.connection_name]
     with conn.cursor() as cursor:
         cursor.execute(query, bind_params)
