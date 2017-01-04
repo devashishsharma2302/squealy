@@ -1,31 +1,26 @@
-{% extends 'squealy-dashboard-base.html' %}
-
-
-{% block body %}
 <div 
-	style="
-	position: absolute;
-	height: {{widget.height}};
-	width: {{widget.width}};
-	top: {{widget.top}};
-	left: {{widget.left}}"
+  id="widgetWrapper{{ forloop.counter }}"
+  class="widget-wrapper"
 >
-	<h3 
-		style="
-		background: white;
-        text-align: center;
-        margin: 0;
-        padding: 15px 0 15px 0;
-        display: inline-block;
-        width: 100%;"
-     >
-        {{widget.title}}
-     </h3>
-	<div
-		id='{{widget.title}}'
-		style="height: {{widget.height|add:'-50'}}; width: {{widget.width}}"
-	>
-		
-	</div>
+  <h3
+    class="widget-header"
+    id="widget_header{{ forloop.counter }}"
+  >
+    {{widget.title}}
+  </h3>
+  <div
+    id='{{widget.title}}'
+  >
+  </div>
 </div>
-{% endblock %}
+
+<script>
+  $("#widgetWrapper{{ forloop.counter }}").css(
+    {
+      top: {{widget.top}}*GRID_HEIGHT + 'px',
+      left: {{widget.left}}*GRID_WIDTH+ 'px',
+      width: {{widget.width}}*GRID_WIDTH + 'px',
+      height: {{widget.height}}*GRID_HEIGHT + 'px'
+    }
+  )
+</script>

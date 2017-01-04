@@ -10,7 +10,7 @@ export default class DashboardHeader extends Component {
       <Navbar bsStyle='default' fluid>
         <Navbar.Header>
           <Navbar.Brand>
-            <a href="#">
+            <a href="/">
               <img src={logo} />
             </a>
           </Navbar.Brand>

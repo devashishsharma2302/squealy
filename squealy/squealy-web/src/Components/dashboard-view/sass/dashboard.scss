@@ -7,6 +7,12 @@
     width: 200px;
   }
 
+  .dashboard-btn-wrapper {
+    display: inline-block;
+    width: 150px;
+    margin-right: 5px;
+  }
+
   .color-picker {
     position: absolute;
     right: 30px;
@@ -31,8 +37,7 @@
       height: 90vh;
       margin-top: 2%;
       position: relative;
-      overflow-y: scroll;
-      overflow-x: hidden;
+      overflow: scroll;
 
       .rnd-filter-wrapper {
         height: 100%;
