@@ -73,7 +73,6 @@ export class ResponseTableHeader extends Component {
       let columnDefinition = Object.assign({}, this.props.columnDefinition)
       let selectedColumnDef = columnDefinition[selectedColumn]
       let columnType = selectedColumnDef.type || 'Dimension'
-      this.refs.colKey.value = selectedColumn
       this.refs.colName.value = selectedColumn
       this.setState({
         selectedClmDataType: selectedColumnDef.data_type,
@@ -87,7 +86,6 @@ export class ResponseTableHeader extends Component {
     let columnDefinition = Object.assign({}, this.props.columnDefinition)
     let refObj = this.refs
     columnDefinition[refObj.colName.value] = {
-      key: refObj.colKey.value,
       type: this.state.selectedColumnType,
       data_type: this.state.selectedClmDataType
     }
@@ -99,12 +97,7 @@ export class ResponseTableHeader extends Component {
     const {headerName, selectedColumn, columnDefinition} = this.props
     let editColumnModalContent = 
       <div className="edit-col-modal">
-        <div className="row">
-          <label htmlFor="col-key" className="col-md-3">Key: </label>
-          <div className="col-md-8 col-def-form">
-            <input type="text" id="col-key" ref="colKey"/>
-          </div>
-        </div>
+       
         <div className="row">
           <label htmlFor="col-name" className="col-md-3">Column Name: </label>
           <div className="col-md-8 col-def-form">

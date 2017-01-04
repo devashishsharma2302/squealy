@@ -99,7 +99,7 @@ export default class ApiTabsToggle extends Component {
                 <MainComponent
                 setApiAccess={setApiAccess}
                 apiDefinition={apiDefinition}
-                selectedApiIndex={selectedApiIndex}
+                selectedApiIndex={i}
                 testData={testData}
                 handleEditParam={this.handleEditParam}
                 onChangeApiDefinition={onChangeApiDefinition}
