@@ -57,9 +57,13 @@ export default class Widget extends Component {
   // Sets the position of the widget in its state
   widgetPositionHandler = (event, uiState) => {
     // Update the position of the widget in the state of dashboard container
+    let containerLeft = this.props.containerNode.getBoundingClientRect().left,
+        containerTop = this.props.containerNode.getBoundingClientRect().top,
+        leftPosition = uiState.node.getBoundingClientRect().left - containerLeft,
+        topPosition = uiState.node.getBoundingClientRect().top - containerTop
     const {dashboardIndex, index} = this.props
-    const newTop = uiState.position.top/GRID_HEIGHT
-    const newLeft = uiState.position.left/GRID_WIDTH
+    const newTop = topPosition/GRID_HEIGHT
+    const newLeft = leftPosition/GRID_WIDTH
     this.props.widgetRepositionHandler(dashboardIndex, index, newTop, newLeft)
   }
 
