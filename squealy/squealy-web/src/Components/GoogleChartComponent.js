@@ -10,9 +10,9 @@ export default class GoogleChartWrapper extends Component {
 
   renderChart = (config) => {
     let wrapper = new google.visualization.ChartWrapper({
-      chartType: config.chartType,
+      chartType: (config.chartType)?config.chartType:'ColumnChart',
       dataTable: config,
-      containerId: 'widget' + config.index,
+      containerId: (config.index)?'widget' + config.index:'widget',
       options: {
         ...config.chartStyles,
         'height': config.height,
@@ -29,7 +29,7 @@ export default class GoogleChartWrapper extends Component {
   render() {
     const { config } = this.props
     return(
-      <div id={'widget' + config.index} />
+      <div id={(config.index)?'widget' + config.index:'widget'} />
     )
   }
 }
