@@ -10,19 +10,12 @@ export class SQLEditor extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      editorContent: 'SELECT ...'
+      editorContent: props.sqlQuery?props.sqlQuery:'SELECT ...'
     }
   }
 
   textChangeHandler = (text) => {
     this.setState({editorContent: text})
-  }
-
-  componentWillReceiveProps(nextProps) {
-    //Set editor content on mount only if user has already wrriten a query
-    if(nextProps.sqlQuery) {
-      this.setState({editorContent: nextProps.sqlQuery})
-    }
   }
 
   onBlur = () => {
@@ -82,7 +75,7 @@ export class SQLEditor extends Component {
             editorProps={{$blockScrolling: true}}
             onChange={this.textChangeHandler}
             onBlur={this.onBlur}
-            onLoad={editor => editor.focus()}
+            onLoad={editor=>{editor.focus()}}
           />
         </div>
       </div>
