@@ -22,11 +22,11 @@ class SquealyDatePicker extends Component {
     } = this.props
     return(
       <Datetime
-        value={value}
+        defaultValue={value}
         className="rnd-filter"
         timeFormat={false}
         onChange={
-          (value)=>onChangeHandler(moment(value).format(DATE_FORMAT))}
+          (value)=>onChangeHandler(value.format(DATE_FORMAT))}
       />
     )
   }
@@ -40,10 +40,10 @@ class SquealyDatetimePicker extends Component {
     } = this.props
     return(
       <Datetime
-        value={value}
+        defaultValue={value}
         className="rnd-filter"
         onChange={
-          (value)=>onChangeHandler(moment(value).format(DATETIME_FORMAT))}
+          (val)=>onChangeHandler(val.format(DATETIME_FORMAT))}
       />
     )
   }
@@ -140,14 +140,16 @@ export default class Filter extends Component {
 
   // Sets the position of the filter in its state
   filterPositionHandler = (event, uiState) => {
-    let leftPosition = uiState.node.getBoundingClientRect().left - 30
-    this.setState({
-      left: leftPosition/GRID_WIDTH
-    }, () => {
-      // Update the position of the widget in the state of dashboard container
-      const {selectedDashboardIndex, index} = this.props
-      this.props.filterRepositionHandler(selectedDashboardIndex, index, this.state.left)
-    })
+    if (event.target.tagName !== 'SPAN') {
+      let leftPosition = uiState.node.getBoundingClientRect().left - 30
+      this.setState({
+        left: leftPosition/GRID_WIDTH
+      }, () => {
+        // Update the position of the widget in the state of dashboard container
+        const {selectedDashboardIndex, index} = this.props
+        this.props.filterRepositionHandler(selectedDashboardIndex, index, this.state.left)
+      })
+    }
   }
 
   updateFilterSize = () => {
