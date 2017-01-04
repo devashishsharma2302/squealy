@@ -46,11 +46,11 @@ export default class Widget extends Component {
   }
 
   resizeStartHandler = (direction, styleSize, clientSize, e) => {
-    if(e.preventDefault) e.preventDefault();
+    e.preventDefault();
   }
 
   dragStartHandler = (e) => {
-    if(e.preventDefault) e.preventDefault();
+    e.preventDefault();
   }
 
   // Sets the position of the widget in its state
