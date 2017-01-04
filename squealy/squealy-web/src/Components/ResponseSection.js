@@ -1,9 +1,15 @@
 import React, {Component} from 'react'
+import Select from 'react-select'
+import 'react-select/dist/react-select.css'
 
 import GoogleChartComponent from './GoogleChartComponent'
 import JSONViewer from './JSONViewer'
 import { QueryResponseTable } from './ResponseTable'
-import {VISUALIZATION_MODES, RESPONSE_FORMATS} from '../Constant'
+import {
+  VISUALIZATION_MODES,
+  RESPONSE_FORMATS,
+  GOOGLE_CHART_TYPE_OPTIONS
+} from '../Constant'
 import {chartData} from '../mockData'
 
 const responseElementReferenceMap = {
@@ -18,7 +24,8 @@ export default class ResponseSection extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      visualizationMode: VISUALIZATION_MODES.raw
+      visualizationMode: VISUALIZATION_MODES.raw,
+      chartType: GOOGLE_CHART_TYPE_OPTIONS[7].value
     }
   }
 
@@ -32,7 +39,7 @@ export default class ResponseSection extends Component {
       selectedAPIDefinition,
       onChangeApiDefinition
     } = this.props
-    const {visualizationMode} = this.state
+    const {visualizationMode, chartType} = this.state
     let responseElem
     if (selectedTestData.apiSuccess) {
       //Gets the reference of the response element to be rendered
@@ -57,22 +64,42 @@ export default class ResponseSection extends Component {
       <div className="response-section">
       {(selectedTestData.selectedFormat === 'GoogleChartsFormatter')?
         <div>
-          <button 
-            type="button"
-            className="response-section-btn"
-            onClick={(e) => this.visualizationChangeHandler(e, 'Raw')}>
-            Raw Data
-          </button>
-          <button
-            type="button"
-            className="response-section-btn"
-            onClick={(e) => this.visualizationChangeHandler(e, 'Widget')}>
-            Visualize
-          </button>
+          <div id="gc_response_header">
+            <button 
+              type="button"
+              className="response-section-btn"
+              onClick={(e) => this.visualizationChangeHandler(e, 'Raw')}>
+              Raw Data
+            </button>
+            <button
+              type="button"
+              className="response-section-btn"
+              onClick={(e) => this.visualizationChangeHandler(e, 'Widget')}>
+              Visualize
+            </button>
+            {(visualizationMode === 'Widget')?
+              <div id="chart_select">
+                <Select
+                  name="chart-type"
+                  options={GOOGLE_CHART_TYPE_OPTIONS}
+                  value={chartType}
+                  onChange={(selectedChartType)=>this.setState({chartType: selectedChartType.value})}
+                  placeholder='Select Database'
+                />
+              </div>
+            :
+              null
+            }
+          </div>
           <div>
             {(visualizationMode==VISUALIZATION_MODES.raw)?
               responseElem:<GoogleChartComponent 
-                              config={selectedTestData.apiResponse} />
+                              config={{
+                                ...selectedTestData.apiResponse,
+                                height: 350,
+                                chartType: chartType
+                              }}
+                           />
             }
           </div>
         </div>
