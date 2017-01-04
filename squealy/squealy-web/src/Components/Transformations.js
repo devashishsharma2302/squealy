@@ -196,6 +196,7 @@ export default class Transformations extends Component {
             <ReactTags
               tags={selectedApiDefinition.selectedTransformations}
               autocomplete={true}
+              autofocus={false}
               minQueryLength={0}
               suggestions={AVAILABLE_TRANSFORMATIONS}
               handleDelete={this.handleDelete}
