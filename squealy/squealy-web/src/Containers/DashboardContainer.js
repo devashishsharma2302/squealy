@@ -2,8 +2,8 @@ import React, {Component} from 'react'
 import DashboardNavigator from '../Components/dashboard-view/DashboardNavigator'
 import {getEmptyDashboardDefinition, getEmptyWidgetDefinition, getApiRequest, postApiRequest, saveYamlOnServer} from '../Utils'
 import DashboardHeader from '../Components/dashboard-view/DashboardHeader'
+import {DOMAIN_NAME} from '../Constant'
 
-export const APIURI = 'http://localhost:8000'
 
 export default class DashboardContainer extends Component {
   constructor() {
@@ -17,7 +17,7 @@ export default class DashboardContainer extends Component {
   // empty database definition
   componentWillMount() {
     // TODO: Get dashboard definitions from local storage
-    let apiUrl = APIURI+'/squealy-dashboard-design/'
+    let apiUrl = DOMAIN_NAME+'squealy-dashboard-design/'
     getApiRequest(apiUrl, null, this.setDashboardDefinitions, this.setDefaultDashboardDef, null)
   }
 
@@ -87,7 +87,7 @@ export default class DashboardContainer extends Component {
   }
 
   saveDashboard = () => {
-    let apiUrl = APIURI+'/squealy-dashboard-design/'
+    let apiUrl = DOMAIN_NAME+'squealy-dashboard-design/'
     let requestData = JSON.parse(JSON.stringify(this.state.dashboardDefinitions))
     requestData.map((dashboard, dashboardIndex) => {
       requestData[dashboardIndex].widgets = dashboard.widgets.filter(widget => widget!=null)
@@ -150,7 +150,7 @@ export default class DashboardContainer extends Component {
   }
 
   saveChartApi = (chartApi, onSuccess) => {
-    let apiUrl = APIURI+'/squealy-apis/'
+    let apiUrl = DOMAIN_NAME+'squealy-apis/'
     let yamlData = saveYamlOnServer([chartApi])
     postApiRequest(apiUrl, yamlData[0], ()=>{onSuccess()}, ()=>{},null)
   }
