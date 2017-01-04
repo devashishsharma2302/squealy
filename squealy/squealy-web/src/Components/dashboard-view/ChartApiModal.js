@@ -8,8 +8,8 @@ import {
   RESPONSE_FORMATS
 } from '../../Constant'
 import {
-    HidashModal
-} from '../HidashUtilsComponents'
+    SquealyModal
+} from '../SquealyUtilsComponents'
 
 export default class ChartApiModal extends Component {
 	constructor(props) {
@@ -157,7 +157,7 @@ export default class ChartApiModal extends Component {
 	  </div>
 	
 	return (
-		<HidashModal
+		<SquealyModal
 			dialogClassName='chart-api-modal'
 			modalSize = 'large'
       modalId='chartApiModal'

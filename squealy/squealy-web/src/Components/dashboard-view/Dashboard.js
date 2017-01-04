@@ -11,8 +11,8 @@ import 'brace/ext/language_tools'
 import Widget from './Widget'
 import Filter from './Filter'
 import {
-    HidashModal
-} from '../HidashUtilsComponents'
+    SquealyModal
+} from '../SquealyUtilsComponents'
 import {
     GOOGLE_CHART_TYPE_OPTIONS,
     INCORRECT_JSON_ERROR,
@@ -568,7 +568,7 @@ export default class Dashboard extends Component {
               />
             )
           }
-          <HidashModal
+          <SquealyModal
             modalId='EditWidgetModal'
             closeModal={()=>this.setState({showEditWidgetModal: false})}
             showModal={this.state.showEditWidgetModal}
@@ -576,7 +576,7 @@ export default class Dashboard extends Component {
             modalContent={modalContent}
             saveChanges={this.saveUpdatedWidgetData}
           />
-          <HidashModal
+          <SquealyModal
             modalId='AddWidgetModal'
             closeModal={()=>this.setState({showAddWidgetModal: false})}
             showModal={this.state.showAddWidgetModal}
@@ -584,7 +584,7 @@ export default class Dashboard extends Component {
             modalContent={addWidgetModalContent}
             saveChanges={this.saveNewWidget}
           />
-          <HidashModal
+          <SquealyModal
             modalId='filterModal'
             closeModal={()=>this.setState({showFilterModal: false})}
             showModal={this.state.showFilterModal}

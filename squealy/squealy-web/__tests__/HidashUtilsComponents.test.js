@@ -2,12 +2,12 @@ import React from 'react'
 import { shallow, mount } from 'enzyme'
 
 import {
-  HidashModal,
-  HidashDropdown
-} from '../src/Components/HidashUtilsComponents'
+  SquealyModal,
+  SquealyDropdown
+} from '../src/Components/SquealyUtilsComponents'
 
 
-describe('Tests the Hidash utility components', () => {
+describe('Tests the Squealy utility components', () => {
   const options = [{
     name: 'option1',
     value: '1'
@@ -26,7 +26,7 @@ describe('Tests the Hidash utility components', () => {
 
   it('Triggers change event on select tag', () => {
     const component = mount(
-      <HidashDropdown
+      <SquealyDropdown
         options = {options}
         selectedValue = {selectedValue}
         onChangeHandler = {onChangeHandler}
@@ -43,7 +43,7 @@ describe('Tests the Hidash utility components', () => {
 
   it('Triggers click event on save button and calls saveChanges function', () => {
     const component = mount(
-      <HidashModal
+      <SquealyModal
         modalHeader={modalHeader}
         modalId={modalId}
         modalContent={modalContent}

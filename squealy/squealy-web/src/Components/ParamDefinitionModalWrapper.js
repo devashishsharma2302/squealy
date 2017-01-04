@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {HidashModal, HidashDropdown} from './HidashUtilsComponents'
+import {SquealyModal, SquealyDropdown} from './SquealyUtilsComponents'
 import {PARAM_FORMAT_OPTIONS} from './../Constant'
 import AceEditor from 'react-ace'
 
@@ -196,7 +196,7 @@ export default class ParamDefinitionModalWrapper extends Component {
           </div> :
           <div className='col-md-12'>
             <label htmlFor='paramFormat' className='col-md-4'>Param Definition Format: </label>
-            <HidashDropdown
+            <SquealyDropdown
               options={PARAM_FORMAT_OPTIONS}
               name='paramFormat'
               onChangeHandler={this.paramFormatSelectionHandler}
@@ -299,9 +299,9 @@ export default class ParamDefinitionModalWrapper extends Component {
         }
       </div>
     return  (<div>
-      <HidashModal modalId='addParamsModal' closeModal={this.props.closeParamModal} showModal={this.props.showParamModal} modalHeader='Add Parameters'
+      <SquealyModal modalId='addParamsModal' closeModal={this.props.closeParamModal} showModal={this.props.showParamModal} modalHeader='Add Parameters'
       modalContent={addParamModalContent} saveChanges={this.saveParamHandler}/>
-      <HidashModal modalId='addValidationsModal' closeModal={this.props.closeValidationModal} showModal={this.props.showValidationModal} modalHeader='Validations'
+      <SquealyModal modalId='addValidationsModal' closeModal={this.props.closeValidationModal} showModal={this.props.showValidationModal} modalHeader='Validations'
       modalContent={addValidationsModalContent} saveChanges={this.saveValidationHandler} modalSize="large"/>
       </div>)
   }
