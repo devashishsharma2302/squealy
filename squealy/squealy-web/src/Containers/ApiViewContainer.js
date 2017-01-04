@@ -74,6 +74,7 @@ export default class ApiViewContainer extends Component {
         let apiObj = {
           apiName: data.name,
           open: true,
+          columns: data.columns,
           format: data.format,
           paramDefinition: data.parameters,
           sqlQuery: data.query,
@@ -169,16 +170,16 @@ export default class ApiViewContainer extends Component {
       selectedFormat: format
     }
     newTestData[this.state.selectedApiIndex] = Object.assign(newTestData[this.state.selectedApiIndex], onSuccessTestData)
-    if(format === RESPONSE_FORMATS.table.value){
+    if(format === RESPONSE_FORMATS.table.formatter){
       response.columns.map((column) => {
-        newAPIdef[this.state.selectedApiIndex].columns[column.name] = {
+        newAPIdef[this.state.selectedApiIndex]['columns'][column.name] = {
           type: column.col_type || 'dimension',
           data_type: column.data_type || 'string'
         }
       })
     }
     this.setState({testData: newTestData, apiDefinition: newAPIdef},()=>{
-      this.onChangeApiDefinition('format', format)
+      this.onChangeApiDefinition('format', format);console.log(this.state)
     })
   }
 
