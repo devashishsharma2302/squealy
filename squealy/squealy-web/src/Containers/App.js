@@ -23,7 +23,7 @@ export default class App extends Component{
       })
    )
     return(
-      <div className="parent-div container-fluid">
+      <div>
         {childrenWithProps}
       </div>
     )

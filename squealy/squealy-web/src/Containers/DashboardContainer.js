@@ -160,8 +160,8 @@ export default class DashboardContainer extends Component {
     const {dashboardDefinitions, selectedDashboardIndex} = this.state
     const {googleDefined} = this.props
     return (
-
-      <div>
+      <div className='parent-div container-fluid dashboard-container'>
+      <div className='dashboard-design'>
         <DashboardHeader saveDashboard={this.saveDashboard}/>
         <DashboardNavigator
           selectDashboard={this.selectDashboard}
@@ -182,6 +182,7 @@ export default class DashboardContainer extends Component {
           googleDefined={googleDefined}
           saveChartApi={this.saveChartApi}
         />
+      </div>
       </div>
     )
   }
