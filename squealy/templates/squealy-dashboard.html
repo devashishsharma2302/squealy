@@ -11,6 +11,13 @@
       border-radius: 4px;
     }
 
+    input[type='text'] {
+      padding: 7px;
+      min-width: 200px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+
     .filter-wrapper {
       height: 100px;
       width: 100%;
@@ -26,6 +33,16 @@
       margin-top: 5px;
     }
 
+    .widget-header {
+      background: white;
+      text-align: center;
+      font-size: 19px;
+      margin: 0;
+      padding: 15px 0 15px 0;
+      display: inline-block;
+      width: 100%;
+    }
+
     #dashboard_area {
       min-height: 100%;
       width: 100%;
@@ -34,6 +51,10 @@
 
     .filter {
       flex-grow: 1;
+    }
+
+    .widget-wrapper {
+      position: absolute;
     }
 
 </style>
@@ -111,10 +132,15 @@
           data: params,
           contentType: 'application/json',
           success: function (response) {
+            const chartHeight = (widget.height*GRID_HEIGHT)-50;
             var wrapper = new google.visualization.ChartWrapper({
               chartType: widget.chartType,
               dataTable: response,
               containerId: widget.title,
+              options: {
+                height: chartHeight,
+                width: '100%'
+              }
             });
             wrapper.draw();
           }
