@@ -80,7 +80,8 @@ export default class Widget extends Component {
       widgetDeletionHandler,
       dashboardIndex,
       googleDefined,
-      filterValues
+      filterValues,
+      containerNode
     } = this.props
     return(
       (widgetData && googleDefined)?
@@ -96,8 +97,7 @@ export default class Widget extends Component {
             onDragStart={this.dragStartHandler}
             onDragStop={this.widgetPositionHandler}
             bounds={{
-              left: 0,
-              right: 830
+              left: 0
             }}
           >
             <div

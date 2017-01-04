@@ -154,7 +154,6 @@ export function getEmptyWidgetDefinition() {
 export function getEmptyFilterDefinition() {
   return {
     width: 3,
-    height: 50,
     top:1,
     left: 1,
     label: 'Fliter Label',

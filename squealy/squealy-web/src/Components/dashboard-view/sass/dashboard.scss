@@ -31,8 +31,7 @@
       height: 90vh;
       margin-top: 2%;
       position: relative;
-      overflow-y: scroll;
-      overflow-x: hidden;
+      overflow: scroll;
 
       .rnd-filter-wrapper {
         height: 100%;

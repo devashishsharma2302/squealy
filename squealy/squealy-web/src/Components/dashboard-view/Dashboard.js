@@ -546,6 +546,7 @@ export default class Dashboard extends Component {
                 dashboardIndex={dashboardIndex}
                 widgetDeletionHandler={widgetDeletionHandler}
                 googleDefined={googleDefined}
+                containerNode={this.refs.dashboardArea}
               />
             )
           }

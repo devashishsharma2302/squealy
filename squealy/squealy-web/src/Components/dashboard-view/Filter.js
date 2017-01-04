@@ -23,6 +23,8 @@ class HidashDatePicker extends Component {
     return(
       <Datetime
         value={value}
+        className="rnd-filter"
+        timeFormat={false}
         onChange={
           (value)=>onChangeHandler(moment(value).format(DATE_FORMAT))}
       />
@@ -39,6 +41,7 @@ class HidashDatetimePicker extends Component {
     return(
       <Datetime
         value={value}
+        className="rnd-filter"
         onChange={
           (value)=>onChangeHandler(moment(value).format(DATETIME_FORMAT))}
       />
@@ -104,7 +107,6 @@ export default class Filter extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      height: props.filterDefinition.height,
       width: props.filterDefinition.width,
       top: props.filterDefinition.top,
       left: props.filterDefinition.left,
@@ -131,21 +133,24 @@ export default class Filter extends Component {
   // Sets the width and height of the widget and rnd component in filter's state
   filterResizeHandler = (direction, styleSize) => {
     this.setState({
-      width: styleSize.width,
-      height: styleSize.height
+      width: styleSize.width/GRID_WIDTH,
     })
   }
 
   // Sets the position of the filter in its state
   filterPositionHandler = (event, uiState) => {
     this.setState({
-      top: uiState.position.top,
-      left: uiState.position.left
+      left: uiState.position.left/GRID_WIDTH
     }, () => {
       // Update the position of the widget in the state of dashboard container
       const {selectedDashboardIndex, index} = this.props
-      this.props.filterRepositionHandler(selectedDashboardIndex, index, this.state.top, this.state.left)
+      this.props.filterRepositionHandler(selectedDashboardIndex, index, this.state.left)
     })
+  }
+
+  updateFilterSize = () => {
+    const {selectedDashboardIndex, index} = this.props
+    this.props.filterResizeHandler(selectedDashboardIndex, index, this.state.width)
   }
 
   resizeStartHandler = (direction, styleSize, clientSize, e) => {
@@ -185,6 +190,8 @@ export default class Filter extends Component {
         x={left*GRID_WIDTH}
         y={top*GRID_HEIGHT}
         width={width*GRID_WIDTH}
+        onResize={this.filterResizeHandler}
+        onResizeStop={this.updateFilterSize}
         onResize={this.widgetResizeHandler}
         onResizeStart={this.resizeStartHandler}
         onDragStart={this.dragStartHandler}

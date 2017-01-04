@@ -130,17 +130,15 @@ export default class DashboardContainer extends Component {
     this.setState({dashboardDefinitions: newDashboardDefinitions})
   }
 
-  filterRepositionHandler = (dashboardIndex, filterIndex, top, left) => {
+  filterRepositionHandler = (dashboardIndex, filterIndex, left) => {
     let newDashboardDefinitions = this.state.dashboardDefinitions.slice()
-    newDashboardDefinitions[dashboardIndex].filters[filterIndex].top = top
     newDashboardDefinitions[dashboardIndex].filters[filterIndex].left = left
     this.setState({dashboardDefinitions: newDashboardDefinitions})
   }
 
-  filterResizeHandler = (dashboardIndex, filterIndex, width, height) => {
+  filterResizeHandler = (dashboardIndex, filterIndex, width) => {
     let newDashboardDefinitions = this.state.dashboardDefinitions.slice()
     newDashboardDefinitions[dashboardIndex].filters[filterIndex].width = width
-    newDashboardDefinitions[dashboardIndex].filters[filterIndex].height = height
     this.setState({dashboardDefinitions: newDashboardDefinitions})
   }
 
