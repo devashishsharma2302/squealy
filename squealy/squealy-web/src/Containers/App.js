@@ -23,7 +23,7 @@ export default class App extends Component{
       })
    )
     return(
-      <div>
+      <div style={{height: 'inherit'}}>
         {childrenWithProps}
       </div>
     )
