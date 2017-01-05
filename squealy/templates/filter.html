@@ -49,7 +49,9 @@
       onchange="updateFilterValues('{{filter.label}}', event)"
       class="filter"
       id="filter_{{forloop.counter}}"
-    />
+    >
+        <option value="" disabled selected>Select {{filter.label}}</option>
+    </select>
     <script>
       getOptions('{{filter.apiUrl}}', 'filter_{{forloop.counter}}')
     </script>

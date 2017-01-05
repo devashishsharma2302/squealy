@@ -9,12 +9,17 @@
     {{widget.title}}
   </h3>
   <div
-    id='{{widget.title}}'
+    id='chart_{{forloop.counter0}}'
   >
   </div>
 </div>
 
 <script>
+  $(window).resize(function() {
+    $("body").height(document.body.scrollHeight+ 15 )
+    $("body").width(document.body.scrollWidth)
+});
+
   $("#widgetWrapper{{ forloop.counter }}").css(
     {
       top: {{widget.top}}*GRID_HEIGHT + 'px',
@@ -23,4 +28,5 @@
       height: {{widget.height}}*GRID_HEIGHT + 'px'
     }
   )
+  $(window).trigger('resize');
 </script>

@@ -140,9 +140,9 @@ export default class Filter extends Component {
   // Sets the position of the filter in its state
   filterPositionHandler = (event, uiState) => {
     if (event.target.tagName !== 'SPAN') {
-      let leftPosition = uiState.node.getBoundingClientRect().left
+      let leftPosition = Math.round(uiState.node.getBoundingClientRect().left)
       this.setState({
-        left: leftPosition/GRID_WIDTH
+        left: Math.round(leftPosition/GRID_WIDTH)
       }, () => {
         // Update the position of the widget in the state of dashboard container
         const {selectedDashboardIndex, index} = this.props
