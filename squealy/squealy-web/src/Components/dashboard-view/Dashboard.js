@@ -47,20 +47,18 @@ export default class Dashboard extends Component {
     }
 
     selectedWidgetIndex = null
-    mouseIsDownOnPicker = false
 
     componentDidMount() {
-      window.addEventListener('mousedown', this.pageClick, false)
+      window.addEventListener('mouseup', this.pageClick, false)
     }
 
     // To show/hide color picker
     pageClick = (e) => {
-      if (this.mouseIsDownOnPicker) {
-        return
-      }
-      this.setState({
+      if (e.target.id == 'dashboardAreaWrapper' || e.target.id=='dashboardArea') {
+        this.setState({
           displayColorPicker: false
-      })
+        })
+      }
     }
 
     //Add a new parameter
@@ -522,8 +520,6 @@ export default class Dashboard extends Component {
         </div>
         {(displayColorPicker)?
           <div className='color-picker'
-               onMouseDown={() => {this.mouseIsDownOnPicker = true}}
-               onMouseUp={() => {this.mouseIsDownOnPicker = false}}
           >
             <ChromePicker color={dashboardDefinition.styles.background}
                           onChange={(color)=>updateDashboardDefinition(dashboardIndex, 'styles', {background:color.hex})}/>

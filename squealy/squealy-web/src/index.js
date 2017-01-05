@@ -8,7 +8,7 @@ import App from './Containers/App'
 
 ReactDOM.render(
     <Router history={browserHistory}>
-      <Route path='/squealy-authoring-interface/' component={App}>
+      <Route path='/squealy-authoring-interface' component={App}>
         <IndexRoute component={ApiViewContainer} />
         <Route path='/squealy-authoring-interface/dashboard' component={DashboardContainer} />
       </Route>

@@ -40,8 +40,8 @@ export default class Widget extends Component {
   // Sets the width and height of the widget and rnd component in widget's state
   widgetResizeHandler = (direction, styleSize) => {
     const {dashboardIndex, index} = this.props
-    const newWidth = styleSize.width/GRID_WIDTH
-    const newHeight = styleSize.height/GRID_HEIGHT
+    const newWidth = Math.round(styleSize.width/GRID_WIDTH)
+    const newHeight = Math.round(styleSize.height/GRID_HEIGHT)
     this.props.widgetResizeHandler(dashboardIndex, index, newWidth, newHeight)
   }
 
@@ -58,11 +58,11 @@ export default class Widget extends Component {
     // Update the position of the widget in the state of dashboard container
     let containerLeft = this.props.containerNode.getBoundingClientRect().left,
         containerTop = this.props.containerNode.getBoundingClientRect().top,
-        leftPosition = uiState.node.getBoundingClientRect().left - containerLeft,
-        topPosition = uiState.node.getBoundingClientRect().top - containerTop
+        leftPosition = Math.round(uiState.node.getBoundingClientRect().left) - Math.round(containerLeft),
+        topPosition = Math.round(uiState.node.getBoundingClientRect().top) - Math.round(containerTop)
     const {dashboardIndex, index} = this.props
-    const newTop = topPosition/GRID_HEIGHT
-    const newLeft = leftPosition/GRID_WIDTH
+    const newTop = Math.round(topPosition/GRID_HEIGHT)
+    const newLeft = Math.round(leftPosition/GRID_WIDTH)
     this.props.widgetRepositionHandler(dashboardIndex, index, newTop, newLeft)
   }
 
@@ -99,10 +99,7 @@ export default class Widget extends Component {
             onResizeStart={this.resizeStartHandler}
             onDragStart={this.dragStartHandler}
             onDragStop={this.widgetPositionHandler}
-            bounds={{
-              left: 0,
-              top: 0
-            }}
+            bounds={'parent'}
           >
             <div
               onMouseEnter={() => this.setState({editMode: true})}
