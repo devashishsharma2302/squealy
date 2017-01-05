@@ -26,6 +26,9 @@ export function postApiRequest(uri, data, onSuccessCallback,
   postData(uri, data, 'POST', onSuccessCallback, onFailureCallback, callbackParmas)
 }
 
+export function baseUrl() {
+  return window.location.origin + '/'
+}
 /**
  * @module Utils
  * @params {String} Url - Provides the post url
