@@ -1,7 +1,32 @@
 
 div.parent-div.container-fluid.dashboard-container {
   padding: 0px;
- 
+  height:100%;
+
+  .dashboard-design {
+    height: 100%;
+
+    .dashboard-tabs {
+      height:100%;
+
+      #dashboard-tabs {
+        height:100%;
+
+        .tab-content {
+          height:100%;
+
+          .tab-pane {
+            height: 100%;
+            
+            .panel.panel-default {
+              height: 100%;
+            }
+          }
+        }
+      }
+    }
+  }
+  
   nav.navbar.navbar-default {
     width: 100%;
     margin: 0px;
@@ -9,11 +34,11 @@ div.parent-div.container-fluid.dashboard-container {
  
   div.panel-body {
     padding:0px;
+    height: inherit;
   }
   
   #dashboardAreaWrapper {
-    height: 80vh;
-    overflow: hidden;
+    height: inherit;
     
     .background-color-picker {
       width: 200px;
@@ -51,9 +76,10 @@ div.parent-div.container-fluid.dashboard-container {
     }
 
     #dashboardArea {
-        height: 100%;
+        height: inherit;
         position: relative;
         overflow: auto;
+        overflow-x: auto;
 
         .rnd-filter-wrapper {
           height: 100%;

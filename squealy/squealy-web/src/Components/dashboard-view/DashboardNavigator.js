@@ -107,7 +107,7 @@ export default class DashboardNavigator extends Component {
         </Tab>
       )
     })
-    return(<div>
+    return(<div className='dashboard-tabs'>
         <Tabs
         bsStyle="tabs"
         animation={true}
