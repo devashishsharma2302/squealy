@@ -140,7 +140,7 @@ export default class Filter extends Component {
   // Sets the position of the filter in its state
   filterPositionHandler = (event, uiState) => {
     if (event.target.tagName !== 'SPAN') {
-      let leftPosition = uiState.node.getBoundingClientRect().left - 30
+      let leftPosition = uiState.node.getBoundingClientRect().left
       this.setState({
         left: leftPosition/GRID_WIDTH
       }, () => {

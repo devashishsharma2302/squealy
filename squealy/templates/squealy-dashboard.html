@@ -46,7 +46,8 @@
     #dashboard_area {
       min-height: 100%;
       width: 100%;
-      overflow-y: auto
+      overflow-y: auto;
+      padding: 15px;
     }
 
     .filter {
@@ -54,7 +55,7 @@
     }
 
     .widget-wrapper {
-      position: absolute;
+      position: relative;
     }
 
 </style>
@@ -70,6 +71,15 @@
 
   var updateFilterValues = function(key, e) {
     filterValues[key] = e.target.value;
+    loadCharts();
+  }
+  var updateDatetimeFilterValues = function(key, e) {
+    filterValues[key] = e.date.format('YYYY-MM-DD hh:mm:ss');
+    loadCharts();
+  }
+
+  var updateDateFilterValues = function(key, e) {
+    filterValues[key] = e.date.format('YYYY-MM-DD');
     loadCharts();
   }
 
@@ -98,7 +108,7 @@
 >
   <script type="text/javascript">
     // Calculate the width of a grid according to the size of dashboard wrapper
-    const GRID_WIDTH = $('#dashboard_area').width()/12;
+    const GRID_WIDTH = 104;
     const GRID_HEIGHT = 20;
   </script>
   {% for filter in dashboard.filters %}

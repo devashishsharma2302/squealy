@@ -100,7 +100,8 @@ export default class Widget extends Component {
             onDragStart={this.dragStartHandler}
             onDragStop={this.widgetPositionHandler}
             bounds={{
-              left: 0
+              left: 0,
+              top: 0
             }}
           >
             <div
