@@ -50,7 +50,7 @@ export default class Dashboard extends Component {
     mouseIsDownOnPicker = false
 
     componentDidMount() {
-      window.addEventListener('mousedown', this.pageClick, false)
+      window.addEventListener('mouseup', this.pageClick, false)
     }
 
     // To show/hide color picker
