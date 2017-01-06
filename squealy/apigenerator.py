@@ -32,8 +32,7 @@ class ApiGenerator():
                 if config.get("permission_classes"):
                     for permission_class_as_str in config.get("permission_classes"):
                         apiview_class.permission_classes.append(eval(permission_class_as_str))
-
-                urlpatterns.append(url(r'^'+config['url'], apiview_class.as_view()))
+                urlpatterns.append(url(r'^'+config['url']+'[/]*$', apiview_class.as_view()))
 
         return urlpatterns
 

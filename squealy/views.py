@@ -130,7 +130,7 @@ class DynamicApiRouter(APIView):
         filename = SquealySettings.get('YAML_FILE_NAME', 'squealy-api.yaml')
         file_path = join(file_dir, filename)
         urls = squealy.apigenerator.ApiGenerator.generate_urls_from_yaml(file_path)
-        response = url(r'', include(urls)).resolve(url_path.split('/squealy-apis/')[1]).func(request)
+        response = url(r'', include(urls)).resolve(url_path.split('/squealy-apis/')[1].split('?')[0]).func(request)
         return response
 
     def post(self, request):
@@ -138,15 +138,17 @@ class DynamicApiRouter(APIView):
         filename = SquealySettings.get('YAML_FILE_NAME', 'squealy-api.yaml')
         file_path = join(file_dir, filename)
         apis = []
-        with open(file_path) as f:
-            api_config = yaml.load_all(f)
-            for api in api_config:
-                apis.append(api)
+        if isfile(file_path):
+            with open(file_path) as f:
+                api_config = yaml.load_all(f)
+                for api in api_config:
+                    apis.append(api)
         new_api = json.loads(request.body)
         new_api['id'] = len(apis)+1
         apis.append(new_api)
         squealy.apigenerator.ApiGenerator._save_apis_to_file(apis)
         return Response({}, status.HTTP_200_OK)
+
 
 class DashboardTemplateView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
@@ -160,11 +162,12 @@ class DashboardTemplateView(APIView):
         filename = SquealySettings.get('DASHBOARD_FILE_NAME', 'squealy_dashboard.yaml')
         file_path = join(file_dir, filename)
         dashboard = {}
-        with open(file_path) as f:
-            dashboards_config = yaml.load_all(f)
-            for config in dashboards_config:
-                if config.get('apiName', '').lower().replace(' ', '-') == api_name:
-                    dashboard = config
+        if isfile(file_path):
+            with open(file_path) as f:
+                dashboards_config = yaml.load_all(f)
+                for config in dashboards_config:
+                    if config.get('apiName', '').lower().replace(' ', '-') == api_name:
+                        dashboard = config
         return render(request, 'squealy-dashboard.html', {'dashboard': dashboard})
 
 class DashboardApiView(APIView):
@@ -177,9 +180,10 @@ class DashboardApiView(APIView):
         dashboard_file_name = SquealySettings.get('dashboard_filename', 'squealy_dashboard.yaml')
         dashboard_file_path = join(file_dir, dashboard_file_name)
         dashboards = []
-        with open(dashboard_file_path) as f:
-            for dashboard in yaml.load_all(f):
-                dashboards.append(dashboard)
+        if isfile(dashboard_file_path):
+            with open(dashboard_file_path) as f:
+                for dashboard in yaml.load_all(f):
+                    dashboards.append(dashboard)
         return Response(dashboards)
 
     def post(self, request):
