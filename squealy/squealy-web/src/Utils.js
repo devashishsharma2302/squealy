@@ -161,7 +161,8 @@ export function getEmptyFilterDefinition() {
     left: 1,
     label: 'Fliter Label',
     type: {},
-    apiUrl: ''
+    apiUrl: '',
+    isParameterized: false
   }
 }
 

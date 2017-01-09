@@ -115,13 +115,27 @@ export default class Filter extends Component {
   }
 
   componentWillMount() {
-    const {filterDefinition} = this.props
+    this.refreshFilterData(this.props.filterValues)
+  }
+
+  refreshFilterData = (filterValues) => {
+    const {filterDefinition, updateFilterValues} = this.props
     if(filterDefinition.apiUrl) {
       const url = DOMAIN_NAME + 'squealy-apis/' + filterDefinition.apiUrl
-      getApiRequest(url, null, (data)=>this.setState({filterData: data}), ()=>{}, null)
+      getApiRequest(url, filterValues, (data)=> { 
+                                          this.setState({filterData: data})
+                                          updateFilterValues(filterDefinition.label, data.data[0][0])
+                                        }, ()=>{}, null)
     }
   }
 
+  
+  componentWillReceiveProps(nextProps) {
+    if (JSON.stringify(this.props.filterValues) !== JSON.stringify(nextProps.filterValues) && this.props.filterDefinition.isParameterized){
+      this.refreshFilterData(nextProps.filterValues)
+    }
+  } 
+   
   disableDragging = () => {
     this.setState({draggable: false})
   }

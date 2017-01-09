@@ -173,8 +173,7 @@ export default class SideMenu extends Component {
             </tr>
           </thead>
           <tbody>
-            {
-              this.state.hasOwnProperty('authentication_classes') ?
+            { this.state.authentication_classes?
                 this.state.authentication_classes.map((value, key) => {
                   return (
                     <tr key={key}>

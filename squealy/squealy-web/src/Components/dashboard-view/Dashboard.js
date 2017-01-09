@@ -346,19 +346,25 @@ export default class Dashboard extends Component {
           </div>
         </div>
         {(selectedFilter.type === 'dropdown')?
-          <div className="col-md-12">
-            <label className="col-md-4">Api Url: </label>
-            <input 
-              type="text"
-              ref="filterLabel"
-              value={selectedFilter.apiUrl}
-              onChange={(event)=>this.updateFilterDefinition('apiUrl', event.target.value)}
-            />
-            <img  
-              src={AddIcon}
-              className='add-icon'
-              onClick={()=>this.chartApiModalVisibilityEnabler()}
-            />
+          <div>
+            <div className="col-md-12">
+              <label className="col-md-4">Api Url: </label>
+              <input 
+                type="text"
+                ref="filterLabel"
+                value={selectedFilter.apiUrl}
+                onChange={(event)=>this.updateFilterDefinition('apiUrl', event.target.value)}
+              />
+              <img  
+                src={AddIcon}
+                className='add-icon'
+                onClick={()=>this.chartApiModalVisibilityEnabler()}
+              />
+            </div>
+            <div className="col-md-12">
+              <label className="col-md-4">Parameterized: </label>
+              <input type='checkbox' checked={selectedFilter.isParameterized} onChange={(event)=>this.updateFilterDefinition('isParameterized', event.target.checked)} /> 
+            </div>
           </div>
         :
           null
@@ -555,6 +561,7 @@ export default class Dashboard extends Component {
                   filterResizeHandler={filterResizeHandler}
                   filterRepositionHandler={filterRepositionHandler}
                   modalVisibilityEnabler={this.filterModalVisibilityEnabler}
+                  filterValues={filterValues}
                 />
               :
                 null
