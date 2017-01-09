@@ -160,6 +160,7 @@ class DashboardTemplateView(APIView):
             raise DashboardNotFoundException('Parameter Required - dashboard api-name not provided in url')
         file_dir = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
         filename = SquealySettings.get('DASHBOARD_FILE_NAME', 'squealy_dashboard.yaml')
+        template_name = SquealySettings.get('DASHBOARD_TEMPLATE', 'squealy-dashboard.html')
         file_path = join(file_dir, filename)
         dashboard = {}
         if isfile(file_path):
@@ -168,7 +169,7 @@ class DashboardTemplateView(APIView):
                 for config in dashboards_config:
                     if config.get('apiName', '').lower().replace(' ', '-') == api_name:
                         dashboard = config
-        return render(request, 'squealy-dashboard.html', {'dashboard': dashboard})
+        return render(request, template_name, {'dashboard': dashboard})
 
 class DashboardApiView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
