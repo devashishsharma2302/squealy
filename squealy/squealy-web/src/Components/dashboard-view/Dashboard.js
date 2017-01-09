@@ -216,6 +216,18 @@ export default class Dashboard extends Component {
       })
     }
 
+    saveFilter = () => {
+      const {selectedFilter, selectedFilterIndex} = this.state
+      this.setState({
+        showEditFilterModal: false,
+      },() => {
+        this.props.UpdateFilterHandler(
+          this.props.selectedDashboardIndex,
+          selectedFilterIndex,
+          this.state.selectedFilter
+        )
+      })
+    }
     saveNewWidget = () => {
       this.props.widgetAdditionHandler(this.props.selectedDashboardIndex, this.state.newWidget)
       this.setState({
@@ -258,7 +270,8 @@ export default class Dashboard extends Component {
       const {dashboardDefinition} = this.props
       this.setState({
         selectedFilter: dashboardDefinition.filters[filterIndex],
-        showFilterModal: true,
+        selectedFilterIndex: filterIndex,
+        showEditFilterModal: true,
         newApiType: 'filter'
       })
     }
@@ -576,7 +589,7 @@ export default class Dashboard extends Component {
             modalId='AddWidgetModal'
             closeModal={()=>this.setState({showAddWidgetModal: false})}
             showModal={this.state.showAddWidgetModal}
-            modalHeader='Add new widget'
+            modalHeader='Add New Widget'
             modalContent={addWidgetModalContent}
             saveChanges={this.saveNewWidget}
           />
@@ -584,9 +597,17 @@ export default class Dashboard extends Component {
             modalId='filterModal'
             closeModal={()=>this.setState({showFilterModal: false})}
             showModal={this.state.showFilterModal}
-            modalHeader='Filter'
+            modalHeader='Add New Filter'
             modalContent={filterModalContent}
             saveChanges={this.saveNewFilter}
+          />
+          <SquealyModal
+            modalId='editFilterModal'
+            closeModal={()=>this.setState({showEditFilterModal: false})}
+            showModal={this.state.showEditFilterModal}
+            modalHeader='Edit Filter'
+            modalContent={filterModalContent}
+            saveChanges={this.saveFilter}
           />
           <ChartApiModal
             showModal={showChartApiModal}

@@ -70,6 +70,14 @@ export default class DashboardContainer extends Component {
     })
   }
 
+   UpdateFilterHandler = (dashboardDefinitionIndex, filterIndex, newFilter) => {
+    let newDashboardDefinitions = this.state.dashboardDefinitions.slice()
+    newDashboardDefinitions[dashboardDefinitionIndex].filters[filterIndex] = newFilter
+    this.setState({
+      dashboardDefinitions: newDashboardDefinitions
+    })
+  }
+
   widgetDeletionHandler = (dashboardDefinitionIndex, widgetIndex) => {
     let newDashboardDefinitions = JSON.parse(JSON.stringify(this.state.dashboardDefinitions))
     delete newDashboardDefinitions[dashboardDefinitionIndex].widgets[widgetIndex]
@@ -179,6 +187,7 @@ export default class DashboardContainer extends Component {
           filterDeletionHandler={this.filterDeletionHandler}
           filterRepositionHandler={this.filterRepositionHandler}
           filterResizeHandler={this.filterResizeHandler}
+          UpdateFilterHandler={this.UpdateFilterHandler}
           googleDefined={googleDefined}
           saveChartApi={this.saveChartApi}
         />
