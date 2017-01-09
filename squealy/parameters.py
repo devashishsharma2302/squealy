@@ -1,7 +1,7 @@
 import arrow
 import datetime
 
-from squealy.exceptions import DateParseException, DateTimeParseException, NumberParseException
+from .exceptions import DateParseException, DateTimeParseException, NumberParseException
 
 
 class Parameter():
