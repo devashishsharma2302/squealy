@@ -216,6 +216,18 @@ export default class Dashboard extends Component {
       })
     }
 
+    saveFilter = () => {
+      const {selectedFilter, selectedFilterIndex} = this.state
+      this.setState({
+        showEditFilterModal: false,
+      },() => {
+        this.props.UpdateFilterHandler(
+          this.props.selectedDashboardIndex,
+          selectedFilterIndex,
+          this.state.selectedFilter
+        )
+      })
+    }
     saveNewWidget = () => {
       this.props.widgetAdditionHandler(this.props.selectedDashboardIndex, this.state.newWidget)
       this.setState({
@@ -258,7 +270,8 @@ export default class Dashboard extends Component {
       const {dashboardDefinition} = this.props
       this.setState({
         selectedFilter: dashboardDefinition.filters[filterIndex],
-        showFilterModal: true,
+        selectedFilterIndex: filterIndex,
+        showEditFilterModal: true,
         newApiType: 'filter'
       })
     }
@@ -333,19 +346,25 @@ export default class Dashboard extends Component {
           </div>
         </div>
         {(selectedFilter.type === 'dropdown')?
-          <div className="col-md-12">
-            <label className="col-md-4">Api Url: </label>
-            <input 
-              type="text"
-              ref="filterLabel"
-              value={selectedFilter.apiUrl}
-              onChange={(event)=>this.updateFilterDefinition('apiUrl', event.target.value)}
-            />
-            <img  
-              src={AddIcon}
-              className='add-icon'
-              onClick={()=>this.chartApiModalVisibilityEnabler()}
-            />
+          <div>
+            <div className="col-md-12">
+              <label className="col-md-4">Api Url: </label>
+              <input 
+                type="text"
+                ref="filterLabel"
+                value={selectedFilter.apiUrl}
+                onChange={(event)=>this.updateFilterDefinition('apiUrl', event.target.value)}
+              />
+              <img  
+                src={AddIcon}
+                className='add-icon'
+                onClick={()=>this.chartApiModalVisibilityEnabler()}
+              />
+            </div>
+            <div className="col-md-12">
+              <label className="col-md-4">Parameterized: </label>
+              <input type='checkbox' checked={selectedFilter.isParameterized} onChange={(event)=>this.updateFilterDefinition('isParameterized', event.target.checked)} /> 
+            </div>
           </div>
         :
           null
@@ -542,6 +561,7 @@ export default class Dashboard extends Component {
                   filterResizeHandler={filterResizeHandler}
                   filterRepositionHandler={filterRepositionHandler}
                   modalVisibilityEnabler={this.filterModalVisibilityEnabler}
+                  filterValues={filterValues}
                 />
               :
                 null
@@ -576,7 +596,7 @@ export default class Dashboard extends Component {
             modalId='AddWidgetModal'
             closeModal={()=>this.setState({showAddWidgetModal: false})}
             showModal={this.state.showAddWidgetModal}
-            modalHeader='Add new widget'
+            modalHeader='Add New Widget'
             modalContent={addWidgetModalContent}
             saveChanges={this.saveNewWidget}
           />
@@ -584,9 +604,17 @@ export default class Dashboard extends Component {
             modalId='filterModal'
             closeModal={()=>this.setState({showFilterModal: false})}
             showModal={this.state.showFilterModal}
-            modalHeader='Filter'
+            modalHeader='Add New Filter'
             modalContent={filterModalContent}
             saveChanges={this.saveNewFilter}
+          />
+          <SquealyModal
+            modalId='editFilterModal'
+            closeModal={()=>this.setState({showEditFilterModal: false})}
+            showModal={this.state.showEditFilterModal}
+            modalHeader='Edit Filter'
+            modalContent={filterModalContent}
+            saveChanges={this.saveFilter}
           />
           <ChartApiModal
             showModal={showChartApiModal}

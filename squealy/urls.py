@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from squealy import views
+import views
 
 urlpatterns = [
     url(r'squealy-authoring-interface/', views.squealy_interface),

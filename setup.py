@@ -2,7 +2,7 @@
 import os
 from setuptools import find_packages
 
-__version__ = '0.1.0'
+__version__ = '0.1.9'
 
 long_description = '''
 Squealy is a django app for auto-generating reporting APIs. All configurations are passed through a single .yml file, which includes sql queries to fetch report data for each API.

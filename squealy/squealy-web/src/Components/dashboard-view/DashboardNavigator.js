@@ -38,6 +38,7 @@ export default class DashboardNavigator extends Component {
       filterResizeHandler,
       filterRepositionHandler,
       filterDeletionHandler,
+      UpdateFilterHandler,
       googleDefined,
       saveChartApi
     } = this.props
@@ -97,6 +98,7 @@ export default class DashboardNavigator extends Component {
                 filterDeletionHandler={filterDeletionHandler}
                 filterResizeHandler={filterResizeHandler}
                 filterRepositionHandler={filterRepositionHandler}
+                UpdateFilterHandler={UpdateFilterHandler}
                 widgetDeletionHandler={widgetDeletionHandler}
                 dashboardIndex={index}
                 googleDefined={googleDefined}
