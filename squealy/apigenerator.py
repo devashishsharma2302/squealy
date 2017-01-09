@@ -27,11 +27,17 @@ class ApiGenerator():
 
                 if config.get("authentication_classes"):
                     for authentication_class_as_str in config.get("authentication_classes"):
-                        apiview_class.authentication_classes.append(eval(authentication_class_as_str))
+                        try:
+                            apiview_class.authentication_classes.append(eval(authentication_class_as_str))
+                        except:
+                            pass
 
                 if config.get("permission_classes"):
                     for permission_class_as_str in config.get("permission_classes"):
-                        apiview_class.permission_classes.append(eval(permission_class_as_str))
+                        try:
+                            apiview_class.permission_classes.append(eval(permission_class_as_str))
+                        except:
+                            pass
                 urlpatterns.append(url(r'^'+config['url']+'[/]*$', apiview_class.as_view()))
 
         return urlpatterns
