@@ -48,7 +48,7 @@ export default class ApiParams extends Component {
     const AccordionHeader = (
       <div className='accordion-header'>
         <div>
-          <h2 className="param-heading">Parameters: </h2>
+          <h2 className="param-heading">Parameter Definition: </h2>
           <span>{this.state.apiParamString}</span>
             <i className={'fa fa-2x param-heading-icon ' + this.state.accordionHeaderIcon}>
             </i>

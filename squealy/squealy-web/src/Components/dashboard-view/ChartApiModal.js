@@ -133,7 +133,7 @@ export default class ChartApiModal extends Component {
         appliedDef[data.name] = {
           type: data.type,
           optional: data.optional,
-          default_values: data.default_values,
+          default_value: data.default_value,
           isParamDefCustom: data.isParamDefCustom
         }
         if (data.hasOwnProperty('kwargs')) {

@@ -275,13 +275,33 @@ export function saveYamlOnServer(data) {
   return yamlArray
 }
 
+
+function processParamDef(definitions) {
+  let appliedDef = {}
+  if (definitions.length) {
+    definitions.map((data) => {
+      appliedDef[data.name] = {
+        type: data.type,
+        optional: data.optional,
+        default_value: data.default_value,
+        isParamDefCustom: data.isParamDefCustom
+      }
+      if (data.hasOwnProperty('kwargs')) {
+        appliedDef[data.name].kwargs = data.kwargs
+      }
+    })
+  }
+  return appliedDef
+}
+
+
 function formatApiDataToYaml(data, index) {
   let format = data['format'] || 'table'
   let formattedData = {
     'id': parseInt(index)+1,
     'name': data.apiName,
     'url': data.urlName,
-    'parameters': data.paramDefinition,
+    'parameters': processParamDef(data.paramDefinition),
     'permission_classes': data.permission_classes,
     'authentication_classes': data.authentication_classes,
     // 'access_control':data.access_control,
@@ -302,7 +322,7 @@ function formattedData(data, index) {
     'id': parseInt(index)+1,
     'name': data.apiName,
     'url': data.urlName,
-    'parameters': data.paramDefinition,
+    'parameters': processParamDef(data.paramDefinition),
     // 'access_control':data.access_control,
     'permission_classes': data.permission_classes,
     'authentication_classes': data.authentication_classes,

@@ -52,7 +52,7 @@ export default class ParamDefinitionModalWrapper extends Component {
       name: this.refs.varName.value,
       type: this.state.isParamDefCustom ? this.refs.customParamPath.value : this.state.selectedValue,
       optional: this.refs.mandatoryField.checked ? false : true,
-      default_values: this.refs.defaultValues.value
+      default_value: this.refs.defaultValues.value
     }
 
     if (!this.state.isParamDefCustom && (this.state.selectedValue === 'date' || this.state.selectedValue === 'dateTime')) {
@@ -122,7 +122,7 @@ export default class ParamDefinitionModalWrapper extends Component {
         let selectedApiParamDef = this.props.editParamState.selectedApiParamDef
         this.refs.varName.value = selectedApiParamDef.name
         this.refs.mandatoryField.checked = !selectedApiParamDef.optional
-        this.refs.defaultValues.value = selectedApiParamDef.default_values
+        this.refs.defaultValues.value = selectedApiParamDef.default_value
       }
     }
   }
