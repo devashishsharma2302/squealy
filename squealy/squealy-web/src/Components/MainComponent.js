@@ -87,7 +87,8 @@ export default class MainComponent extends Component {
           <ResponseSection
             selectedTestData={selectedTestData}
             selectedAPIDefinition={selectedAPIDefinition}
-            onChangeApiDefinition={onChangeApiDefinition}/>
+            onChangeApiDefinition={onChangeApiDefinition}
+            selectedApiIndex={selectedApiIndex}/>
         </div>
       </div>
     )

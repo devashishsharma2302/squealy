@@ -37,7 +37,8 @@ export default class ResponseSection extends Component {
     const {
       selectedTestData,
       selectedAPIDefinition,
-      onChangeApiDefinition
+      onChangeApiDefinition,
+      selectedApiIndex
     } = this.props
     const {visualizationMode, chartType} = this.state
     let responseElem
@@ -96,6 +97,7 @@ export default class ResponseSection extends Component {
               responseElem:<GoogleChartComponent 
                               config={{
                                 ...selectedTestData.apiResponse,
+                                index: 'visualization-section-'+selectedApiIndex,
                                 height: 350,
                                 chartType: chartType
                               }}
