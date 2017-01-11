@@ -71,12 +71,16 @@ export default class ApiViewContainer extends Component {
       let apiDefinition = []
 
       response.map((data)=>{
+        let parameters = []
+        Object.keys(data.parameters).map( key => {
+          parameters.push({...data.parameters[key], name: key})
+        })
         let apiObj = {
           apiName: data.name,
           open: true,
           columns: data.columns,
           format: data.format,
-          paramDefinition: data.parameters,
+          paramDefinition: parameters,
           sqlQuery: data.query,
           permission_classes: data.permission_classes,
           authentication_classes: data.authentication_classes,
@@ -210,7 +214,7 @@ export default class ApiViewContainer extends Component {
         appliedDef[data.name] = {
           type: data.type,
           optional: data.optional,
-          default_values: data.default_values,
+          default_value: data.default_value,
           isParamDefCustom: data.isParamDefCustom
         }
         if (data.hasOwnProperty('kwargs')) {

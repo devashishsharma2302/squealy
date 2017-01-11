@@ -124,7 +124,7 @@ class SqlApiView(APIView):
         for param in self.parameters:
             # Default values
             if self.parameters[param].get('default_value') and\
-               params.get(param) == None:
+                    params.get(param) in [None, '']:
                 params[param] = self.parameters[param].get('default_value')
 
             # Check for missing required parameters
