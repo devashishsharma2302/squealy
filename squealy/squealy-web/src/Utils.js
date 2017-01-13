@@ -248,25 +248,6 @@ export function getDataFromLocalStorage(key) {
   return JSON.parse(localStorage.getItem(key))
 }
 
-
-export function preProcessResponse(response) {
-  let processedResponse = {data: [], columns: []}
-  response.columns.map((column) => {
-    processedResponse.columns.push({
-      accessor: column.name,
-      header: column.name
-    })
-  })
-  response.data.map((row) => {
-    let processedRow = {sortable: false}
-    processedResponse.columns.map((column, index) => {
-      processedRow[column.accessor] = row[index]
-    })
-    processedResponse.data.push(processedRow)
-  })
-  return processedResponse
-}
-
 export function saveYamlOnServer(data) {
   let yamlArray = []
   for (let index in data) {
