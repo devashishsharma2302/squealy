@@ -124,7 +124,9 @@ export default class Filter extends Component {
       const url = DOMAIN_NAME + 'squealy-apis/' + filterDefinition.apiUrl
       getApiRequest(url, filterValues, (data)=> { 
                                           this.setState({filterData: data})
-                                          updateFilterValues(filterDefinition.label, data.data[0][0])
+                                          if (! (filterDefinition.label in this.props.filterValues)) {
+                                            updateFilterValues(filterDefinition.label, data.data[0][0])
+                                          }
                                         }, ()=>{}, null)
     }
   }

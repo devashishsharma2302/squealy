@@ -248,7 +248,7 @@ class YamlGeneratorView(APIView):
 
     def post(self, request, *args, **kwargs):
         try:
-            json_data = json.loads(request.body).get('yamlData')
+            json_data = request.data.get('yamlData')
             ApiGenerator._save_apis_to_file(json_data)
             return Response({}, status.HTTP_200_OK)
         except Exception as e:
@@ -304,7 +304,7 @@ class DynamicApiRouter(APIView):
                 api_config = yaml.load_all(f)
                 for api in api_config:
                     apis.append(api)
-        new_api = json.loads(request.body)
+        new_api = request.data
         new_api['id'] = len(apis)+1
         apis.append(new_api)
         ApiGenerator._save_apis_to_file(apis)
@@ -349,7 +349,7 @@ class DashboardApiView(APIView):
         return Response(dashboards)
 
     def post(self, request):
-        dashboards = json.loads(request.body)
+        dashboards = request.data
         directory = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
 
         if not os.path.exists(directory):
