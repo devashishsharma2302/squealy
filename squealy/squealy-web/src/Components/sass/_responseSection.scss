@@ -42,21 +42,40 @@
 
 .response-section {
 
-  #gc_response_header {
-    display: flex;
-    align-content: center;
+  #response-table {
+    height: 400px;
+    overflow-x: auto;
+    box-shadow: 0 4px 8px 0 #e6e6e6 , 0 6px 33px 0 #e6e6e6 ;
 
-    .response-section-btn {
-      background: $white_color;
-      border-radius: 3px;
-      margin: 0 7px 4px 0;
-      padding: 6px 18px;
-      outline: none;
+    .table thead th {
+      border: 5px solid #fff;
+      margin-bottom: 10%;
     }
 
-    #chart_select {
-      display: inline-block;
-      width: 200px;
+    .table tbody tr td {
+      color: #000;
+      background-color: #e4e4e4;
+      border: 5px solid #fff;
+      margin-top: 10%;
+      font-size: 13px;
+    }
+
+    #gc_response_header {
+      display: flex;
+      align-content: center;
+
+      .response-section-btn {
+        background: $white_color;
+        border-radius: 3px;
+        margin: 0 7px 4px 0;
+        padding: 6px 18px;
+        outline: none;
+      }
+
+      #chart_select {
+        display: inline-block;
+        width: 200px;
+      }
     }
   }
 }
