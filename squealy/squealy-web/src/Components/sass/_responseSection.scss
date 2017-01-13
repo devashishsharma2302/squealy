@@ -45,7 +45,7 @@
   #response-table {
     height: 400px;
     overflow-x: auto;
-    box-shadow: 0 4px 8px 0 #e6e6e6 , 0 6px 33px 0 #e6e6e6 ;
+    box-shadow: 0 4px 8px 0 $light_gray_color , 0 6px 33px 0 $light_gray_color ;
 
     .table thead th {
       border: 5px solid #fff;
@@ -54,7 +54,7 @@
 
     .table tbody tr td {
       color: #000;
-      background-color: #e4e4e4;
+      background-color: $light_gray_color;
       border: 5px solid #fff;
       margin-top: 10%;
       font-size: 13px;

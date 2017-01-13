@@ -4,7 +4,6 @@ import ReactTable from 'react-table'
 import Select from 'react-select'
 import 'react-table/react-table.css'
 import {Modal} from 'react-bootstrap'
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 
 export class QueryResponseTable extends Component {
   constructor (props) {
