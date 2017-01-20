@@ -33,7 +33,10 @@ export default class Dashboard extends Component {
     constructor(props) {
         super(props)
         let search = location.search.substring(1);
-        let filterValues = JSON.parse('{"' + decodeURI(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
+        let filterValues = (search)? JSON.parse('{"' + 
+                                                decodeURI(search).replace(/"/g, '\\"').replace(/&/g, '","')
+                                                .replace(/=/g,'":"') + '"}')
+                                      : {}
         this.state = {
             showEditWidgetModal: false,
             showAddWidgetModal: false,

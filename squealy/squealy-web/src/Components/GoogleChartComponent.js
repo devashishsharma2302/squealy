@@ -9,6 +9,11 @@ export default class GoogleChartWrapper extends Component {
   }
 
   renderChart = (config) => {
+    if (config.chartType === 'Table') {
+      config.cols.map((col, index) => {
+        col.type = 'string'
+      })
+    }
     let wrapper = new google.visualization.ChartWrapper({
       chartType: (config.chartType)?config.chartType:'ColumnChart',
       dataTable: config,

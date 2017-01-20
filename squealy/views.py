@@ -3,6 +3,8 @@ from os.path import join, isfile
 
 from django.conf.urls import url, include
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.decorators import permission_classes, api_view
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -310,9 +312,8 @@ class DynamicApiRouter(APIView):
         ApiGenerator._save_apis_to_file(apis)
         return Response({}, status.HTTP_200_OK)
 
-
+@permission_classes(SquealySettings.get('Authoring_Interface_Permission_Classes', (IsAdminUser, )))
 class DashboardTemplateView(APIView):
-    permission_classes = SquealySettings.get_default_permission_classes()
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
@@ -362,7 +363,8 @@ class DashboardApiView(APIView):
         f.close()
         return Response({}, status.HTTP_200_OK)
 
-
+@api_view(['GET'])
+@permission_classes(SquealySettings.get('Authoring_Interface_Permission_Classes', (IsAdminUser, )))
 def squealy_interface(request):
     """
     Renders the squealy authouring interface template
