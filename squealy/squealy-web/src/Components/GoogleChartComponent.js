@@ -9,7 +9,7 @@ export default class GoogleChartWrapper extends Component {
   }
 
   renderChart = (config) => {
-    if (config.chartType === 'Table') {
+    if (config.chartType === 'Table' && config.cols) {
       config.cols.map((col, index) => {
         col.type = 'string'
       })
