@@ -9,6 +9,7 @@ import FormatSelector from './FormatSelector'
 import Transformations from './Transformations'
 import UrlInputBox from './ApiUrlInputBox'
 import ResponseSection from './ResponseSection'
+import ColumnDefinitionWrapper from './ColumnDefinitionWrapper'
 
 
 export default class MainComponent extends Component {
@@ -55,6 +56,7 @@ export default class MainComponent extends Component {
             onChangeTestData={onChangeTestData}
             onChangeApiDefinition={onChangeApiDefinition}
             apiParams={selectedTestData.apiParams}/>
+          <ColumnDefinitionWrapper />
           <SQLEditor
             onChangeApiDefinition={onChangeApiDefinition}
             sqlQuery={selectedAPIDefinition.sqlQuery}
