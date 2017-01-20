@@ -72,7 +72,6 @@ export default class ApiParams extends Component {
                   placeholder='Select Column Type'
                   clearableValue={false}
                   onChange={this.selectedColumnTypeChangeHandler}
-                  className="asdas"
                 />
               </div>
               <div className="column-definition">
