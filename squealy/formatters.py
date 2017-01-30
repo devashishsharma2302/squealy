@@ -48,7 +48,7 @@ class GoogleChartsFormatter(Formatter):
         response['cols'] = cols = []
         for index, column in enumerate(table.columns):
             col_type = 'number'
-            if isinstance(table.data[0][index], str) or isinstance(table.data[0][index], unicode):
+            if index == 0:
                 col_type = 'string'
             cols.append({"id": column.name, "label": column.name, "type": col_type})
         for row in table.data:

@@ -32,6 +32,11 @@ export default class Dashboard extends Component {
 
     constructor(props) {
         super(props)
+        let search = location.search.substring(1);
+        let filterValues = (search)? JSON.parse('{"' + 
+                                                decodeURI(search).replace(/"/g, '\\"').replace(/&/g, '","')
+                                                .replace(/=/g,'":"') + '"}')
+                                      : {}
         this.state = {
             showEditWidgetModal: false,
             showAddWidgetModal: false,
@@ -39,7 +44,7 @@ export default class Dashboard extends Component {
             editorContent: null,
             newWidget: null,
             newWidgetApiParams: {},
-            filterValues: {},
+            filterValues: filterValues,
             showChartApiModal: false,
             newApiType: null,
             displayColorPicker: false
@@ -74,7 +79,8 @@ export default class Dashboard extends Component {
       let newFilterValues = Object.assign({}, this.state.filterValues)
       newFilterValues[name] = value
       this.setState({filterValues: newFilterValues})
-    }
+      window.history.pushState('', '', String(window.location).split('?')[0]+'?'+$.param(newFilterValues));
+    } 
 
     //Update Parameter For API
     updateParamKey = (currentKey, newKey) => {

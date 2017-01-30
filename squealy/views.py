@@ -3,6 +3,8 @@ from os.path import join, isfile
 
 from django.conf.urls import url, include
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.decorators import permission_classes, api_view
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -248,7 +250,7 @@ class YamlGeneratorView(APIView):
 
     def post(self, request, *args, **kwargs):
         try:
-            json_data = json.loads(request.body).get('yamlData')
+            json_data = request.data.get('yamlData')
             ApiGenerator._save_apis_to_file(json_data)
             return Response({}, status.HTTP_200_OK)
         except Exception as e:
@@ -304,15 +306,14 @@ class DynamicApiRouter(APIView):
                 api_config = yaml.load_all(f)
                 for api in api_config:
                     apis.append(api)
-        new_api = json.loads(request.body)
+        new_api = request.data
         new_api['id'] = len(apis)+1
         apis.append(new_api)
         ApiGenerator._save_apis_to_file(apis)
         return Response({}, status.HTTP_200_OK)
 
-
+@permission_classes(SquealySettings.get('Authoring_Interface_Permission_Classes', (IsAdminUser, )))
 class DashboardTemplateView(APIView):
-    permission_classes = SquealySettings.get_default_permission_classes()
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
@@ -349,7 +350,7 @@ class DashboardApiView(APIView):
         return Response(dashboards)
 
     def post(self, request):
-        dashboards = json.loads(request.body)
+        dashboards = request.data
         directory = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
 
         if not os.path.exists(directory):
@@ -362,7 +363,8 @@ class DashboardApiView(APIView):
         f.close()
         return Response({}, status.HTTP_200_OK)
 
-
+@api_view(['GET'])
+@permission_classes(SquealySettings.get('Authoring_Interface_Permission_Classes', (IsAdminUser, )))
 def squealy_interface(request):
     """
     Renders the squealy authouring interface template

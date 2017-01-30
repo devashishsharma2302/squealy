@@ -26,7 +26,7 @@ export default class Widget extends Component {
   }
   
   componentWillMount() {
-    this.refreshChartData({})
+    this.refreshChartData(this.props.filterValues)
   }
 
   refreshChartData = (filterValues) => {
