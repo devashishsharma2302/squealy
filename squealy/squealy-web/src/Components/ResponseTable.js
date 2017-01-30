@@ -4,7 +4,6 @@ import ReactTable from 'react-table'
 import Select from 'react-select'
 import 'react-table/react-table.css'
 import {Modal} from 'react-bootstrap'
-import { preProcessResponse } from '../Utils'
 
 export class QueryResponseTable extends Component {
   constructor (props) {
@@ -12,35 +11,42 @@ export class QueryResponseTable extends Component {
   }
 
   render () {
-    const {columnDefinition, onChangeApiDefinition} = this.props
-    const response = preProcessResponse(this.props.response)
-    let responseColumn = []
-    response.columns.map((column, i) => {
-      let newCol = {
-        accessor: column.header,
-        header: <ResponseTableHeader 
-                  headerName={column.header}
-                  columnDefinition={columnDefinition}
-                  selectedColumn={column.accessor}
-                  onChangeApiDefinition={onChangeApiDefinition} />
-      }
-      responseColumn.push(newCol)
-    })
+    const {columnDefinition, onChangeApiDefinition, response} = this.props
+    const rows = response.data.map((row, index) =>
+      <tr key={index}>
+        {row.map((entry, index) => 
+          <td key={index}>{entry}</td>
+        )}
+      </tr>
+    )
+
     return (
-      <div className="query-response-wrapper">
-        <div className="hidash-api-response hidash-query-response-grid">
-        {(response.data.length > 0 && response.columns.length > 0)?
-            <ReactTable
-              data={response.data}
-              columns={responseColumn}
-              pageSize={10}
-              minRows={3}
-          />
-        :
-          <div>Loading...</div>
-        }
-        </div>
-      </div>)
+      <div id="response-table">
+        <table className="table">
+          <thead>
+            <tr>
+              {response.columns.map((column, index)=>
+                <th key={index}>{column.name}</th>
+              )}
+            </tr>
+          </thead>
+          <tbody>
+            {(response.data.length !== 0)?
+              rows
+            :
+              <tr>
+                <th
+                  style={{textAlign: 'center'}}
+                  colSpan="4"
+                >
+                  No Results
+                </th>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    )
   }
 }
 
