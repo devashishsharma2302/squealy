@@ -36,8 +36,8 @@ sdict = {
     'test_suite' : 'tests.all_tests',
     'install_requires': [
         'jinjasql',
-        'Django>=1.10.2',
-        'djangorestframework>=3.5.1',
+        'django',
+        'djangorestframework',
         'PyYAML>=3',
         'arrow>=0.8.0'
     ],
