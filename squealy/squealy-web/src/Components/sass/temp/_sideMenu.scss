@@ -1,0 +1,44 @@
+.side-menu {
+	border-right: 1px solid $border_color;
+	height: 100%;
+	padding-top: 10%;
+	}
+
+.side-menu-container {
+	height: 100%;
+
+	.side-menu-parent {
+		height: 100%;	
+	}
+	.chart-list {
+		ul {
+			list-style: none;
+		}
+		li {
+			margin-top: 3%;	
+			margin-left: 5px;
+		}
+	}
+
+	.side-menu-heading {
+		width: 95%;
+		border-bottom: 2px solid $border_color;
+		span {
+			margin-left: 20px;
+			font-size: $side_menu_heading_font_size;
+			color: $text_color;
+		}
+		.chart-icon {
+			margin-left: 10px;
+			color: $text_color;	
+		}
+		.add-new {
+			float: right;
+			right: 0;
+
+		}
+	}
+
+}
+
+
