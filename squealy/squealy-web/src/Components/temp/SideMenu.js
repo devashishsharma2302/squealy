@@ -5,7 +5,7 @@ export default class SideMenu extends Component {
   render () {
     return(
       <div className="side-menu">
-	      <div className="side-menu-heading"><i className="fa fa-pie-chart chart-icon" aria-hidden="true"></i><span>Charts</span>
+				<div className="side-menu-heading"><i className="fa fa-pie-chart chart-icon" aria-hidden="true"></i><span>Charts</span>
 	      	<i className="fa fa-plus add-new" aria-hidden="true"></i>
 	      </div>
 	      <div className="chart-list">

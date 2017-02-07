@@ -12,7 +12,7 @@
 @import './../Components/dashboard-view/sass/dashboard.scss';
 
 html, body, #root {
-  height: 100%;
+  min-height: 100%;
 }
 
 body {
@@ -30,8 +30,6 @@ body {
 
 .parent-div {
   height: inherit;
-  overflow-y: scroll;
-
 }
 
 select {
