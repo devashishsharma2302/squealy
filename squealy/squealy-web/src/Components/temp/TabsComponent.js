@@ -6,6 +6,7 @@ import {Effect} from 'react-notification-badge';
 
 export default class TabsComponent extends Component {
   render() {
+  	const { transformations } = this.props
   	return (
     	<div>
 		    <SplitButton bsStyle='success' title='Run' id='run-button'>
@@ -15,9 +16,9 @@ export default class TabsComponent extends Component {
 	    	</SplitButton>
 	    	<Button bsStyle='primary' className='tab-component'>Validations</Button>
 					<Button bsStyle='primary' className='tab-component'>Transformations
-						<NotificationBadge count={2} effect={Effect.SCALE} className='transformations-count-badge'/>
+						<NotificationBadge count={transformations.length} effect={[null, null, null, null]} className='transformations-count-badge'/>
 					</Button>
-				<Button bsStyle='primary' className='tab-component'>Export</Button>
+				<Button bsStyle='primary' className='tab-component'>Export {'</>'}</Button>
     </div>
     )
   }

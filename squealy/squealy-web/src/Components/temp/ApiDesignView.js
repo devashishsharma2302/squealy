@@ -5,13 +5,15 @@ import TabsComponent from './TabsComponent'
 
 export default class ApiDesignView extends Component {
   render() {
+    const { chart, selectedChartChangeHandler } = this.props
+    console.log(chart.name)
     return (
       <div>
 	      <div className="col-md-12 tabs-container">
-	      <TabsComponent />
+	      <TabsComponent transformations={chart.transformations}/>
 	      </div>
 	      <div className="col-md-12">
-		      <QueryEditor />
+		      <QueryEditor query={chart.query} selectedChartChangeHandler={selectedChartChangeHandler} />
         </div>
 	      <div className="col-md-12">
 		      <ResultSection />

@@ -13,10 +13,20 @@
 	.chart-list {
 		ul {
 			list-style: none;
+			padding: 0;
+		}
+		.selected-chart {
+			background: #eee;
 		}
 		li {
-			margin-top: 3%;	
-			margin-left: 5px;
+			margin-top: 2%;	
+			margin-right: 15px;
+			text-indent: 40px;
+			height: 25px;
+			padding-top: 4px;
+			span {
+				cursor: pointer;
+			}
 		}
 	}
 
