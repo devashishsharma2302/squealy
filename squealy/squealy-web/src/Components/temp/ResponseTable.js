@@ -13,31 +13,6 @@ export default class ResponseTable extends Component {
 
     return (
     	<div className='response-section'>
-        <div id="response-table">
-          <table className="table">
-            <thead>
-              <tr>
-                {response.columns.map((column, index)=>
-                  <th key={index}>{column.name}</th>
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {(response.data.length !== 0)?
-                rows
-              :
-                <tr>
-                  <th
-                    style={{textAlign: 'center'}}
-                    colSpan="4"
-                  >
-                    No Results
-                  </th>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
       </div>
     )
   }

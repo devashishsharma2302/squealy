@@ -31,7 +31,7 @@ export default class AuthoringInterfaceContainer extends Component {
     super(props)
     this.state = {
       charts: [],
-      selectedchartIndex: 0,
+      selectedChartIndex: 0,
       apiError: false,
       apiErrorMsg: ''
     }
@@ -60,10 +60,10 @@ export default class AuthoringInterfaceContainer extends Component {
     // }
   }
 
-  chartDefinitionChangeHandler = (key, value) => {
+  selectedChartChangeHandler = (key, value) => {
     let charts = JSON.parse(JSON.stringify(this.state.charts))
     charts[this.state.selectedChartIndex][key] = value
-    this.setState({charts: charts}, ()=> console.log('changed', charts))
+    this.setState({charts: charts})
   }
 
   runSuccessHandler = (response) => {
@@ -137,7 +137,7 @@ export default class AuthoringInterfaceContainer extends Component {
 
   //Changes the selected API index to the one which was clicked from the API list
   chartSelectionHandler = (index) => {
-    this.setState({selectedchartIndex: index})
+    this.setState({selectedChartIndex: index})
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -148,18 +148,22 @@ export default class AuthoringInterfaceContainer extends Component {
   }
 
   render () {
-    const { charts, selectedchartIndex } = this.state
+    const { charts, selectedChartIndex } = this.state
+    const { googleDefined } = this.props
     return (
       <div className="parent-div container-fluid">
         <NavHeader />
         <div className="row side-menu-container">
           <div className="col-md-3 side-menu-parent">
             <SideMenu chartAdditionHandler={this.chartAdditionHandler} charts={charts} 
-                      selectedchartIndex={selectedchartIndex} chartSelectionHandler={this.chartSelectionHandler}/>
+                      selectedChartIndex={selectedChartIndex} chartSelectionHandler={this.chartSelectionHandler}/>
           </div>
           <div className="col-md-9 api-design-container">
-            <ApiDesignView chart={charts[selectedchartIndex]} 
-                           selectedChartChangeHandler={this.selectedChartChangeHandler}/>
+            <ApiDesignView chart={charts[selectedChartIndex]} 
+                           selectedChartChangeHandler={this.selectedChartChangeHandler}
+                           selectedChartIndex={selectedChartIndex}
+                           googleDefined={googleDefined}
+                           />
           </div>
         </div>
       </div>

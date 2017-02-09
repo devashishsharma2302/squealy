@@ -122,7 +122,8 @@ export function getEmptyApiDefinition() {
     testParameters: {},
     validations: [],
     transformations: [],
-    format: 'table',
+    chartType: 'ColumnChart',
+    options: {},
     chartData: {}
   }
 }

@@ -7,8 +7,17 @@ let charts = [
     testParameters: {},
     validations: [],
     transformations: [{}],
-    format: 'table',
-    chartData: {}
+    options: {},
+    chartType: 'ColumnChart',
+    chartData: {
+    cols: [{id: 'task', label: 'Task', type: 'string'},
+           {id: 'hours', label: 'Hours per Day', type: 'number'}],
+    rows: [{c:[{v: 'Work'}, {v: 11}]},
+           {c:[{v: 'Eat'}, {v: 2}]},
+           {c:[{v: 'Commute'}, {v: 2}]},
+           {c:[{v: 'Watch TV'}, {v:2}]},
+           {c:[{v: 'Sleep'}, {v:7, f:'7.000'}]}]
+    }
   },
   {
     name: 'Chart2',
@@ -18,7 +27,8 @@ let charts = [
     testParameters: {},
     validations: [],
     transformations: [],
-    format: 'table',
+    options: {},
+    chartType: 'ColumnChart',
     chartData: {}
   },
   {
@@ -29,7 +39,8 @@ let charts = [
     testParameters: {},
     validations: [],
     transformations: [{}, {}, {}],
-    format: 'table',
+    chartType: 'ColumnChart',
+    options: {},
     chartData: {}
   }
 

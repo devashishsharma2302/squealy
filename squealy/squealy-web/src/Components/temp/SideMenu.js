@@ -3,7 +3,7 @@ import React, {Component, PropTypes} from 'react'
 export default class SideMenu extends Component {
 
   render () {
-  	const { charts, chartAdditionHandler, selectedchartIndex, chartSelectionHandler } = this.props
+  	const { charts, chartAdditionHandler, selectedChartIndex, chartSelectionHandler } = this.props
   	return(
       <div className="side-menu">
 				<div className="side-menu-heading"><i className="fa fa-pie-chart chart-icon" aria-hidden="true"></i><span>Charts</span>
@@ -14,7 +14,7 @@ export default class SideMenu extends Component {
 			      {
 			      	charts.map( (chart, index) => {
 			      		return (<li onClick={() => chartSelectionHandler(index)} key={index}
-			      							  className={(index==selectedchartIndex)?'selected-chart': ''}>
+			      							  className={(index===selectedChartIndex)?'selected-chart': ''}>
 			      							  <span>{chart.name}</span>
 	      							  </li>)
 			      	})
