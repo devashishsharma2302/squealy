@@ -1,29 +1,8 @@
 import React, {Component} from 'react'
-import ApiTabs from '../../Components/ApiTabs'
-import NavHeader from '../../Components/temp/NavHeader'
-import SideMenu from '../../Components/temp/SideMenu'
-import ApiDesignView from '../../Components/temp/ApiDesignView'
+import MainComponent from '../../Components/temp/MainComponent'
 import {
-  SIDE_BAR_WIDTH,
-  YAML_CONTENT_TYPE,
-  RESPONSE_FORMATS,
-  DOMAIN_NAME
-} from '../../Constant'
-import {
-  postApiRequest,
-  getApiRequest,
-  objectToYaml,
-  saveBlobToFile,
-  saveYamlOnServer,
   getEmptyApiDefinition,
-  exportFile,
-  getDefaultApiDefinition,
-  parseObjectAsYamlConfig,
-  getEmptyTestData,
-  setDataInLocalStorage,
-  getDataFromLocalStorage,
 } from '../../Utils'
-
 import mockCharts from './mockCharts'
 
 export default class AuthoringInterfaceContainer extends Component {
@@ -152,20 +131,11 @@ export default class AuthoringInterfaceContainer extends Component {
     const { googleDefined } = this.props
     return (
       <div className="parent-div container-fluid">
-        <NavHeader />
-        <div className="row side-menu-container">
-          <div className="col-md-3 side-menu-parent">
-            <SideMenu chartAdditionHandler={this.chartAdditionHandler} charts={charts} 
-                      selectedChartIndex={selectedChartIndex} chartSelectionHandler={this.chartSelectionHandler}/>
-          </div>
-          <div className="col-md-9 api-design-container">
-            <ApiDesignView chart={charts[selectedChartIndex]} 
-                           selectedChartChangeHandler={this.selectedChartChangeHandler}
-                           selectedChartIndex={selectedChartIndex}
-                           googleDefined={googleDefined}
-                           />
-          </div>
-        </div>
+        <MainComponent charts={charts} selectedChartIndex={selectedChartIndex}
+                       googleDefined={googleDefined} chartAdditionHandler={this.chartAdditionHandler}
+                       chartSelectionHandler={this.chartSelectionHandler}
+                       selectedChartChangeHandler={this.selectedChartChangeHandler}
+                       />
       </div>
     )
   }

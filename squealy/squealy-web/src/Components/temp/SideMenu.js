@@ -3,11 +3,11 @@ import React, {Component, PropTypes} from 'react'
 export default class SideMenu extends Component {
 
   render () {
-  	const { charts, chartAdditionHandler, selectedChartIndex, chartSelectionHandler } = this.props
+  	const { charts, chartAdditionHandler, selectedChartIndex, chartSelectionHandler, enableAddChartModal } = this.props
   	return(
       <div className="side-menu">
 				<div className="side-menu-heading"><i className="fa fa-pie-chart chart-icon" aria-hidden="true"></i><span>Charts</span>
-	      	<i className="fa fa-plus add-new" aria-hidden="true"></i>
+	      	<i  onClick={enableAddChartModal} className="fa fa-plus add-new" aria-hidden="true"></i>
 	      </div>
 	      <div className="chart-list">
 		      <ul>

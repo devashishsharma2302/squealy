@@ -8,18 +8,17 @@ export default class ApiDesignView extends Component {
     const { chart, selectedChartChangeHandler, selectedChartIndex, googleDefined } = this.props
     return (
       <div>
-	      <div className="col-md-12 tabs-container">
-	      <TabsComponent transformations={chart.transformations}/>
-	      </div>
-	      <div className="col-md-12">
-		      <QueryEditor query={chart.query} selectedChartChangeHandler={selectedChartChangeHandler} />
+        <div className="col-md-12 tabs-container">
+        	<TabsComponent transformations={chart.transformations}/>
         </div>
-	      <div className="col-md-12">
-		      <ResultSection chartData={chart.chartData} options={chart.options} chartType={chart.chartType}
+        <div className="col-md-12">
+          <QueryEditor query={chart.query} selectedChartChangeHandler={selectedChartChangeHandler} />
+        </div>
+        <div className="col-md-12">
+          <ResultSection chartData={chart.chartData} options={chart.options} chartType={chart.chartType}
                          selectedChartIndex={selectedChartIndex} googleDefined={googleDefined} />
         </div>
-   		</div>
-
+      </div>
     )
   }
 }
