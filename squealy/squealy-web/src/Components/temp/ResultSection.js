@@ -10,14 +10,14 @@ export default class ResultSection extends Component {
     return (
     	<AccordionTab heading='Results'>
 			  {(googleDefined && (chartData !== {} ))?
-          <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
+          <Tabs defaultActiveKey={1} id="uncontrolled_tab_example">
     		    <Tab eventKey={1} title="Data">
              <GoogleChartsComponent chartData={chartData} options={{}} chartType='Table'
-                                    id={'response-table-'+ selectedChartIndex} />
+                                    id={'response_table_'+ selectedChartIndex} />
             </Tab>
   			    <Tab eventKey={2} title="Visualisation">
               <GoogleChartsComponent chartData={chartData} options={options} chartType={chartType}
-                                     id={'visualisation-'+ selectedChartIndex} />
+                                     id={'visualisation_'+ selectedChartIndex} />
             </Tab>
   			  </Tabs>
         : null}
