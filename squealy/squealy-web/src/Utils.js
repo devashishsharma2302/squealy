@@ -115,18 +115,16 @@ function getCookie(name) {
 
 export function getEmptyApiDefinition() {
   return {
-    apiName: 'Untitled API 0',
-    open: true,
-    urlName: '',
-    sqlQuery: '',
-    paramDefinition: [],
+    name: '',
+    url: '',
+    query: '',
+    parameters: [],
+    testParameters: {},
     validations: [],
     transformations: [],
-    selectedTransformations: [],
-    columns: {},
-    selectedDB: null,
-    permission_classes: [],
-    authentication_classes: []
+    chartType: 'ColumnChart',
+    options: {},
+    chartData: {}
   }
 }
 
