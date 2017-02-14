@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.postgres import fields
 
+from .constants import TRANSFORMATION_TYPES, PARAMETER_TYPES, COLUMN_TYPES
+
 
 class Account(models.Model):
     """
@@ -38,11 +40,10 @@ class Column(models.Model):
     """
     This represents a column definition for a chart
     """
-    TYPE_CHOICES = [(1, 'dimension'), (2, 'metric')]
 
     chart = models.ForeignKey(Chart, related_name='columns')
     name = models.CharField(max_length=50)
-    type = models.IntegerField(default=1, choices=TYPE_CHOICES)
+    type = models.IntegerField(default=1, choices=COLUMN_TYPES)
 
     def __unicode__(self):
         return self.name
@@ -52,14 +53,13 @@ class Parameter(models.Model):
     """
     This represents a parameter injected in the query
     """
-    TYPE_CHOICES = [(1, 'query'), (2, 'user')]
 
     chart = models.ForeignKey(Chart, related_name='parameters')
     name = models.CharField(max_length=100)
     data_type = models.CharField(max_length=100, default='string')
     mandatory = models.BooleanField(default=True)
     default_value = models.CharField(max_length=200, null=True, blank=True)
-    type = models.IntegerField(default=1, choices=TYPE_CHOICES)
+    type = models.IntegerField(default=1, choices=PARAMETER_TYPES)
 
     def __unicode__(self):
         return self.name
@@ -70,15 +70,13 @@ class Transformation(models.Model):
     This represents the transformations that are applied after retrieving
     the data from the query.
     """
-    TYPE_CHOICES = [(1, 'Transpose'), (2, 'Split'), (3, 'Merge')]
 
     chart = models.ForeignKey(Chart, related_name='transformations')
-    name = models.IntegerField(default=1, choices=TYPE_CHOICES)
+    name = models.IntegerField(default=1, choices=TRANSFORMATION_TYPES)
     kwargs = fields.JSONField(null=True, blank=True)
 
     def __unicode__(self):
-        TYPE_CHOICES = [(1, 'Transpose'), (2, 'Split'), (3, 'Merge')]
-        return TYPE_CHOICES[self.name-1][1]
+        return TRANSFORMATION_TYPES[self.name-1][1]
 
 
 class Validation(models.Model):

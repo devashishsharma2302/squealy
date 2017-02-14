@@ -40,11 +40,12 @@ class GoogleChartsFormatter(Formatter):
         response = {}
         response['rows'] = rows = []
         response['cols'] = cols = []
+        print table.columns
         for index, column in enumerate(table.columns):
             col_type = 'number'
             if index == 0:
                 col_type = 'string'
-            cols.append({"id": column.name, "label": column.name, "type": col_type})
+            cols.append({"id": column, "label": column, "type": col_type})
         for row in table.data:
             row_list = []
             for e in row:
@@ -67,7 +68,7 @@ class HighchartsFormatter(Formatter):
             ]
         """
         response = []
-        columns = table.columns_to_str()
+        columns = table.columns
         column_length = len(columns)
         if column_length == 1:
             for row in table.data:
