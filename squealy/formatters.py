@@ -9,13 +9,7 @@ class Formatter:
 class SimpleFormatter(Formatter):
 
     def format(self, table):
-        data = {"columns": [], "data": table.data}
-        for column in table.columns:
-            data['columns'].append({
-                "name": column.name,
-                "data_type": column.data_type,
-                "col_type": column.col_type
-            })
+        data = {"columns": table.columns, "data": table.data}
         return data
 
 

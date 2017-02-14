@@ -18,13 +18,13 @@ class Transpose(TableTransformer):
         2. The column names in the original
            become the values in the first column in the transformed
         """
-        column_names = [c.name for c in table.columns]
+        column_names = table.columns
         table.data.insert(0, column_names)
         transposed = list(zip(*table.data))
 
         new_table = Table()
         if transposed:
-            new_table.columns = [Column(c, "string", "dimension") for c in transposed[0]]
+            new_table.columns = transposed[0]
             del transposed[0]
         new_table.data = transposed
         return new_table

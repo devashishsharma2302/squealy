@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from squealy.models import Account, Chart, ChartColumn, ChartParameter, Transformation, Validation
+from squealy.models import Account, Chart, Column, Parameter,\
+    Transformation, Validation
 
 
 class AccountAdmin(admin.ModelAdmin):
@@ -16,22 +17,22 @@ class ChartAdmin(admin.ModelAdmin):
         List display for Charts in Django Admin
     """
     model = Chart
-    list_display = ['name', 'account', 'url', 'query', 'format', 'type', 'options']
+    list_display = ['name', 'account', 'url', 'format', 'type', 'options']
 
 
-class ChartColumnAdmin(admin.ModelAdmin):
+class ColumnAdmin(admin.ModelAdmin):
     """
         List display for ChartColumns in Django Admin
     """
-    model = ChartColumn
+    model = Column
     list_display = ['chart', 'name', 'type']
 
 
-class ChartParameterAdmin(admin.ModelAdmin):
+class ParameterAdmin(admin.ModelAdmin):
     """
         List display for ChartParameters in Django Admin
     """
-    model = ChartParameter
+    model = Parameter
     list_display = ['chart', 'name', 'data_type', 'mandatory', 'default_value', 'type']
 
 
@@ -53,7 +54,7 @@ class ValidationAdmin(admin.ModelAdmin):
 
 admin.site.register(Account, AccountAdmin)
 admin.site.register(Chart, ChartAdmin)
-admin.site.register(ChartColumn, ChartColumnAdmin)
-admin.site.register(ChartParameter, ChartParameterAdmin)
+admin.site.register(Column, ColumnAdmin)
+admin.site.register(Parameter, ParameterAdmin)
 admin.site.register(Transformation, TransformationAdmin)
 admin.site.register(Validation, ValidationAdmin)

@@ -1,46 +1,42 @@
 import os
 from os.path import join
 
-import yaml
 from django.conf import settings
 from django.conf.urls import url
-from yaml import load_all
-from .utils import SquealySettings
-
-from .views import SqlApiView
 import rest_framework
 from rest_framework.authentication import *
 from rest_framework.permissions import *
+
+from .views import SqlApiView
+from .utils import SquealySettings, ChartConfig
 
 
 class ApiGenerator():
 
     @staticmethod
-    def generate_urls_from_yaml(file_path):
+    def generate_sql_apiview(chart):
         urlpatterns = []
-        with open(file_path) as f:
-            api_configs = load_all(f)
-            for config in api_configs:
-                apiview_class = ApiGenerator._generate_api_view(config)
-                apiview_class.authentication_classes = SquealySettings.get_default_authentication_classes()
-                apiview_class.permission_classes = SquealySettings.get_default_permission_classes()
+        config = ChartConfig(chart).get_config()
+        config['id'] = chart.id
+        config['url'] = chart.url
+        apiview_class = ApiGenerator._generate_api_view(config)
+        apiview_class.authentication_classes = SquealySettings.get_default_authentication_classes()
+        apiview_class.permission_classes = SquealySettings.get_default_permission_classes()
+        return apiview_class
 
-                if config.get("authentication_classes"):
-                    for authentication_class_as_str in config.get("authentication_classes"):
-                        try:
-                            apiview_class.authentication_classes.append(eval(authentication_class_as_str))
-                        except:
-                            pass
-
-                if config.get("permission_classes"):
-                    for permission_class_as_str in config.get("permission_classes"):
-                        try:
-                            apiview_class.permission_classes.append(eval(permission_class_as_str))
-                        except:
-                            pass
-                urlpatterns.append(url(r'^'+config['url']+'[/]*$', apiview_class.as_view()))
-
-        return urlpatterns
+#         if config.get("authentication_classes"):
+#             for authentication_class_as_str in config.get("authentication_classes"):
+#                 try:
+#                     apiview_class.authentication_classes.append(eval(authentication_class_as_str))
+#                 except:
+#                     pass
+# 
+#         if config.get("permission_classes"):
+#             for permission_class_as_str in config.get("permission_classes"):
+#                 try:
+#                     apiview_class.permission_classes.append(eval(permission_class_as_str))
+#                 except:
+#                     pass
 
     @staticmethod
     def _generate_api_view(config):

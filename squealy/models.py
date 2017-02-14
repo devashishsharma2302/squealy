@@ -6,7 +6,8 @@ from django.contrib.postgres import fields
 
 class Account(models.Model):
     """
-    This model holds the enterprise level accounts containing charts. This would be populated by the admin user.
+    This model holds the enterprise level accounts containing charts.
+    This would be populated by the admin user.
     """
     name = models.CharField(max_length=250)
 
@@ -21,9 +22,11 @@ class Chart(models.Model):
     account = models.ForeignKey(Account, null=True, blank=True)
     url = models.CharField(max_length=2000)
     query = models.TextField()
-    name = models.CharField(max_length=50)  # To be updated to be in sync with the authoring interface UI.
+    # To be updated to be in sync with the authoring interface UI.
+    name = models.CharField(max_length=50)
+    # To accommodate custom formatting function paths too.
     format = models.CharField(max_length=50,
-                              default="SimpleFormatter")  # To accommodate custom formatting function paths too.
+                              default="SimpleFormatter")
     type = models.CharField(max_length=20, default="ColumnChart")
     options = fields.JSONField(null=True, blank=True)
 
@@ -31,13 +34,13 @@ class Chart(models.Model):
         return self.name + "( /" + self.url + ")"
 
 
-class ChartColumn(models.Model):
+class Column(models.Model):
     """
     This represents a column definition for a chart
     """
     TYPE_CHOICES = [(1, 'dimension'), (2, 'metric')]
 
-    chart = models.ForeignKey(Chart)
+    chart = models.ForeignKey(Chart, related_name='columns')
     name = models.CharField(max_length=50)
     type = models.IntegerField(default=1, choices=TYPE_CHOICES)
 
@@ -45,13 +48,13 @@ class ChartColumn(models.Model):
         return self.name
 
 
-class ChartParameter(models.Model):
+class Parameter(models.Model):
     """
     This represents a parameter injected in the query
     """
     TYPE_CHOICES = [(1, 'query'), (2, 'user')]
 
-    chart = models.ForeignKey(Chart)
+    chart = models.ForeignKey(Chart, related_name='parameters')
     name = models.CharField(max_length=100)
     data_type = models.CharField(max_length=100, default='string')
     mandatory = models.BooleanField(default=True)
@@ -64,15 +67,18 @@ class ChartParameter(models.Model):
 
 class Transformation(models.Model):
     """
-    This represents the transformations that are applied after retrieving the data from the query.
+    This represents the transformations that are applied after retrieving
+    the data from the query.
     """
+    TYPE_CHOICES = [(1, 'Transpose'), (2, 'Split'), (3, 'Merge')]
 
-    chart = models.ForeignKey(Chart)
-    name = models.CharField(max_length=100)
-    kwargs = fields.JSONField()
+    chart = models.ForeignKey(Chart, related_name='transformations')
+    name = models.IntegerField(default=1, choices=TYPE_CHOICES)
+    kwargs = fields.JSONField(null=True, blank=True)
 
     def __unicode__(self):
-        return self.name
+        TYPE_CHOICES = [(1, 'Transpose'), (2, 'Split'), (3, 'Merge')]
+        return TYPE_CHOICES[self.name-1][1]
 
 
 class Validation(models.Model):
@@ -80,8 +86,8 @@ class Validation(models.Model):
     This represents API Validations
     """
 
-    chart = models.ForeignKey(Chart)
+    chart = models.ForeignKey(Chart, related_name='validations')
     query = models.TextField()
 
     def __unicode__(self):
-        return self.name
+        return self.chart.name
