@@ -7,6 +7,8 @@
 @import './../Components/sass/sidebar.scss';
 @import './../Components/sass/transformations.scss';
 @import './../Components/sass/columnDefinition.scss';
+@import './../Components/sass/temp/sideMenu.scss';
+@import './../Components/sass/temp/apiDesignView.scss';
 @import './../Components/dashboard-view/sass/dashboard.scss';
 
 html, body, #root {
@@ -24,6 +26,12 @@ body {
   background-color: $light_gray_color !important;
   border-color: $border_color !important;
   color: $black_color !important;
+}
+
+.parent-div {
+  height: inherit;
+  overflow-y: scroll;
+
 }
 
 select {
@@ -159,7 +167,7 @@ h2, .h2 {
 }
 
 .navbar {
-  min-height: 60px;
+  min-height: 10%;
   padding: 3px;
 }
 
