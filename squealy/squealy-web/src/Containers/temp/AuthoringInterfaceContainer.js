@@ -84,7 +84,7 @@ export default class AuthoringInterfaceContainer extends Component {
     //                this.onSuccessTest, this.onErrorTest, format)
   }
 
-  apiDeletionHandler = (index) => {
+  chartDeletionHandler = (index) => {
     if(this.state.apiDefinition.length > 1) {
       let charts = JSON.parse(JSON.stringify(this.state.charts))
       charts.splice(index, 1)
@@ -97,21 +97,16 @@ export default class AuthoringInterfaceContainer extends Component {
   }
 
   //Appends an empty API definition object to current API Definitions
-  chartAdditionHandler = () => {
+  chartAdditionHandler = (name, url) => {
     //TODO: open the addition modal and add the new chart to state also making it the selected chart
-    // let newApiDefinitions = this.state.apiDefinition.slice(),
-    //   newTestData = this.state.testData.slice(),
-    //   selectedApiIndex = newApiDefinitions.length,
-    //   newOpenAPIs = this.state.openAPIs.slice()
-    // newApiDefinitions.push(getDefaultApiDefinition(newApiDefinitions.length))
-    // newTestData.push(getEmptyTestData())
-    // newOpenAPIs.push(selectedApiIndex)
-    // this.setState({
-    //   apiDefinition: newApiDefinitions,
-    //   testData: newTestData,
-    //   selectedApiIndex: selectedApiIndex,
-    //   openAPIs: newOpenAPIs
-    // })
+    let charts = JSON.parse(JSON.stringify(this.state.charts)),
+        newChart = getEmptyApiDefinition()
+        newChart.name = name
+        newChart.url = url
+    charts.push(newChart) 
+    this.setState({
+      charts: charts
+    })
   }
 
   //Changes the selected API index to the one which was clicked from the API list
@@ -134,6 +129,7 @@ export default class AuthoringInterfaceContainer extends Component {
         <MainComponent charts={charts} selectedChartIndex={selectedChartIndex}
                        googleDefined={googleDefined} chartAdditionHandler={this.chartAdditionHandler}
                        chartSelectionHandler={this.chartSelectionHandler}
+                       chartDeletionHandler = {this.chartDeletionHandler}
                        selectedChartChangeHandler={this.selectedChartChangeHandler}
                        />
       </div>
