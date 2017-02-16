@@ -26,7 +26,7 @@ export default class MainComponent extends Component {
   newChartNameChanged = (e) => {
     const newChartName = e.target.value,
       newChartUrl = newChartName.replace(' ', '-').toLowerCase()
-    this.setState ({newChart: {name: newChartName, url: newChartUrl}})
+    this.setState({newChart: {name: newChartName, url: newChartUrl}})
   }
 
   render() {
