@@ -1,31 +1,28 @@
 import importlib
+import os
+
 from os.path import join, isfile
 
-from django.conf.urls import url, include
+from django.db import connections
+from django.shortcuts import render
+from django.conf import settings
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-import rest_framework
-
-
 from jinjasql import JinjaSql
-from django.db import connections
-from django.shortcuts import render
-from django.conf import settings
-from .exceptions import RequiredParameterMissingException, DashboardNotFoundException
+
+from .exceptions import RequiredParameterMissingException,\
+                        DashboardNotFoundException, ChartNotFoundException
 from .transformers import *
 from .formatters import *
 from .parameters import *
 from .utils import SquealySettings
 from .table import Table, Column
-from pydoc import locate
-import yaml
-import os
-import json
-from django.core.files import File
+from .models import *
+from .validators import run_validation
 
 jinjasql = JinjaSql()
 
@@ -77,14 +74,11 @@ class SqlApiView(APIView):
             params = self.parse_params(params)
         if hasattr(self, 'validations'):
             self.run_validations(params, user)
-
         # Execute the SQL Query, and return a Table
         table = self._execute_query(params, user)
-
         if hasattr(self, 'transformations'):
             # Perform basic transformations on the table
             table = self._run_transformations(table)
-
         # Format the table according to google charts / highcharts etc
         data = self._format(table)
 
@@ -105,81 +99,71 @@ class SqlApiView(APIView):
         return SimpleFormatter().format(table)
 
     def _run_transformations(self, table):
-        for transformation in self.transformations:
-            if '.' in transformation.get('name'):
-                module_name, class_name = self.format.rsplit('.',1)
-                module = importlib.import_module(module_name)
-                transformer_instance = getattr(module, class_name)()
-            else:
-                transformer_instance = eval(transformation.get('name', 'TableTransformer').title())()
-            kwargs = transformation.get("kwargs", {})
-            table = transformer_instance.transform(table, **kwargs)
-        return table
+        if self.transformations:
+            for transformation in self.transformations:
+                if '.' in transformation.get('name'):
+                    module_name, class_name = self.format.rsplit('.',1)
+                    module = importlib.import_module(module_name)
+                    transformer_instance = getattr(module, class_name)()
+                else:
+                    transformer_instance = eval(transformation.get('name').title())()
+                kwargs = transformation.get("kwargs") if transformation.get("kwargs") else {}
+                table = transformer_instance.transform(table, **kwargs)
+            return table
+        else:
+            table = TableTransformer().transform(table, {})
+            return table
 
     def run_validations(self, params, user):
+#         for validation in self.validations:
+#             validation_function = locate(validation.get("validation_function").get("name"))
+#             kwargs = validation.get("validation_function").get("kwargs", {})
+#             validation_function(self, params, user, **kwargs)
         for validation in self.validations:
-            validation_function = locate(validation.get("validation_function").get("name"))
-            kwargs = validation.get("validation_function").get("kwargs", {})
-            validation_function(self, params, user, **kwargs)
+            run_validation(params, user, validation['query'])
 
     def parse_params(self, params):
-        for param in self.parameters:
+        for index, param in enumerate(self.parameters):
             # Default values
-            if self.parameters[param].get('default_value') and\
-                    params.get(param) in [None, '']:
-                params[param] = self.parameters[param].get('default_value')
+            if self.parameters[index].get('default_value') and\
+                    self.parameters[index].get('default_value') != '' and\
+                    params.get(param['name']) in [None, '']:
+                params[param.name] = self.parameters[index].get('default_value')
 
             # Check for missing required parameters
-            is_parameter_optional = self.parameters[param].get('optional',
+            is_parameter_optional = self.parameters[index].get('mandatory',
                                                                False)
             if not is_parameter_optional and not params.get(param):
                 raise RequiredParameterMissingException("Parameter required: "+param)
-
             # Formatting parameters
-            parameter_type_str = self.parameters[param].get("type", "String")
-            kwargs = self.parameters[param].get("kwargs", {})
+            parameter_type_str = self.parameters[index].get("data_type", "String")
+            kwargs = self.parameters[index].get("kwargs", {})
+
             if '.' in parameter_type_str:
                 module_name, class_name = parameter_type_str.rsplit('.', 1)
                 module = importlib.import_module(module_name)
                 parameter_type = getattr(module, class_name)
             else:
                 parameter_type = eval(parameter_type_str.title())
-            if params.get(param):
-                params[param] = parameter_type(param, **kwargs).to_internal(params[param])
+            if params.get(param['name']):
+                params[param['name']] = parameter_type(param['name'], **kwargs).to_internal(params[param['name']])
         return params
 
     def _execute_query(self, params, user):
-
         query, bind_params = jinjasql.prepare_query(self.query,
                                                     {
                                                      "params": params,
                                                      "user": user
                                                     })
-        conn = connections[self.connection_name]
+        conn = connections['userdb']
         with conn.cursor() as cursor:
             cursor.execute(query, bind_params)
-            cols = []
             rows = []
-            for desc in cursor.description:
-                # if column definition is provided
-                if hasattr(self, 'columns') and self.columns and self.columns.get(desc[0]):
-                    column = self.columns.get(desc[0])
-                    cols.append(
-                        Column(
-                           name=desc[0],
-                           data_type=column.get('data_type', 'string'),
-                           col_type=column.get('type', 'dimension')
-                        )
-                    )
-                else:
-                    cols.append(
-                        Column(name=desc[0],
-                               data_type='string', col_type='dimension')
-                    )
+            cols = [desc[0] for desc in cursor.description]
             for db_row in cursor:
                 row_list = []
-                for col_index, chart_col in enumerate(cols):
-                    value = db_row[col_index]
+                for col in db_row:
+                    value = col
                     if isinstance(value, str):
                         # If value contains a non english alphabet
                         value = value.encode('utf-8')
@@ -288,12 +272,13 @@ class DynamicApiRouter(APIView):
     authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request, *args, **kwargs):
-        url_path = request.get_full_path()
-        file_dir = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
-        filename = SquealySettings.get('YAML_FILE_NAME', 'squealy-api.yaml')
-        file_path = join(file_dir, filename)
-        urls = ApiGenerator.generate_urls_from_yaml(file_path)
-        response = url(r'', include(urls)).resolve(url_path.split('/squealy-apis/')[1].split('?')[0]).func(request)
+        url_path = request.get_full_path().split('/squealy-apis/')[1].split('?')[0]
+        chart_attributes = ['parameters', 'columns', 'validations', 'transformations']
+        chart = Chart.objects.filter(url=url_path).prefetch_related(*chart_attributes)
+        if not chart:
+            raise ChartNotFoundException('A chart with this url was not found.')
+        view_class = ApiGenerator.generate_sql_apiview(chart[0])
+        response = view_class.as_view()(request)
         return response
 
     def post(self, request):

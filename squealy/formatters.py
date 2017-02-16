@@ -9,13 +9,7 @@ class Formatter:
 class SimpleFormatter(Formatter):
 
     def format(self, table):
-        data = {"columns": [], "data": table.data}
-        for column in table.columns:
-            data['columns'].append({
-                "name": column.name,
-                "data_type": column.data_type,
-                "col_type": column.col_type
-            })
+        data = {"columns": table.columns, "data": table.data}
         return data
 
 
@@ -50,7 +44,7 @@ class GoogleChartsFormatter(Formatter):
             col_type = 'number'
             if index == 0:
                 col_type = 'string'
-            cols.append({"id": column.name, "label": column.name, "type": col_type})
+            cols.append({"id": column, "label": column, "type": col_type})
         for row in table.data:
             row_list = []
             for e in row:
@@ -73,7 +67,7 @@ class HighchartsFormatter(Formatter):
             ]
         """
         response = []
-        columns = table.columns_to_str()
+        columns = table.columns
         column_length = len(columns)
         if column_length == 1:
             for row in table.data:

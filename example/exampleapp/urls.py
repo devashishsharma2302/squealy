@@ -9,10 +9,10 @@ from os.path import dirname, abspath, join
 YAML_ROOT = join(dirname(abspath(__file__)), "yaml")
 file_path = join(YAML_ROOT, "apis.yaml")
 
-squealy_urls = ApiGenerator.generate_urls_from_yaml(file_path)
+#squealy_urls = ApiGenerator.generate_urls_from_yaml(file_path)
 
 urlpatterns = [
     url(r'^table-report/', DatabaseTableReport.as_view()),
-    url(r'^squealy/', include(squealy_urls)),
+    #url(r'^squealy/', include(squealy_urls)),
 
 ]

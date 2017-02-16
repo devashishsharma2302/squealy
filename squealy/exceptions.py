@@ -30,3 +30,8 @@ class ValidationFailedException(APIException):
 class DashboardNotFoundException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     pass
+
+
+class ChartNotFoundException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    pass

@@ -3,6 +3,8 @@ import rest_framework
 from rest_framework.authentication import *
 from rest_framework.permissions import *
 
+from .models import *
+
 
 class SquealySettings():
 
@@ -31,3 +33,63 @@ class SquealySettings():
             return settings.SQUEALY.get(key, default)
         else:
             return default
+
+
+class ChartConfig():
+
+    def __init__(self, chart):
+        self.chart = chart
+
+    def get_parameters(self, chart):
+        """
+        Returns the parameters associated to the chart
+        """
+        return list(chart.parameters.all().values())
+
+    def get_validations(self, chart):
+        """
+        Returns the parameters associated to the chart
+        """
+        return list(chart.validations.all().values())
+
+    def get_columns(self, chart):
+        """
+        Returns the parameters associated to the chart
+        """
+        return list(chart.columns.all().values())
+
+    def get_transformations(self, chart):
+        """
+        Returns the parameters associated to the chart
+        """
+        transformations_list = []
+        for transformation in chart.transformations.all():
+            transformations_list.append({
+                'kwargs': transformation.kwargs,
+                'name': transformation.get_name_display()
+            })
+        return transformations_list
+
+    def get_chart_config(self, chart):
+        """
+        Returns the chart configuratios from the chart model in a dictionary
+        """
+        return {
+                'name': chart.name,
+                'format': chart.format,
+                'url': chart.url,
+                'query': chart.query,
+                'type': chart.type,
+                'account_id': chart.account_id
+            }
+
+    def get_config(self):
+        """
+        Returns related parameters, validations, transformations and columns
+        """
+        config = self.get_chart_config(self.chart)
+        config['transformations'] = self.get_transformations(self.chart)
+        config['validations'] = self.get_validations(self.chart)
+        config['parameters'] = self.get_parameters(self.chart)
+        config['columns'] = self.get_columns(self.chart)
+        return config

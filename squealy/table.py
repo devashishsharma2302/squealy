@@ -7,11 +7,10 @@ class Table:
         return [str(column.name) for column in self.columns]
 
     def get_col_type(self):
-        return [str(column.col_type) for column in self.columns]   
+        return [str(column.col_type) for column in self.columns]
 
 
 class Column:
-    def __init__(self, name, data_type, col_type):
+    def __init__(self, name, type):
         self.name = name
-        self.data_type = data_type
-        self.col_type = col_type
+        self.type = type
