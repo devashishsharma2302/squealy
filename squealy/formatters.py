@@ -40,7 +40,6 @@ class GoogleChartsFormatter(Formatter):
         response = {}
         response['rows'] = rows = []
         response['cols'] = cols = []
-        print table.columns
         for index, column in enumerate(table.columns):
             col_type = 'number'
             if index == 0:

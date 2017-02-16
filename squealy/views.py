@@ -1,24 +1,18 @@
 import importlib
-import yaml
 import os
-import json
+
 from os.path import join, isfile
 
-from django.conf.urls import url, include
 from django.db import connections
 from django.shortcuts import render
 from django.conf import settings
-from django.core.files import File
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-import rest_framework
 from jinjasql import JinjaSql
-from pydoc import locate
-
 
 from .exceptions import RequiredParameterMissingException,\
                         DashboardNotFoundException, ChartNotFoundException
@@ -105,7 +99,6 @@ class SqlApiView(APIView):
         return SimpleFormatter().format(table)
 
     def _run_transformations(self, table):
-        print self.transformations
         if self.transformations:
             for transformation in self.transformations:
                 if '.' in transformation.get('name'):
