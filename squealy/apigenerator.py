@@ -15,7 +15,6 @@ class ApiGenerator():
 
     @staticmethod
     def generate_sql_apiview(chart):
-        urlpatterns = []
         config = ChartConfig(chart).get_config()
         config['id'] = chart.id
         config['url'] = chart.url
