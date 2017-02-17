@@ -57,7 +57,7 @@ class SqlApiView(APIView):
                 self.transformations = request.data.get('transformations', [])
                 table = self._run_transformations(table)
             # Format the table according to the format requested
-            self.format = request.data.get('format', 'SimpleFormatter')
+            self.format = request.data.get('format', 'GoogleChartsFormatter')
             data = self._format(table)
             return Response(data, status.HTTP_200_OK)
         except Exception as e:

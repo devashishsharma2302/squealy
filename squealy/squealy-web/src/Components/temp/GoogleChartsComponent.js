@@ -17,7 +17,7 @@ export default class GoogleChartWrapper extends Component {
       })
     }
     let wrapper = new google.visualization.ChartWrapper({
-      chartType: (chartType)?chartType:'ColumnChart',
+      chartType: (chartType) ? chartType : 'ColumnChart',
       dataTable: chartData,
       containerId: id,
       options: {

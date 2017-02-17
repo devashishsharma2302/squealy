@@ -1,5 +1,6 @@
 @import 'variables';
 @import 'mixins';
+@import 'fonts';
 @import './../Components/sass/apiList';
 @import './../Components/sass/apiParams';
 @import './../Components/sass/mainComponent';
@@ -7,12 +8,14 @@
 @import './../Components/sass/sidebar.scss';
 @import './../Components/sass/transformations.scss';
 @import './../Components/sass/columnDefinition.scss';
-@import './../Components/sass/temp/sideMenu.scss';
-@import './../Components/sass/temp/apiDesignView.scss';
 @import './../Components/dashboard-view/sass/dashboard.scss';
+@import './../Components/sass/temp/sideMenu.scss';
+@import './../Components/sass/temp/modal';
+@import './../Components/sass/temp/apiDesignView.scss';
 
 html, body, #root {
   height: 100%;
+  font-family: Roboto;
 }
 
 body {

@@ -1,53 +1,50 @@
 .side-menu {
-	border-right: 1px solid $border_color;
-	height: 100%;
-	padding-top: 10%;
+  border-right: 1px solid $border-color;
+  padding-top: 10%;
 }
 
 .side-menu-container {
-	height: 100%;
+  height: 100%;
+  .side-menu-parent {
+    height: 100%;
+  }
+  .chart-list {
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    .selected-chart {
+      background: #eee;
+    }
+    li {
+      margin-top: 2%;	
+      margin-right: 15px;
+      text-indent: 40px;
+      height: 25px;
+      padding-top: 4px;
+      span {
+        cursor: pointer;
+      }
+    }
+  }
 
-	.side-menu-parent {
-		height: 100%;
-	}
-	.chart-list {
-		ul {
-			list-style: none;
-			padding: 0;
-		}
-		.selected-chart {
-			background: #eee;
-		}
-		li {
-			margin-top: 2%;	
-			margin-right: 15px;
-			text-indent: 40px;
-			height: 25px;
-			padding-top: 4px;
-			span {
-				cursor: pointer;
-			}
-		}
-	}
-
-	.side-menu-heading {
-		width: 95%;
-		border-bottom: 2px solid $border_color;
-		span {
-			margin-left: 20px;
-			font-size: $side_menu_heading_font_size;
-			color: $text_color;
-		}
-		.chart-icon {
-			margin-left: 10px;
-			color: $text_color;	
-		}
-		.add-new {
-			float: right;
-			right: 0;
-		}
-	}
-
+  .side-menu-heading {
+    width: 95%;
+    border-bottom: 2px solid $border-color;
+    span {
+      margin-left: 20px;
+      font-size: $side-menu-heading-font-size;
+      color: $text-color;
+    }
+    .chart-icon {
+      margin-left: 10px;
+      color: $text-color;	
+    }
+    .add-new {
+      float: right;
+      right: 0;
+    }
+  }
 }
 
 
