@@ -13,16 +13,15 @@
 
 .add-modal-content{
   border: 1px solid $light-gray-color;
-  .fa-times {
-    float: right;
-    margin: 5px;
-    color: $text-color;
-  }
   > div {
     margin: 10px 0;
     > label {
       font-size: 14px;
     }
+  }
+  .param-form-footer button {
+    float: right;
+    margin: 5px;
   }
 }
 

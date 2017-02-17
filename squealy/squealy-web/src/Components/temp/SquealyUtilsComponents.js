@@ -12,7 +12,8 @@ export class SquealyModal extends Component {
       showModal,
       modalSize,
       closeModal,
-      dialogClassName
+      dialogClassName,
+      noFooter
     } = this.props
 
 
@@ -24,10 +25,16 @@ export class SquealyModal extends Component {
         <Modal.Body>
           {modalContent}
         </Modal.Body>
-        <Modal.Footer>
-          <button onClick={closeModal} className="btn btn-default">Close</button>
-          {saveChanges ? <button onClick={saveChanges} className="btn btn-info">Save</button> : null}
-        </Modal.Footer>
+        {
+          noFooter ? null :
+            <Modal.Footer>
+              <button onClick={closeModal} className="btn btn-default">Close</button>
+              {
+                saveChanges ? 
+                  <button onClick={saveChanges} className="btn btn-info">Save</button>
+                : null}
+            </Modal.Footer>
+        }
       </Modal>
     )
   }

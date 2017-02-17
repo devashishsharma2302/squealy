@@ -21,7 +21,7 @@ export default class TabsComponent extends Component {
   }
 
   render() {
-    const { transformations, onHandleTestButton, parameters } = this.props
+    const { transformations, onHandleTestButton, parameters, selectedChartChangeHandler} = this.props
     return (
       <div>
         <SplitButton bsStyle='success' title='Run' id='run-button' onClick={onHandleTestButton}>
@@ -39,6 +39,7 @@ export default class TabsComponent extends Component {
         {
           this.state.showParamDefModal && 
           <ParamDefinitionModalWrapper
+            selectedChartChangeHandler={selectedChartChangeHandler}
             closeModal={this.closeParamDefinitionModal}
             showModal={this.state.showParamDefModal}
             parameters={parameters}/>

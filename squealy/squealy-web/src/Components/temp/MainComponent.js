@@ -42,8 +42,7 @@ export default class MainComponent extends Component {
       </div>
     )
 
-    const {
-      charts, chartAdditionHandler, chartDeletionHandler,
+    const { charts, chartAdditionHandler, chartDeletionHandler,
       chartSelectionHandler, selectedChartIndex, googleDefined,
       selectedChartChangeHandler, onHandleTestButton, parameters} = this.props
     return (
@@ -56,7 +55,8 @@ export default class MainComponent extends Component {
               enableAddChartModal={this.enableAddChartModal} />
           </div>
           <div className="col-md-9 api-design-container">
-            <ApiDesignView chart={charts[selectedChartIndex]}
+            <ApiDesignView 
+              chart={charts[selectedChartIndex]}
               selectedChartChangeHandler={selectedChartChangeHandler}
               selectedChartIndex={selectedChartIndex}
               googleDefined={googleDefined}

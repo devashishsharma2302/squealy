@@ -152,7 +152,8 @@ export default class AuthoringInterfaceContainer extends Component {
           chartAdditionHandler={this.chartAdditionHandler}
           chartSelectionHandler={this.chartSelectionHandler}
           chartDeletionHandler={this.chartDeletionHandler}
-          selectedChartChangeHandler={this.selectedChartChangeHandler} />
+          selectedChartChangeHandler={this.selectedChartChangeHandler} 
+          />
       </div>
     )
   }

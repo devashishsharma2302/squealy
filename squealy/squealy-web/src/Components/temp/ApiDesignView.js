@@ -15,6 +15,7 @@ export default class ApiDesignView extends Component {
       <div>
         <div className="col-md-12 tabs-container">
           <TabsComponent 
+            selectedChartChangeHandler={selectedChartChangeHandler}
             transformations={chart.transformations} 
             onHandleTestButton={onHandleTestButton}
             parameters={chart.parameters}/>
