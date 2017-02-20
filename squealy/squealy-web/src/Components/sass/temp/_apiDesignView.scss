@@ -19,3 +19,13 @@
 .response-table {
   height: 200px;
 }
+
+tr.editable-table-row {
+  td input {
+    border: 1px solid $white-color;
+  }
+
+  td input:hover, td input:focus {
+    border: 1px solid $border-color;
+  }
+}

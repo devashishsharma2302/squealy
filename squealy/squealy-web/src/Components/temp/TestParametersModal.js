@@ -51,12 +51,12 @@ export default class TestParametersModal extends Component {
   render () {
     const {testParameters, selectedChartChangeHandler} = this.props
     const testParametersHTML = 
-      <table className="table table-bordered">
+      <table className="table">
         <thead>
           <tr>
             <th>Parameters</th>
             <th>Value</th>
-            <th onClick={this.addTestParam}>
+            <th onClick={this.addTestParam} className="clickable-element">
               <i className="fa fa-plus"></i>
             </th>
           </tr>
@@ -65,7 +65,7 @@ export default class TestParametersModal extends Component {
           {
             Object.keys(testParameters).map((key) => {
               return (
-                <tr key={key}>
+                <tr key={key} className="editable-table-row">
                   <td>
                     <input defaultValue={key} onBlur={(e) => this.updateTestParametersKey(e, key)}
                       placeholder='Enter Key' />
@@ -74,8 +74,8 @@ export default class TestParametersModal extends Component {
                     <input defaultValue={testParameters[key]} placeholder='Enter Value'
                       onBlur={(e) => this.updateTestParametersValue(e, key)} />
                   </td>
-                  <td onClick={() => this.removeTestParameters(key)}>
-                    <i className="fa fa-trash"/>
+                  <td onClick={() => this.removeTestParameters(key)} className="clickable-element">
+                    <i className="fa fa-trash-o"/>
                   </td>
                 </tr>
               )

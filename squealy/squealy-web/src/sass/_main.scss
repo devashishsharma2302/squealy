@@ -35,6 +35,10 @@ body {
   height: inherit;
 }
 
+.clickable-element {
+  cursor: pointer;
+}
+
 select {
   min-width: 119px;
   padding: 5px;

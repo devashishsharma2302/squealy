@@ -151,7 +151,7 @@ export default class ParamDefinitionModal extends Component {
             <tr>
               <th>Name</th>
               <th>Format/Path</th>
-              <th className="add-new">
+              <th className="align-center clickable-element">
                 <i className="fa fa-plus"
                   aria-hidden="true" data-toggle="modal"
                   onClick={this.addParamDefHandler}>
@@ -172,8 +172,10 @@ export default class ParamDefinitionModal extends Component {
                           <td>{param.customParamPath}</td>
                           : <td>{param.paramFormat}</td>
                       }
-                      <td><i className="fa fa-trash-o" aria-hidden="true" 
-                        onClick={() => this.deleteEntry(i, 'paramDefinition')} /></td>
+                      <td className="align-center clickable-element">
+                        <i className="fa fa-trash-o" aria-hidden="true" 
+                        onClick={() => this.deleteEntry(i, 'paramDefinition')} />
+                      </td>
                     </tr>
                   )
                 })

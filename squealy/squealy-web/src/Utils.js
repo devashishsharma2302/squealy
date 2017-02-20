@@ -363,7 +363,7 @@ function execRegexGroupedMulValues(regex, text, result) {
 
 
 
-export function fetchApiParamsFromQuery(text) {
+export function fetchQueryParamsFromQuery(text) {
   let regExpForParams = /{{\s*params\.([^\s}%]+)\s*}}/g,
       regExpForExp = /{%[^(%})]*params\.([^\s}%]+)[^({%)]*%}/g,
       paramsArray = []
@@ -375,17 +375,17 @@ export function fetchApiParamsFromQuery(text) {
   return paramsArray
 }
 
-export function fetchSessionParamsFromQuery(text) {
-  let regExpForParams = /{{\s*user\.([^\s}%]+)\s*}}/g,
-      regExpForExp = /{%[^(%})]*user\.([^\s}%]+)[^({%)]*%}/g,
-      paramsArray = []
+// export function fetchSessionParamsFromQuery(text) {
+//   let regExpForParams = /{{\s*user\.([^\s}%]+)\s*}}/g,
+//       regExpForExp = /{%[^(%})]*user\.([^\s}%]+)[^({%)]*%}/g,
+//       paramsArray = []
 
 
-  paramsArray = execRegexGroupedMulValues(regExpForParams, text, paramsArray)
-  paramsArray = execRegexGroupedMulValues(regExpForExp, text, paramsArray)
+//   paramsArray = execRegexGroupedMulValues(regExpForParams, text, paramsArray)
+//   paramsArray = execRegexGroupedMulValues(regExpForExp, text, paramsArray)
 
-  return paramsArray
-}
+//   return paramsArray
+// }
 
 export function isJsonString(str) {
     try {

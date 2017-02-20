@@ -22,7 +22,9 @@ export default class ApiDesignView extends Component {
             testParameters={chart.testParameters}/>
         </div>
         <div className="col-md-12">
-          <QueryEditor query={chart.query} 
+          <QueryEditor 
+            query={chart.query} 
+            testParameters={chart.testParameters}
             selectedChartChangeHandler={selectedChartChangeHandler} />
         </div>
         <div className="col-md-12">

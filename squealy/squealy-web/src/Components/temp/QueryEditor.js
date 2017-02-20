@@ -3,13 +3,14 @@ import AccordionTab from './AccordionTab'
 import AceEditor from 'react-ace'
 import 'brace/mode/sql'
 import 'brace/theme/tomorrow'
+import { fetchQueryParamsFromQuery } from './../../Utils'
 
 export default class QueryEditor extends Component {
  
   constructor(props) {
     super(props)
     this.state = {
-      editorContent: props.query?props.query:'SELECT ...'
+      editorContent: props.query ? props.query : 'SELECT ...'
     }
   }
 
@@ -17,34 +18,22 @@ export default class QueryEditor extends Component {
     this.setState({editorContent: text})
   }
 
-   onBlur = () => {
+   onBlurHandler = () => {
     const {selectedChartChangeHandler} = this.props
-    let {editorContent} = this.state
-    //   newApiParams = Object.assign({}, apiParams),
-    //   apiParamArray = fetchApiParamsFromQuery(editorContent),
-    //   sessionParamArray = fetchSessionParamsFromQuery(editorContent)
+    let {editorContent} = this.state,
+      currentTestParams = Object.assign({}, this.props.testParameters),
+      testParamArray = fetchQueryParamsFromQuery(editorContent)
 
 
-    // //Update new params in Test Parameter if query has new param added
-    // apiParamArray.map((param) => {
-    //   if (!newApiParams.hasOwnProperty('params')) {
-    //     newApiParams.params = {}
-    //   }
-    //   if (param && !newApiParams.params.hasOwnProperty(param)) {
-    //     newApiParams.params[param] = ''
-    //   }
-    // })
-
-    // sessionParamArray.map((param) => {
-    //   if (!newApiParams.hasOwnProperty('session')) {
-    //     newApiParams.session = {}
-    //   }
-    //   if (param && !newApiParams.session.hasOwnProperty(param)) {
-    //     newApiParams.session[param] = ''
-    //   }
-    // })
-    // onChangeTestData(newApiParams)
-    // //Update sql query in selected api definition
+    //Generate parameters in testParameters
+    testParamArray.map((param) => {
+      if (param && !currentTestParams.hasOwnProperty(param)) {
+        currentTestParams[param] = ''
+      }
+    })
+    selectedChartChangeHandler('testParameters', currentTestParams)
+    
+    //Update sql query in selected chart definition
     selectedChartChangeHandler('query', editorContent)
   }
 
@@ -75,7 +64,7 @@ export default class QueryEditor extends Component {
             value={this.state.editorContent}
             editorProps={{$blockScrolling: true}}
             onChange={this.textChangeHandler}
-            onBlur={this.onBlur}
+            onBlur={this.onBlurHandler}
           />
 
     	</AccordionTab>
