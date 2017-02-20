@@ -70,8 +70,9 @@ export default class AuthoringInterfaceContainer extends Component {
       config: {
         query: this.state.charts[this.state.selectedChartIndex].query
       },
+      params: this.state.charts[this.state.selectedChartIndex].testParameters,
       transformations: this.state.charts[this.state.selectedChartIndex].transformations,
-      params: this.state.charts[this.state.selectedChartIndex].parameters
+      parameters: this.state.charts[this.state.selectedChartIndex].parameters
     } 
     postApiRequest(DOMAIN_NAME+'test/', payloadObj,
                     this.onSuccessTest, this.onErrorTest, 'table')

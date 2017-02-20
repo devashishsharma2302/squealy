@@ -4,7 +4,7 @@ import { PARAM_FORMAT_OPTIONS } from './../../Constant'
 import { getEmptyParamDefinition } from './../../Utils'
 
 
-export default class ParamDefinitionModalWrapper extends Component {
+export default class ParamDefinitionModal extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -49,7 +49,6 @@ export default class ParamDefinitionModalWrapper extends Component {
   }
 
   onChangeParamHandler = (key, value) => {
-    console.log(key, value)
     let currentParamDefinition = Object.assign({}, this.state.paramDefinition)
     currentParamDefinition[key] = value
     this.setState({paramDefinition: currentParamDefinition})
@@ -185,16 +184,14 @@ export default class ParamDefinitionModalWrapper extends Component {
         {this.state.showParamDefForm && addParamDefFormHTML}
       </div>
     return (
-      <div>
-        <SquealyModal
-          bsSize={'large'}
-          modalId='addParameterDefModal'
-          closeModal={this.props.closeModal}
-          showModal={this.props.showModal}
-          modalHeader='Add Parameters Definition'
-          modalContent={paramDefinitionHTML}
-          noFooter={true} />
-      </div>
+      <SquealyModal
+        bsSize={'large'}
+        modalId='addParameterDefModal'
+        closeModal={this.props.closeModal}
+        showModal={this.props.showModal}
+        modalHeader='Add Parameters Definition'
+        modalContent={paramDefinitionHTML}
+        noFooter={true} />
     )
   }
 }

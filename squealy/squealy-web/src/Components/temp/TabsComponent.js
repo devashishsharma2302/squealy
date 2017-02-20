@@ -2,13 +2,15 @@ import React, { Component } from 'react'
 import { SplitButton, MenuItem, Button } from 'react-bootstrap'
 import NotificationBadge from 'react-notification-badge'
 import { Effect } from 'react-notification-badge'
-import ParamDefinitionModalWrapper from './ParamDefinitionModalWrapper'
+import ParamDefinitionModal from './ParamDefinitionModal'
+import TestParametersModal from './TestParametersModal'
 
 export default class TabsComponent extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      showParamDefModal: false
+      showParamDefModal: false,
+      showTestParamModal: false
     }
   }
 
@@ -20,12 +22,20 @@ export default class TabsComponent extends Component {
     this.setState({showParamDefModal: false})
   }
 
+  showTestParamModalHandler = () => {
+    this.setState({showTestParamModal: true})
+  }
+
+  closeTestParamModalHandler = () => {
+    this.setState({showTestParamModal: false})
+  }
+
   render() {
-    const { transformations, onHandleTestButton, parameters, selectedChartChangeHandler} = this.props
+    const { transformations, onHandleTestButton, parameters, testParameters, selectedChartChangeHandler} = this.props
     return (
       <div>
         <SplitButton bsStyle='success' title='Run' id='run-button' onClick={onHandleTestButton}>
-          <MenuItem eventKey='1'>Update Test Parameters</MenuItem>
+          <MenuItem eventKey='1' onClick={this.showTestParamModalHandler}>Update Test Parameters</MenuItem>
           <MenuItem divider />
           <MenuItem eventKey='2' onClick={this.showParamDefinitionModal}>Parameter Definitions</MenuItem>
         </SplitButton>
@@ -38,11 +48,19 @@ export default class TabsComponent extends Component {
         <Button bsStyle='primary' className='tab-component'>Export {'</>'}</Button>
         {
           this.state.showParamDefModal && 
-          <ParamDefinitionModalWrapper
+          <ParamDefinitionModal
             selectedChartChangeHandler={selectedChartChangeHandler}
             closeModal={this.closeParamDefinitionModal}
             showModal={this.state.showParamDefModal}
             parameters={parameters}/>
+        }
+        {
+          this.state.showTestParamModal && 
+          <TestParametersModal
+            selectedChartChangeHandler={selectedChartChangeHandler}
+            closeModal={this.closeTestParamModalHandler}
+            showModal={this.state.showTestParamModal}
+            testParameters={testParameters}/>
         }
       </div>
     )
