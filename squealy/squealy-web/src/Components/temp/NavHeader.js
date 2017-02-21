@@ -8,7 +8,7 @@ import logo from '../../images/logo.png'
 export default class NavBar extends Component {
   render() {
     return (
-      <Navbar bsStyle='default' fluid>
+      <Navbar fluid>
         <Navbar.Header>
           <Navbar.Brand>
             <a href="/">

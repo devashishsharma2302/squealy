@@ -12,10 +12,15 @@
 @import './../Components/sass/temp/sideMenu.scss';
 @import './../Components/sass/temp/modal';
 @import './../Components/sass/temp/apiDesignView.scss';
+@import './../Components/sass/temp/navBar.scss';
 
 html, body, #root {
   height: 100%;
   font-family: Roboto;
+}
+
+.full-height {
+  height: 100%
 }
 
 body {
@@ -27,7 +32,7 @@ body {
 
 .active {
   background-color: $light_gray_color !important;
-  border-color: $border_color !important;
+  border-color: $border-color !important;
   color: $black_color !important;
 }
 
@@ -42,7 +47,7 @@ body {
 select {
   min-width: 119px;
   padding: 5px;
-  border: 1px solid $border_color;
+  border: 1px solid $border-color;
   background: white;
   border-radius: 4px;
 }
@@ -51,7 +56,7 @@ input[type='text'] {
   padding: 7px;
   min-width: 200px;
   border-radius: 4px;
-  border: 1px solid $border_color;
+  border: 1px solid $border-color;
 }
 
 .modal-body {
@@ -59,6 +64,10 @@ input[type='text'] {
   overflow: auto;
   max-height: 68vh;
   max-width: 100%;
+}
+
+button {
+  outline: none !important;
 }
 
 /*Scrollbar styles*/
@@ -124,9 +133,6 @@ input[type='text'] {
 }
 
 /*Overriding bootstrap CSS*/
-.navbar {
-  margin: 0 -15px;
-}
 
 h3 {
   margin: 10px 0;
@@ -134,10 +140,6 @@ h3 {
 
 .Select-menu-outer {
   z-index: 10 !important;
-}
-
-.nav-tabs > li > a {
-  padding: 6px 15px;
 }
 
 input[type='radio'] {
@@ -154,36 +156,10 @@ h2, .h2 {
   font-size: 20px;
 }
 
-.navbar-brand {
-  padding: 6px 15px;
-  > a {
-    font-size: 29px;
-    margin-bottom: 3px;
-    color: #5e5e5e;
-    background-color: transparent;
-    text-decoration: none !important;
-  }
-  > p {
-    font-size: 13px;
-    color: #3f51b5;
-    font-weight: 600;
-    font-style: italic;
-  }
-}
-
-.navbar {
-  min-height: 10%;
-  padding: 3px;
-}
-
 .caret {
   border-top: 5px solid;
   border-right: 5px solid transparent;
   border-left: 5px solid transparent;
-}
-
-.navbar-default .navbar-nav > li > a {
-  font-size: 17px;
 }
 
 label {
@@ -223,4 +199,45 @@ a[aria-selected="true"] > div.api-tab > div.dropdown {
   border-radius: 2px;
   width: 100%;
 }
+
+.nav-tabs {
+  border-bottom: none;
+  li > a {
+    color: $text-color;
+    opacity: 0.6;
+    font-size: 15px;
+    font-weight: bold;
+  }
+
+  .active {
+    background-color: $white-color !important;
+  }
+}
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+  background-color: #fff;
+  border: none;
+  border-bottom: 3px solid $squealy-theme-blue;
+  opacity: 1;
+}
+
+.btn-primary {
+  background: $squealy-theme-blue;
+  border-color: $squealy-theme-blue;
+}
+
+.btn-primary:hover, .btn-primary:active {
+  background: $squealy-theme-blue-active;
+  border-color: $squealy-theme-blue-active;
+}
+
+.btn-success {
+  background: $squealy-success;
+  border-color: $squealy-success;
+}
+
+.btn-success:hover, .btn-success:focus {
+  background: $squealy-success-active;
+  border-color: $squealy-success-active;  
+}
+
 

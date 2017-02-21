@@ -46,7 +46,7 @@ export default class MainComponent extends Component {
       chartSelectionHandler, selectedChartIndex, googleDefined,
       selectedChartChangeHandler, onHandleTestButton, parameters} = this.props
     return (
-      <div>
+      <div className="full-height">
         <NavHeader />
         <div className="row side-menu-container">
           <div className="col-md-3 side-menu-parent">

@@ -4,6 +4,10 @@ import NotificationBadge from 'react-notification-badge'
 import { Effect } from 'react-notification-badge'
 import ParamDefinitionModal from './ParamDefinitionModal'
 import TestParametersModal from './TestParametersModal'
+import transformationIcon from './../../images/transformations_icon.png'
+import validationIcon from './../../images/validation_icon.png'
+import exportIcon from './../../images/export_icon.png'
+
 
 export default class TabsComponent extends Component {
   constructor(props) {
@@ -34,18 +38,21 @@ export default class TabsComponent extends Component {
     const { transformations, onHandleTestButton, parameters, testParameters, selectedChartChangeHandler} = this.props
     return (
       <div>
-        <SplitButton bsStyle='success' title='Run' id='run-button' onClick={onHandleTestButton}>
+        <SplitButton className="run-btn-group" bsStyle='success' title='Run' id='run-button' onClick={onHandleTestButton}>
           <MenuItem eventKey='1' onClick={this.showTestParamModalHandler}>Update Test Parameters</MenuItem>
           <MenuItem divider />
           <MenuItem eventKey='2' onClick={this.showParamDefinitionModal}>Parameter Definitions</MenuItem>
         </SplitButton>
-        <Button bsStyle='primary' className='tab-component'>Validations</Button>
-        <Button bsStyle='primary' className='tab-component'>Transformations
+        <Button bsStyle='primary' className='tab-component'>
+          <img src={validationIcon} alt="squealyValidation"/>Validations</Button>
+        <Button bsStyle='primary' className='tab-component'>
+          <img src={transformationIcon} alt="transformationIcon"/>Transformations
           <NotificationBadge count={transformations.length} 
             effect={[null, null, null, null]} 
             className='transformations-count-badge' />
         </Button>
-        <Button bsStyle='primary' className='tab-component'>Export {'</>'}</Button>
+        <Button bsStyle='primary' className='tab-component'>
+          <img src={exportIcon} alt="exportIcon"/>Export</Button>
         {
           this.state.showParamDefModal && 
           <ParamDefinitionModal

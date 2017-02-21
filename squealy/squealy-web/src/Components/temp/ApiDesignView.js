@@ -12,7 +12,7 @@ export default class ApiDesignView extends Component {
     } = this.props
 
     return (
-      <div>
+      <div className="full-height">
         <div className="col-md-12 tabs-container">
           <TabsComponent 
             selectedChartChangeHandler={selectedChartChangeHandler}

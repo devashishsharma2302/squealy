@@ -91,15 +91,14 @@
 
 .param-heading {
   display: inline-block;
-  color: $black-color;
   margin-top: 13px;
   margin-bottom: 13px;
 }
 
 .param-heading-icon {
   float: right ;
-  color: $black-color;
-  font-size: 1.5em !important;
+  color: $text-color;
+  font-weight: bold !important;
   margin-top: 13px;
 }
 

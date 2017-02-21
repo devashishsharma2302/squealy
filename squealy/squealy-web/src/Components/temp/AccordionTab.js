@@ -6,18 +6,18 @@ export default class AccordionTab extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      accordionHeaderIcon: 'fa-caret-down'
+      accordionHeaderIcon: 'fa-angle-down'
     }
   }
 
   handleAccordionFadeOut = () => {
     this.setState({
-      accordionHeaderIcon: 'fa-caret-right'
+      accordionHeaderIcon: 'fa-angle-right'
     })
   }
 
   handleAccordionFadeIn = () => {
-    this.setState({accordionHeaderIcon: 'fa-caret-down'})
+    this.setState({accordionHeaderIcon: 'fa-angle-down'})
   }
 
   render() {

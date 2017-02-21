@@ -11,7 +11,6 @@ export default class ParamDefinitionModal extends Component {
       showParamDefForm: false,
       selectedValue: 'dateTime',
       query: '',
-      isParamDefCustom: false,
       paramDefinition: getEmptyParamDefinition()
     }
   }
@@ -35,7 +34,6 @@ export default class ParamDefinitionModal extends Component {
     let currentParamDefinition = Object.assign({}, this.state.paramDefinition)
     currentParamDefinition['paramFormat'] = value ? 'custom' : this.state.selectedValue
     this.setState({
-      isParamDefCustom: value,
       selectedValue: currentParamDefinition.paramFormat,
       paramDefinition: currentParamDefinition
     })
@@ -55,11 +53,14 @@ export default class ParamDefinitionModal extends Component {
   }
 
   handleEditParam = (index) => {
-    let currentParamDefinition = Object.assign({}, this.props.parameters[index])
-    this.setState({
-      selectedValue: currentParamDefinition.paramFormat,
-      paramDefinition: currentParamDefinition
+    this.setState({ showParamDefForm: true }, () => {
+      let currentParamDefinition = Object.assign({}, this.props.parameters[index])
+      this.setState({
+        selectedValue: currentParamDefinition.paramFormat,
+        paramDefinition: currentParamDefinition
+      })
     })
+    
   }
 
   deleteEntry = (index, fieldName) => {
@@ -81,41 +82,21 @@ export default class ParamDefinitionModal extends Component {
     const addParamDefFormHTML =
       <div className="modal-container">
         <div className='row add-modal-content'>
-          <div className="validation-options">
-            <label className='radio-inline'>
-              <input type="radio" checked={!this.state.isParamDefCustom}
-                onChange={() => { this.onChangeParamDefType(false) }} />Pre Defined
-            </label>
-            <label className='radio-inline'>
-              <input type='radio' checked={this.state.isParamDefCustom}
-                onChange={() => { this.onChangeParamDefType(true) }} />Custom
-            </label>
-          </div>
-
           <div className='col-md-12'>
             <label htmlFor='paramName' className='col-md-4'>Name: </label>
             <input type='text' name='paramName' value={this.state.paramDefinition.paramName} 
               onChange={(e) => this.onChangeParamHandler('paramName', e.target.value)} />
           </div>
+          <div className='col-md-12'>
+            <label htmlFor='paramFormat' className='col-md-4'>Type: </label>
+            <SquealyDropdown
+              options={PARAM_FORMAT_OPTIONS}
+              name='paramFormat'
+              onChangeHandler={this.paramFormatSelectionHandler}
+              selectedValue={this.state.selectedValue} />
+          </div>
           {
-            this.state.isParamDefCustom ? <div className='col-md-12'>
-              <label htmlFor='customParamPath' className='col-md-4'>Custom Param Definition Path: </label>
-              <input type='text' name='customParamPath' 
-                value={this.state.paramDefinition.customParamPath} 
-                onChange={(e) => this.onChangeParamHandler('customParamPath', e.target.value)} />
-            </div> :
-              <div className='col-md-12'>
-                <label htmlFor='paramFormat' className='col-md-4'>Format: </label>
-                <SquealyDropdown
-                  options={PARAM_FORMAT_OPTIONS}
-                  name='paramFormat'
-                  onChangeHandler={this.paramFormatSelectionHandler}
-                  selectedValue={this.state.selectedValue} />
-              </div>
-          }
-          {
-            (!this.state.isParamDefCustom && 
-              (this.state.selectedValue === 'dateTime' || this.state.selectedValue === 'date')) 
+            (this.state.selectedValue === 'dateTime' || this.state.selectedValue === 'date') 
                 ? <div className='col-md-12'>
               <label htmlFor='selectedValueFormat' className='col-md-4'>Date/DateTime Format: </label>
               <input type='text' name='selectedValueFormat' 
@@ -150,7 +131,7 @@ export default class ParamDefinitionModal extends Component {
           <thead>
             <tr>
               <th>Name</th>
-              <th>Format/Path</th>
+              <th>Type</th>
               <th className="align-center clickable-element">
                 <i className="fa fa-plus"
                   aria-hidden="true" data-toggle="modal"
@@ -167,11 +148,7 @@ export default class ParamDefinitionModal extends Component {
                     <tr key={'param_row_' + i}>
                       <td onClick={() => this.handleEditParam(i)}
                         className='param-name'>{param.paramName}</td>
-                      {
-                        param.paramFormat === 'custom' ?
-                          <td>{param.customParamPath}</td>
-                          : <td>{param.paramFormat}</td>
-                      }
+                      <td>{param.paramFormat}</td>
                       <td className="align-center clickable-element">
                         <i className="fa fa-trash-o" aria-hidden="true" 
                         onClick={() => this.deleteEntry(i, 'paramDefinition')} />

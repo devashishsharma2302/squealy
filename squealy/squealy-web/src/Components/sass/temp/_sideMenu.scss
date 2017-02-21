@@ -7,42 +7,53 @@
   height: 100%;
   .side-menu-parent {
     height: 100%;
+    padding-top: 15px;
+    background: $light-gray-color
   }
   .chart-list {
+    margin-bottom: 25px;
     ul {
       list-style: none;
       padding: 0;
     }
     .selected-chart {
-      background: #eee;
+      text-decoration: underline;
+      font-weight: bold;
     }
     li {
       margin-top: 2%;	
       margin-right: 15px;
-      text-indent: 40px;
+      text-indent: 50px;
       height: 25px;
       padding-top: 4px;
       span {
         cursor: pointer;
       }
+      span:hover {
+        color: $squealy-theme-blue;	
+        text-decoration: underline;
+        font-weight: bold;
+      }
     }
   }
 
   .side-menu-heading {
-    width: 95%;
-    border-bottom: 2px solid $border-color;
+    width: 93%;
     span {
       margin-left: 20px;
       font-size: $side-menu-heading-font-size;
       color: $text-color;
+      font-family: Roboto Bold;
     }
-    .chart-icon {
-      margin-left: 10px;
-      color: $text-color;	
+    img {
+      width: 25px;
     }
     .add-new {
       float: right;
       right: 0;
+      cursor: pointer;
+      color: $squealy-theme-blue;
+      font-size: 20px;
     }
   }
 }
