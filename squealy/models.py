@@ -28,7 +28,7 @@ class Chart(models.Model):
     name = models.CharField(max_length=50)
     # To accommodate custom formatting function paths too.
     format = models.CharField(max_length=50,
-                              default="SimpleFormatter")
+                              default="GoogleChartsFormatter")
     type = models.CharField(max_length=20, default="ColumnChart")
     options = fields.JSONField(null=True, blank=True)
 

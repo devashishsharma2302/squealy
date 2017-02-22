@@ -1,4 +1,4 @@
-from .table import Column, Table
+from .table import Table
 
 
 class TableTransformer(object):
@@ -66,7 +66,8 @@ class Merge(TableTransformer):
         """
         Returns table objects with merged columns and data
         """
-        cur_columns = table.columns_to_str()
+        print table
+        cur_columns = table.columns
         columns_to_merge_index = [cur_columns.index(column) for column in columns_to_merge]
         data = []
         for index,row in enumerate(table.data):
@@ -85,7 +86,7 @@ class Merge(TableTransformer):
         new_columns = []
 
         for column in table.columns:
-            if column.name not in columns_to_merge:
+            if column not in columns_to_merge:
                 new_columns.append(column)
-        new_columns.append(Column(new_column_name, 'string', 'dimension'))
+        new_columns.append(new_column_name)
         return Table(new_columns, data)

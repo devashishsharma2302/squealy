@@ -20,7 +20,7 @@ from .transformers import *
 from .formatters import *
 from .parameters import *
 from .utils import SquealySettings
-from .table import Table, Column
+from .table import Table
 from .models import *
 from .validators import run_validation
 
