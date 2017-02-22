@@ -1,9 +1,10 @@
 import React, {Component} from 'react'
 import MainComponent from '../../Components/temp/MainComponent'
 import {
-  getEmptyApiDefinition,
-} from '../../Utils'
+  getEmptyApiDefinition, postApiRequest
+} from './../../Utils'
 import mockCharts from './mockCharts'
+import { DOMAIN_NAME } from './../../Constant'
 
 export default class AuthoringInterfaceContainer extends Component {
   constructor(props) {
@@ -18,8 +19,7 @@ export default class AuthoringInterfaceContainer extends Component {
 
   initializeState = () => {
     if (!this.state.charts.length) {
-      let charts =mockCharts
-      //let charts = [getEmptyApiDefinition()]
+      let charts = [getEmptyApiDefinition()]
       this.setState({charts: charts, selectedChartIndex: 0})
     }
   }
@@ -54,11 +54,30 @@ export default class AuthoringInterfaceContainer extends Component {
     this.setState({apiError: true, apiErrorMsg: error})
   }
 
+  onSuccessTest = (data) => {
+    let currentChartData = [...this.state.charts]
+    currentChartData[this.state.selectedChartIndex]['chartData'] = data
+    this.setState({charts: currentChartData})
+  }
+
+  onErrorTest = (errorLog) => {
+    console.log(errorLog)
+  }
+
   onHandleTestButton = () => {
     //TODO: make API POST call
-
-    // let tempParam = this.state.testData[this.state.selectedApiIndex].apiParams || {}
-    // let paramObj = {}
+    let payloadObj = {
+      config: {
+        query: this.state.charts[this.state.selectedChartIndex].query
+      },
+      params: this.state.charts[this.state.selectedChartIndex].testParameters,
+      transformations: this.state.charts[this.state.selectedChartIndex].transformations,
+      parameters: this.state.charts[this.state.selectedChartIndex].parameters
+    } 
+    postApiRequest(DOMAIN_NAME+'test/', payloadObj,
+                    this.onSuccessTest, this.onErrorTest, 'table')
+    //let tempParam = this.state.testData[this.state.selectedApiIndex].apiParams || {}
+    //let paramObj = {}
     // try {
     //   paramObj = typeof tempParam === 'string' ? JSON.parse(tempParam) : tempParam
     // } catch (e) {
@@ -122,16 +141,20 @@ export default class AuthoringInterfaceContainer extends Component {
   }
 
   render () {
-    const { charts, selectedChartIndex } = this.state
+    const { charts, selectedChartIndex, parameters} = this.state
     const { googleDefined } = this.props
     return (
       <div className="parent-div container-fluid">
-        <MainComponent charts={charts} selectedChartIndex={selectedChartIndex}
-                       googleDefined={googleDefined} chartAdditionHandler={this.chartAdditionHandler}
-                       chartSelectionHandler={this.chartSelectionHandler}
-                       chartDeletionHandler = {this.chartDeletionHandler}
-                       selectedChartChangeHandler={this.selectedChartChangeHandler}
-                       />
+        <MainComponent 
+          charts={charts}
+          onHandleTestButton={this.onHandleTestButton}
+          selectedChartIndex={selectedChartIndex}
+          googleDefined={googleDefined}
+          chartAdditionHandler={this.chartAdditionHandler}
+          chartSelectionHandler={this.chartSelectionHandler}
+          chartDeletionHandler={this.chartDeletionHandler}
+          selectedChartChangeHandler={this.selectedChartChangeHandler} 
+          />
       </div>
     )
   }

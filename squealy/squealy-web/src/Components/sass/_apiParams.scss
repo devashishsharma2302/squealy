@@ -1,5 +1,5 @@
 .param-definition-section {
-  border-bottom: 1px solid $border_color;
+  border-bottom: 1px solid $border-color;
   margin-bottom: 26px;
   .panel-group {
     margin-bottom: 0;
@@ -11,10 +11,17 @@
   min-width: 20%;
 }
 
-.add-modal-content > div {
-  margin: 10px 0;
-  > label {
-    font-size: 17px;
+.add-modal-content{
+  border: 1px solid $light-gray-color;
+  > div {
+    margin: 10px 0;
+    > label {
+      font-size: 14px;
+    }
+  }
+  .param-form-footer button {
+    float: right;
+    margin: 5px;
   }
 }
 
@@ -25,7 +32,7 @@
 }
 
 .api-param-def-table {
-  border: 1px solid $light_gray_color;
+  border: 1px solid $light-gray-color;
 
   > tbody > tr {
     > td > i.fa-trash-o {
@@ -35,7 +42,7 @@
 
     > td > i.fa-trash-o:hover {
       opacity: 1;
-      color: $orange_color;
+      color: $orange-color;
     }
   } 
 }
@@ -45,7 +52,7 @@
   max-height: 100%;
   overflow: auto;
   > table {
-    border: 1px solid $light_gray_color;
+    border: 1px solid $light-gray-color;
     > tfoot > tr > td.add-validation-button > div {
       float: right;
       > i {
@@ -64,7 +71,7 @@
 
 .add-validation-form {
   padding: 10px;
-  border: 1px solid $light_gray_color;
+  border: 1px solid $light-gray-color;
   > div {
     margin: 5px;
   }
@@ -74,7 +81,7 @@
   > h4 {
     font-weight: bold;
     padding-bottom: 10px;
-    border-bottom: 1px solid $light_gray_color;
+    border-bottom: 1px solid $light-gray-color;
   }
 }
 
@@ -84,15 +91,14 @@
 
 .param-heading {
   display: inline-block;
-  color: $black_color;
   margin-top: 13px;
   margin-bottom: 13px;
 }
 
 .param-heading-icon {
   float: right ;
-  color: $black_color;
-  font-size: 1.5em !important;
+  color: $text-color;
+  font-weight: bold !important;
   margin-top: 13px;
 }
 
@@ -101,5 +107,13 @@
   margin-bottom: 13px;
   > label.radio-inline {
     padding-right: 64px;
+    > input[type="radio"] {
+      margin-top: 0px;
+    }
   }
 }
+
+.align-center {
+  text-align: center;
+}
+

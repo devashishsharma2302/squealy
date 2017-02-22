@@ -1,8 +1,6 @@
 import React, {Component} from 'react'
 import { RESPONSE_FORMATS, PARAM_FORMAT_OPTIONS, COLUMN_TYPE } from '../Constant'
-import ReactTable from 'react-table'
 import Select from 'react-select'
-import 'react-table/react-table.css'
 import {Modal} from 'react-bootstrap'
 
 export class QueryResponseTable extends Component {

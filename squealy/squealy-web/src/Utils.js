@@ -27,7 +27,9 @@ export function postApiRequest(uri, data, onSuccessCallback,
 }
 
 export function baseUrl() {
-  return window.location.origin + '/'
+  //FIXME: Revert these changes before deploying.
+  //return window.location.origin + '/'
+  return 'http://localhost:8000/'
 }
 /**
  * @module Utils
@@ -115,8 +117,8 @@ function getCookie(name) {
 
 export function getEmptyApiDefinition() {
   return {
-    name: '',
-    url: '',
+    name: 'first chart',
+    url: 'first-chart',
     query: '',
     parameters: [],
     testParameters: {},
@@ -178,6 +180,17 @@ export function getDefaultApiDefinition(apiIndex) {
     selectedDB: '',
     permission_classes: [],
     authentication_classes: []
+  }
+}
+
+export function getEmptyParamDefinition(apiIndex) {
+  return {
+    paramName: '',
+    customParamPath: '',
+    paramFormat: 'dateTime',
+    selectedValueFormat: '',
+    mandatoryField: true,
+    defaultValues: ''
   }
 }
 
@@ -350,7 +363,7 @@ function execRegexGroupedMulValues(regex, text, result) {
 
 
 
-export function fetchApiParamsFromQuery(text) {
+export function fetchQueryParamsFromQuery(text) {
   let regExpForParams = /{{\s*params\.([^\s}%]+)\s*}}/g,
       regExpForExp = /{%[^(%})]*params\.([^\s}%]+)[^({%)]*%}/g,
       paramsArray = []
@@ -362,17 +375,17 @@ export function fetchApiParamsFromQuery(text) {
   return paramsArray
 }
 
-export function fetchSessionParamsFromQuery(text) {
-  let regExpForParams = /{{\s*user\.([^\s}%]+)\s*}}/g,
-      regExpForExp = /{%[^(%})]*user\.([^\s}%]+)[^({%)]*%}/g,
-      paramsArray = []
+// export function fetchSessionParamsFromQuery(text) {
+//   let regExpForParams = /{{\s*user\.([^\s}%]+)\s*}}/g,
+//       regExpForExp = /{%[^(%})]*user\.([^\s}%]+)[^({%)]*%}/g,
+//       paramsArray = []
 
 
-  paramsArray = execRegexGroupedMulValues(regExpForParams, text, paramsArray)
-  paramsArray = execRegexGroupedMulValues(regExpForExp, text, paramsArray)
+//   paramsArray = execRegexGroupedMulValues(regExpForParams, text, paramsArray)
+//   paramsArray = execRegexGroupedMulValues(regExpForExp, text, paramsArray)
 
-  return paramsArray
-}
+//   return paramsArray
+// }
 
 export function isJsonString(str) {
     try {

@@ -1,0 +1,15 @@
+.modal-container {
+  margin-right: auto;
+  margin-left: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.modal-header {
+  background: $squealy-theme-blue;
+  color: $white-color;
+  .close {
+    opacity: 1;
+    color: $white-color;
+  }
+}
