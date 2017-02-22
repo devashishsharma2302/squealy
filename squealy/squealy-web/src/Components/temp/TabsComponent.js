@@ -4,9 +4,9 @@ import NotificationBadge from 'react-notification-badge'
 import { Effect } from 'react-notification-badge'
 import ParamDefinitionModal from './ParamDefinitionModal'
 import TestParametersModal from './TestParametersModal'
-import transformationIcon from './../../images/transformations_icon.png'
-import validationIcon from './../../images/validation_icon.png'
-import exportIcon from './../../images/export_icon.png'
+import transformationIcon from './../../images/transformations_icon_white.png'
+import validationIcon from './../../images/validation_icon_white.png'
+import exportIcon from './../../images/export_icon_white.png'
 
 
 export default class TabsComponent extends Component {
