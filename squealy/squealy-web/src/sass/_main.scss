@@ -23,6 +23,7 @@ html {
 body, #root {
   min-height: 100vh;
   font-family: Roboto;
+  overflow-y: scroll;
 }
 
 .full-height {
@@ -96,7 +97,7 @@ button {
   background: $primary;
 }
 ::-webkit-scrollbar-track {
-  background: $light_gray_color;
+  background: $white-color;
   border: 0px none $white_color;
   border-radius: 50px;
 }
@@ -240,7 +241,11 @@ a[aria-selected="true"] > div.api-tab > div.dropdown {
   border-color: $squealy-success;
 }
 
-.btn-success:hover, .btn-success:focus {
+.btn-success:hover, .btn-success:focus, 
+.open > .btn-success.dropdown-toggle:hover, 
+.open > .btn-success.dropdown-toggle:focus, 
+.open > .btn-success.dropdown-toggle.focus
+ {
   background: $squealy-success-active;
   border-color: $squealy-success-active;  
 }

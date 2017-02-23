@@ -39,9 +39,13 @@ export default class AuthoringInterfaceContainer extends Component {
     // }
   }
 
-  selectedChartChangeHandler = (key, value, callback=null) => {
-    let charts = JSON.parse(JSON.stringify(this.state.charts))
-    charts[this.state.selectedChartIndex][key] = value
+  selectedChartChangeHandler = (key, value, callback=null, index) => {
+    let charts = JSON.parse(JSON.stringify(this.state.charts)),
+      chartIndex = index ? index : this.state.selectedChartIndex
+    charts[chartIndex][key] = value
+    if (key === 'name') {
+      charts[chartIndex].url = value.replace(/ /g, '-').toLowerCase()
+    }
     this.setState({charts: charts}, ()=>(callback) && callback())
   }
 
@@ -104,25 +108,29 @@ export default class AuthoringInterfaceContainer extends Component {
     //                this.onSuccessTest, this.onErrorTest, format)
   }
 
-  chartDeletionHandler = (index) => {
-    if(this.state.apiDefinition.length > 1) {
+  chartDeletionHandler = (index, callBackFunc) => {
+    if(this.state.charts.length > 1) {
       let charts = JSON.parse(JSON.stringify(this.state.charts))
       charts.splice(index, 1)
       this.setState({
         charts: charts
+      }, () => {
+        callBackFunc.constructor === 'Function' || callBackFunc()
       })
     } else {
-      this.initializeState()
+      this.setState({charts: [getEmptyApiDefinition()], selectedChartIndex: 0}, () => {
+        callBackFunc.constructor === 'Function' || callBackFunc()
+      })
     }
   }
 
   //Appends an empty API definition object to current API Definitions
-  chartAdditionHandler = (name, url) => {
+  chartAdditionHandler = (name) => {
     //TODO: open the addition modal and add the new chart to state also making it the selected chart
     let charts = JSON.parse(JSON.stringify(this.state.charts)),
         newChart = getEmptyApiDefinition()
         newChart.name = name
-        newChart.url = url
+        newChart.url = name.replace(/ /g, '-').toLowerCase()
     charts.push(newChart) 
     this.setState({
       charts: charts
