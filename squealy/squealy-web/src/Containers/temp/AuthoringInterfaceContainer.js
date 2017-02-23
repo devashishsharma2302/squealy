@@ -39,10 +39,10 @@ export default class AuthoringInterfaceContainer extends Component {
     // }
   }
 
-  selectedChartChangeHandler = (key, value) => {
+  selectedChartChangeHandler = (key, value, callback=null) => {
     let charts = JSON.parse(JSON.stringify(this.state.charts))
     charts[this.state.selectedChartIndex][key] = value
-    this.setState({charts: charts})
+    this.setState({charts: charts}, ()=>(callback) && callback())
   }
 
   runSuccessHandler = (response) => {
@@ -72,7 +72,8 @@ export default class AuthoringInterfaceContainer extends Component {
       },
       params: this.state.charts[this.state.selectedChartIndex].testParameters,
       transformations: this.state.charts[this.state.selectedChartIndex].transformations,
-      parameters: this.state.charts[this.state.selectedChartIndex].parameters
+      parameters: this.state.charts[this.state.selectedChartIndex].parameters,
+      validations: this.state.charts[this.state.selectedChartIndex].validations
     } 
     postApiRequest(DOMAIN_NAME+'test/', payloadObj,
                     this.onSuccessTest, this.onErrorTest, 'table')

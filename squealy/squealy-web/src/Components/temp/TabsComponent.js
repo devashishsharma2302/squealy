@@ -27,7 +27,7 @@ export default class TabsComponent extends Component {
   }
 
   render() {
-    const { transformations, onHandleTestButton, parameters, testParameters, selectedChartChangeHandler} = this.props
+    const { transformations, onHandleTestButton, parameters, testParameters, selectedChartChangeHandler, validations} = this.props
     const {
       showValidationsModal,
       showParamDefModal,
@@ -82,7 +82,8 @@ export default class TabsComponent extends Component {
           <ValidationsModal
             selectedChartChangeHandler={selectedChartChangeHandler}
             closeModal={()=>this.modalVisibilityHandler('showValidationsModal')}
-            showModal={showValidationsModal}/>
+            showModal={showValidationsModal}
+            validations={validations}/>
         }
       </div>
     )

@@ -19,7 +19,8 @@ export default class ApiDesignView extends Component {
             transformations={chart.transformations} 
             onHandleTestButton={onHandleTestButton}
             parameters={chart.parameters}
-            testParameters={chart.testParameters}/>
+            testParameters={chart.testParameters}
+            validations={chart.validations}/>
         </div>
         <div className="col-md-12">
           <QueryEditor 
