@@ -34,7 +34,8 @@ export default class ApiDesignView extends Component {
             options={chart.options}
             chartType={chart.chartType}
             selectedChartIndex={selectedChartIndex}
-            googleDefined={googleDefined} />
+            googleDefined={googleDefined}
+            selectedChartChangeHandler={selectedChartChangeHandler} />
         </div>
       </div>
     )

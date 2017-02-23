@@ -45,7 +45,6 @@ export class SquealyDropdown extends Component {
   render () {
     const {name, options, selectedValue, onChangeHandler} = this.props
     return (
-      <div>
         <select value={selectedValue} id='params_type' onChange={(e) => onChangeHandler(e.target.value)}>
           {
             options.map((option, i) => {
@@ -56,7 +55,6 @@ export class SquealyDropdown extends Component {
             })
           }
         </select>
-      </div>
     )
   }
 }
