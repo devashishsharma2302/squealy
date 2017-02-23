@@ -15,7 +15,7 @@ from rest_framework import status
 from jinjasql import JinjaSql
 
 from .exceptions import RequiredParameterMissingException,\
-                        DashboardNotFoundException, ChartNotFoundException
+                        DashboardNotFoundException, ChartNotFoundException, MalformedChartDataException
 from .transformers import *
 from .formatters import *
 from .parameters import *
@@ -124,17 +124,18 @@ class SqlApiView(APIView):
 
     def parse_params(self, params):
         for index, param in enumerate(self.parameters):
+            # Check for missing required parameters
+            mandatory = self.parameters[index].get('mandatory',
+                                                               False)
+            if mandatory and params.get(param['name']) is None:
+                raise RequiredParameterMissingException("Parameter required: " + param['name'])
+
             # Default values
             if self.parameters[index].get('default_value') and\
                     self.parameters[index].get('default_value') != '' and\
                     params.get(param['name']) in [None, '']:
-                params[param.name] = self.parameters[index].get('default_value')
+                params[param['name']] = self.parameters[index].get('default_value')
 
-            # Check for missing required parameters
-            is_parameter_optional = self.parameters[index].get('mandatory',
-                                                               False)
-            if not is_parameter_optional and not params.get(param):
-                raise RequiredParameterMissingException("Parameter required: "+param)
             # Formatting parameters
             parameter_type_str = self.parameters[index].get("data_type", "String")
             kwargs = self.parameters[index].get("kwargs", {})
@@ -281,21 +282,35 @@ class DynamicApiRouter(APIView):
         response = view_class.as_view()(request)
         return response
 
+    '''
+    To save or update chart objects
+    '''
     def post(self, request):
-        file_dir = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
-        filename = SquealySettings.get('YAML_FILE_NAME', 'squealy-api.yaml')
-        file_path = join(file_dir, filename)
-        apis = []
-        if isfile(file_path):
-            with open(file_path) as f:
-                api_config = yaml.load_all(f)
-                for api in api_config:
-                    apis.append(api)
-        new_api = request.data
-        new_api['id'] = len(apis)+1
-        apis.append(new_api)
-        ApiGenerator._save_apis_to_file(apis)
-        return Response({}, status.HTTP_200_OK)
+        try:
+            data = request.data
+            chart_object = Chart(id=data['id'], name=data['name'], url=data['url'], query=data['query'],
+                                 type=data['type'], options=data['options'])
+            chart_object.save()
+            for transformation in data['transformations']:
+                existing_object = Transformation.objects.filter(chart=chart_object,
+                                                                name=transformation['name']).first()
+                id = existing_object.id if existing_object else None
+                transformation_object = Transformation(id=id, name=transformation['name'],
+                                                       kwargs=transformation.get('kwargs', None),chart=chart_object)
+                transformation_object.save()
+
+            for parameter in data['parameters']:
+                existing_object = Parameter.objects.filter(chart=chart_object, name=parameter['name']).first()
+                id = existing_object.id if existing_object else None
+                parameter_object = Parameter(id=id, name=parameter['name'], data_type=parameter['dataType'],
+                                             mandatory=parameter['mandatory'], default_value=parameter['defaultValue'],
+                                             chart=chart_object)
+                parameter_object.save()
+
+
+        except KeyError as e:
+            raise MalformedChartDataException("Key Error - "+ str(e.args))
+        return Response(chart_object.id, status.HTTP_200_OK)
 
 @permission_classes(SquealySettings.get('Authoring_Interface_Permission_Classes', (IsAdminUser, )))
 class DashboardTemplateView(APIView):

@@ -32,13 +32,13 @@ class Transpose(TableTransformer):
 
 class Split(TableTransformer):
 
-    def transform(self, table, pivot_column):
+    def transform(self, table, pivot_column, metric_column):
         """Returns pivot table based on the pivot column"""
         # NOTE:: Split transformation is for single metric. Future implementation for multiple metric
         # Get index of the pivot column
-        pivot_column_index = table.columns_to_str().index(pivot_column)
+        pivot_column_index = table.columns.index(pivot_column)
         # Find the index of the metric column
-        metric_column_index = table.get_col_type().index("metric")
+        metric_column_index = table.columns.index(metric_column)
         new_split_columns = set()
         # Get values of new columns
         for data in table.data:
@@ -56,7 +56,7 @@ class Split(TableTransformer):
         # Delete the metric and pivot column
         del table.columns[metric_column_index]
         del table.columns[pivot_column_index]
-        table.columns = table.columns[:pivot_column_index] + [Column(column,'string','dimension') for column in new_split_columns] + table.columns[pivot_column_index:]
+        table.columns = table.columns[:pivot_column_index] + [column for column in new_split_columns] + table.columns[pivot_column_index:]
         return table
 
 
@@ -66,7 +66,6 @@ class Merge(TableTransformer):
         """
         Returns table objects with merged columns and data
         """
-        print table
         cur_columns = table.columns
         columns_to_merge_index = [cur_columns.index(column) for column in columns_to_merge]
         data = []
