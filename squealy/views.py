@@ -307,9 +307,14 @@ class DynamicApiRouter(APIView):
                                              chart=chart_object)
                 parameter_object.save()
 
+            Validation.objects.filter(chart=chart_object).all().delete()
+            for validation in data['validations']:
+                validation_object = Validation(query=validation['query'], chart=chart_object)
+                validation_object.save()
 
         except KeyError as e:
             raise MalformedChartDataException("Key Error - "+ str(e.args))
+
         return Response(chart_object.id, status.HTTP_200_OK)
 
 @permission_classes(SquealySettings.get('Authoring_Interface_Permission_Classes', (IsAdminUser, )))
