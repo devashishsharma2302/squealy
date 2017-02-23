@@ -49,7 +49,7 @@ class ValidationAdmin(admin.ModelAdmin):
         List display for Validations in Django Admin
     """
     model = Validation
-    list_display = ['chart', 'query']
+    list_display = ['chart', 'name', 'query']
 
 
 admin.site.register(Account, AccountAdmin)

@@ -86,6 +86,7 @@ class Validation(models.Model):
 
     chart = models.ForeignKey(Chart, related_name='validations')
     query = models.TextField()
+    name = models.CharField(max_length=200)
 
     def __unicode__(self):
         return self.chart.name

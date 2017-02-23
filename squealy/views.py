@@ -291,6 +291,8 @@ class DynamicApiRouter(APIView):
             chart_object = Chart(id=data['id'], name=data['name'], url=data['url'], query=data['query'],
                                  type=data['type'], options=data['options'])
             chart_object.save()
+
+            transformation_ids = []
             for transformation in data['transformations']:
                 existing_object = Transformation.objects.filter(chart=chart_object,
                                                                 name=transformation['name']).first()
@@ -298,7 +300,10 @@ class DynamicApiRouter(APIView):
                 transformation_object = Transformation(id=id, name=transformation['name'],
                                                        kwargs=transformation.get('kwargs', None),chart=chart_object)
                 transformation_object.save()
+                transformation_ids.append(transformation_object.id)
+            Transformation.objects.filter(chart=chart_object).exclude(id__in=transformation_ids).all().delete()
 
+            parameter_ids = []
             for parameter in data['parameters']:
                 existing_object = Parameter.objects.filter(chart=chart_object, name=parameter['name']).first()
                 id = existing_object.id if existing_object else None
@@ -306,11 +311,18 @@ class DynamicApiRouter(APIView):
                                              mandatory=parameter['mandatory'], default_value=parameter['defaultValue'],
                                              chart=chart_object)
                 parameter_object.save()
+                parameter_ids.append(parameter_object.id)
 
-            Validation.objects.filter(chart=chart_object).all().delete()
+            Parameter.objects.filter(chart=chart_object).exclude(id__in=parameter_ids).all().delete()
+
+            validation_ids = []
             for validation in data['validations']:
-                validation_object = Validation(query=validation['query'], chart=chart_object)
+                existing_object = Validation.objects.filter(chart=chart_object, name=validation['name']).first()
+                id = existing_object.id if existing_object else None
+                validation_object = Validation(id=id, query=validation['query'],name=validation['name'], chart=chart_object)
                 validation_object.save()
+                validation_ids.append(validation_object.id)
+            Validation.objects.filter(chart=chart_object).exclude(id__in=validation_ids).all().delete()
 
         except KeyError as e:
             raise MalformedChartDataException("Key Error - "+ str(e.args))
