@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from jinjasql import JinjaSql
 
+from squealy.serializers import ChartSerializer
 from .exceptions import RequiredParameterMissingException,\
                         DashboardNotFoundException, ChartNotFoundException, MalformedChartDataException
 from .transformers import *
@@ -228,43 +229,54 @@ class DatabaseView(APIView):
             return Response({'tables': tables})
 
 
-class YamlGeneratorView(APIView):
+# class YamlGeneratorView(APIView):
+#     permission_classes = SquealySettings.get_default_permission_classes()
+#     authentication_classes = [SessionAuthentication, BasicAuthentication]
+#     authentication_classes.extend(SquealySettings.get_default_authentication_classes())
+#
+#     def post(self, request, *args, **kwargs):
+#         try:
+#             json_data = request.data.get('yamlData')
+#             ApiGenerator._save_apis_to_file(json_data)
+#             return Response({}, status.HTTP_200_OK)
+#         except Exception as e:
+#             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
+#
+#     def get(self, request, *args, **kwargs):
+#         try:
+#             directory = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
+#             if not os.path.exists(directory):
+#                 os.makedirs(directory)
+#             file_name = SquealySettings.get('YAML_FILE_NAME', 'squealy-api.yaml')
+#             full_path = join(directory,file_name)
+#             if isfile(full_path):
+#                 with open(full_path,'r') as f:
+#                     try:
+#                         api_list = []
+#                         api_data = yaml.safe_load_all(f)
+#                         for api in api_data:
+#                             api_list.append(api)
+#                         return Response(api_list, status.HTTP_200_OK)
+#                     except yaml.YAMLError as exc:
+#                         return Response({'yaml error': str(exc)}, status.HTTP_400_BAD_REQUEST)
+#                 f.close()
+#                 return Response({}, status.HTTP_200_OK)
+#             else:
+#                 return Response({'message': 'No api generated.'}, status.HTTP_204_NO_CONTENT)
+#
+#         except Exception as e:
+#             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
+
+
+class ChartsLoaderView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
-    def post(self, request, *args, **kwargs):
-        try:
-            json_data = request.data.get('yamlData')
-            ApiGenerator._save_apis_to_file(json_data)
-            return Response({}, status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
-
     def get(self, request, *args, **kwargs):
-        try:
-            directory = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-            file_name = SquealySettings.get('YAML_FILE_NAME', 'squealy-api.yaml')
-            full_path = join(directory,file_name)
-            if isfile(full_path):
-                with open(full_path,'r') as f:
-                    try:
-                        api_list = []
-                        api_data = yaml.safe_load_all(f)
-                        for api in api_data:
-                            api_list.append(api)
-                        return Response(api_list, status.HTTP_200_OK)
-                    except yaml.YAMLError as exc:
-                        return Response({'yaml error': str(exc)}, status.HTTP_400_BAD_REQUEST)
-                f.close()
-                return Response({}, status.HTTP_200_OK)
-            else:
-                return Response({'message': 'No api generated.'}, status.HTTP_204_NO_CONTENT)
-
-        except Exception as e:
-            return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
+        charts = Chart.objects.all()
+        response = ChartSerializer(charts, many=True).data
+        return Response(response)
 
 
 class DynamicApiRouter(APIView):
@@ -287,47 +299,49 @@ class DynamicApiRouter(APIView):
     '''
     def post(self, request):
         try:
-            data = request.data
-            chart_object = Chart(id=data['id'], name=data['name'], url=data['url'], query=data['query'],
-                                 type=data['type'], options=data['options'])
-            chart_object.save()
+            charts = request.data['charts']
+            chart_ids = []
+            for data in charts:
+                chart_object = Chart(id=data['id'], name=data['name'], url=data['url'], query=data['query'],
+                                     type=data['type'], options=data['options'])
+                chart_object.save()
+                chart_ids.append(chart_object.id)
+                transformation_ids = []
+                for transformation in data['transformations']:
+                    existing_object = Transformation.objects.filter(chart=chart_object,
+                                                                    name=transformation['name']).first()
+                    id = existing_object.id if existing_object else None
+                    transformation_object = Transformation(id=id, name=transformation['name'],
+                                                           kwargs=transformation.get('kwargs', None),chart=chart_object)
+                    transformation_object.save()
+                    transformation_ids.append(transformation_object.id)
+                Transformation.objects.filter(chart=chart_object).exclude(id__in=transformation_ids).all().delete()
 
-            transformation_ids = []
-            for transformation in data['transformations']:
-                existing_object = Transformation.objects.filter(chart=chart_object,
-                                                                name=transformation['name']).first()
-                id = existing_object.id if existing_object else None
-                transformation_object = Transformation(id=id, name=transformation['name'],
-                                                       kwargs=transformation.get('kwargs', None),chart=chart_object)
-                transformation_object.save()
-                transformation_ids.append(transformation_object.id)
-            Transformation.objects.filter(chart=chart_object).exclude(id__in=transformation_ids).all().delete()
+                parameter_ids = []
+                for parameter in data['parameters']:
+                    existing_object = Parameter.objects.filter(chart=chart_object, name=parameter['name']).first()
+                    id = existing_object.id if existing_object else None
+                    parameter_object = Parameter(id=id, name=parameter['name'], data_type=parameter['dataType'],
+                                                 mandatory=parameter['mandatory'], default_value=parameter['defaultValue'],
+                                                 chart=chart_object)
+                    parameter_object.save()
+                    parameter_ids.append(parameter_object.id)
 
-            parameter_ids = []
-            for parameter in data['parameters']:
-                existing_object = Parameter.objects.filter(chart=chart_object, name=parameter['name']).first()
-                id = existing_object.id if existing_object else None
-                parameter_object = Parameter(id=id, name=parameter['name'], data_type=parameter['dataType'],
-                                             mandatory=parameter['mandatory'], default_value=parameter['defaultValue'],
-                                             chart=chart_object)
-                parameter_object.save()
-                parameter_ids.append(parameter_object.id)
+                Parameter.objects.filter(chart=chart_object).exclude(id__in=parameter_ids).all().delete()
 
-            Parameter.objects.filter(chart=chart_object).exclude(id__in=parameter_ids).all().delete()
-
-            validation_ids = []
-            for validation in data['validations']:
-                existing_object = Validation.objects.filter(chart=chart_object, name=validation['name']).first()
-                id = existing_object.id if existing_object else None
-                validation_object = Validation(id=id, query=validation['query'],name=validation['name'], chart=chart_object)
-                validation_object.save()
-                validation_ids.append(validation_object.id)
-            Validation.objects.filter(chart=chart_object).exclude(id__in=validation_ids).all().delete()
+                validation_ids = []
+                for validation in data['validations']:
+                    existing_object = Validation.objects.filter(chart=chart_object, name=validation['name']).first()
+                    id = existing_object.id if existing_object else None
+                    validation_object = Validation(id=id, query=validation['query'],name=validation['name'], chart=chart_object)
+                    validation_object.save()
+                    validation_ids.append(validation_object.id)
+                Validation.objects.filter(chart=chart_object).exclude(id__in=validation_ids).all().delete()
 
         except KeyError as e:
             raise MalformedChartDataException("Key Error - "+ str(e.args))
 
-        return Response(chart_object.id, status.HTTP_200_OK)
+        return Response(chart_ids, status.HTTP_200_OK)
 
 @permission_classes(SquealySettings.get('Authoring_Interface_Permission_Classes', (IsAdminUser, )))
 class DashboardTemplateView(APIView):
