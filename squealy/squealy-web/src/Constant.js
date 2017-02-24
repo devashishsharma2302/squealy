@@ -41,7 +41,20 @@ export const PARAM_FORMAT_OPTIONS = [
   }
 ]
 
-export const AVAILABLE_TRANSFORMATIONS = ['transpose', 'merge', 'split']
+export const AVAILABLE_TRANSFORMATIONS = [
+  {
+    value: 'transpose',
+    label: 'Transpose'
+  },
+  {
+    value: 'merge',
+    label: 'Merge'
+  },
+  {
+    value: 'split',
+    label: 'Split'
+  }
+]
 
 export const GOOGLE_CHART_TYPE_OPTIONS = [
   {label: 'Table', value: 'Table'},

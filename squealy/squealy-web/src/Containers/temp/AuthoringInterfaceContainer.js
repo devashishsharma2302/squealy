@@ -66,14 +66,22 @@ export default class AuthoringInterfaceContainer extends Component {
 
   onHandleTestButton = () => {
     //TODO: make API POST call
+    const selectedChart = this.state.charts[this.state.selectedChartIndex]
+    let transformations = selectedChart.transformations.map(transformation => {
+        return {
+          name: transformation.value,
+          kwargs: null
+      }
+    })
+
     let payloadObj = {
       config: {
-        query: this.state.charts[this.state.selectedChartIndex].query
+        query: selectedChart.query
       },
-      params: this.state.charts[this.state.selectedChartIndex].testParameters,
-      transformations: this.state.charts[this.state.selectedChartIndex].transformations,
-      parameters: this.state.charts[this.state.selectedChartIndex].parameters,
-      validations: this.state.charts[this.state.selectedChartIndex].validations
+      params: selectedChart.testParameters,
+      transformations: transformations,
+      parameters: selectedChart.parameters,
+      validations: selectedChart.validations
     } 
     postApiRequest(DOMAIN_NAME+'test/', payloadObj,
                     this.onSuccessTest, this.onErrorTest, 'table')

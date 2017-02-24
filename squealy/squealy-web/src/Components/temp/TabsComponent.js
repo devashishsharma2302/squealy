@@ -6,6 +6,7 @@ import { Effect } from 'react-notification-badge'
 import ParamDefinitionModal from './ParamDefinitionModal'
 import TestParametersModal from './TestParametersModal'
 import ValidationsModal from './ValidationsModal'
+import TransformationsModal from './TransformationsModal'
 import transformationIcon from './../../images/transformations_icon_white.png'
 import validationIcon from './../../images/validation_icon_white.png'
 import exportIcon from './../../images/export_icon_white.png'
@@ -17,7 +18,8 @@ export default class TabsComponent extends Component {
     this.state = {
       showParamDefModal: false,
       showTestParamModal: false,
-      showValidationsModal: false
+      showValidationsModal: false,
+      showTransformationsModal: false
     }
   }
 
@@ -31,7 +33,8 @@ export default class TabsComponent extends Component {
     const {
       showValidationsModal,
       showParamDefModal,
-      showTestParamModal
+      showTestParamModal,
+      showTransformationsModal
     } = this.state
     return (
       <div>
@@ -53,7 +56,11 @@ export default class TabsComponent extends Component {
           className='tab-component'
           onClick={() => this.modalVisibilityHandler('showValidationsModal')}>
           <img src={validationIcon} alt="squealyValidation"/>Validations</Button>
-        <Button bsStyle='primary' className='tab-component'>
+        <Button
+          bsStyle='primary'
+          className='tab-component'
+          onClick={()=>this.modalVisibilityHandler('showTransformationsModal')}
+        >
           <img src={transformationIcon} alt="transformationIcon"/>Transformations
           <NotificationBadge count={transformations.length} 
             effect={[null, null, null, null]} 
@@ -84,6 +91,15 @@ export default class TabsComponent extends Component {
             closeModal={()=>this.modalVisibilityHandler('showValidationsModal')}
             showModal={showValidationsModal}
             validations={validations}/>
+        }
+        {
+          showTransformationsModal &&
+          <TransformationsModal
+            selectedChartChangeHandler={selectedChartChangeHandler}
+            closeModal={()=>this.modalVisibilityHandler('showTransformationsModal')}
+            showModal={showTransformationsModal}
+            transformations={transformations}
+          />
         }
       </div>
     )

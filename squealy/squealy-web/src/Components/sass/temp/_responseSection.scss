@@ -1,3 +1,14 @@
 .chart-type-select {
-  float: right;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  >img {
+    height: 26px;
+    margin-left: 15px;
+  }
+}
+
+.chart-config-modal {
+  width: 70%;
 }

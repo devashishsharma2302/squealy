@@ -14,9 +14,15 @@
 @import './../Components/sass/temp/apiDesignView.scss';
 @import './../Components/sass/temp/navBar.scss';
 @import './../Components/sass/temp/responseSection.scss';
+@import './../Components/sass/temp/googleTable.scss';
 
-html, body, #root {
-  height: 100%;
+html {
+  min-height: 100%;
+  font-family: Roboto;
+}
+
+body, #root {
+  min-height: 100vh;
   font-family: Roboto;
 }
 
@@ -27,7 +33,6 @@ html, body, #root {
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
   background: white;
 }
 
@@ -38,7 +43,7 @@ body {
 }
 
 .parent-div {
-  height: inherit;
+  height: 100%;
 }
 
 .clickable-element {
