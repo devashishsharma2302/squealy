@@ -19,6 +19,8 @@ export default class SideMenu extends Component {
     }
   }
 
+/*
+  //FIXME: Commenting this code as facing some bubbling issues. Need to fix it. 
   componentDidMount () {
     document.body.addEventListener('click', this.hideLeftMenu);
   }
@@ -26,12 +28,12 @@ export default class SideMenu extends Component {
   componentWillUnmount () {
     document.body.removeEventListener('click', this.hideLeftMenu);
   }
-
+*/
   newChartNameChanged = (e) => {
     this.setState({chartName: e.target.value})
   }
 
-  hideLeftMenu = () => {
+  hideLeftMenu = (e) => {
     this.setState({
       leftMenuChartIndex: null,
       showLeftNavContextMenu: false
@@ -56,6 +58,7 @@ export default class SideMenu extends Component {
   }
 
   showChartDetailsModal = (action) => {
+    console.log('showChartDetailsModal')
     let charts = JSON.parse(JSON.stringify(this.props.charts)),
       selectedChartName = (action === 'EDIT') ? charts[this.state.leftMenuChartIndex].name : '' 
 
@@ -84,18 +87,23 @@ export default class SideMenu extends Component {
 
 
   render() {
+    const {
+      leftMenuChartIndex,
+      chartName,
+      showLeftNavContextMenu,
+      leftMenuPosition,
+      showAddChartModal,
+      chartEditMode
+    } = this.state
+
     const addNewChartModalContent = (
       <div className="row">
         <div className="col-md-12">
           <label className='col-md-4'>Name: </label>
-          <input type='text' value={this.state.chartName} onChange={this.newChartNameChanged} />
+          <input type='text' value={chartName} onChange={this.newChartNameChanged} />
         </div>
       </div>
     )
-
-    const {
-      leftMenuChartIndex
-    } = this.state
 
     let listClassName = ''
     const {
@@ -128,13 +136,13 @@ export default class SideMenu extends Component {
               })
             }
             {
-              this.state.showLeftNavContextMenu && 
-                <ul className="left-nav-menu" style={this.state.leftMenuPosition} 
+              showLeftNavContextMenu && 
+                <ul className="left-nav-menu" style={leftMenuPosition} 
                   onContextMenu={(e)=> {e.preventDefault()}}>
                   <li onClick={() => this.showChartDetailsModal('EDIT')}>Rename Chart 
                     <i className="fa fa-pencil"/></li>
                   <li onClick={() => 
-                      this.props.chartDeletionHandler(this.state.leftMenuChartIndex, this.hideLeftMenu)}>
+                      this.props.chartDeletionHandler(leftMenuChartIndex, this.hideLeftMenu)}>
                     Delete Chart<i className="fa fa-trash-o"/></li>
                   <li className="close-option" onClick={this.hideLeftMenu}>Close</li>
                 </ul>
@@ -144,8 +152,8 @@ export default class SideMenu extends Component {
         <SquealyModal
           modalId='addChartModal'
           closeModal={() => this.setState({ showAddChartModal: false })}
-          showModal={this.state.showAddChartModal}
-          modalHeader= {this.state.chartEditMode ? 'Rename Chart' : 'Create New Chart'}
+          showModal={showAddChartModal}
+          modalHeader= {chartEditMode ? 'Rename Chart' : 'Create New Chart'}
           modalContent={addNewChartModalContent}
           saveChanges={this.chartAdditionModalSave} />
       </div>
