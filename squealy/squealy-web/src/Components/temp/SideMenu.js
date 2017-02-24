@@ -45,7 +45,7 @@ export default class SideMenu extends Component {
     //e.pageY calculating height from ul.
     //FIXME: Hardcoded 10px to show menu at accurate position. Need to check why do we need to add it?
     let leftMenuPosition = {
-      top: e.pageY - document.getElementById('chart_list_ul').offsetTop - 10,
+      top: e.pageY - this.refs.chartListUl.offsetTop - 10,
       left: e.pageX
     },
     flag = (index !== this.state.leftMenuChartIndex) || !this.state.showLeftNavContextMenu
@@ -58,7 +58,6 @@ export default class SideMenu extends Component {
   }
 
   showChartDetailsModal = (action) => {
-    console.log('showChartDetailsModal')
     let charts = JSON.parse(JSON.stringify(this.props.charts)),
       selectedChartName = (action === 'EDIT') ? charts[this.state.leftMenuChartIndex].name : '' 
 
@@ -122,7 +121,7 @@ export default class SideMenu extends Component {
             <span>Charts</span>
             <i onClick={() => this.showChartDetailsModal('ADD')} className="fa fa-plus-circle add-new" aria-hidden="true"></i>
           </div>
-          <ul id="chart_list_ul">
+          <ul ref="chartListUl">
             {
               charts.map((chart, index) => {
                 listClassName = (index === selectedChartIndex) ? 'selected-chart' : ''
