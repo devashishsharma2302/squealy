@@ -35,7 +35,6 @@ export default class SideMenu extends Component {
       top: e.target.offsetTop - 13
     }
 
-    console.log(e.target.clientTop, e.target.clientLeft, e.target.offsetTop, e.target.offsetLeft)
 
     this.setState({
       leftMenuChartIndex: ((index !== this.state.leftMenuChartIndex) ||!this.state.showLeftNavContextMenu) ? index : null,
