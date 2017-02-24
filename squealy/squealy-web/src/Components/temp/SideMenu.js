@@ -13,9 +13,18 @@ export default class SideMenu extends Component {
       chartName: '',
       chartEditMode: false,
       leftMenuPosition: {
-        top: 0
+        top: 0,
+        left: 0
       }
     }
+  }
+
+  componentDidMount () {
+    document.body.addEventListener('click', this.hideLeftMenu);
+  }
+
+  componentWillUnmount () {
+    document.body.removeEventListener('click', this.hideLeftMenu);
   }
 
   newChartNameChanged = (e) => {
@@ -30,15 +39,18 @@ export default class SideMenu extends Component {
   }
 
   toggleLeftMenu = (e, index) => {
-    e.preventDefault();
+    e.preventDefault()
+    //e.pageY calculating height from ul.
+    //FIXME: Hardcoded 10px to show menu at accurate position. Need to check why do we need to add it?
     let leftMenuPosition = {
-      top: e.target.offsetTop - 13
-    }
-
+      top: e.pageY - document.getElementById('chart_list_ul').offsetTop - 10,
+      left: e.pageX
+    },
+    flag = (index !== this.state.leftMenuChartIndex) || !this.state.showLeftNavContextMenu
 
     this.setState({
-      leftMenuChartIndex: ((index !== this.state.leftMenuChartIndex) ||!this.state.showLeftNavContextMenu) ? index : null,
-      showLeftNavContextMenu: ((index !== this.state.leftMenuChartIndex) ||!this.state.showLeftNavContextMenu),
+      leftMenuChartIndex: flag ? index : null,
+      showLeftNavContextMenu: flag,
       leftMenuPosition: leftMenuPosition
     })
   }
@@ -82,6 +94,11 @@ export default class SideMenu extends Component {
     )
 
     const {
+      leftMenuChartIndex
+    } = this.state
+
+    let listClassName = ''
+    const {
       charts,
       chartAdditionHandler,
       selectedChartIndex,
@@ -97,20 +114,23 @@ export default class SideMenu extends Component {
             <span>Charts</span>
             <i onClick={() => this.showChartDetailsModal('ADD')} className="fa fa-plus-circle add-new" aria-hidden="true"></i>
           </div>
-          <ul>
+          <ul id="chart_list_ul">
             {
               charts.map((chart, index) => {
+                listClassName = (index === selectedChartIndex) ? 'selected-chart' : ''
+                listClassName += (leftMenuChartIndex === index) ? ' right-button-clicked' : ''
                 return (
                   <li onClick={() => this.selectChartHandler(index)} key={index}
-                    className={(index === selectedChartIndex) ? 'selected-chart' : ''}
+                    className={listClassName}
                     onContextMenu={(e) => this.toggleLeftMenu(e, index)}>
-                    <span>{chart.name}</span>
+                    <span title={chart.name}>{chart.name}</span>
                   </li>)
               })
             }
             {
               this.state.showLeftNavContextMenu && 
-                <ul className="left-nav-menu" style={this.state.leftMenuPosition}>
+                <ul className="left-nav-menu" style={this.state.leftMenuPosition} 
+                  onContextMenu={(e)=> {e.preventDefault()}}>
                   <li onClick={() => this.showChartDetailsModal('EDIT')}>Rename Chart 
                     <i className="fa fa-pencil"/></li>
                   <li onClick={() => 
