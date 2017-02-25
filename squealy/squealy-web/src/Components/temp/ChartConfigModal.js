@@ -10,48 +10,44 @@ export default class ChartConfigModal extends Component {
   constructor() {
     super()
     this.state = {
-      selectedValidation: undefined,
-      showForm: false,
-      validationName: '',
-      validationQuery: ''
+      config: ''
     }
   }
 
+  onChangeHandler = (config) => {
+    this.setState({config: config})
+  }
+
+  handleSaveClick = () => {
+    const { config } = this.state
+    let newConfig = (config)?JSON.parse(config):{}
+    this.props.selectedChartChangeHandler('options', newConfig)
+  }
+
   render () {
-    const { selectedChartChangeHandler } = this.props
-    const {
-      selectedValidation,
-      showForm,
-      validationName,
-      validationQuery
-    } = this.state
+    const { config } = this.state
     const modalContent =
       <div className="modal-container">
         <div className='row add-modal-content'>
           <div className='col-md-12'>
-            <label htmlFor='validationQuery' className='col-md-2'>
-              Configurations:
-            </label>
-            <div className="col-md-10 validation-query">
+            <div className="col-md-12 validation-query">
               <AceEditor
                 mode="sql"
                 theme="tomorrow"
-                name={'validationQuery'}
                 height="200px"
                 width="100%"
                 fontSize={15}
-                maxLines={20}
+                maxLine s={20}
                 minLines={12}
                 highlightActiveLine={true}
+                onChange={this.onChangeHandler}
+                value={config}
                 editorProps={{$blockScrolling: true}}
-                onChange={(value)=>this.onChangeHandler('validationQuery', value)}
-                value={validationQuery}
               />
             </div>
           </div>
           <div className='col-md-12 param-form-footer'>
-            <button className="btn btn-default" onClick={this.formVisibilityHandler}>Cancel</button>
-            <button className="btn btn-primary" onClick={this.onClickSave}>Save</button>
+            <button className="btn btn-primary" onClick={this.handleSaveClick}>Save</button>
           </div>
         </div>
       </div>

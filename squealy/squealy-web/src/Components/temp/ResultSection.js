@@ -58,6 +58,7 @@ export default class ResultSection extends Component {
           <ChartConfigModal
             showModal={this.state.showModal}
             closeModal={this.modalVisibilityHandler}
+            selectedChartChangeHandler={selectedChartChangeHandler}
           />
       </AccordionTab>
     )
