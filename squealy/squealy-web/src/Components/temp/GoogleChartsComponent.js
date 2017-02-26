@@ -5,7 +5,9 @@ export default class GoogleChartWrapper extends Component {
 
   componentDidMount() {
     if (JSON.stringify(this.props.chartData) !== '{}') {
-      this.renderChart()
+      if (this.props.chartData) {
+        this.renderChart()
+      }
     }
   }
 
@@ -30,7 +32,7 @@ export default class GoogleChartWrapper extends Component {
   }
 
   componentDidUpdate() {
-    if (JSON.stringify(this.props.chartData) !== '{}') {
+    if (this.props.chartData) {
       this.renderChart()
     }
   }

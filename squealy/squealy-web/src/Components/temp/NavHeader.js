@@ -7,6 +7,7 @@ import logo from '../../images/logo.png'
 
 export default class NavBar extends Component {
   render() {
+    const { savedStatus, saveInProgress } = this.props
     return (
       <Navbar fluid>
         <Navbar.Header>
@@ -16,6 +17,13 @@ export default class NavBar extends Component {
             </a>
           </Navbar.Brand>
         </Navbar.Header>
+        <div className='save-status'>
+          {
+            (saveInProgress)? 'Saving....'
+            : 
+            (savedStatus)? 'All Changes Saved.': 'Unable to Save.'
+          }
+        </div>
       </Navbar>
     )
   }

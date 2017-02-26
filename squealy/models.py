@@ -60,6 +60,7 @@ class Parameter(models.Model):
     mandatory = models.BooleanField(default=True)
     default_value = models.CharField(max_length=200, null=True, blank=True)
     type = models.IntegerField(default=1, choices=PARAMETER_TYPES)
+    kwargs = fields.JSONField(null=True, blank=True)
 
     def __unicode__(self):
         return self.name

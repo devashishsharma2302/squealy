@@ -9,7 +9,7 @@ export default class ParamDefinitionModal extends Component {
     super(props)
     this.state = {
       showParamDefForm: false,
-      selectedValue: 'dateTime',
+      selectedValue: 'string',
       query: '',
       paramDefinition: getEmptyParamDefinition()
     }
@@ -20,7 +20,7 @@ export default class ParamDefinitionModal extends Component {
     this.setState({ 
       showParamDefForm: true,
       paramDefinition: getEmptyParamDefinition(),
-      selectedValue: 'dateTime'
+      selectedDataType: 'string'
     })
   }
 
@@ -31,32 +31,32 @@ export default class ParamDefinitionModal extends Component {
 
   //Function to change param definition. It can be Custom or Predefined type like Date, DateTime, String 
   onChangeParamDefType = (value) => {
-    let currentParamDefinition = Object.assign({}, this.state.paramDefinition)
-    currentParamDefinition['paramFormat'] = value ? 'custom' : this.state.selectedValue
+    let currentParamDefinition = JSON.parse(JSON.stringify(this.state.paramDefinition))
+    currentParamDefinition['data_type'] = this.state.selectedDataType
     this.setState({
-      selectedValue: currentParamDefinition.paramFormat,
+      selectedDataType: currentParamDefinition.data_type,
       paramDefinition: currentParamDefinition
     })
   }
 
   //Function to select Type for Predefined params
   paramFormatSelectionHandler = (value) => {
-    let currentParamDefinition = Object.assign({}, this.state.paramDefinition)
-    currentParamDefinition['paramFormat'] = value
+    let currentParamDefinition = JSON.parse(JSON.stringify(this.state.paramDefinition))
+    currentParamDefinition['data_type'] = value
     this.setState({selectedValue: value, paramDefinition: currentParamDefinition})
   }
 
   onChangeParamHandler = (key, value) => {
-    let currentParamDefinition = Object.assign({}, this.state.paramDefinition)
+    let currentParamDefinition = JSON.parse(JSON.stringify(this.state.paramDefinition))
     currentParamDefinition[key] = value
     this.setState({paramDefinition: currentParamDefinition})
   }
 
   handleEditParam = (index) => {
     this.setState({ showParamDefForm: true }, () => {
-      let currentParamDefinition = Object.assign({}, this.props.parameters[index])
+      let currentParamDefinition = this.props.parameters[index]
       this.setState({
-        selectedValue: currentParamDefinition.paramFormat,
+        selectedValue: currentParamDefinition.data_type,
         paramDefinition: currentParamDefinition
       })
     })
@@ -67,25 +67,25 @@ export default class ParamDefinitionModal extends Component {
     let currentParameters = [...this.props.parameters]
     currentParameters.splice(index, 1)
     this.props.selectedChartChangeHandler('parameters', currentParameters)
-    this.setState({paramDefinition: getEmptyParamDefinition(), selectedValue: 'datetime'})
+    this.setState({paramDefinition: getEmptyParamDefinition(), selectedValue: 'string'})
   }
 
   saveParamHandler = () => {
     let selectedChartParamDef = [...this.props.parameters]
     selectedChartParamDef.push(this.state.paramDefinition)
     this.props.selectedChartChangeHandler('parameters', selectedChartParamDef)
-    this.setState({paramDefinition: getEmptyParamDefinition(), selectedValue: 'dateTime'})
+    this.setState({paramDefinition: getEmptyParamDefinition(), selectedValue: 'string'})
   }
 
   render() {
     const {parameters, selectedChartChangeHandler} = this.props
-    const addParamDefFormHTML =
+    const addParamDefFormContent =
       <div className="modal-container">
         <div className='row add-modal-content'>
           <div className='col-md-12'>
             <label htmlFor='paramName' className='col-md-4'>Name: </label>
-            <input type='text' name='paramName' value={this.state.paramDefinition.paramName} 
-              onChange={(e) => this.onChangeParamHandler('paramName', e.target.value)} />
+            <input type='text' name='paramName' value={this.state.paramDefinition.name} 
+              onChange={(e) => this.onChangeParamHandler('name', e.target.value)} />
           </div>
           <div className='col-md-12'>
             <label htmlFor='paramFormat' className='col-md-4'>Type: </label>
@@ -96,27 +96,27 @@ export default class ParamDefinitionModal extends Component {
               selectedValue={this.state.selectedValue} />
           </div>
           {
-            (this.state.selectedValue === 'dateTime' || this.state.selectedValue === 'date') 
+            (this.state.selectedValue === 'datetime' || this.state.selectedValue === 'date') 
                 ? <div className='col-md-12'>
               <label htmlFor='selectedValueFormat' className='col-md-4'>Date/DateTime Format: </label>
               <input type='text' name='selectedValueFormat' 
-                value={this.state.paramDefinition.selectedValueFormat} 
-                onChange={(e) => this.onChangeParamHandler('selectedValueFormat', e.target.value)} />
+                value={this.state.paramDefinition.kwargs.format} 
+                onChange={(e) => this.onChangeParamHandler('kwargs', {'format': e.target.value})} />
             </div>
               : null
           }
           <div className='col-md-12'>
             <label htmlFor='mandatoryField' className='col-md-4'>Mandatory: </label>
             <input type='checkbox' name='mandatoryField'
-              value={this.state.paramDefinition.mandatoryField}
-              checked={this.state.paramDefinition.mandatoryField}
-              onChange={(e) => this.onChangeParamHandler('mandatoryField', e.target.checked)} />
+              value={this.state.paramDefinition.mandatory}
+              checked={this.state.paramDefinition.mandatory}
+              onChange={(e) => this.onChangeParamHandler('mandatory', e.target.checked)} />
           </div>
           <div className='col-md-12'>
-            <label htmlFor='defaultValues' className='col-md-4'>Default Values: </label>
+            <label htmlFor='defaultValues' className='col-md-4'>Default Value: </label>
             <input type='text' name='defaultValues' 
-              value={this.state.paramDefinition.defaultValues} 
-              onChange={(e) => this.onChangeParamHandler('defaultValues', e.target.value)} />
+              value={this.state.paramDefinition.default_value} 
+              onChange={(e) => this.onChangeParamHandler('default_value', e.target.value)} />
           </div>
           <div className='col-md-12 param-form-footer'>
             <button className="btn btn-default" onClick={this.closeParamForm}>Cancel</button>
@@ -125,7 +125,7 @@ export default class ParamDefinitionModal extends Component {
         </div>
       </div>
 
-    const paramDefinitionHTML =
+    const paramDefinitionEntry =
       <div>
         <table className="table table-hover api-param-def-table">
           <thead>
@@ -147,8 +147,8 @@ export default class ParamDefinitionModal extends Component {
                   return (
                     <tr key={'param_row_' + i}>
                       <td onClick={() => this.handleEditParam(i)}
-                        className='param-name'>{param.paramName}</td>
-                      <td>{param.paramFormat}</td>
+                        className='param-name'>{param.name}</td>
+                      <td>{param.data_type}</td>
                       <td className="align-center clickable-element">
                         <i className="fa fa-trash-o" aria-hidden="true" 
                         onClick={() => this.deleteEntry(i, 'paramDefinition')} />
@@ -160,7 +160,7 @@ export default class ParamDefinitionModal extends Component {
             }
           </tbody>
         </table>
-        {this.state.showParamDefForm && addParamDefFormHTML}
+        {this.state.showParamDefForm && addParamDefFormContent}
       </div>
     return (
       <SquealyModal
@@ -169,7 +169,7 @@ export default class ParamDefinitionModal extends Component {
         closeModal={this.props.closeModal}
         showModal={this.props.showModal}
         modalHeader='Add Parameters Definition'
-        modalContent={paramDefinitionHTML}
+        modalContent={paramDefinitionEntry}
         noFooter={true} />
     )
   }

@@ -102,12 +102,7 @@ class SqlApiView(APIView):
     def _run_transformations(self, table):
         if self.transformations:
             for transformation in self.transformations:
-                if '.' in transformation.get('name'):
-                    module_name, class_name = self.format.rsplit('.',1)
-                    module = importlib.import_module(module_name)
-                    transformer_instance = getattr(module, class_name)()
-                else:
-                    transformer_instance = eval(transformation.get('name').title())()
+                transformer_instance = eval(transformation.get('name').title())()
                 kwargs = transformation.get("kwargs") if transformation.get("kwargs") else {}
                 table = transformer_instance.transform(table, **kwargs)
             return table
@@ -140,7 +135,6 @@ class SqlApiView(APIView):
             # Formatting parameters
             parameter_type_str = self.parameters[index].get("data_type", "String")
             kwargs = self.parameters[index].get("kwargs", {})
-
             if '.' in parameter_type_str:
                 module_name, class_name = parameter_type_str.rsplit('.', 1)
                 module = importlib.import_module(module_name)
@@ -306,6 +300,8 @@ class DynamicApiRouter(APIView):
                                      type=data['type'], options=data['options'])
                 chart_object.save()
                 chart_ids.append(chart_object.id)
+
+                # Parsing transformations
                 transformation_ids = []
                 for transformation in data['transformations']:
                     existing_object = Transformation.objects.filter(chart=chart_object,
@@ -317,18 +313,20 @@ class DynamicApiRouter(APIView):
                     transformation_ids.append(transformation_object.id)
                 Transformation.objects.filter(chart=chart_object).exclude(id__in=transformation_ids).all().delete()
 
+                # Parsing Parameters
                 parameter_ids = []
                 for parameter in data['parameters']:
                     existing_object = Parameter.objects.filter(chart=chart_object, name=parameter['name']).first()
                     id = existing_object.id if existing_object else None
-                    parameter_object = Parameter(id=id, name=parameter['name'], data_type=parameter['dataType'],
-                                                 mandatory=parameter['mandatory'], default_value=parameter['defaultValue'],
-                                                 chart=chart_object)
+                    parameter_object = Parameter(id=id, name=parameter['name'], data_type=parameter['data_type'],
+                                                 mandatory=parameter['mandatory'], default_value=parameter['default_value'],
+                                                 chart=chart_object, kwargs=parameter['kwargs'])
                     parameter_object.save()
                     parameter_ids.append(parameter_object.id)
 
                 Parameter.objects.filter(chart=chart_object).exclude(id__in=parameter_ids).all().delete()
 
+                # Parsing validations
                 validation_ids = []
                 for validation in data['validations']:
                     existing_object = Validation.objects.filter(chart=chart_object, name=validation['name']).first()
