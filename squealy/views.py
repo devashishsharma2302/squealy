@@ -120,17 +120,18 @@ class SqlApiView(APIView):
 
     def parse_params(self, params):
         for index, param in enumerate(self.parameters):
+
+            # Default values
+            if self.parameters[index].get('default_value') and \
+                            self.parameters[index].get('default_value') != '' and \
+                            params.get(param['name']) in [None, '']:
+                params[param['name']] = self.parameters[index].get('default_value')
+
             # Check for missing required parameters
             mandatory = self.parameters[index].get('mandatory',
                                                                False)
             if mandatory and params.get(param['name']) is None:
                 raise RequiredParameterMissingException("Parameter required: " + param['name'])
-
-            # Default values
-            if self.parameters[index].get('default_value') and\
-                    self.parameters[index].get('default_value') != '' and\
-                    params.get(param['name']) in [None, '']:
-                params[param['name']] = self.parameters[index].get('default_value')
 
             # Formatting parameters
             parameter_type_str = self.parameters[index].get("data_type", "String")
