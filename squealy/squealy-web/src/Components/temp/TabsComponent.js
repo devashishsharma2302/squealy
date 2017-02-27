@@ -55,14 +55,14 @@ export default class TabsComponent extends Component {
           <img src={validationIcon} alt="squealyValidation"/>Validations</Button>
         <Button bsStyle='primary' className='tab-component'>
           <img src={transformationIcon} alt="transformationIcon"/>Transformations
-          <NotificationBadge count={transformations.length} 
-            effect={[null, null, null, null]} 
+          <NotificationBadge count={transformations.length}
+            effect={[null, null, null, null]}
             className='transformations-count-badge' />
         </Button>
         <Button bsStyle='primary' className='tab-component'>
           <img src={exportIcon} alt="exportIcon"/>Export</Button>
         {
-          showParamDefModal && 
+          showParamDefModal &&
           <ParamDefinitionModal
             selectedChartChangeHandler={selectedChartChangeHandler}
             closeModal={()=>this.modalVisibilityHandler('showParamDefModal')}
@@ -70,7 +70,7 @@ export default class TabsComponent extends Component {
             parameters={parameters}/>
         }
         {
-          showTestParamModal && 
+          showTestParamModal &&
           <TestParametersModal
             selectedChartChangeHandler={selectedChartChangeHandler}
             closeModal={()=>this.modalVisibilityHandler('showTestParamModal')}
@@ -78,7 +78,7 @@ export default class TabsComponent extends Component {
             testParameters={testParameters}/>
         }
         {
-          showValidationsModal && 
+          showValidationsModal &&
           <ValidationsModal
             selectedChartChangeHandler={selectedChartChangeHandler}
             closeModal={()=>this.modalVisibilityHandler('showValidationsModal')}

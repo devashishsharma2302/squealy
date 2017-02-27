@@ -117,6 +117,8 @@ function getCookie(name) {
 
 export function getEmptyApiDefinition() {
   return {
+    id: null,
+    type: 'ColumnChart',
     name: 'first chart',
     url: 'first-chart',
     query: '',
