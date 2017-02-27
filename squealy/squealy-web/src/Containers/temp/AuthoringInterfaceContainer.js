@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import MainComponent from '../../Components/temp/MainComponent'
 import {
-  getEmptyApiDefinition, postApiRequest
+  getEmptyApiDefinition, postApiRequest, getApiRequest
 } from './../../Utils'
 import mockCharts from './mockCharts'
 import { DOMAIN_NAME } from './../../Constant'
@@ -10,11 +10,14 @@ export default class AuthoringInterfaceContainer extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      charts: [],
+      charts: [getEmptyApiDefinition()],
       selectedChartIndex: 0,
       apiError: false,
-      apiErrorMsg: ''
+      apiErrorMsg: '',
+      saveInProgress: false,
+      savedStatus: true
     }
+
   }
 
   initializeState = () => {
@@ -24,25 +27,56 @@ export default class AuthoringInterfaceContainer extends Component {
     }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     //TODO: Get charts from backend
-    this.loadInitialCharts()
+    getApiRequest(DOMAIN_NAME+'charts/', null,
+                    (response)=>this.loadInitialCharts(response),
+                     this.loadInitialCharts, null)
+
+  }
+
+  onChartsSaved = () => {
+    this.setState({'savedStatus': true, 'saveInProgress': false})
+  }
+
+  onChartSaveError = () => {
+    this.setState({'savedStatus': false, 'saveInProgress': false})
+  }
+
+  saveCharts = ()=> {
+    this.setState({'saveInProgress': true},
+                  postApiRequest(DOMAIN_NAME+'squealy-apis/', {'charts': this.state.charts},
+                  this.onChartsSaved,()=> {}, null)
+    )
   }
 
   loadInitialCharts = (response) => {
-    // if (response) {
-    //TODO: format API response to match with the state
-    // }
-    // else {
-    this.initializeState()
+    let charts = [],
+    tempChart = {}
 
-    // }
+    if (response) {
+      response.map(chart => {
+        tempChart = chart
+        tempChart.chartType = tempChart.type
+        tempChart.testParameters = {}
+        charts.push(tempChart)
+      })
+      this.setState({charts: charts})
+    }
+    else {
+    this.initializeState()
+    }
   }
 
-  selectedChartChangeHandler = (key, value, callback=null) => {
-    let charts = JSON.parse(JSON.stringify(this.state.charts))
-    charts[this.state.selectedChartIndex][key] = value
-    this.setState({charts: charts})
+  selectedChartChangeHandler = (key, value, callback=null, index) => {
+    let charts = JSON.parse(JSON.stringify(this.state.charts)),
+      chartIndex = index ? index : this.state.selectedChartIndex
+    console.log(key, value, chartIndex)
+    charts[chartIndex][key] = value
+    if (key === 'name') {
+      charts[chartIndex].url = value.replace(/ /g, '-').toLowerCase()
+    }
+    this.setState({charts: charts}, ()=>{console.log(this.state);this.saveCharts(); (callback) && callback()})
   }
 
   runSuccessHandler = (response) => {
@@ -70,8 +104,14 @@ export default class AuthoringInterfaceContainer extends Component {
         let kwargs = null
         if(transformation.value === 'split') {
           kwargs = {
-            pivot_column: this.state.pivotColumn,
-            metric_column: this.state.metric
+            pivot_column: selectedChart.pivotColumn.value,
+            metric_column: selectedChart.metric.value
+          }
+        }
+        if(transformation.value === 'merge') {
+          kwargs = {
+            columns_to_merge: selectedChart.columnsToMerge.map(column=>column.value),
+            new_column_name: selectedChart.newColumnName
           }
         }
         return {
@@ -88,7 +128,7 @@ export default class AuthoringInterfaceContainer extends Component {
       transformations: transformations,
       parameters: selectedChart.parameters,
       validations: selectedChart.validations
-    } 
+    }
     postApiRequest(DOMAIN_NAME+'test/', payloadObj,
                     this.onSuccessTest, this.onErrorTest, 'table')
     //let tempParam = this.state.testData[this.state.selectedApiIndex].apiParams || {}
@@ -118,29 +158,35 @@ export default class AuthoringInterfaceContainer extends Component {
     //                this.onSuccessTest, this.onErrorTest, format)
   }
 
-  chartDeletionHandler = (index) => {
-    if(this.state.apiDefinition.length > 1) {
+  chartDeletionHandler = (index, callBackFunc) => {
+    if(this.state.charts.length > 1) {
       let charts = JSON.parse(JSON.stringify(this.state.charts))
       charts.splice(index, 1)
       this.setState({
         charts: charts
+      }, () => {
+        this.saveCharts()
+        callBackFunc.constructor === 'Function' || callBackFunc()
       })
     } else {
-      this.initializeState()
+      this.setState({charts: [getEmptyApiDefinition()], selectedChartIndex: 0}, () => {
+        this.saveCharts()
+        callBackFunc.constructor === 'Function' || callBackFunc()
+      })
     }
   }
 
   //Appends an empty API definition object to current API Definitions
-  chartAdditionHandler = (name, url) => {
+  chartAdditionHandler = (name) => {
     //TODO: open the addition modal and add the new chart to state also making it the selected chart
     let charts = JSON.parse(JSON.stringify(this.state.charts)),
         newChart = getEmptyApiDefinition()
         newChart.name = name
-        newChart.url = url
-    charts.push(newChart) 
+        newChart.url = name.replace(/ /g, '-').toLowerCase()
+    charts.push(newChart)
     this.setState({
       charts: charts
-    })
+    }, this.saveCharts)
   }
 
   //Changes the selected API index to the one which was clicked from the API list
@@ -150,25 +196,26 @@ export default class AuthoringInterfaceContainer extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     if (nextState !== nextProps) {
-      //FIXME: Need to change hardcode localstorage key name. Later we will save as project name
       return true
     }
   }
 
   render () {
-    const { charts, selectedChartIndex, parameters} = this.state
+    const { charts, selectedChartIndex, parameters, savedStatus, saveInProgress} = this.state
     const { googleDefined } = this.props
     return (
       <div className="parent-div container-fluid">
-        <MainComponent 
+        <MainComponent
           charts={charts}
+          saveInProgress={saveInProgress}
+          savedStatus={savedStatus}
           onHandleTestButton={this.onHandleTestButton}
           selectedChartIndex={selectedChartIndex}
           googleDefined={googleDefined}
           chartAdditionHandler={this.chartAdditionHandler}
           chartSelectionHandler={this.chartSelectionHandler}
           chartDeletionHandler={this.chartDeletionHandler}
-          selectedChartChangeHandler={this.selectedChartChangeHandler} 
+          selectedChartChangeHandler={this.selectedChartChangeHandler}
           />
       </div>
     )

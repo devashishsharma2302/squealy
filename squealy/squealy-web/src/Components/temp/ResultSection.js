@@ -33,7 +33,7 @@ export default class ResultSection extends Component {
     } = this.props
     return (
       <AccordionTab heading='Results'>
-        {(googleDefined && (chartData !== {})) ?
+        {(googleDefined && chartData && chartData.hasOwnProperty('rows')) ?
           <Tabs defaultActiveKey={1} id="uncontrolled_tab_example">
             <Tab eventKey={1} title="Data">
               <GoogleChartsComponent chartData={chartData}

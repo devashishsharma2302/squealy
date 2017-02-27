@@ -4,21 +4,20 @@ import { GOOGLE_CHART_TYPE_OPTIONS, GRID_WIDTH_OPTIONS }  from '../../Constant'
 export default class GoogleChartWrapper extends Component {
 
   componentDidMount() {
-    if (JSON.stringify(this.props.chartData) !== '{}') {
-      this.renderChart()
-    }
+    this.renderChart()
   }
 
   renderChart = () => {
     const { chartData, chartType, options, id } = this.props
-    if (chartData.chartType === 'Table' && chartData.cols) {
-      chartData.cols.map((col, index) => {
+    let tableData = JSON.parse(JSON.stringify(chartData))
+    if (chartType === 'Table' && chartData.cols) {
+      tableData.cols.map((col, index) => {
         col.type = 'string'
       })
     }
     let wrapper = new google.visualization.ChartWrapper({
       chartType: (chartType) ? chartType : 'ColumnChart',
-      dataTable: chartData,
+      dataTable: tableData,
       containerId: id,
       options: {
         ...options,
@@ -30,9 +29,7 @@ export default class GoogleChartWrapper extends Component {
   }
 
   componentDidUpdate() {
-    if (JSON.stringify(this.props.chartData) !== '{}') {
-      this.renderChart()
-    }
+    this.renderChart()
   }
 
   render() {

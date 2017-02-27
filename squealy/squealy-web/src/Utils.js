@@ -117,6 +117,8 @@ function getCookie(name) {
 
 export function getEmptyApiDefinition() {
   return {
+    id: null,
+    type: 'ColumnChart',
     name: 'first chart',
     url: 'first-chart',
     query: '',
@@ -129,7 +131,8 @@ export function getEmptyApiDefinition() {
     chartData: {},
     pivotColumn: undefined,
     metric: undefined,
-    columnsToMerge: undefined
+    columnsToMerge: undefined,
+    newColumnName: ''
   }
 }
 
@@ -188,12 +191,11 @@ export function getDefaultApiDefinition(apiIndex) {
 
 export function getEmptyParamDefinition(apiIndex) {
   return {
-    paramName: '',
-    customParamPath: '',
-    paramFormat: 'dateTime',
-    selectedValueFormat: '',
-    mandatoryField: true,
-    defaultValues: ''
+    name: '',
+    data_type: 'string',
+    mandatory: false,
+    default_value: '',
+    kwargs: {}
   }
 }
 
