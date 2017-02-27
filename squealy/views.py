@@ -14,13 +14,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from jinjasql import JinjaSql
 
+from squealy.serializers import ChartSerializer
 from .exceptions import RequiredParameterMissingException,\
-                        DashboardNotFoundException, ChartNotFoundException
+                        DashboardNotFoundException, ChartNotFoundException, MalformedChartDataException
 from .transformers import *
 from .formatters import *
 from .parameters import *
 from .utils import SquealySettings
-from .table import Table, Column
+from .table import Table
 from .models import *
 from .validators import run_validation
 
@@ -101,12 +102,7 @@ class SqlApiView(APIView):
     def _run_transformations(self, table):
         if self.transformations:
             for transformation in self.transformations:
-                if '.' in transformation.get('name'):
-                    module_name, class_name = self.format.rsplit('.',1)
-                    module = importlib.import_module(module_name)
-                    transformer_instance = getattr(module, class_name)()
-                else:
-                    transformer_instance = eval(transformation.get('name').title())()
+                transformer_instance = eval(transformation.get('name').title())()
                 kwargs = transformation.get("kwargs") if transformation.get("kwargs") else {}
                 table = transformer_instance.transform(table, **kwargs)
             return table
@@ -124,21 +120,21 @@ class SqlApiView(APIView):
 
     def parse_params(self, params):
         for index, param in enumerate(self.parameters):
+            # Check for missing required parameters
+            mandatory = self.parameters[index].get('mandatory',
+                                                               False)
+            if mandatory and params.get(param['name']) is None:
+                raise RequiredParameterMissingException("Parameter required: " + param['name'])
+
             # Default values
             if self.parameters[index].get('default_value') and\
                     self.parameters[index].get('default_value') != '' and\
                     params.get(param['name']) in [None, '']:
-                params[param.name] = self.parameters[index].get('default_value')
+                params[param['name']] = self.parameters[index].get('default_value')
 
-            # Check for missing required parameters
-            is_parameter_optional = self.parameters[index].get('mandatory',
-                                                               False)
-            if not is_parameter_optional and not params.get(param):
-                raise RequiredParameterMissingException("Parameter required: "+param)
             # Formatting parameters
             parameter_type_str = self.parameters[index].get("data_type", "String")
             kwargs = self.parameters[index].get("kwargs", {})
-
             if '.' in parameter_type_str:
                 module_name, class_name = parameter_type_str.rsplit('.', 1)
                 module = importlib.import_module(module_name)
@@ -227,43 +223,54 @@ class DatabaseView(APIView):
             return Response({'tables': tables})
 
 
-class YamlGeneratorView(APIView):
+# class YamlGeneratorView(APIView):
+#     permission_classes = SquealySettings.get_default_permission_classes()
+#     authentication_classes = [SessionAuthentication, BasicAuthentication]
+#     authentication_classes.extend(SquealySettings.get_default_authentication_classes())
+#
+#     def post(self, request, *args, **kwargs):
+#         try:
+#             json_data = request.data.get('yamlData')
+#             ApiGenerator._save_apis_to_file(json_data)
+#             return Response({}, status.HTTP_200_OK)
+#         except Exception as e:
+#             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
+#
+#     def get(self, request, *args, **kwargs):
+#         try:
+#             directory = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
+#             if not os.path.exists(directory):
+#                 os.makedirs(directory)
+#             file_name = SquealySettings.get('YAML_FILE_NAME', 'squealy-api.yaml')
+#             full_path = join(directory,file_name)
+#             if isfile(full_path):
+#                 with open(full_path,'r') as f:
+#                     try:
+#                         api_list = []
+#                         api_data = yaml.safe_load_all(f)
+#                         for api in api_data:
+#                             api_list.append(api)
+#                         return Response(api_list, status.HTTP_200_OK)
+#                     except yaml.YAMLError as exc:
+#                         return Response({'yaml error': str(exc)}, status.HTTP_400_BAD_REQUEST)
+#                 f.close()
+#                 return Response({}, status.HTTP_200_OK)
+#             else:
+#                 return Response({'message': 'No api generated.'}, status.HTTP_204_NO_CONTENT)
+#
+#         except Exception as e:
+#             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
+
+
+class ChartsLoaderView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
-    def post(self, request, *args, **kwargs):
-        try:
-            json_data = request.data.get('yamlData')
-            ApiGenerator._save_apis_to_file(json_data)
-            return Response({}, status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
-
     def get(self, request, *args, **kwargs):
-        try:
-            directory = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-            file_name = SquealySettings.get('YAML_FILE_NAME', 'squealy-api.yaml')
-            full_path = join(directory,file_name)
-            if isfile(full_path):
-                with open(full_path,'r') as f:
-                    try:
-                        api_list = []
-                        api_data = yaml.safe_load_all(f)
-                        for api in api_data:
-                            api_list.append(api)
-                        return Response(api_list, status.HTTP_200_OK)
-                    except yaml.YAMLError as exc:
-                        return Response({'yaml error': str(exc)}, status.HTTP_400_BAD_REQUEST)
-                f.close()
-                return Response({}, status.HTTP_200_OK)
-            else:
-                return Response({'message': 'No api generated.'}, status.HTTP_204_NO_CONTENT)
-
-        except Exception as e:
-            return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
+        charts = Chart.objects.all()
+        response = ChartSerializer(charts, many=True).data
+        return Response(response)
 
 
 class DynamicApiRouter(APIView):
@@ -281,21 +288,58 @@ class DynamicApiRouter(APIView):
         response = view_class.as_view()(request)
         return response
 
+    '''
+    To save or update chart objects
+    '''
     def post(self, request):
-        file_dir = SquealySettings.get('YAML_PATH', join(settings.BASE_DIR, 'yaml'))
-        filename = SquealySettings.get('YAML_FILE_NAME', 'squealy-api.yaml')
-        file_path = join(file_dir, filename)
-        apis = []
-        if isfile(file_path):
-            with open(file_path) as f:
-                api_config = yaml.load_all(f)
-                for api in api_config:
-                    apis.append(api)
-        new_api = request.data
-        new_api['id'] = len(apis)+1
-        apis.append(new_api)
-        ApiGenerator._save_apis_to_file(apis)
-        return Response({}, status.HTTP_200_OK)
+        try:
+            charts = request.data['charts']
+            chart_ids = []
+            for data in charts:
+                chart_object = Chart(id=data['id'], name=data['name'], url=data['url'], query=data['query'],
+                                     type=data['type'], options=data['options'])
+                chart_object.save()
+                chart_ids.append(chart_object.id)
+
+                # Parsing transformations
+                transformation_ids = []
+                for transformation in data['transformations']:
+                    existing_object = Transformation.objects.filter(chart=chart_object,
+                                                                    name=transformation['name']).first()
+                    id = existing_object.id if existing_object else None
+                    transformation_object = Transformation(id=id, name=transformation['name'],
+                                                           kwargs=transformation.get('kwargs', None),chart=chart_object)
+                    transformation_object.save()
+                    transformation_ids.append(transformation_object.id)
+                Transformation.objects.filter(chart=chart_object).exclude(id__in=transformation_ids).all().delete()
+
+                # Parsing Parameters
+                parameter_ids = []
+                for parameter in data['parameters']:
+                    existing_object = Parameter.objects.filter(chart=chart_object, name=parameter['name']).first()
+                    id = existing_object.id if existing_object else None
+                    parameter_object = Parameter(id=id, name=parameter['name'], data_type=parameter['data_type'],
+                                                 mandatory=parameter['mandatory'], default_value=parameter['default_value'],
+                                                 chart=chart_object, kwargs=parameter['kwargs'])
+                    parameter_object.save()
+                    parameter_ids.append(parameter_object.id)
+
+                Parameter.objects.filter(chart=chart_object).exclude(id__in=parameter_ids).all().delete()
+
+                # Parsing validations
+                validation_ids = []
+                for validation in data['validations']:
+                    existing_object = Validation.objects.filter(chart=chart_object, name=validation['name']).first()
+                    id = existing_object.id if existing_object else None
+                    validation_object = Validation(id=id, query=validation['query'],name=validation['name'], chart=chart_object)
+                    validation_object.save()
+                    validation_ids.append(validation_object.id)
+                Validation.objects.filter(chart=chart_object).exclude(id__in=validation_ids).all().delete()
+
+        except KeyError as e:
+            raise MalformedChartDataException("Key Error - "+ str(e.args))
+
+        return Response(chart_ids, status.HTTP_200_OK)
 
 @permission_classes(SquealySettings.get('Authoring_Interface_Permission_Classes', (IsAdminUser, )))
 class DashboardTemplateView(APIView):

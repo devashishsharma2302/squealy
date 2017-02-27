@@ -28,7 +28,7 @@ class Chart(models.Model):
     name = models.CharField(max_length=50)
     # To accommodate custom formatting function paths too.
     format = models.CharField(max_length=50,
-                              default="SimpleFormatter")
+                              default="GoogleChartsFormatter")
     type = models.CharField(max_length=20, default="ColumnChart")
     options = fields.JSONField(null=True, blank=True)
 
@@ -60,6 +60,7 @@ class Parameter(models.Model):
     mandatory = models.BooleanField(default=True)
     default_value = models.CharField(max_length=200, null=True, blank=True)
     type = models.IntegerField(default=1, choices=PARAMETER_TYPES)
+    kwargs = fields.JSONField(null=True, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -86,6 +87,7 @@ class Validation(models.Model):
 
     chart = models.ForeignKey(Chart, related_name='validations')
     query = models.TextField()
+    name = models.CharField(max_length=200)
 
     def __unicode__(self):
         return self.chart.name

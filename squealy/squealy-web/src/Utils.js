@@ -185,12 +185,11 @@ export function getDefaultApiDefinition(apiIndex) {
 
 export function getEmptyParamDefinition(apiIndex) {
   return {
-    paramName: '',
-    customParamPath: '',
-    paramFormat: 'dateTime',
-    selectedValueFormat: '',
-    mandatoryField: true,
-    defaultValues: ''
+    name: '',
+    data_type: 'string',
+    mandatory: false,
+    default_value: '',
+    kwargs: {}
   }
 }
 

@@ -8,10 +8,10 @@ export default class MainComponent extends Component {
   render() {
     const { charts, chartAdditionHandler, chartDeletionHandler,
       chartSelectionHandler, selectedChartIndex, googleDefined,
-      selectedChartChangeHandler, onHandleTestButton, parameters} = this.props
+      selectedChartChangeHandler, onHandleTestButton, parameters, savedStatus, saveInProgress} = this.props
     return (
       <div className="full-height">
-        <NavHeader />
+        <NavHeader savedStatus={savedStatus} saveInProgress={saveInProgress}/>
         <div className="row side-menu-container">
           <div className="col-md-3 side-menu-parent">
             <SideMenu chartAdditionHandler={chartAdditionHandler} 
