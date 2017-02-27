@@ -42,7 +42,7 @@ export default class AuthoringInterfaceContainer extends Component {
   selectedChartChangeHandler = (key, value, callback=null) => {
     let charts = JSON.parse(JSON.stringify(this.state.charts))
     charts[this.state.selectedChartIndex][key] = value
-    this.setState({charts: charts}, ()=>console.log(this.state))
+    this.setState({charts: charts})
   }
 
   runSuccessHandler = (response) => {
