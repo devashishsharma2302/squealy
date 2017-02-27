@@ -14,10 +14,12 @@ export default class ParamDefinitionModal extends Component {
       paramDefinition: getEmptyParamDefinition()
     }
   }
+  editMode = false
+  editArrayIndex = -1
 
   //Function to open add param form and initialize form values
   addParamDefHandler = () => {
-    this.setState({ 
+    this.setState({
       showParamDefForm: true,
       paramDefinition: getEmptyParamDefinition(),
       selectedDataType: 'string'
@@ -29,7 +31,7 @@ export default class ParamDefinitionModal extends Component {
     this.setState({ showParamDefForm: false })
   }
 
-  //Function to change param definition. It can be Custom or Predefined type like Date, DateTime, String 
+  //Function to change param definition. It can be Custom or Predefined type like Date, DateTime, String
   onChangeParamDefType = (value) => {
     let currentParamDefinition = JSON.parse(JSON.stringify(this.state.paramDefinition))
     currentParamDefinition['data_type'] = this.state.selectedDataType
@@ -55,12 +57,14 @@ export default class ParamDefinitionModal extends Component {
   handleEditParam = (index) => {
     this.setState({ showParamDefForm: true }, () => {
       let currentParamDefinition = this.props.parameters[index]
+      this.editMode = true
+      this.editArrayIndex = index
       this.setState({
         selectedValue: currentParamDefinition.data_type,
         paramDefinition: currentParamDefinition
       })
     })
-    
+
   }
 
   deleteEntry = (index, fieldName) => {
@@ -72,9 +76,18 @@ export default class ParamDefinitionModal extends Component {
 
   saveParamHandler = () => {
     let selectedChartParamDef = [...this.props.parameters]
-    selectedChartParamDef.push(this.state.paramDefinition)
-    this.props.selectedChartChangeHandler('parameters', selectedChartParamDef)
-    this.setState({paramDefinition: getEmptyParamDefinition(), selectedValue: 'string'})
+    if (this.editMode) {
+      selectedChartParamDef[this.editArrayIndex] = this.state.paramDefinition
+    } else {
+      selectedChartParamDef.push(this.state.paramDefinition)
+    }
+
+    this.props.selectedChartChangeHandler('parameters', selectedChartParamDef,
+      () => {
+        this.setState({showParamDefForm: false})
+        this.editMode = false
+        this.editArrayIndex = -1
+      })
   }
 
   render() {
@@ -84,7 +97,7 @@ export default class ParamDefinitionModal extends Component {
         <div className='row add-modal-content'>
           <div className='col-md-12'>
             <label htmlFor='paramName' className='col-md-4'>Name: </label>
-            <input type='text' name='paramName' value={this.state.paramDefinition.name} 
+            <input type='text' name='paramName' value={this.state.paramDefinition.name}
               onChange={(e) => this.onChangeParamHandler('name', e.target.value)} />
           </div>
           <div className='col-md-12'>
@@ -96,11 +109,11 @@ export default class ParamDefinitionModal extends Component {
               selectedValue={this.state.selectedValue} />
           </div>
           {
-            (this.state.selectedValue === 'datetime' || this.state.selectedValue === 'date') 
+            (this.state.selectedValue === 'datetime' || this.state.selectedValue === 'date')
                 ? <div className='col-md-12'>
               <label htmlFor='selectedValueFormat' className='col-md-4'>Date/DateTime Format: </label>
-              <input type='text' name='selectedValueFormat' 
-                value={this.state.paramDefinition.kwargs.format} 
+              <input type='text' name='selectedValueFormat'
+                value={this.state.paramDefinition.kwargs.format}
                 onChange={(e) => this.onChangeParamHandler('kwargs', {'format': e.target.value})} />
             </div>
               : null
@@ -114,8 +127,8 @@ export default class ParamDefinitionModal extends Component {
           </div>
           <div className='col-md-12'>
             <label htmlFor='defaultValues' className='col-md-4'>Default Value: </label>
-            <input type='text' name='defaultValues' 
-              value={this.state.paramDefinition.default_value} 
+            <input type='text' name='defaultValues'
+              value={this.state.paramDefinition.default_value}
               onChange={(e) => this.onChangeParamHandler('default_value', e.target.value)} />
           </div>
           <div className='col-md-12 param-form-footer'>
@@ -150,7 +163,7 @@ export default class ParamDefinitionModal extends Component {
                         className='param-name'>{param.name}</td>
                       <td>{param.data_type}</td>
                       <td className="align-center clickable-element">
-                        <i className="fa fa-trash-o" aria-hidden="true" 
+                        <i className="fa fa-trash-o" aria-hidden="true"
                         onClick={() => this.deleteEntry(i, 'paramDefinition')} />
                       </td>
                     </tr>

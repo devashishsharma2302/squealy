@@ -58,6 +58,7 @@ export default class AuthoringInterfaceContainer extends Component {
       response.map(chart => {
         tempChart = chart
         tempChart.chartType = tempChart.type
+        tempChart.testParameters = {}
         charts.push(tempChart)
       })
       this.setState({charts: charts})
@@ -107,7 +108,7 @@ export default class AuthoringInterfaceContainer extends Component {
       transformations: this.state.charts[this.state.selectedChartIndex].transformations,
       parameters: this.state.charts[this.state.selectedChartIndex].parameters,
       validations: this.state.charts[this.state.selectedChartIndex].validations
-    } 
+    }
     postApiRequest(DOMAIN_NAME+'test/', payloadObj,
                     this.onSuccessTest, this.onErrorTest, 'table')
     //let tempParam = this.state.testData[this.state.selectedApiIndex].apiParams || {}
@@ -162,7 +163,7 @@ export default class AuthoringInterfaceContainer extends Component {
         newChart = getEmptyApiDefinition()
         newChart.name = name
         newChart.url = name.replace(/ /g, '-').toLowerCase()
-    charts.push(newChart) 
+    charts.push(newChart)
     this.setState({
       charts: charts
     }, this.saveCharts)
@@ -175,7 +176,6 @@ export default class AuthoringInterfaceContainer extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     if (nextState !== nextProps) {
-      //FIXME: Need to change hardcode localstorage key name. Later we will save as project name
       return true
     }
   }
@@ -185,7 +185,7 @@ export default class AuthoringInterfaceContainer extends Component {
     const { googleDefined } = this.props
     return (
       <div className="parent-div container-fluid">
-        <MainComponent 
+        <MainComponent
           charts={charts}
           saveInProgress={saveInProgress}
           savedStatus={savedStatus}
@@ -195,7 +195,7 @@ export default class AuthoringInterfaceContainer extends Component {
           chartAdditionHandler={this.chartAdditionHandler}
           chartSelectionHandler={this.chartSelectionHandler}
           chartDeletionHandler={this.chartDeletionHandler}
-          selectedChartChangeHandler={this.selectedChartChangeHandler} 
+          selectedChartChangeHandler={this.selectedChartChangeHandler}
           />
       </div>
     )

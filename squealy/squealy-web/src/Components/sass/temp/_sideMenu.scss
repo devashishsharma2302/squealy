@@ -18,20 +18,20 @@
     > ul {
       list-style: none;
       padding: 0;
-      position: relative;
       > li {
-        opacity: 1;
         margin-top: 2%;	
         margin-right: 15px;
         text-indent: 50px;
         height: 25px;
         padding-top: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         span {
           cursor: pointer;
         }
       }
       > li:hover, li:focus {
-        opacity: 0.6;
         span {
           color: $squealy-theme-blue;	
           text-decoration: underline;
@@ -47,7 +47,18 @@
       margin-right: -15px;
       text-indent: 65px;
     }
-    
+    .right-button-clicked {
+      opacity: 0.6;
+      background: $highlighted-left-menu;
+      margin-left: -15px;
+      margin-right: -15px;
+      text-indent: 65px !important;
+      span {
+        color: $squealy-theme-blue;	
+        text-decoration: underline;
+        font-weight: bold;
+      }
+    }
   }
 
   .side-menu-heading {
