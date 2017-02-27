@@ -33,7 +33,7 @@ class ParameterAdmin(admin.ModelAdmin):
         List display for ChartParameters in Django Admin
     """
     model = Parameter
-    list_display = ['chart', 'name', 'data_type', 'mandatory', 'default_value', 'type']
+    list_display = ['chart', 'name', 'data_type', 'mandatory', 'default_value', 'type', 'kwargs']
 
 
 class TransformationAdmin(admin.ModelAdmin):
@@ -49,7 +49,7 @@ class ValidationAdmin(admin.ModelAdmin):
         List display for Validations in Django Admin
     """
     model = Validation
-    list_display = ['chart', 'query']
+    list_display = ['chart', 'name', 'query']
 
 
 admin.site.register(Account, AccountAdmin)

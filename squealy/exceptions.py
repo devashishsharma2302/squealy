@@ -35,3 +35,8 @@ class DashboardNotFoundException(APIException):
 class ChartNotFoundException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     pass
+
+
+class MalformedChartDataException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    pass
