@@ -28,7 +28,7 @@ export const RESPONSE_FORMATS = {
 export const PARAM_FORMAT_OPTIONS = [
   {
     label: 'DateTime',
-    value: 'dateTime'
+    value: 'datetime'
   }, {
     label: 'String',
     value: 'string'
@@ -84,7 +84,7 @@ export const INCORRECT_JSON_ERROR = 'You have not entered a valid json'
 export const FILTER_TYPES = [
   {
     label: 'DateTime',
-    value: 'dateTime'
+    value: 'datetime'
   }, {
     label: 'Input',
     value: 'input'
