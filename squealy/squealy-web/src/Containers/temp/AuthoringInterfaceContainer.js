@@ -68,7 +68,6 @@ export default class AuthoringInterfaceContainer extends Component {
     }
   }
 
-
   selectedChartChangeHandler = (key, value, callback=null, index) => {
     let charts = JSON.parse(JSON.stringify(this.state.charts)),
       chartIndex = index ? index : this.state.selectedChartIndex
@@ -99,15 +98,35 @@ export default class AuthoringInterfaceContainer extends Component {
   }
 
   onHandleTestButton = () => {
-    //TODO: make API POST call
+    const selectedChart = this.state.charts[this.state.selectedChartIndex]
+    let transformations = selectedChart.transformations.map(transformation => {
+        let kwargs = null
+        if(transformation.value === 'split') {
+          kwargs = {
+            pivot_column: selectedChart.pivotColumn.value,
+            metric_column: selectedChart.metric.value
+          }
+        }
+        if(transformation.value === 'merge') {
+          kwargs = {
+            columns_to_merge: selectedChart.columnsToMerge.map(column=>column.value),
+            new_column_name: selectedChart.newColumnName
+          }
+        }
+        return {
+          name: transformation.value,
+          kwargs: kwargs
+      }
+    })
+
     let payloadObj = {
       config: {
-        query: this.state.charts[this.state.selectedChartIndex].query
+        query: selectedChart.query
       },
-      params: this.state.charts[this.state.selectedChartIndex].testParameters,
-      transformations: this.state.charts[this.state.selectedChartIndex].transformations,
-      parameters: this.state.charts[this.state.selectedChartIndex].parameters,
-      validations: this.state.charts[this.state.selectedChartIndex].validations
+      params: selectedChart.testParameters,
+      transformations: transformations,
+      parameters: selectedChart.parameters,
+      validations: selectedChart.validations
     }
     postApiRequest(DOMAIN_NAME+'test/', payloadObj,
                     this.onSuccessTest, this.onErrorTest, 'table')
