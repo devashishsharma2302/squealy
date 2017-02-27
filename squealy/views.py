@@ -289,6 +289,14 @@ class DynamicApiRouter(APIView):
         return response
 
     '''
+    To delete a chart
+    '''
+    def delete(self, request):
+        data = request.data
+        Chart.objects.filter(id= data['id']).first().delete()
+        return Response({})
+
+    '''
     To save or update chart objects
     '''
     def post(self, request):
