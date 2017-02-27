@@ -76,7 +76,7 @@ export default class AuthoringInterfaceContainer extends Component {
     if (key === 'name') {
       charts[chartIndex].url = value.replace(/ /g, '-').toLowerCase()
     }
-    this.setState({charts: charts}, ()=>{console.log(this.state);this.saveCharts(); (callback) && callback()})
+    this.setState({charts: charts}, ()=>{this.saveCharts(); (callback) && callback()})
   }
 
   runSuccessHandler = (response) => {
