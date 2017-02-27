@@ -4,11 +4,7 @@ import { GOOGLE_CHART_TYPE_OPTIONS, GRID_WIDTH_OPTIONS }  from '../../Constant'
 export default class GoogleChartWrapper extends Component {
 
   componentDidMount() {
-    if (JSON.stringify(this.props.chartData) !== '{}') {
-      if (this.props.chartData) {
-        this.renderChart()
-      }
-    }
+    this.renderChart()
   }
 
   renderChart = () => {
@@ -32,9 +28,7 @@ export default class GoogleChartWrapper extends Component {
   }
 
   componentDidUpdate() {
-    if (this.props.chartData) {
-      this.renderChart()
-    }
+    this.renderChart()
   }
 
   render() {
