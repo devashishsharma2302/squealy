@@ -6,6 +6,7 @@ import { Effect } from 'react-notification-badge'
 import ParamDefinitionModal from './ParamDefinitionModal'
 import TestParametersModal from './TestParametersModal'
 import ValidationsModal from './ValidationsModal'
+import TransformationsModal from './TransformationsModal'
 import transformationIcon from './../../images/transformations_icon_white.png'
 import validationIcon from './../../images/validation_icon_white.png'
 import exportIcon from './../../images/export_icon_white.png'
@@ -17,7 +18,8 @@ export default class TabsComponent extends Component {
     this.state = {
       showParamDefModal: false,
       showTestParamModal: false,
-      showValidationsModal: false
+      showValidationsModal: false,
+      showTransformationsModal: false
     }
   }
 
@@ -27,11 +29,24 @@ export default class TabsComponent extends Component {
   }
 
   render() {
-    const { transformations, onHandleTestButton, parameters, testParameters, selectedChartChangeHandler, validations} = this.props
+    const {
+      transformations,
+      onHandleTestButton,
+      parameters,
+      testParameters,
+      selectedChartChangeHandler,
+      validations,
+      chartColumns,
+      pivotColumn,
+      metric,
+      columnsToMerge,
+      newColumnName
+    } = this.props
     const {
       showValidationsModal,
       showParamDefModal,
-      showTestParamModal
+      showTestParamModal,
+      showTransformationsModal
     } = this.state
     return (
       <div>
@@ -52,17 +67,28 @@ export default class TabsComponent extends Component {
           bsStyle='primary'
           className='tab-component'
           onClick={() => this.modalVisibilityHandler('showValidationsModal')}>
-          <img src={validationIcon} alt="squealyValidation"/>Validations</Button>
-        <Button bsStyle='primary' className='tab-component'>
+          <img src={validationIcon} alt="squealyValidation"/>
+            Validations
+            <NotificationBadge 
+              count={validations.length} 
+              effect={[null, null, null, null]} 
+              className='transformations-count-badge'
+            />
+        </Button>
+        <Button
+          bsStyle='primary'
+          className='tab-component'
+          onClick={()=>this.modalVisibilityHandler('showTransformationsModal')}
+        >
           <img src={transformationIcon} alt="transformationIcon"/>Transformations
-          <NotificationBadge count={transformations.length} 
-            effect={[null, null, null, null]} 
+          <NotificationBadge count={transformations.length}
+            effect={[null, null, null, null]}
             className='transformations-count-badge' />
         </Button>
         <Button bsStyle='primary' className='tab-component'>
           <img src={exportIcon} alt="exportIcon"/>Export</Button>
         {
-          showParamDefModal && 
+          showParamDefModal &&
           <ParamDefinitionModal
             selectedChartChangeHandler={selectedChartChangeHandler}
             closeModal={()=>this.modalVisibilityHandler('showParamDefModal')}
@@ -70,7 +96,7 @@ export default class TabsComponent extends Component {
             parameters={parameters}/>
         }
         {
-          showTestParamModal && 
+          showTestParamModal &&
           <TestParametersModal
             selectedChartChangeHandler={selectedChartChangeHandler}
             closeModal={()=>this.modalVisibilityHandler('showTestParamModal')}
@@ -78,12 +104,26 @@ export default class TabsComponent extends Component {
             testParameters={testParameters}/>
         }
         {
-          showValidationsModal && 
+          showValidationsModal &&
           <ValidationsModal
             selectedChartChangeHandler={selectedChartChangeHandler}
             closeModal={()=>this.modalVisibilityHandler('showValidationsModal')}
             showModal={showValidationsModal}
             validations={validations}/>
+        }
+        {
+          showTransformationsModal &&
+          <TransformationsModal
+            selectedChartChangeHandler={selectedChartChangeHandler}
+            closeModal={()=>this.modalVisibilityHandler('showTransformationsModal')}
+            showModal={showTransformationsModal}
+            transformations={transformations}
+            chartColumns={chartColumns}
+            pivotColumn={pivotColumn}
+            metric={metric}
+            columnsToMerge={columnsToMerge}
+            newColumnName={newColumnName}
+          />
         }
       </div>
     )

@@ -118,6 +118,7 @@ function getCookie(name) {
 export function getEmptyApiDefinition() {
   return {
     id: null,
+    type: 'ColumnChart',
     name: 'first chart',
     url: 'first-chart',
     query: '',
@@ -127,7 +128,11 @@ export function getEmptyApiDefinition() {
     transformations: [],
     type: 'ColumnChart',
     options: {},
-    chartData: {}
+    chartData: {},
+    pivotColumn: undefined,
+    metric: undefined,
+    columnsToMerge: undefined,
+    newColumnName: ''
   }
 }
 

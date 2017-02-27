@@ -72,6 +72,7 @@ export default class AuthoringInterfaceContainer extends Component {
       response.map(chart => {
         tempChart = chart
         tempChart.chartType = tempChart.type
+        tempChart.testParameters = {}
         charts.push(tempChart)
       })
       this.setState({charts: charts})
@@ -80,7 +81,6 @@ export default class AuthoringInterfaceContainer extends Component {
     this.initializeState()
     }
   }
-
 
   selectedChartChangeHandler = (key, value, callback=null, index) => {
     let charts = JSON.parse(JSON.stringify(this.state.charts)),
@@ -112,16 +112,36 @@ export default class AuthoringInterfaceContainer extends Component {
   }
 
   onHandleTestButton = () => {
-    //TODO: make API POST call
+    const selectedChart = this.state.charts[this.state.selectedChartIndex]
+    let transformations = selectedChart.transformations.map(transformation => {
+        let kwargs = null
+        if(transformation.value === 'split') {
+          kwargs = {
+            pivot_column: selectedChart.pivotColumn.value,
+            metric_column: selectedChart.metric.value
+          }
+        }
+        if(transformation.value === 'merge') {
+          kwargs = {
+            columns_to_merge: selectedChart.columnsToMerge.map(column=>column.value),
+            new_column_name: selectedChart.newColumnName
+          }
+        }
+        return {
+          name: transformation.value,
+          kwargs: kwargs
+      }
+    })
+
     let payloadObj = {
       config: {
-        query: this.state.charts[this.state.selectedChartIndex].query
+        query: selectedChart.query
       },
-      params: this.state.charts[this.state.selectedChartIndex].testParameters,
-      transformations: this.state.charts[this.state.selectedChartIndex].transformations,
-      parameters: this.state.charts[this.state.selectedChartIndex].parameters,
-      validations: this.state.charts[this.state.selectedChartIndex].validations
-    } 
+      params: selectedChart.testParameters,
+      transformations: transformations,
+      parameters: selectedChart.parameters,
+      validations: selectedChart.validations
+    }
     postApiRequest(DOMAIN_NAME+'test/', payloadObj,
                     this.onSuccessTest, this.onErrorTest, 'table')
     //let tempParam = this.state.testData[this.state.selectedApiIndex].apiParams || {}
@@ -177,7 +197,7 @@ export default class AuthoringInterfaceContainer extends Component {
         newChart = getEmptyApiDefinition()
         newChart.name = name
         newChart.url = name.replace(/ /g, '-').toLowerCase()
-    charts.push(newChart) 
+    charts.push(newChart)
     this.setState({
       charts: charts
     }, this.saveCharts)
@@ -190,7 +210,6 @@ export default class AuthoringInterfaceContainer extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     if (nextState !== nextProps) {
-      //FIXME: Need to change hardcode localstorage key name. Later we will save as project name
       return true
     }
   }
@@ -200,7 +219,7 @@ export default class AuthoringInterfaceContainer extends Component {
     const { googleDefined } = this.props
     return (
       <div className="parent-div container-fluid">
-        <MainComponent 
+        <MainComponent
           charts={charts}
           saveInProgress={saveInProgress}
           savedStatus={savedStatus}
@@ -210,7 +229,7 @@ export default class AuthoringInterfaceContainer extends Component {
           chartAdditionHandler={this.chartAdditionHandler}
           chartSelectionHandler={this.chartSelectionHandler}
           chartDeletionHandler={this.chartDeletionHandler}
-          selectedChartChangeHandler={this.selectedChartChangeHandler} 
+          selectedChartChangeHandler={this.selectedChartChangeHandler}
           />
       </div>
     )

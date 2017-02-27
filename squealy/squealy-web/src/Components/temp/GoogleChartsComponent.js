@@ -9,14 +9,15 @@ export default class GoogleChartWrapper extends Component {
 
   renderChart = () => {
     const { chartData, chartType, options, id } = this.props
-    if (chartData.chartType === 'Table' && chartData.cols) {
-      chartData.cols.map((col, index) => {
+    let tableData = JSON.parse(JSON.stringify(chartData))
+    if (chartType === 'Table' && chartData.cols) {
+      tableData.cols.map((col, index) => {
         col.type = 'string'
       })
     }
     let wrapper = new google.visualization.ChartWrapper({
       chartType: (chartType) ? chartType : 'ColumnChart',
-      dataTable: chartData,
+      dataTable: tableData,
       containerId: id,
       options: {
         ...options,
