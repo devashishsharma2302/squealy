@@ -71,7 +71,6 @@ export default class AuthoringInterfaceContainer extends Component {
   selectedChartChangeHandler = (key, value, callback=null, index) => {
     let charts = JSON.parse(JSON.stringify(this.state.charts)),
       chartIndex = index ? index : this.state.selectedChartIndex
-    console.log(key, value, chartIndex)
     charts[chartIndex][key] = value
     if (key === 'name') {
       charts[chartIndex].url = value.replace(/ /g, '-').toLowerCase()
