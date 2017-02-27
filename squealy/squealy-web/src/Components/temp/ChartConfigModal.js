@@ -22,6 +22,7 @@ export default class ChartConfigModal extends Component {
     const { config } = this.state
     let newConfig = (config)?JSON.parse(config):{}
     this.props.selectedChartChangeHandler('options', newConfig)
+    this.props.closeModal()
   }
 
   render () {

@@ -126,7 +126,10 @@ export function getEmptyApiDefinition() {
     transformations: [],
     chartType: 'ColumnChart',
     options: {},
-    chartData: {}
+    chartData: {},
+    pivotColumn: undefined,
+    metric: undefined,
+    columnsToMerge: undefined
   }
 }
 

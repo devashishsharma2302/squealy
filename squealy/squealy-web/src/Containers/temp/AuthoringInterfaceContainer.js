@@ -42,7 +42,7 @@ export default class AuthoringInterfaceContainer extends Component {
   selectedChartChangeHandler = (key, value, callback=null) => {
     let charts = JSON.parse(JSON.stringify(this.state.charts))
     charts[this.state.selectedChartIndex][key] = value
-    this.setState({charts: charts}, ()=>(callback) && callback())
+    this.setState({charts: charts}, ()=>console.log(this.state))
   }
 
   runSuccessHandler = (response) => {
@@ -65,12 +65,18 @@ export default class AuthoringInterfaceContainer extends Component {
   }
 
   onHandleTestButton = () => {
-    //TODO: make API POST call
     const selectedChart = this.state.charts[this.state.selectedChartIndex]
     let transformations = selectedChart.transformations.map(transformation => {
+        let kwargs = null
+        if(transformation.value === 'split') {
+          kwargs = {
+            pivot_column: this.state.pivotColumn,
+            metric_column: this.state.metric
+          }
+        }
         return {
           name: transformation.value,
-          kwargs: null
+          kwargs: kwargs
       }
     })
 

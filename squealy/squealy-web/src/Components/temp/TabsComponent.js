@@ -29,7 +29,18 @@ export default class TabsComponent extends Component {
   }
 
   render() {
-    const { transformations, onHandleTestButton, parameters, testParameters, selectedChartChangeHandler, validations} = this.props
+    const {
+      transformations,
+      onHandleTestButton,
+      parameters,
+      testParameters,
+      selectedChartChangeHandler,
+      validations,
+      chartColumns,
+      pivotColumn,
+      metric,
+      columnsToMerge
+    } = this.props
     const {
       showValidationsModal,
       showParamDefModal,
@@ -55,7 +66,14 @@ export default class TabsComponent extends Component {
           bsStyle='primary'
           className='tab-component'
           onClick={() => this.modalVisibilityHandler('showValidationsModal')}>
-          <img src={validationIcon} alt="squealyValidation"/>Validations</Button>
+          <img src={validationIcon} alt="squealyValidation"/>
+            Validations
+            <NotificationBadge 
+              count={validations.length} 
+              effect={[null, null, null, null]} 
+              className='transformations-count-badge'
+            />
+        </Button>
         <Button
           bsStyle='primary'
           className='tab-component'
@@ -99,6 +117,10 @@ export default class TabsComponent extends Component {
             closeModal={()=>this.modalVisibilityHandler('showTransformationsModal')}
             showModal={showTransformationsModal}
             transformations={transformations}
+            chartColumns={chartColumns}
+            pivotColumn={pivotColumn}
+            metric={metric}
+            columnsToMerge={columnsToMerge}
           />
         }
       </div>

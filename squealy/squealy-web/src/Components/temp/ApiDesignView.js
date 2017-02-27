@@ -10,7 +10,6 @@ export default class ApiDesignView extends Component {
       googleDefined,
       onHandleTestButton,
     } = this.props
-
     return (
       <div className="full-height">
         <div className="col-md-12 tabs-container">
@@ -20,7 +19,11 @@ export default class ApiDesignView extends Component {
             onHandleTestButton={onHandleTestButton}
             parameters={chart.parameters}
             testParameters={chart.testParameters}
-            validations={chart.validations}/>
+            validations={chart.validations}
+            chartColumns={chart.chartData.cols}
+            pivotColumn={chart.pivotColumn}
+            metric={chart.metric}
+            columnsToMerge={chart.columnsToMerge}/>
         </div>
         <div className="col-md-12">
           <QueryEditor 
