@@ -302,53 +302,51 @@ class DynamicApiRouter(APIView):
     '''
     def post(self, request):
         try:
-            charts = request.data['charts']
-            chart_ids = []
-            for data in charts:
-                chart_object = Chart(id=data['id'], name=data['name'], url=data['url'], query=data['query'],
-                                     type=data['type'], options=data['options'])
-                chart_object.save()
-                chart_ids.append(chart_object.id)
+            data = request.data['chart']
+            chart_object = Chart(id=data['id'], name=data['name'], url=data['url'], query=data['query'],
+                                 type=data['type'], options=data['options'])
+            chart_object.save()
+            chart_id = chart_object.id
 
-                # Parsing transformations
-                transformation_ids = []
-                for transformation in data['transformations']:
-                    existing_object = Transformation.objects.filter(chart=chart_object,
-                                                                    name=transformation['name']).first()
-                    id = existing_object.id if existing_object else None
-                    transformation_object = Transformation(id=id, name=transformation['name'],
-                                                           kwargs=transformation.get('kwargs', None),chart=chart_object)
-                    transformation_object.save()
-                    transformation_ids.append(transformation_object.id)
-                Transformation.objects.filter(chart=chart_object).exclude(id__in=transformation_ids).all().delete()
+            # Parsing transformations
+            transformation_ids = []
+            for transformation in data['transformations']:
+                existing_object = Transformation.objects.filter(chart=chart_object,
+                                                                name=transformation['name']).first()
+                id = existing_object.id if existing_object else None
+                transformation_object = Transformation(id=id, name=transformation['name'],
+                                                       kwargs=transformation.get('kwargs', None),chart=chart_object)
+                transformation_object.save()
+                transformation_ids.append(transformation_object.id)
+            Transformation.objects.filter(chart=chart_object).exclude(id__in=transformation_ids).all().delete()
 
-                # Parsing Parameters
-                parameter_ids = []
-                for parameter in data['parameters']:
-                    existing_object = Parameter.objects.filter(chart=chart_object, name=parameter['name']).first()
-                    id = existing_object.id if existing_object else None
-                    parameter_object = Parameter(id=id, name=parameter['name'], data_type=parameter['data_type'],
-                                                 mandatory=parameter['mandatory'], default_value=parameter['default_value'],
-                                                 chart=chart_object, kwargs=parameter['kwargs'])
-                    parameter_object.save()
-                    parameter_ids.append(parameter_object.id)
+            # Parsing Parameters
+            parameter_ids = []
+            for parameter in data['parameters']:
+                existing_object = Parameter.objects.filter(chart=chart_object, name=parameter['name']).first()
+                id = existing_object.id if existing_object else None
+                parameter_object = Parameter(id=id, name=parameter['name'], data_type=parameter['data_type'],
+                                             mandatory=parameter['mandatory'], default_value=parameter['default_value'],
+                                             chart=chart_object, kwargs=parameter['kwargs'])
+                parameter_object.save()
+                parameter_ids.append(parameter_object.id)
 
-                Parameter.objects.filter(chart=chart_object).exclude(id__in=parameter_ids).all().delete()
+            Parameter.objects.filter(chart=chart_object).exclude(id__in=parameter_ids).all().delete()
 
-                # Parsing validations
-                validation_ids = []
-                for validation in data['validations']:
-                    existing_object = Validation.objects.filter(chart=chart_object, name=validation['name']).first()
-                    id = existing_object.id if existing_object else None
-                    validation_object = Validation(id=id, query=validation['query'],name=validation['name'], chart=chart_object)
-                    validation_object.save()
-                    validation_ids.append(validation_object.id)
-                Validation.objects.filter(chart=chart_object).exclude(id__in=validation_ids).all().delete()
+            # Parsing validations
+            validation_ids = []
+            for validation in data['validations']:
+                existing_object = Validation.objects.filter(chart=chart_object, name=validation['name']).first()
+                id = existing_object.id if existing_object else None
+                validation_object = Validation(id=id, query=validation['query'],name=validation['name'], chart=chart_object)
+                validation_object.save()
+                validation_ids.append(validation_object.id)
+            Validation.objects.filter(chart=chart_object).exclude(id__in=validation_ids).all().delete()
 
         except KeyError as e:
             raise MalformedChartDataException("Key Error - "+ str(e.args))
 
-        return Response(chart_ids, status.HTTP_200_OK)
+        return Response(chart_id, status.HTTP_200_OK)
 
 @permission_classes(SquealySettings.get('Authoring_Interface_Permission_Classes', (IsAdminUser, )))
 class DashboardTemplateView(APIView):
