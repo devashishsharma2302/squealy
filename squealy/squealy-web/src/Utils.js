@@ -132,7 +132,9 @@ export function getEmptyApiDefinition() {
     pivotColumn: undefined,
     metric: undefined,
     columnsToMerge: undefined,
-    newColumnName: ''
+    newColumnName: '',
+    apiError: false,
+    apiErrorMsg: ''
   }
 }
 

@@ -12,12 +12,9 @@ export default class AuthoringInterfaceContainer extends Component {
     this.state = {
       charts: [getEmptyApiDefinition()],
       selectedChartIndex: 0,
-      apiError: false,
-      apiErrorMsg: '',
       saveInProgress: false,
       savedStatus: true
     }
-
   }
 
   initializeState = () => {
@@ -39,7 +36,7 @@ export default class AuthoringInterfaceContainer extends Component {
     this.setState({'savedStatus': true, 'saveInProgress': false})
   }
 
-  onChartSaveError = () => {
+  onChartSaveError = (e) => {
     this.setState({'savedStatus': false, 'saveInProgress': false})
   }
 
@@ -78,23 +75,19 @@ export default class AuthoringInterfaceContainer extends Component {
     this.setState({charts: charts}, ()=>{this.saveCharts(); (callback) && callback()})
   }
 
-  runSuccessHandler = (response) => {
-    //TODO: post processing of response to get the chart data
-    this.chartDefinitionChangeHandler('chartData', response)
-  }
-
-  runErrorHandler  = (error) => {
-    this.setState({apiError: true, apiErrorMsg: error})
-  }
-
   onSuccessTest = (data) => {
     let currentChartData = [...this.state.charts]
     currentChartData[this.state.selectedChartIndex]['chartData'] = data
+    currentChartData[this.state.selectedChartIndex].apiError = false
+    currentChartData[this.state.selectedChartIndex].apiErrorMsg = null
     this.setState({charts: currentChartData})
   }
 
-  onErrorTest = (errorLog) => {
-    console.log(errorLog)
+  onErrorTest = (e) => {
+    let charts = JSON.parse(JSON.stringify(this.state.charts))
+    charts[this.state.selectedChartIndex].apiError = true
+    charts[this.state.selectedChartIndex].apiErrorMsg = e.responseJSON.error
+    this.setState({charts: charts})
   }
 
   onHandleTestButton = () => {

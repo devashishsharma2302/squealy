@@ -34,6 +34,8 @@ export default class ApiDesignView extends Component {
         </div>
         <div className="col-md-12">
           <ResultSection
+            isError={chart.apiError}
+            errorMessage={chart.apiErrorMsg}
             chartData={chart.chartData}
             options={chart.options}
             chartType={chart.chartType}

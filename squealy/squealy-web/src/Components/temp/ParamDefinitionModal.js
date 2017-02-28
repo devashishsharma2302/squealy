@@ -151,6 +151,7 @@ export default class ParamDefinitionModal extends Component {
               <th>Name</th>
               <th>Test value</th>
               <th>Type</th>
+              <th>Default Value</th>
               <th className="align-center clickable-element">
                 <i className="fa fa-plus"
                   aria-hidden="true" data-toggle="modal"
@@ -169,6 +170,7 @@ export default class ParamDefinitionModal extends Component {
                         className='param-name'>{param.name}</td>
                       <td>{param.test_value}</td>
                       <td>{param.data_type}</td>
+                      <td>{param.default_value}</td>
                       <td className="align-center clickable-element">
                         <i className="fa fa-trash-o" aria-hidden="true"
                         onClick={() => this.deleteEntry(i, 'paramDefinition')} />
