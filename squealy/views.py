@@ -1,9 +1,9 @@
 import importlib
 import os
-
+from itertools import groupby
 from os.path import join, isfile
 
-from django.db import connections
+from django.db import connections, connection
 from django.shortcuts import render
 from django.conf import settings
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -24,6 +24,8 @@ from .utils import SquealySettings
 from .table import Table
 from .models import *
 from .validators import run_validation
+
+from django.db import transaction
 
 jinjasql = JinjaSql()
 
@@ -313,44 +315,48 @@ class DynamicApiRouter(APIView):
             transformation_ids = []
             existing_transformations = {transformation.name: transformation.id
                                         for transformation in chart_object.transformations.all()}
-            for transformation in data['transformations']:
-                id = existing_transformations.get(transformation['name'], None)
-                transformation_object = Transformation(id=id, name=transformation['name'],
-                                                       kwargs=transformation.get('kwargs', None),chart=chart_object)
-                transformation_object.save()
-                transformation_ids.append(transformation_object.id)
+
+            with transaction.atomic():
+                for transformation in data['transformations']:
+                    id = existing_transformations.get(transformation['name'], None)
+                    transformation_object = Transformation(id=id, name=transformation['name'],
+                                                           kwargs=transformation.get('kwargs', None),chart=chart_object)
+                    transformation_object.save()
+                    transformation_ids.append(transformation_object.id)
             Transformation.objects.filter(chart=chart_object).exclude(id__in=transformation_ids).all().delete()
 
             # Parsing Parameters
             parameter_ids = []
             existing_parameters = {param.name: param.id
                                    for param in chart_object.parameters.all()}
-            for parameter in data['parameters']:
-                id = existing_parameters.get(parameter['name'], None)
-                parameter_object = Parameter(id=id, name=parameter['name'], data_type=parameter['data_type'],
-                                             mandatory=parameter['mandatory'], default_value=parameter['default_value'],
-                                             test_value=parameter['test_value'], chart=chart_object,
-                                             kwargs=parameter['kwargs'])
-                parameter_object.save()
-                parameter_ids.append(parameter_object.id)
-
+            with transaction.atomic():
+                for parameter in data['parameters']:
+                    id = existing_parameters.get(parameter['name'], None)
+                    parameter_object = Parameter(id=id, name=parameter['name'], data_type=parameter['data_type'],
+                                                 mandatory=parameter['mandatory'], default_value=parameter['default_value'],
+                                                 test_value=parameter['test_value'], chart=chart_object,
+                                                 kwargs=parameter['kwargs'])
+                    parameter_object.save()
+                    parameter_ids.append(parameter_object.id)
             Parameter.objects.filter(chart=chart_object).exclude(id__in=parameter_ids).all().delete()
 
             # Parsing validations
             validation_ids = []
             existing_validations = {validation.name: validation.id
-                                   for validation in chart_object.validations.all()}
-            for validation in data['validations']:
-                id = existing_validations.get(validation['name'], None)
-                validation_object = Validation(id=id, query=validation['query'],name=validation['name'], chart=chart_object)
-                validation_object.save()
-                validation_ids.append(validation_object.id)
+                                    for validation in chart_object.validations.all()}
+            with transaction.atomic():
+                for validation in data['validations']:
+                    id = existing_validations.get(validation['name'], None)
+                    validation_object = Validation(id=id, query=validation['query'],name=validation['name'], chart=chart_object)
+                    validation_object.save()
+                    validation_ids.append(validation_object.id)
             Validation.objects.filter(chart=chart_object).exclude(id__in=validation_ids).all().delete()
 
         except KeyError as e:
             raise MalformedChartDataException("Key Error - "+ str(e.args))
 
         return Response(chart_id, status.HTTP_200_OK)
+
 
 @permission_classes(SquealySettings.get('Authoring_Interface_Permission_Classes', (IsAdminUser, )))
 class DashboardTemplateView(APIView):
