@@ -307,13 +307,14 @@ class DynamicApiRouter(APIView):
                                  type=data['type'], options=data['options'])
             chart_object.save()
             chart_id = chart_object.id
+            Chart.objects.all().prefetch_related('transformations', 'parameters', 'validations')
 
             # Parsing transformations
             transformation_ids = []
+            existing_transformations = {transformation.name: transformation.id
+                                        for transformation in chart_object.transformations.all()}
             for transformation in data['transformations']:
-                existing_object = Transformation.objects.filter(chart=chart_object,
-                                                                name=transformation['name']).first()
-                id = existing_object.id if existing_object else None
+                id = existing_transformations.get(transformation['name'], None)
                 transformation_object = Transformation(id=id, name=transformation['name'],
                                                        kwargs=transformation.get('kwargs', None),chart=chart_object)
                 transformation_object.save()
@@ -322,9 +323,10 @@ class DynamicApiRouter(APIView):
 
             # Parsing Parameters
             parameter_ids = []
+            existing_parameters = {param.name: param.id
+                                   for param in chart_object.parameters.all()}
             for parameter in data['parameters']:
-                existing_object = Parameter.objects.filter(chart=chart_object, name=parameter['name']).first()
-                id = existing_object.id if existing_object else None
+                id = existing_parameters.get(parameter['name'], None)
                 parameter_object = Parameter(id=id, name=parameter['name'], data_type=parameter['data_type'],
                                              mandatory=parameter['mandatory'], default_value=parameter['default_value'],
                                              chart=chart_object, kwargs=parameter['kwargs'])
@@ -335,9 +337,10 @@ class DynamicApiRouter(APIView):
 
             # Parsing validations
             validation_ids = []
+            existing_validations = {validation.name: validation.id
+                                   for validation in chart_object.validations.all()}
             for validation in data['validations']:
-                existing_object = Validation.objects.filter(chart=chart_object, name=validation['name']).first()
-                id = existing_object.id if existing_object else None
+                id = existing_validations.get(validation['name'], None)
                 validation_object = Validation(id=id, query=validation['query'],name=validation['name'], chart=chart_object)
                 validation_object.save()
                 validation_ids.append(validation_object.id)
@@ -368,6 +371,7 @@ class DashboardTemplateView(APIView):
                     if config.get('apiName', '').lower().replace(' ', '-') == api_name:
                         dashboard = config
         return render(request, template_name, {'dashboard': dashboard})
+
 
 class DashboardApiView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
