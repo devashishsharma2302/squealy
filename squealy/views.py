@@ -329,7 +329,8 @@ class DynamicApiRouter(APIView):
                 id = existing_parameters.get(parameter['name'], None)
                 parameter_object = Parameter(id=id, name=parameter['name'], data_type=parameter['data_type'],
                                              mandatory=parameter['mandatory'], default_value=parameter['default_value'],
-                                             chart=chart_object, kwargs=parameter['kwargs'])
+                                             test_value=parameter['test_value'], chart=chart_object,
+                                             kwargs=parameter['kwargs'])
                 parameter_object.save()
                 parameter_ids.append(parameter_object.id)
 
