@@ -101,6 +101,11 @@ export default class ParamDefinitionModal extends Component {
               onChange={(e) => this.onChangeParamHandler('name', e.target.value)} />
           </div>
           <div className='col-md-12'>
+            <label htmlFor='testValue' className='col-md-4'>Test Value: </label>
+            <input type='text' name='testValue' value={this.state.paramDefinition.test_value}
+              onChange={(e) => this.onChangeParamHandler('test_value', e.target.value)} />
+          </div>
+          <div className='col-md-12'>
             <label htmlFor='paramFormat' className='col-md-4'>Type: </label>
             <SquealyDropdown
               options={PARAM_FORMAT_OPTIONS}
@@ -144,6 +149,7 @@ export default class ParamDefinitionModal extends Component {
           <thead>
             <tr>
               <th>Name</th>
+              <th>Test value</th>
               <th>Type</th>
               <th className="align-center clickable-element">
                 <i className="fa fa-plus"
@@ -161,6 +167,7 @@ export default class ParamDefinitionModal extends Component {
                     <tr key={'param_row_' + i}>
                       <td onClick={() => this.handleEditParam(i)}
                         className='param-name'>{param.name}</td>
+                      <td>{param.test_value}</td>
                       <td>{param.data_type}</td>
                       <td className="align-center clickable-element">
                         <i className="fa fa-trash-o" aria-hidden="true"

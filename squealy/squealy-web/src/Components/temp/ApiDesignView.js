@@ -13,9 +13,9 @@ export default class ApiDesignView extends Component {
     return (
       <div className="full-height">
         <div className="col-md-12 tabs-container">
-          <TabsComponent 
+          <TabsComponent
             selectedChartChangeHandler={selectedChartChangeHandler}
-            transformations={chart.transformations} 
+            transformations={chart.transformations}
             onHandleTestButton={onHandleTestButton}
             parameters={chart.parameters}
             testParameters={chart.testParameters}
@@ -27,13 +27,13 @@ export default class ApiDesignView extends Component {
             newColumnName={chart.newColumnName}/>
         </div>
         <div className="col-md-12">
-          <QueryEditor 
-            query={chart.query} 
-            testParameters={chart.testParameters}
+          <QueryEditor
+            query={chart.query}
+            parameters={chart.parameters}
             selectedChartChangeHandler={selectedChartChangeHandler} />
         </div>
         <div className="col-md-12">
-          <ResultSection 
+          <ResultSection
             chartData={chart.chartData}
             options={chart.options}
             chartType={chart.chartType}

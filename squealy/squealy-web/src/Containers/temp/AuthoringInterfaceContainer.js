@@ -130,31 +130,6 @@ export default class AuthoringInterfaceContainer extends Component {
     }
     postApiRequest(DOMAIN_NAME+'test/', payloadObj,
                     this.onSuccessTest, this.onErrorTest, 'table')
-    //let tempParam = this.state.testData[this.state.selectedApiIndex].apiParams || {}
-    //let paramObj = {}
-    // try {
-    //   paramObj = typeof tempParam === 'string' ? JSON.parse(tempParam) : tempParam
-    // } catch (e) {
-    //   console.log(e)
-    //   console.log('please check your object syntax. Object key and value should be wrapped up in double quotes. Expected input: {"objKey": "objVal"}')
-    // }
-    // let paramDef = this.processParamDef(this.state.apiDefinition[this.state.selectedApiIndex].paramDefinition)
-    // format = format || 'table'
-    // let payloadObj = {
-    //   config: {
-    //     query: this.state.apiDefinition[this.state.selectedApiIndex].sqlQuery
-    //   },
-    //   transformations: this.state.apiDefinition[this.state.selectedApiIndex].transformations,
-    //   format: format,
-    //   params: paramObj.params,
-    //   parameters: paramDef,
-    //   user: paramObj.session,
-    //   validations: this.state.apiDefinition[this.state.selectedApiIndex].validations,
-    //   columns: this.state.apiDefinition[this.state.selectedApiIndex].columns,
-    //   connection: this.state.selectedDB
-    // }
-    // postApiRequest(DOMAIN_NAME+'test/', payloadObj,
-    //                this.onSuccessTest, this.onErrorTest, format)
   }
 
   chartDeletionHandler = (index, callBackFunc) => {
