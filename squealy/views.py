@@ -1,5 +1,6 @@
 import importlib
 import os
+import json
 
 from os.path import join, isfile
 
@@ -26,6 +27,14 @@ from .models import *
 from .validators import run_validation
 
 jinjasql = JinjaSql()
+
+
+def render_chart(request, chart_data):
+    """
+    Renders the chart with data and its filters
+    """
+    return render(request, 'chart.html', {"chart_data": json.dumps(chart_data)})
+
 
 class SqlApiView(APIView):
     # validations = []
@@ -83,6 +92,8 @@ class SqlApiView(APIView):
         # Format the table according to google charts / highcharts etc
         data = self._format(table)
 
+        if params.get('type'):
+            return render_chart(request, data)
         # Return the response
         return Response(data)
 
