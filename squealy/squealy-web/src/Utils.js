@@ -23,7 +23,7 @@ import jsyaml from 'js-yaml'
 export function postApiRequest(uri, data, onSuccessCallback,
                                onFailureCallback, callbackParmas) {
   data = jsonStringfy(data)
-  postData(uri, data, 'POST', onSuccessCallback, onFailureCallback, callbackParmas)
+  apiCall(uri, data, 'POST', onSuccessCallback, onFailureCallback, callbackParmas)
 }
 
 export function baseUrl() {
@@ -39,7 +39,7 @@ export function baseUrl() {
  */
 export function getApiRequest(uri, data, onSuccessCallback, onFailureCallback,
                               interval) {
-  postData(uri, data, 'GET', onSuccessCallback, onFailureCallback, interval)
+  apiCall(uri, data, 'GET', onSuccessCallback, onFailureCallback, interval)
 }
 
 /**
@@ -65,7 +65,7 @@ function jsonStringfy(data) {
  * @params {Function} onFailure - Failure callback function
  * TODO: Need to add a callback function on success and failure
  */
-function postData(uri, data, methodType, onSuccess, onFailure, callbackParmas=null) {
+export function apiCall(uri, data, methodType, onSuccess, onFailure, callbackParmas=null) {
   const csrftoken = getCookie('csrftoken');
   $.ajaxSetup({
     beforeSend: function(xhr, settings) {
@@ -126,7 +126,7 @@ export function getEmptyApiDefinition() {
     testParameters: {},
     validations: [],
     transformations: [],
-    chartType: 'ColumnChart',
+    type: 'ColumnChart',
     options: {},
     chartData: {},
     pivotColumn: undefined,

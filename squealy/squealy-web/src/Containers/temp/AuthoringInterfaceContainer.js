@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import MainComponent from '../../Components/temp/MainComponent'
 import {
-  getEmptyApiDefinition, postApiRequest, getApiRequest
+  getEmptyApiDefinition, postApiRequest, getApiRequest, apiCall
 } from './../../Utils'
 import mockCharts from './mockCharts'
 import { DOMAIN_NAME } from './../../Constant'
@@ -18,10 +18,10 @@ export default class AuthoringInterfaceContainer extends Component {
   }
 
   initializeState = () => {
-    if (!this.state.charts.length) {
-      let charts = [getEmptyApiDefinition()]
-      this.setState({charts: charts, selectedChartIndex: 0})
-    }
+    let charts = [getEmptyApiDefinition()]
+    this.setState({charts: charts, selectedChartIndex: 0},
+     this.saveChart(this.state.charts[this.state.selectedChartIndex])
+    )
   }
 
   componentDidMount() {
@@ -32,7 +32,7 @@ export default class AuthoringInterfaceContainer extends Component {
 
   }
 
-  onChartsSaved = () => {
+  onChartSaved = () => {
     this.setState({'savedStatus': true, 'saveInProgress': false})
   }
 
@@ -40,10 +40,37 @@ export default class AuthoringInterfaceContainer extends Component {
     this.setState({'savedStatus': false, 'saveInProgress': false})
   }
 
-  saveCharts = ()=> {
+  saveChart = (chart) => {
+    if (chart.id) {
+      this.setState({'saveInProgress': true},
+            postApiRequest(DOMAIN_NAME+'squealy-apis/', {'chart': chart},
+            this.onChartSaved,this.onChartSaveError, null)
+      )
+    }
+  }
+
+  onChartDeleted = () => {
+    this.setState({'savedStatus': true, 'saveInProgress': false})
+  }
+
+  deleteChart = (id) => {
     this.setState({'saveInProgress': true},
-                  postApiRequest(DOMAIN_NAME+'squealy-apis/', {'charts': this.state.charts},
-                  this.onChartsSaved,()=> {}, null)
+                  apiCall(DOMAIN_NAME+'squealy-apis/', JSON.stringify({'id': id}), 'DELETE',
+                  this.onChartDeleted,this.onChartSaveError, null)
+    ) 
+  }
+
+  onNewChartSaved = (newChartIndex, id) => {
+    let charts = JSON.parse(JSON.stringify(this.state.charts))
+    charts[newChartIndex].id = id
+    this.setState({'charts': charts, 'savedStatus': true, 'saveInProgress': false},
+     ()=> this.saveChart(charts[newChartIndex]))
+  }
+
+  saveNewChart = (newChartIndex) => {
+    this.setState({'saveInProgress': true},
+          postApiRequest(DOMAIN_NAME+'squealy-apis/', {'chart': this.state.charts[newChartIndex]},
+          (id) => this.onNewChartSaved(newChartIndex, id),this.onChartSaveError, null)
     )
   }
 
@@ -51,7 +78,7 @@ export default class AuthoringInterfaceContainer extends Component {
     let charts = [],
     tempChart = {}
 
-    if (response) {
+    if (response && response.length !== 0) {
       response.map(chart => {
         tempChart = chart
         tempChart.chartType = tempChart.type
@@ -72,7 +99,7 @@ export default class AuthoringInterfaceContainer extends Component {
     if (key === 'name') {
       charts[chartIndex].url = value.replace(/ /g, '-').toLowerCase()
     }
-    this.setState({charts: charts}, ()=>{this.saveCharts(); (callback) && callback()})
+    this.setState({charts: charts}, ()=>{this.saveChart(charts[chartIndex]); (callback) && callback()})
   }
 
   onSuccessTest = (data) => {
@@ -127,17 +154,19 @@ export default class AuthoringInterfaceContainer extends Component {
 
   chartDeletionHandler = (index, callBackFunc) => {
     if(this.state.charts.length > 1) {
+      let deletedChartId = this.state.charts[index].id
       let charts = JSON.parse(JSON.stringify(this.state.charts))
       charts.splice(index, 1)
       this.setState({
-        charts: charts
+        charts: charts,
+        selectedChartIndex: this.state.selectedChartIndex - 1
       }, () => {
-        this.saveCharts()
+        this.deleteChart(deletedChartId)
         callBackFunc.constructor === 'Function' || callBackFunc()
       })
     } else {
       this.setState({charts: [getEmptyApiDefinition()], selectedChartIndex: 0}, () => {
-        this.saveCharts()
+        this.deleteChart(deletedChartId)
         callBackFunc.constructor === 'Function' || callBackFunc()
       })
     }
@@ -150,10 +179,10 @@ export default class AuthoringInterfaceContainer extends Component {
         newChart = getEmptyApiDefinition()
         newChart.name = name
         newChart.url = name.replace(/ /g, '-').toLowerCase()
-    charts.push(newChart)
+    let newChartIndex = charts.push(newChart) - 1
     this.setState({
       charts: charts
-    }, this.saveCharts)
+    }, ()=>this.saveNewChart(newChartIndex))
   }
 
   //Changes the selected API index to the one which was clicked from the API list

@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^example/', include('exampleapp.urls')),
     url(r'^', include('squealy.urls')),
+    url('^', include('django.contrib.auth.urls')),
 ]
