@@ -3,10 +3,11 @@ import AccordionTab from './AccordionTab'
 import AceEditor from 'react-ace'
 import 'brace/mode/sql'
 import 'brace/theme/tomorrow'
-import { fetchQueryParamsFromQuery } from './../../Utils'
+import { fetchQueryParamsFromQuery, getEmptyParamDefinition,
+  checkObjectAlreadyExists} from './../../Utils'
 
 export default class QueryEditor extends Component {
- 
+
   constructor(props) {
     super(props)
     this.state = {
@@ -18,21 +19,24 @@ export default class QueryEditor extends Component {
     this.setState({editorContent: text})
   }
 
-   onBlurHandler = () => {
+  onBlurHandler = () => {
     const {selectedChartChangeHandler} = this.props
     let {editorContent} = this.state,
-      currentTestParams = Object.assign({}, this.props.testParameters),
-      testParamArray = fetchQueryParamsFromQuery(editorContent)
+      currentParams = JSON.parse(JSON.stringify(this.props.parameters)),
+      testParamArray = fetchQueryParamsFromQuery(editorContent),
+      newParamObj = {}
 
 
     //Generate parameters in testParameters
     testParamArray.map((param) => {
-      if (param && !currentTestParams.hasOwnProperty(param)) {
-        currentTestParams[param] = ''
+      if (param && !checkObjectAlreadyExists(currentParams, 'name', param)) {
+        newParamObj = getEmptyParamDefinition()
+        newParamObj.name = param
+        currentParams.push(newParamObj)
       }
     })
-    selectedChartChangeHandler('testParameters', currentTestParams)
-    
+    selectedChartChangeHandler('parameters', currentParams)
+
     //Update sql query in selected chart definition
     selectedChartChangeHandler('query', editorContent)
   }

@@ -29,11 +29,12 @@ export default class ResultSection extends Component {
       googleDefined,
       options,
       chartType,
-      selectedChartChangeHandler
+      selectedChartChangeHandler,
+      errorMessage
     } = this.props
-    return (
-      <AccordionTab heading='Results'>
-        {(googleDefined && chartData && chartData.hasOwnProperty('rows')) ?
+
+    const resultSectionOnSuccess =
+      (googleDefined && chartData && chartData.hasOwnProperty('rows')) ?
           <Tabs defaultActiveKey={1} id="uncontrolled_tab_example">
             <Tab eventKey={1} title="Data">
               <GoogleChartsComponent chartData={chartData}
@@ -53,13 +54,19 @@ export default class ResultSection extends Component {
               <GoogleChartsComponent chartData={chartData} options={options} chartType={chartType}
                 id={'visualisation_' + selectedChartIndex} />
             </Tab>
-          </Tabs>
-          : null}
-          <ChartConfigModal
-            showModal={this.state.showModal}
-            closeModal={this.modalVisibilityHandler}
-            selectedChartChangeHandler={selectedChartChangeHandler}
-          />
+          </Tabs> : null
+    return (
+      <AccordionTab heading='Results'>
+        {
+          errorMessage ?
+            <div className='error-box'>{errorMessage}</div>
+            : resultSectionOnSuccess
+        }
+        <ChartConfigModal
+          showModal={this.state.showModal}
+          closeModal={this.modalVisibilityHandler}
+          selectedChartChangeHandler={selectedChartChangeHandler}
+        />
       </AccordionTab>
     )
   }

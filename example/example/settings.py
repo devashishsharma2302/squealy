@@ -136,20 +136,10 @@ CORS_ORIGIN_WHITELIST = (
     'localhost:3000'
 )
 
-# REST_FRAMEWORK = {
-#                     'DEFAULT_PERMISSION_CLASSES': [
-#                         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-#                     ]
-#                 }
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static")
+]
 
-SQUEALY = {
-        'YAML_PATH': os.path.dirname(os.path.realpath(__file__)),
-        'YAML_FILE_NAME': 'squealy-api.yaml'
-        #     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-#     ],
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework.authentication.TokenAuthentication'
-#     ]
-#
-}
+# Login settings
+
+LOGIN_REDIRECT_URL = '/squealy-authoring-interface/'

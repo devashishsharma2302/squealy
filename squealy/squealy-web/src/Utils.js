@@ -132,7 +132,8 @@ export function getEmptyApiDefinition() {
     pivotColumn: undefined,
     metric: undefined,
     columnsToMerge: undefined,
-    newColumnName: ''
+    newColumnName: '',
+    apiErrorMsg: null
   }
 }
 
@@ -195,7 +196,8 @@ export function getEmptyParamDefinition(apiIndex) {
     data_type: 'string',
     mandatory: false,
     default_value: '',
-    kwargs: {}
+    kwargs: {},
+    test_value: ''
   }
 }
 
@@ -399,4 +401,14 @@ export function isJsonString(str) {
         return false;
     }
     return true;
+}
+
+
+export function checkObjectAlreadyExists (data, keyName, value) {
+  for (let i = 0; i < data.length; i++) {
+    if (data[i].hasOwnProperty(keyName) && data[i][keyName] === value) {
+      return true
+    }
+  }
+  return false
 }
