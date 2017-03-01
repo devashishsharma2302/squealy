@@ -10,7 +10,6 @@ class TableTransformer(object):
 
 
 class Transpose(TableTransformer):
-    # Fixme: Introduce Dimensions
     def transform(self, table):
         """Converts rows into columns and vice versa
         1. The first column in the original

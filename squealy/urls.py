@@ -4,9 +4,5 @@ import views
 urlpatterns = [
     url(r'squealy-authoring-interface/', views.squealy_interface),
     url(r'charts/$', views.ChartsLoaderView.as_view()),
-    url(r'test/$', views.SqlApiView.as_view()),
-    url(r'database-details/', views.DatabaseView.as_view()),
-    url(r'squealy-apis/', views.DynamicApiRouter.as_view()),
-    url(r'squealy-dashboard-design/', views.DashboardApiView.as_view()),
-    url(r'squealy-dashboard(?:/(?P<api_name>[-\w]+))?/$', views.DashboardTemplateView.as_view())
+    url(r'squealy/(?P<chart_url>[-\w]+)/$', views.ChartView.as_view()),
 ]
