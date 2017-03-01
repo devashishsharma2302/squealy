@@ -12,12 +12,9 @@ export default class AuthoringInterfaceContainer extends Component {
     this.state = {
       charts: [getEmptyApiDefinition()],
       selectedChartIndex: 0,
-      apiError: false,
-      apiErrorMsg: '',
       saveInProgress: false,
       savedStatus: true
     }
-
   }
 
   initializeState = () => {
@@ -39,7 +36,7 @@ export default class AuthoringInterfaceContainer extends Component {
     this.setState({'savedStatus': true, 'saveInProgress': false})
   }
 
-  onChartSaveError = () => {
+  onChartSaveError = (e) => {
     this.setState({'savedStatus': false, 'saveInProgress': false})
   }
 
@@ -60,7 +57,7 @@ export default class AuthoringInterfaceContainer extends Component {
     this.setState({'saveInProgress': true},
                   apiCall(DOMAIN_NAME+'squealy-apis/', JSON.stringify({'id': id}), 'DELETE',
                   this.onChartDeleted,this.onChartSaveError, null)
-    ) 
+    )
   }
 
   onNewChartSaved = (newChartIndex, id) => {
@@ -105,23 +102,17 @@ export default class AuthoringInterfaceContainer extends Component {
     this.setState({charts: charts}, ()=>{this.saveChart(charts[chartIndex]); (callback) && callback()})
   }
 
-  runSuccessHandler = (response) => {
-    //TODO: post processing of response to get the chart data
-    this.chartDefinitionChangeHandler('chartData', response)
-  }
-
-  runErrorHandler  = (error) => {
-    this.setState({apiError: true, apiErrorMsg: error})
-  }
-
   onSuccessTest = (data) => {
     let currentChartData = [...this.state.charts]
     currentChartData[this.state.selectedChartIndex]['chartData'] = data
+    currentChartData[this.state.selectedChartIndex].apiErrorMsg = null
     this.setState({charts: currentChartData})
   }
 
-  onErrorTest = (errorLog) => {
-    console.log(errorLog)
+  onErrorTest = (e) => {
+    let charts = JSON.parse(JSON.stringify(this.state.charts))
+    charts[this.state.selectedChartIndex].apiErrorMsg = e.responseJSON.error
+    this.setState({charts: charts})
   }
 
   onHandleTestButton = () => {
@@ -157,31 +148,6 @@ export default class AuthoringInterfaceContainer extends Component {
     }
     postApiRequest(DOMAIN_NAME+'test/', payloadObj,
                     this.onSuccessTest, this.onErrorTest, 'table')
-    //let tempParam = this.state.testData[this.state.selectedApiIndex].apiParams || {}
-    //let paramObj = {}
-    // try {
-    //   paramObj = typeof tempParam === 'string' ? JSON.parse(tempParam) : tempParam
-    // } catch (e) {
-    //   console.log(e)
-    //   console.log('please check your object syntax. Object key and value should be wrapped up in double quotes. Expected input: {"objKey": "objVal"}')
-    // }
-    // let paramDef = this.processParamDef(this.state.apiDefinition[this.state.selectedApiIndex].paramDefinition)
-    // format = format || 'table'
-    // let payloadObj = {
-    //   config: {
-    //     query: this.state.apiDefinition[this.state.selectedApiIndex].sqlQuery
-    //   },
-    //   transformations: this.state.apiDefinition[this.state.selectedApiIndex].transformations,
-    //   format: format,
-    //   params: paramObj.params,
-    //   parameters: paramDef,
-    //   user: paramObj.session,
-    //   validations: this.state.apiDefinition[this.state.selectedApiIndex].validations,
-    //   columns: this.state.apiDefinition[this.state.selectedApiIndex].columns,
-    //   connection: this.state.selectedDB
-    // }
-    // postApiRequest(DOMAIN_NAME+'test/', payloadObj,
-    //                this.onSuccessTest, this.onErrorTest, format)
   }
 
   chartDeletionHandler = (index, callBackFunc) => {

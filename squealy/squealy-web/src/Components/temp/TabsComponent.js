@@ -4,7 +4,6 @@ import NotificationBadge from 'react-notification-badge'
 import { Effect } from 'react-notification-badge'
 
 import ParamDefinitionModal from './ParamDefinitionModal'
-import TestParametersModal from './TestParametersModal'
 import ValidationsModal from './ValidationsModal'
 import TransformationsModal from './TransformationsModal'
 import transformationIcon from './../../images/transformations_icon_white.png'
@@ -17,7 +16,6 @@ export default class TabsComponent extends Component {
     super(props)
     this.state = {
       showParamDefModal: false,
-      showTestParamModal: false,
       showValidationsModal: false,
       showTransformationsModal: false
     }
@@ -45,7 +43,6 @@ export default class TabsComponent extends Component {
     const {
       showValidationsModal,
       showParamDefModal,
-      showTestParamModal,
       showTransformationsModal
     } = this.state
     return (
@@ -53,12 +50,6 @@ export default class TabsComponent extends Component {
         <SplitButton className="run-btn-group" bsStyle='success' title='Run' id='run-button' onClick={onHandleTestButton}>
           <MenuItem
             eventKey='1'
-            onClick={()=>this.modalVisibilityHandler('showTestParamModal')}>
-              Update Test Parameters
-          </MenuItem>
-          <MenuItem divider />
-          <MenuItem
-            eventKey='2'
             onClick={()=>this.modalVisibilityHandler('showParamDefModal')}>
               Parameter Definitions
           </MenuItem>
@@ -69,9 +60,9 @@ export default class TabsComponent extends Component {
           onClick={() => this.modalVisibilityHandler('showValidationsModal')}>
           <img src={validationIcon} alt="squealyValidation"/>
             Validations
-            <NotificationBadge 
-              count={validations.length} 
-              effect={[null, null, null, null]} 
+            <NotificationBadge
+              count={validations.length}
+              effect={[null, null, null, null]}
               className='transformations-count-badge'
             />
         </Button>
@@ -86,7 +77,8 @@ export default class TabsComponent extends Component {
             className='transformations-count-badge' />
         </Button>
         <Button bsStyle='primary' className='tab-component'>
-          <img src={exportIcon} alt="exportIcon"/>Export</Button>
+          <i className="fa fa-share-alt"/>
+          Share</Button>
         {
           showParamDefModal &&
           <ParamDefinitionModal
@@ -94,14 +86,6 @@ export default class TabsComponent extends Component {
             closeModal={()=>this.modalVisibilityHandler('showParamDefModal')}
             showModal={this.state.showParamDefModal}
             parameters={parameters}/>
-        }
-        {
-          showTestParamModal &&
-          <TestParametersModal
-            selectedChartChangeHandler={selectedChartChangeHandler}
-            closeModal={()=>this.modalVisibilityHandler('showTestParamModal')}
-            showModal={this.state.showTestParamModal}
-            testParameters={testParameters}/>
         }
         {
           showValidationsModal &&
