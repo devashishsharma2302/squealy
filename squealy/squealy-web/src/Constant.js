@@ -110,7 +110,7 @@ export const FILTER_TYPES = [
   }
 ]
 
-export const RND_FILTER_RESIZEABILITY_CONSTRAINTS = { 
+export const RND_FILTER_RESIZEABILITY_CONSTRAINTS = {
   top:false,
   right:true,
   bottom:false,
@@ -136,3 +136,84 @@ export const GRID_PADDING = 15
 export const GRID_HEIGHT = 20
 
 export const GRID_WIDTH_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+export const CHART_CONFIG_EXAMPLE = {
+  'width': 400,
+  'height': 240,
+  'title': 'Chart Title',
+  'colors': ['#e0440e', '#e6693e', '#ec8f6e', '#f3b49f', '#f6c7b6'],
+  'vAxis': {
+    'title': 'Y-Axis Data',
+    'titleTextStyle': {
+      'color': '#000'
+    },
+    'gridlines': {
+      'count': 4,
+      'color': '#ccc'
+    },
+    'minValue': 5,
+    'maxValue': 100
+  },
+  'hAxis': {
+    'title': 'X-Axis Data',
+    'titleTextStyle': {
+      'color': '#000',
+      'fontSize': 17
+    },
+    'gridlines': {
+      'count': 4,
+      'color': '#ccc'
+    },
+    'viewWindow': {
+      'min':0,
+      'max':5
+    },
+    'scaleType': 'log'
+  },
+  'chartArea': {
+    'height': '50%',
+    'width': '50%',
+    'top': '10%',
+    'left': '10%'
+  },
+  'animation':{
+    'duration': 1000,
+    'easing': 'out',
+    'startup': true
+  },
+  'annotations': {
+    'boxStyle': {
+      'stroke': '#888',
+      'rx': 10,
+      'ry': 10
+    },
+    'highContrast': true,
+    'textStyle': {
+      'fontName': 'Times-Roman',
+      'fontSize': 18,
+      'bold': true,
+      'italic': true,
+      'color': '#871b47',
+      'auraColor': '#d799ae',
+      'opacity': 0.8
+    },
+    'backgroundColor': '#ff0000',
+
+  },
+  'legend': {
+    'position': 'top',
+    'textStyle': {
+      'color': '#0000ff',
+      'fontSize': 16
+    }
+  },
+  'tooltip': {
+    'textStyle': {
+      'color': '#FF0000'
+    },
+    'showColorCode': true,
+    'isHtml': true
+  }
+}
+
+export const GOOGLE_CHART_DOC = 'https://developers.google.com/chart/interactive/docs/gallery/areachart#configuration-options'

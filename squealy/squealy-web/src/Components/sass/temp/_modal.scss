@@ -7,6 +7,17 @@
   .validation-query {
     padding: 0 4px 0 0 ;
   }
+  .add-modal-content {
+    > button.btn-success {
+      margin-top: 10px;
+      font-size: 13px;
+      font-weight: bold;
+      > i.fa-angle-double-left {
+        padding-right: 7px;
+        font-weight: bold;
+      }
+    }
+  }
 }
 
 .modal-header {
@@ -17,3 +28,4 @@
     color: $white-color;
   }
 }
+

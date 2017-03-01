@@ -15,8 +15,8 @@
 
 .error-box {
   min-height: 85px;
-  background: #ffcccc;
-  color: #ff0000;
+  background: $warning-bg-color;
+  color: $red-color;
   font-size: 17px;
   font-family: Roboto Bold;
   text-align: center;

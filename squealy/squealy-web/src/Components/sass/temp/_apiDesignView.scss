@@ -63,3 +63,10 @@ tr.editable-table-row {
   border-bottom-right-radius: 28px;
   border-top-right-radius: 28px;
 }
+
+.note-text {
+  color: $note-text-color;
+  &:hover, &:active, &:focus {
+    color: $note-text-color-active;
+  }
+}
