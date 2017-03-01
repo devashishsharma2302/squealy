@@ -33,7 +33,7 @@ class ParameterAdmin(admin.ModelAdmin):
         List display for ChartParameters in Django Admin
     """
     model = Parameter
-    list_display = ['chart', 'name', 'data_type', 'mandatory', 'default_value', 'type', 'kwargs']
+    list_display = ['chart', 'name', 'data_type', 'mandatory', 'default_value', 'test_value', 'type', 'kwargs']
 
 
 class TransformationAdmin(admin.ModelAdmin):
