@@ -30,7 +30,6 @@ export default class ResultSection extends Component {
       options,
       chartType,
       selectedChartChangeHandler,
-      isError,
       errorMessage
     } = this.props
 
@@ -59,7 +58,7 @@ export default class ResultSection extends Component {
     return (
       <AccordionTab heading='Results'>
         {
-          isError ?
+          errorMessage ?
             <div className='error-box'>{errorMessage}</div>
             : resultSectionOnSuccess
         }

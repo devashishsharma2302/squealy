@@ -133,8 +133,7 @@ export function getEmptyApiDefinition() {
     metric: undefined,
     columnsToMerge: undefined,
     newColumnName: '',
-    apiError: false,
-    apiErrorMsg: ''
+    apiErrorMsg: null
   }
 }
 

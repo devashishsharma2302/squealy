@@ -57,7 +57,7 @@ export default class AuthoringInterfaceContainer extends Component {
     this.setState({'saveInProgress': true},
                   apiCall(DOMAIN_NAME+'squealy-apis/', JSON.stringify({'id': id}), 'DELETE',
                   this.onChartDeleted,this.onChartSaveError, null)
-    ) 
+    )
   }
 
   onNewChartSaved = (newChartIndex, id) => {
@@ -105,14 +105,12 @@ export default class AuthoringInterfaceContainer extends Component {
   onSuccessTest = (data) => {
     let currentChartData = [...this.state.charts]
     currentChartData[this.state.selectedChartIndex]['chartData'] = data
-    currentChartData[this.state.selectedChartIndex].apiError = false
     currentChartData[this.state.selectedChartIndex].apiErrorMsg = null
     this.setState({charts: currentChartData})
   }
 
   onErrorTest = (e) => {
     let charts = JSON.parse(JSON.stringify(this.state.charts))
-    charts[this.state.selectedChartIndex].apiError = true
     charts[this.state.selectedChartIndex].apiErrorMsg = e.responseJSON.error
     this.setState({charts: charts})
   }
