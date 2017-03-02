@@ -52,7 +52,7 @@ class ChartView(APIView):
         try:
             params = request.data.get('params', {})
             user = request.data.get('user', None)
-            chart_attributes = ['parameters', 'columns', 'validations', 'transformations']
+            chart_attributes = ['parameters', 'validations', 'transformations']
             chart = Chart.objects.filter(url=chart_url).prefetch_related(*chart_attributes).first()
             if not chart:
                 raise ChartNotFoundException('No charts found at this path')

@@ -1,10 +1,8 @@
 import {
-  YAML_INDENTATION,
   RESPONSE_FORMATS,
   GOOGLE_CHART_TYPE_OPTIONS
 } from './Constant'
 import FileSaver from 'filesaver.js-npm'
-import jsyaml from 'js-yaml'
 /*!*************************************************************************
 [Utils.js]
 *****************************************************************************/
@@ -118,7 +116,6 @@ function getCookie(name) {
 export function getEmptyApiDefinition() {
   return {
     id: null,
-    type: 'ColumnChart',
     name: 'first chart',
     url: 'first-chart',
     query: '',
@@ -137,15 +134,6 @@ export function getEmptyApiDefinition() {
   }
 }
 
-export function getEmptyDashboardDefinition() {
-  return {
-    apiName: 'Untitled Dashboard',
-    styles: {background: '#e6e6e6'},
-    widgets: [],
-    filters: [],
-    widgetsParams: []
-  }
-}
 
 export function getEmptyWidgetDefinition() {
   return {
@@ -161,34 +149,6 @@ export function getEmptyWidgetDefinition() {
   }
 }
 
-export function getEmptyFilterDefinition() {
-  return {
-    width: 3,
-    top:1,
-    left: 1,
-    label: 'Fliter Label',
-    type: {},
-    apiUrl: '',
-    isParameterized: false
-  }
-}
-
-export function getDefaultApiDefinition(apiIndex) {
-  return {
-    apiName: `Untitled API ${apiIndex}`,
-    open: true,
-    urlName: '',
-    sqlQuery: '',
-    paramDefinition: [],
-    validations: [],
-    transformations: [],
-    selectedTransformations: [],
-    columns: {},
-    selectedDB: '',
-    permission_classes: [],
-    authentication_classes: []
-  }
-}
 
 export function getEmptyParamDefinition(apiIndex) {
   return {
@@ -199,79 +159,6 @@ export function getEmptyParamDefinition(apiIndex) {
     kwargs: {},
     test_value: ''
   }
-}
-
-export function getEmptyTestData() {
-  return {
-    apiSuccess: false,
-    apiError: false,
-    apiResponse: [],
-    apiParams: {},
-    selectedFormat: RESPONSE_FORMATS.table.value
-  }
-}
-
-/**
- * [objectToYaml: covert json object to yaml]
- * /
- * @param  {[object]} obj [provide api definition]
- * @return {[yaml]}     [return api definition as yaml]
- */
-export function objectToYaml(obj) {
-  return jsyaml.dump(obj, {indent: YAML_INDENTATION})
-}
-
-/**
- * [YamlFileToJsonObj: Read data from file and covert yaml to json object]
- * /
- * @param {[file]} fileName [provide yaml file name that we need to convert as JSON object]
- * @param {[object]}  [return file data as json object]
- */
-export function YamlFileToJsonObj(fileName) {
-  return jsyaml.load(fileName)
-}
-
-/**
- * [yamlObjToJson convert yaml to json objcet ]
- * @param  {yaml} yaml [yaml object that we need to convert as json object]
- * @return {object}      [return data as json object]
- */
-export function yamlObjToJson(yaml) {
-  return jsyaml.load(yaml)
-}
-
-/**
- * [exportFile write data in a file and save it on local disk]
- * @param  {string/object/yaml} data        [provides the data that we need to write in file]
- * @param  {[string]} contentType [data type]
- * @param  {[string]} fileName    [name of the file that we are writing]
- */
-export function exportFile(data, contentType) {
-  let blob = new Blob([], {type: contentType})
-  for (let index in data) {
-      blob = new Blob([blob,  '---\n', formatApiDataToYaml(data[index],index), '\n\n'], {type: contentType})
-  }
-  return blob
-}
-
-export function saveBlobToFile(data, file) {
-  FileSaver.saveAs(data, file)
-}
-
-export function setDataInLocalStorage(key, data) {
-  localStorage.setItem(key, JSON.stringify(data))
-}
-
-export function getDataFromLocalStorage(key) {
-  return JSON.parse(localStorage.getItem(key))
-}
-
-export function saveYamlOnServer(data) {
-  let yamlArray = []
-  for (let index in data) {
-    yamlArray.push(formattedData(data[index],index))
-  }
-  return yamlArray
 }
 
 
@@ -291,50 +178,6 @@ function processParamDef(definitions) {
     })
   }
   return appliedDef
-}
-
-
-function formatApiDataToYaml(data, index) {
-  let format = data['format'] || 'table'
-  let formattedData = {
-    'id': parseInt(index)+1,
-    'name': data.apiName,
-    'url': data.urlName,
-    'parameters': processParamDef(data.paramDefinition),
-    'permission_classes': data.permission_classes,
-    'authentication_classes': data.authentication_classes,
-    // 'access_control':data.access_control,
-    'validations': data.validations,
-    'query': data.sqlQuery,
-    'transformations': data.transformations,
-    'format': RESPONSE_FORMATS[format].formatter
-  }
-  if(data.columns) {
-    formattedData.columns = data.columns
-  }
-  return jsyaml.dump(formattedData, {indent: YAML_INDENTATION})
-}
-
-function formattedData(data, index) {
-  let format = data['format'] || 'table'
-  let formattedData = {
-    'id': parseInt(index)+1,
-    'name': data.apiName,
-    'url': data.urlName,
-    'parameters': processParamDef(data.paramDefinition),
-    // 'access_control':data.access_control,
-    'permission_classes': data.permission_classes,
-    'authentication_classes': data.authentication_classes,
-    'validations': data.validations,
-    'query': data.sqlQuery,
-    'transformations': data.transformations,
-    'selectedTransformations': data.selectedTransformations || [],
-    'format': RESPONSE_FORMATS[format].formatter
-  }
-  if(data.columns) {
-    formattedData.columns = data.columns
-  }
-  return formattedData
 }
 
 
@@ -411,4 +254,13 @@ export function checkObjectAlreadyExists (data, keyName, value) {
     }
   }
   return false
+}
+
+export function formatTestParameters (paramDefintion) {
+  let testParams = {}
+
+  paramDefintion.map((param) => {
+    testParams[param['name']] = param['test_value']
+  })
+  return testParams
 }

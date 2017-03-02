@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import MainComponent from '../../Components/temp/MainComponent'
 import {
-  getEmptyApiDefinition, postApiRequest, getApiRequest, apiCall
+  getEmptyApiDefinition, postApiRequest, getApiRequest, apiCall, formatTestParameters
 } from './../../Utils'
 import mockCharts from './mockCharts'
 import { DOMAIN_NAME } from './../../Constant'
@@ -43,7 +43,7 @@ export default class AuthoringInterfaceContainer extends Component {
   saveChart = (chart) => {
     if (chart.id) {
       this.setState({'saveInProgress': true},
-            postApiRequest(DOMAIN_NAME+'squealy-apis/', {'chart': chart},
+            postApiRequest(DOMAIN_NAME+'charts/', {'chart': chart},
             this.onChartSaved,this.onChartSaveError, null)
       )
     }
@@ -55,7 +55,7 @@ export default class AuthoringInterfaceContainer extends Component {
 
   deleteChart = (id) => {
     this.setState({'saveInProgress': true},
-                  apiCall(DOMAIN_NAME+'squealy-apis/', JSON.stringify({'id': id}), 'DELETE',
+                  apiCall(DOMAIN_NAME+'charts/', JSON.stringify({'id': id}), 'DELETE',
                   this.onChartDeleted,this.onChartSaveError, null)
     )
   }
@@ -69,7 +69,7 @@ export default class AuthoringInterfaceContainer extends Component {
 
   saveNewChart = (newChartIndex) => {
     this.setState({'saveInProgress': true},
-          postApiRequest(DOMAIN_NAME+'squealy-apis/', {'chart': this.state.charts[newChartIndex]},
+          postApiRequest(DOMAIN_NAME+'charts/', {'chart': this.state.charts[newChartIndex]},
           (id) => this.onNewChartSaved(newChartIndex, id),this.onChartSaveError, null)
     )
   }
@@ -81,7 +81,6 @@ export default class AuthoringInterfaceContainer extends Component {
     if (response && response.length !== 0) {
       response.map(chart => {
         tempChart = chart
-        tempChart.chartType = tempChart.type
         tempChart.testParameters = {}
         charts.push(tempChart)
       })
@@ -137,16 +136,11 @@ export default class AuthoringInterfaceContainer extends Component {
       }
     })
 
+
     let payloadObj = {
-      config: {
-        query: selectedChart.query
-      },
-      params: selectedChart.testParameters,
-      transformations: transformations,
-      parameters: selectedChart.parameters,
-      validations: selectedChart.validations
+      params: formatTestParameters(selectedChart.parameters)
     }
-    postApiRequest(DOMAIN_NAME+'test/', payloadObj,
+    postApiRequest(DOMAIN_NAME+'squealy/'+selectedChart.url+'/', payloadObj,
                     this.onSuccessTest, this.onErrorTest, 'table')
   }
 

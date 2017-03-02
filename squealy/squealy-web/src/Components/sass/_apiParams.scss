@@ -11,8 +11,9 @@
   min-width: 20%;
 }
 
-.add-modal-content{
+.add-modal-content {
   border: 1px solid $light-gray-color;
+  margin-bottom: 10px;
   > div {
     margin: 10px 0;
     > label {
@@ -44,7 +45,7 @@
       opacity: 1;
       color: $orange-color;
     }
-  } 
+  }
 }
 
 .validation-table-wrapper {
@@ -103,7 +104,7 @@
 }
 
 .validation-options {
-  padding-left: 10px; 
+  padding-left: 10px;
   margin-bottom: 13px;
   > label.radio-inline {
     padding-right: 64px;
