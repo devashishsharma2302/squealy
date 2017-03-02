@@ -6,6 +6,7 @@ import { Effect } from 'react-notification-badge'
 import ParamDefinitionModal from './ParamDefinitionModal'
 import ValidationsModal from './ValidationsModal'
 import TransformationsModal from './TransformationsModal'
+import ShareModal from './ShareModal'
 import transformationIcon from './../../images/transformations_icon_white.png'
 import validationIcon from './../../images/validation_icon_white.png'
 import exportIcon from './../../images/export_icon_white.png'
@@ -17,7 +18,8 @@ export default class TabsComponent extends Component {
     this.state = {
       showParamDefModal: false,
       showValidationsModal: false,
-      showTransformationsModal: false
+      showTransformationsModal: false,
+      showShareModal: false
     }
   }
 
@@ -38,12 +40,14 @@ export default class TabsComponent extends Component {
       pivotColumn,
       metric,
       columnsToMerge,
-      newColumnName
+      newColumnName,
+      chartUrl
     } = this.props
     const {
       showValidationsModal,
       showParamDefModal,
-      showTransformationsModal
+      showTransformationsModal,
+      showShareModal
     } = this.state
     return (
       <div>
@@ -76,7 +80,8 @@ export default class TabsComponent extends Component {
             effect={[null, null, null, null]}
             className='transformations-count-badge' />
         </Button>
-        <Button bsStyle='primary' className='tab-component'>
+        <Button bsStyle='primary' className='tab-component'
+          onClick={()=>this.modalVisibilityHandler('showShareModal')}>
           <i className="fa fa-share-alt"/>
           Share</Button>
         {
@@ -94,6 +99,14 @@ export default class TabsComponent extends Component {
             closeModal={()=>this.modalVisibilityHandler('showValidationsModal')}
             showModal={showValidationsModal}
             validations={validations}/>
+        }
+        {
+          showShareModal &&
+          <ShareModal
+            selectedChartChangeHandler={selectedChartChangeHandler}
+            closeModal={()=>this.modalVisibilityHandler('showShareModal')}
+            showModal={showShareModal}
+            chartUrl={chartUrl}/>
         }
         {
           showTransformationsModal &&

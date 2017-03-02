@@ -1,10 +1,8 @@
 import {
-  YAML_INDENTATION,
   RESPONSE_FORMATS,
   GOOGLE_CHART_TYPE_OPTIONS
 } from './Constant'
 import FileSaver from 'filesaver.js-npm'
-import jsyaml from 'js-yaml'
 /*!*************************************************************************
 [Utils.js]
 *****************************************************************************/

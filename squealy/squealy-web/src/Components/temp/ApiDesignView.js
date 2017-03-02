@@ -24,7 +24,8 @@ export default class ApiDesignView extends Component {
             pivotColumn={chart.pivotColumn}
             metric={chart.metric}
             columnsToMerge={chart.columnsToMerge}
-            newColumnName={chart.newColumnName}/>
+            newColumnName={chart.newColumnName}
+            chartUrl={chart.url}/>
         </div>
         <div className="col-md-12">
           <QueryEditor
