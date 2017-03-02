@@ -37,7 +37,7 @@ export default class ApiDesignView extends Component {
             errorMessage={chart.apiErrorMsg}
             chartData={chart.chartData}
             options={chart.options}
-            chartType={chart.chartType}
+            chartType={chart.type}
             selectedChartIndex={selectedChartIndex}
             googleDefined={googleDefined}
             selectedChartChangeHandler={selectedChartChangeHandler} />

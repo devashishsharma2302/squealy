@@ -32,7 +32,6 @@ export default class ResultSection extends Component {
       selectedChartChangeHandler,
       errorMessage
     } = this.props
-
     const resultSectionOnSuccess =
       (googleDefined && chartData && chartData.hasOwnProperty('rows')) ?
           <Tabs defaultActiveKey={1} id="uncontrolled_tab_example">
@@ -47,7 +46,7 @@ export default class ResultSection extends Component {
                   name='chartType'
                   options={GOOGLE_CHART_TYPE_OPTIONS}
                   selectedValue={chartType}
-                  onChangeHandler={(value)=>selectedChartChangeHandler('chartType', value)}
+                  onChangeHandler={(value)=>selectedChartChangeHandler('type', value)}
                 />
                 <img src={configIcon} onClick={this.modalVisibilityHandler} />
               </div>
@@ -63,6 +62,7 @@ export default class ResultSection extends Component {
             : resultSectionOnSuccess
         }
         <ChartConfigModal
+          chartConfiguration={options}
           showModal={this.state.showModal}
           closeModal={this.modalVisibilityHandler}
           selectedChartChangeHandler={selectedChartChangeHandler}

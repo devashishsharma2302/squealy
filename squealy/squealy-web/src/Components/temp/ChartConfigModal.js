@@ -30,8 +30,12 @@ export default class ChartConfigModal extends Component {
     this.props.closeModal()
   }
 
+  componentWillReceiveProps (nextProps) {
+    this.setState({config: JSON.stringify(nextProps.chartConfiguration, null, '\t')})
+  }
+
   render () {
-    const { config, configExample } = this.state
+    const { config, configExample, chartConfiguration } = this.state
     const modalContent =
       <div className="modal-container">
         <div className='row add-modal-content'>
@@ -77,9 +81,7 @@ export default class ChartConfigModal extends Component {
             <button className="btn btn-primary" onClick={this.handleSaveClick}>Save</button>
           </div>
         </div>
-        <a href={GOOGLE_CHART_DOC} className='note-text'><strong>NOTE: </strong> Please refer
-          to Google Chart documentation for more configuration. Click here to go to
-          the documentation.</a>
+        <a href={GOOGLE_CHART_DOC} className='note-text'><strong>NOTE: </strong> GoogleCharts supports a lot of configuration that can be added here. Click here to refer tha docs.</a>
       </div>
 
     return (
