@@ -36,19 +36,6 @@ class Chart(models.Model):
         return self.name + "( /" + self.url + ")"
 
 
-class Column(models.Model):
-    """
-    This represents a column definition for a chart
-    """
-
-    chart = models.ForeignKey(Chart, related_name='columns')
-    name = models.CharField(max_length=50)
-    type = models.IntegerField(default=1, choices=COLUMN_TYPES)
-
-    def __unicode__(self):
-        return self.name
-
-
 class Parameter(models.Model):
     """
     This represents a parameter injected in the query
@@ -61,7 +48,7 @@ class Parameter(models.Model):
     default_value = models.CharField(max_length=200, null=True, blank=True)
     test_value = models.CharField(max_length=200, null=True, blank=True)
     type = models.IntegerField(default=1, choices=PARAMETER_TYPES)
-    kwargs = fields.JSONField(null=True, blank=True)
+    kwargs = fields.JSONField(null=True, blank=True, default={})
 
     def __unicode__(self):
         return self.name
@@ -75,7 +62,7 @@ class Transformation(models.Model):
 
     chart = models.ForeignKey(Chart, related_name='transformations')
     name = models.IntegerField(default=1, choices=TRANSFORMATION_TYPES)
-    kwargs = fields.JSONField(null=True, blank=True)
+    kwargs = fields.JSONField(null=True, blank=True, default={})
 
     def __unicode__(self):
         return TRANSFORMATION_TYPES[self.name-1][1]
