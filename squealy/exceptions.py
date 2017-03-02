@@ -8,27 +8,22 @@ class RequiredParameterMissingException(APIException):
 
 
 class DateParseException(APIException):
-    status_code = status.HTTP_400_BAD_REQUEST
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     pass
 
 
 class DateTimeParseException(APIException):
-    status_code = status.HTTP_400_BAD_REQUEST
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     pass
 
 
 class NumberParseException(APIException):
-    status_code = status.HTTP_400_BAD_REQUEST
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     pass
 
 
 class ValidationFailedException(APIException):
     status_code = status.HTTP_403_FORBIDDEN
-    pass
-
-
-class DashboardNotFoundException(APIException):
-    status_code = status.HTTP_400_BAD_REQUEST
     pass
 
 
@@ -39,4 +34,9 @@ class ChartNotFoundException(APIException):
 
 class MalformedChartDataException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
+    pass
+
+
+class TransformationException(APIException):
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     pass
