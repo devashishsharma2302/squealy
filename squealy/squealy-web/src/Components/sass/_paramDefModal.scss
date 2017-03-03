@@ -70,22 +70,6 @@
   }
 }
 
-.add-validation-form {
-  padding: 10px;
-  border: 1px solid $light-gray-color;
-  > div {
-    margin: 5px;
-  }
-  > button {
-    float: right;
-  }
-  > h4 {
-    font-weight: bold;
-    padding-bottom: 10px;
-    border-bottom: 1px solid $light-gray-color;
-  }
-}
-
 .param-name:hover {
   @include on-hover-style
 }

@@ -1,23 +1,32 @@
-
 html {
   min-height: 100%;
-  font-family: Roboto;
-}
-
-body, #root {
-  min-height: 100vh;
-  font-family: Roboto;
-  overflow-y: scroll;
-}
-
-.full-height {
-  height: 100%
 }
 
 body {
   margin: 0;
   padding: 0;
-  background: white;
+  background: white; 
+  min-height: 100vh;
+  font-family: Roboto;
+  overflow-y: scroll; //To avoid flickering due to scrollbar width
+}
+
+#root{
+  min-height: 100vh;
+  font-family: Roboto;
+  overflow-y: scroll;
+}
+
+.response-section {
+  margin-top: 5%;
+}
+
+a[role="menuitem"] > i.fa {
+  padding-right: 12px;
+}
+
+.full-height {
+  height: 100%
 }
 
 .active {
@@ -165,50 +174,6 @@ hr {
   margin-bottom: 12px;
 }
 
-.ReactTable .-pagination .-btn:not([disabled]) {
-  color: #fff !important;
-  background-color: #5bc0de !important;
-  border-color: #46b8da !important;
-}
-
-.ReactTable .-pagination .-btn:not([disabled]):hover {
-  color: #fff !important;
-  background-color: #31b0d5 !important;
-  border-color: #269abc !important;
-}
-
-a[aria-selected="false"] > div.api-tab > div.dropdown {
-  visibility: hidden;
-}
-
-a[aria-selected="true"] > div.api-tab > div.dropdown {
-  visibility: visible;
-}
-
-#save-btn, #save-dashboard-btn {
-  border-radius: 2px;
-  width: 100%;
-}
-
-.nav-tabs {
-  border-bottom: none;
-  li > a {
-    color: $text-color;
-    opacity: 0.6;
-    font-size: 15px;
-    font-weight: bold;
-  }
-
-  .active {
-    background-color: $white-color !important;
-  }
-}
-.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
-  background-color: #fff;
-  border: none;
-  border-bottom: 3px solid $squealy-theme-blue;
-  opacity: 1;
-}
 
 .btn-primary {
   background: $squealy-theme-blue;
@@ -219,7 +184,7 @@ a[aria-selected="true"] > div.api-tab > div.dropdown {
   background: $squealy-theme-blue-active;
   border-color: $squealy-theme-blue-active;
 }
-
+  
 .btn-success {
   background: $squealy-success;
   border-color: $squealy-success;
