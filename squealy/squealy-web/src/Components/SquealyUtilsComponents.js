@@ -12,7 +12,8 @@ export class SquealyModal extends Component {
       showModal,
       modalSize,
       closeModal,
-      dialogClassName
+      dialogClassName,
+      noFooter
     } = this.props
 
 
@@ -24,10 +25,16 @@ export class SquealyModal extends Component {
         <Modal.Body>
           {modalContent}
         </Modal.Body>
-        <Modal.Footer>
-          <button onClick={closeModal} className="btn btn-default">Close</button>
-          {saveChanges ? <button onClick={saveChanges} className="btn btn-info">Save</button> : null}
-        </Modal.Footer>
+        {
+          noFooter ? null :
+            <Modal.Footer>
+              <button onClick={closeModal} className="btn btn-default">Close</button>
+              {
+                saveChanges ? 
+                  <button onClick={saveChanges} className="btn btn-info">Save</button>
+                : null}
+            </Modal.Footer>
+        }
       </Modal>
     )
   }
@@ -38,18 +45,16 @@ export class SquealyDropdown extends Component {
   render () {
     const {name, options, selectedValue, onChangeHandler} = this.props
     return (
-      <div>
         <select value={selectedValue} id='params_type' onChange={(e) => onChangeHandler(e.target.value)}>
-          {
-            options.map((option, i) => {
-              return ((typeof option === 'object') ? 
-                <option key={'dropdown_'+i} value={option.value}>{option.label}</option>
-                :
-                <option key={'dropdown_'+i} value={option}>{option}</option>)
-            })
-          }
-        </select>
-      </div>
+        {
+          options.map((option, i) => {
+            return ((option.constructor === Object) ? 
+              <option key={'dropdown_'+i} value={option.value}>{option.label}</option>
+              :
+              <option key={'dropdown_'+i} value={option}>{option}</option>)
+          })
+        }
+      </select>
     )
   }
 }

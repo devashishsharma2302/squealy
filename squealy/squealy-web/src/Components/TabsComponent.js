@@ -7,9 +7,9 @@ import ParamDefinitionModal from './ParamDefinitionModal'
 import ValidationsModal from './ValidationsModal'
 import TransformationsModal from './TransformationsModal'
 import ShareModal from './ShareModal'
-import transformationIcon from './../../images/transformations_icon_white.png'
-import validationIcon from './../../images/validation_icon_white.png'
-import exportIcon from './../../images/export_icon_white.png'
+import transformationIcon from './../images/transformations_icon_white.png'
+import validationIcon from './../images/validation_icon_white.png'
+import exportIcon from './../images/export_icon_white.png'
 
 
 export default class TabsComponent extends Component {

@@ -1,12 +1,10 @@
 import React, { Component } from 'react'
 import AccordionTab from './AccordionTab'
 import { Tab, Tabs } from 'react-bootstrap'
-
-import mockResponse from './mockResponse'
 import GoogleChartsComponent from './GoogleChartsComponent'
 import { SquealyDropdown } from './SquealyUtilsComponents'
-import { GOOGLE_CHART_TYPE_OPTIONS } from '../../Constant'
-import configIcon from '../../images/settings_icon.png'
+import { GOOGLE_CHART_TYPE_OPTIONS } from './../Constant'
+import configIcon from './../images/settings_icon.png'
 import ChartConfigModal from './ChartConfigModal'
 
 export default class ResultSection extends Component {

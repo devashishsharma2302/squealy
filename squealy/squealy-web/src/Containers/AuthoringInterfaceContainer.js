@@ -1,10 +1,9 @@
 import React, {Component} from 'react'
-import MainComponent from '../../Components/temp/MainComponent'
+import MainComponent from './../Components/MainComponent'
 import {
   getEmptyApiDefinition, postApiRequest, getApiRequest, apiCall, formatTestParameters
-} from './../../Utils'
-import mockCharts from './mockCharts'
-import { DOMAIN_NAME } from './../../Constant'
+} from './../Utils'
+import { DOMAIN_NAME } from './../Constant'
 
 export default class AuthoringInterfaceContainer extends Component {
   constructor(props) {

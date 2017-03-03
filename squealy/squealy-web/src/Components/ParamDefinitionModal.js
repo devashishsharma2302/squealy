@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { SquealyModal, SquealyDropdown } from './SquealyUtilsComponents'
-import { PARAM_FORMAT_OPTIONS } from './../../Constant'
-import { getEmptyParamDefinition } from './../../Utils'
+import { PARAM_FORMAT_OPTIONS } from './../Constant'
+import { getEmptyParamDefinition } from './../Utils'
 
 
 export default class ParamDefinitionModal extends Component {

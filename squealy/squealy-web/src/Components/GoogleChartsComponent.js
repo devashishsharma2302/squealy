@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { GOOGLE_CHART_TYPE_OPTIONS, GRID_WIDTH_OPTIONS }  from '../../Constant'
+import { GOOGLE_CHART_TYPE_OPTIONS, GRID_WIDTH_OPTIONS }  from './../Constant'
 
 export default class GoogleChartWrapper extends Component {
 
