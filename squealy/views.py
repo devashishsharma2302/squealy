@@ -1,10 +1,11 @@
-from django.db import connections
+from django.contrib.auth.models import Permission
+from django.db import connections, connection
 from django.shortcuts import render
 from django.db import transaction
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import permission_classes, api_view
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, BasePermission
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -24,7 +25,6 @@ from .models import Chart, Transformation, Validation, Parameter
 from .validators import run_validation
 
 jinjasql = JinjaSql()
-
 
 class ChartView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
