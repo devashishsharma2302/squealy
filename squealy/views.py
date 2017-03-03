@@ -26,14 +26,6 @@ from .validators import run_validation
 
 jinjasql = JinjaSql()
 
-
-def render_chart(request, parameters):
-    """
-    Renders the chart with data and its filters
-    """
-    return render(request, 'chart.html', {"filters": parameters})
-
-
 class ChartView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
     authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -43,13 +35,11 @@ class ChartView(APIView):
         """
         This is the API endpoint for executing the query and returning the data for a particular chart
         """
-        chart_attributes = ['parameters', 'validations', 'transformations']
+        chart_attributes = ['parameters', 'columns', 'validations', 'transformations']
         chart = Chart.objects.filter(url=chart_url).prefetch_related(*chart_attributes).first()
         if not chart:
             raise ChartNotFoundException('No charts found at this path')
         params = request.GET.copy()
-        if params.get('type'):
-            return render_chart(request, list(chart.parameters.all().values()) )
         user = request.user
 
         data = self._process_chart_query(chart, params, user)
