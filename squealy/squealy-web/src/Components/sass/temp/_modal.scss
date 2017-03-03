@@ -7,6 +7,48 @@
   .validation-query {
     padding: 0 4px 0 0 ;
   }
+  .add-modal-content {
+    > button.btn-success {
+      margin-top: 10px;
+      font-size: 13px;
+      font-weight: bold;
+      > i.fa-angle-double-left {
+        padding-right: 7px;
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+.copy-url {
+  position: relative;
+  > input {
+    width: 100%;
+  }
+
+  > label {
+    padding-top: 7px;
+    padding-bottom: 7px;
+  }
+  > button {
+    position: absolute;
+    right: 15px;
+    padding: 7px;
+    background: $squealy-success;
+    color: $white-color;
+
+    &:hover, &:focus, &:active {
+      color: $white-color;
+    }
+  }
+}
+
+.share-modal {
+  min-height: 75px;
+  .note-text {
+    padding-top: 10px;
+    text-align: center;
+  }
 }
 
 .modal-header {
@@ -17,3 +59,4 @@
     color: $white-color;
   }
 }
+
