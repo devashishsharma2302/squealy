@@ -4,7 +4,7 @@ import AceEditor from 'react-ace'
 import 'brace/mode/sql'
 import 'brace/theme/tomorrow'
 import { fetchQueryParamsFromQuery, getEmptyParamDefinition,
-  checkObjectAlreadyExists} from './../../Utils'
+  checkObjectAlreadyExists} from './../Utils'
 
 export default class QueryEditor extends Component {
 

@@ -1,7 +1,6 @@
 import React, {Component} from 'react'
-
-import {googleChartLoader} from '../Utils'
-import AuthoringInterfaceContainer from './temp/AuthoringInterfaceContainer'
+import {googleChartLoader} from './../Utils'
+import AuthoringInterfaceContainer from './AuthoringInterfaceContainer'
 
 
 export default class App extends Component{
