@@ -1,10 +1,11 @@
+from django.contrib.auth.models import Permission
 from django.db import connections
 from django.shortcuts import render
 from django.db import transaction
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import permission_classes, api_view
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, BasePermission
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -26,8 +27,16 @@ from .validators import run_validation
 jinjasql = JinjaSql()
 
 
+class ChartViewPermission(BasePermission):
+
+    def has_permission(self, request, view):
+        print request.user.has_perm('squealy.can_view_c09'), Permission.objects.filter(user=request.user).all()
+        return True
+
+
 class ChartView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
+    permission_classes.append(ChartViewPermission)
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
@@ -35,7 +44,7 @@ class ChartView(APIView):
         """
         This is the API endpoint for executing the query and returning the data for a particular chart
         """
-        chart_attributes = ['parameters', 'columns', 'validations', 'transformations']
+        chart_attributes = ['parameters', 'validations', 'transformations']
         chart = Chart.objects.filter(url=chart_url).prefetch_related(*chart_attributes).first()
         if not chart:
             raise ChartNotFoundException('No charts found at this path')
@@ -52,7 +61,7 @@ class ChartView(APIView):
         try:
             params = request.data.get('params', {})
             user = request.data.get('user', None)
-            chart_attributes = ['parameters', 'columns', 'validations', 'transformations']
+            chart_attributes = ['parameters', 'validations', 'transformations']
             chart = Chart.objects.filter(url=chart_url).prefetch_related(*chart_attributes).first()
             if not chart:
                 raise ChartNotFoundException('No charts found at this path')
