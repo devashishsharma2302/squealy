@@ -1,6 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { browserHistory, Router, Route, IndexRoute } from 'react-router'
 
 import ApiViewContainer from './Containers/ApiViewContainer'
 import DashboardContainer from './Containers/DashboardContainer'
