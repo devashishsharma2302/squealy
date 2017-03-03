@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 
 import {googleChartLoader} from '../Utils'
+import AuthoringInterfaceContainer from './temp/AuthoringInterfaceContainer'
 
 
 export default class App extends Component{
@@ -17,14 +18,9 @@ export default class App extends Component{
 
   render() {
     const { googleDefined } = this.state
-    const childrenWithProps = React.Children.map(this.props.children,
-     (child) => React.cloneElement(child, {
-       googleDefined: googleDefined
-      })
-   )
     return(
       <div style={{height: '100%'}}>
-        {childrenWithProps}
+        <AuthoringInterfaceContainer googleDefined={googleDefined} />
       </div>
     )
   }
