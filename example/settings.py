@@ -146,3 +146,5 @@ CORS_ORIGIN_WHITELIST += (tuple(os.environ.get('CORS_ORIGIN_WHITELIST', '').spli
 
 # Set to False to allow writes
 SITE_READ_ONLY = True
+
+LOGIN_URL='/login/'
