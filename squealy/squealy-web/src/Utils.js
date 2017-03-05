@@ -25,9 +25,7 @@ export function postApiRequest(uri, data, onSuccessCallback,
 }
 
 export function baseUrl() {
-  //FIXME: Revert these changes before deploying.
-  //return window.location.origin + '/'
-  return 'http://localhost:8000/'
+  return window.location.origin + '/'
 }
 /**
  * @module Utils

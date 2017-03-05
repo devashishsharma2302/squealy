@@ -1,0 +1,24 @@
+.google-visualization-table-tr-head {
+  .google-visualization-table-th {
+    padding: 10px;
+    background: $squealy-theme-blue;
+    color: $white-color;
+  }
+
+  .google-visualization-table-sortind {
+    color: $white-color;
+    font-size: 18px;
+    vertical-align: middle;
+  }
+}
+
+.google-visualization-table {
+  .gradient {
+    background-image: none !important;
+  }
+
+  .google-visualization-table-table td {
+    padding: 8px 1.35em;
+  }
+} 
+

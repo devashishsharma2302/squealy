@@ -30,9 +30,7 @@ jinjasql = JinjaSql()
 class ChartViewPermission(BasePermission):
 
     def has_permission(self, request, view):
-        print request.user.has_perm('squealy.can_view_c09'), Permission.objects.filter(user=request.user).all()
         return True
-
 
 class ChartView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()

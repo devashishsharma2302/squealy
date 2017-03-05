@@ -1,0 +1,72 @@
+.tabs-container {
+  border-bottom: 3px solid $border-color;
+  height: 47px;
+  padding-bottom: 2px;
+
+  .tab-component {
+    margin-left: 10px;
+    font-size: 14px;
+    border-radius: 28px;
+    img {
+      height: 20px;
+      padding-right: 5px;
+      vertical-align: bottom;
+    }
+
+    .fa {
+      font-size: 16px;
+      padding-right: 5px;
+    }
+  }
+  .transformation-container {
+    display: inline-block;
+    background: red;
+    width: 50px;
+  }
+  .transformations-count-badge {
+    top: -34px !important;
+    right: -17px !important;
+  }
+}
+.response-table {
+  height: 200px;
+}
+
+tr.editable-table-row {
+  td input {
+    border: 1px solid $white-color;
+  }
+
+  td input:hover, td input:focus {
+    border: 1px solid $border-color;
+  }
+}
+
+.api-design-container {
+  height: 100%;
+  padding: 15px 0 0 0;
+  float: right;
+}
+
+.param-heading {
+  font-family: Roboto Bold;
+  color: $text-color;
+}
+
+.run-btn-group {
+  border-bottom-left-radius: 28px;
+  border-top-left-radius: 28px;
+  padding-right: 27px;
+}
+
+#run-button {
+  border-bottom-right-radius: 28px;
+  border-top-right-radius: 28px;
+}
+
+.note-text {
+  color: $note-text-color;
+  &:hover, &:active, &:focus {
+    color: $note-text-color-active;
+  }
+}

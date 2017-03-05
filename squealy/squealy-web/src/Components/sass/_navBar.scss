@@ -1,0 +1,63 @@
+.navbar {
+  margin: 0 -15px;
+  min-height: 58px;
+  padding: 3px;
+  background: $white-color;
+  box-shadow: 0px 3px 7px 0px $border-color;
+  border-radius: 0;
+  z-index: 10;
+  border-color: $white-color;
+}
+
+.nav-tabs > li > a {
+  padding: 6px 15px;
+  margin-bottom: 10px;
+}
+
+.navbar-brand {
+  padding: 6px 15px;
+  > a {
+    font-size: 29px;
+    margin-bottom: 3px;
+    color: #5e5e5e;
+    background-color: transparent;
+    text-decoration: none !important;
+  }
+  > p {
+    font-size: 13px;
+    color: #3f51b5;
+    font-weight: 600;
+    font-style: italic;
+  }
+}
+
+.navbar-default .navbar-nav > li > a {
+  font-size: 17px;
+}
+
+.save-status {
+  margin-top: 30px;
+  margin-right: 240px;
+  text-align: center;
+  color: $text-color;
+}
+
+.nav-tabs {
+  border-bottom: none;
+  li > a {
+    color: $text-color;
+    opacity: 0.6;
+    font-size: 15px;
+    font-weight: bold;
+  }
+
+  .active {
+    background-color: $white-color !important;
+  }
+}
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+  background-color: #fff;
+  border: none;
+  border-bottom: 3px solid $squealy-theme-blue;
+  opacity: 1;
+}

@@ -1,0 +1,104 @@
+.param-definition-section {
+  border-bottom: 1px solid $border-color;
+  margin-bottom: 26px;
+  .panel-group {
+    margin-bottom: 0;
+  }
+}
+
+.api-param-text {
+  min-height: 20%;
+  min-width: 20%;
+}
+
+.add-modal-content {
+  border: 1px solid $light-gray-color;
+  margin-bottom: 10px;
+  > div {
+    margin: 10px 0;
+    > label {
+      font-size: 14px;
+    }
+  }
+  .param-form-footer button {
+    float: right;
+    margin: 5px;
+  }
+}
+
+.api-param-def-wrapper {
+  max-width: 100%;
+  max-height: 50%;
+  overflow: auto;
+}
+
+.api-param-def-table {
+  border: 1px solid $light-gray-color;
+
+  > tbody > tr {
+    > td > i.fa-trash-o {
+      opacity: 0.5;
+      cursor: pointer;
+    }
+
+    > td > i.fa-trash-o:hover {
+      opacity: 1;
+      color: $orange-color;
+    }
+  }
+}
+
+.validation-table-wrapper {
+  max-width: 100%;
+  max-height: 100%;
+  overflow: auto;
+  > table {
+    border: 1px solid $light-gray-color;
+    > tfoot > tr > td.add-validation-button > div {
+      float: right;
+      > i {
+        font-size: 1.4em;
+      }
+    }
+    > tbody > tr > td.delete-validation-button > div {
+      float: right;
+      > i {
+        font-size: 1.4em;
+      }
+    }
+
+  }
+}
+
+.param-name:hover {
+  @include on-hover-style
+}
+
+.param-heading {
+  display: inline-block;
+  margin-top: 13px;
+  margin-bottom: 13px;
+}
+
+.param-heading-icon {
+  float: right ;
+  color: $text-color;
+  font-weight: bold !important;
+  margin-top: 13px;
+}
+
+.validation-options {
+  padding-left: 10px;
+  margin-bottom: 13px;
+  > label.radio-inline {
+    padding-right: 64px;
+    > input[type="radio"] {
+      margin-top: 0px;
+    }
+  }
+}
+
+.align-center {
+  text-align: center;
+}
+
