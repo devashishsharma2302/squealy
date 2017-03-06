@@ -23,7 +23,7 @@ def create_default_superuser(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('squealy', '0005_parameter_kwargs'),
+        ('squealy', '0001_initial'),
     ]
 
     operations = [

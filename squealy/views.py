@@ -1,5 +1,5 @@
 from django.contrib.auth.models import Permission
-from django.db import connections, connection
+from django.db import connections
 from django.shortcuts import render
 from django.db import transaction
 
@@ -26,8 +26,15 @@ from .validators import run_validation
 
 jinjasql = JinjaSql()
 
+
+class ChartViewPermission(BasePermission):
+
+    def has_permission(self, request, view):
+        return True
+
 class ChartView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
+    permission_classes.append(ChartViewPermission)
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
@@ -35,7 +42,7 @@ class ChartView(APIView):
         """
         This is the API endpoint for executing the query and returning the data for a particular chart
         """
-        chart_attributes = ['parameters', 'columns', 'validations', 'transformations']
+        chart_attributes = ['parameters', 'validations', 'transformations']
         chart = Chart.objects.filter(url=chart_url).prefetch_related(*chart_attributes).first()
         if not chart:
             raise ChartNotFoundException('No charts found at this path')
