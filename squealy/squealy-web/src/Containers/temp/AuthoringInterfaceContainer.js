@@ -109,6 +109,9 @@ export default class AuthoringInterfaceContainer extends Component {
       this.setState({charts: charts}, ()=> {
         const { selectedChartIndex, charts } = this.state
         const currentPath = window.location.pathname.split('/')
+
+        // If there is a string after / , set the selected chart else set the
+        // chart name in the URL
         if (currentPath[1] !== '') {
           const chartInUrl = currentPath[1]
 
