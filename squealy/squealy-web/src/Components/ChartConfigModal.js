@@ -2,7 +2,7 @@ import React, { Component} from 'react'
 import AceEditor from 'react-ace'
 import 'brace/mode/sql'
 import 'brace/theme/tomorrow'
-import { CHART_CONFIG_EXAMPLE, GOOGLE_CHART_DOC } from './../../Constant'
+import { CHART_CONFIG_EXAMPLE, GOOGLE_CHART_DOC } from './../Constant'
 
 import { SquealyModal } from './SquealyUtilsComponents'
 

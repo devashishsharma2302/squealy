@@ -1,6 +1,6 @@
 import React, { Component} from 'react'
 import AceEditor from 'react-ace'
-import { baseUrl } from './../../Utils'
+import { baseUrl } from './../Utils'
 import 'brace/mode/sql'
 import 'brace/theme/tomorrow'
 import CopyToClipboard from 'react-copy-to-clipboard'

@@ -41,3 +41,23 @@
   text-align: center;
   color: $text-color;
 }
+
+.nav-tabs {
+  border-bottom: none;
+  li > a {
+    color: $text-color;
+    opacity: 0.6;
+    font-size: 15px;
+    font-weight: bold;
+  }
+
+  .active {
+    background-color: $white-color !important;
+  }
+}
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+  background-color: #fff;
+  border: none;
+  border-bottom: 3px solid $squealy-theme-blue;
+  opacity: 1;
+}
