@@ -179,7 +179,10 @@ class ChartsLoaderView(APIView):
         To delete a chart
         """
         data = request.data
-        Chart.objects.filter(id=data['id']).first().delete()
+        try:
+            Chart.objects.filter(id=data['id']).first().delete()
+        except Exception:
+            ChartNotFoundException('A chart with id' + data['id'] + 'was not found')
         return Response({})
 
     def post(self, request):

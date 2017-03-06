@@ -81,7 +81,7 @@ export default class ChartConfigModal extends Component {
             <button className="btn btn-primary" onClick={this.handleSaveClick}>Save</button>
           </div>
         </div>
-        <a href={GOOGLE_CHART_DOC} className='note-text'><strong>NOTE: </strong> GoogleCharts supports a lot of configuration that can be added here. Click here to refer tha docs.</a>
+        <a href={GOOGLE_CHART_DOC} className='note-text' target="_blank"><strong>NOTE: </strong> GoogleCharts supports a lot of configuration that can be added here. Click here to refer the docs.</a>
       </div>
 
     return (
