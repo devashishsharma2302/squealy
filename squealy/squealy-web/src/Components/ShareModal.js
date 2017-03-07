@@ -39,6 +39,7 @@ export default class ValidationsModal extends Component {
         closeModal={this.props.closeModal}
         showModal={this.props.showModal}
         modalHeader='Share Your Chart'
+        helpText='Generate a url for this chart which can be shared with other users'
         modalContent={modalContent}
       />
     )

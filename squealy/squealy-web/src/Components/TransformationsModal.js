@@ -114,10 +114,11 @@ export default class TransformationsModal extends Component {
     return (
       <SquealyModal
         bsSize={'large'}
-        modalId='addTestParametersModal'
+        modalId='transformationsModal'
         closeModal={closeModal}
         showModal={showModal}
         modalHeader='Transformations'
+        helpText='Use transfromations on the result set of the query to avoid complex transformation logic inside the query'
         modalContent={testParametersHTML}
       />
     )
