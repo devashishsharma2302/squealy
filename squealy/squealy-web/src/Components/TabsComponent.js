@@ -32,7 +32,9 @@ export default class TabsComponent extends Component {
     const {
       chart,
       onHandleTestButton,
-      selectedChartChangeHandler
+      selectedChartChangeHandler,
+      updateViewMode,
+      currentChartMode
     } = this.props
     const {
       showValidationsModal,
@@ -49,93 +51,103 @@ export default class TabsComponent extends Component {
     }
 
     if (chart.can_edit) {
-      viewButton.viewText = 'View'
-      viewButton.icon =  <i className="fa fa-eye"/>
-      // viewButton.className = 'disabled'
+      viewButton.className = ''
       viewButton.title = 'Please contact to Admin for write access'
+      if (currentChartMode) {
+        viewButton.viewText = 'View'
+        viewButton.icon =  <i className="fa fa-eye"/>
+      } else {
+        viewButton.viewText = 'Edit'
+        viewButton.icon =  <i className="fa fa-pencil"/>
+      }
     } else {
       viewButton.viewText = 'Edit'
       viewButton.icon =  <i className="fa fa-pencil"/>
-      // viewButton.className = ''
-      viewButton.title = null
+      viewButton.className = 'disabled'
+      viewButton.title = 'Please contact to Admin for write access'
     }
 
     return (
       <div>
-        <SplitButton className="run-btn-group" bsStyle='success' title='Run' id='run-button' onClick={onHandleTestButton}>
-          <MenuItem
-            eventKey='1'
-            onClick={()=>this.modalVisibilityHandler('showParamDefModal')}>
-              Parameter Definitions
-          </MenuItem>
-        </SplitButton>
-        <Button
-          bsStyle='primary'
-          className='tab-component'
-          onClick={() => this.modalVisibilityHandler('showValidationsModal')}>
-          <img src={validationIcon} alt="squealyValidation"/>
-            Validations
-            <NotificationBadge
-              count={chart.validations.length}
-              effect={[null, null, null, null]}
-              className='transformations-count-badge'
-            />
-        </Button>
-        <Button
-          bsStyle='primary'
-          className='tab-component'
-          onClick={()=>this.modalVisibilityHandler('showTransformationsModal')}
-        >
-          <img src={transformationIcon} alt="transformationIcon"/>Transformations
-          <NotificationBadge count={chart.transformations.length}
-            effect={[null, null, null, null]}
-            className='transformations-count-badge' />
-        </Button>
-        <Button bsStyle='primary' className='tab-component'
-          onClick={()=>this.modalVisibilityHandler('showShareModal')}>
-          <i className="fa fa-share-alt"/>
-          Share</Button>
-        {
-          showParamDefModal &&
-          <ParamDefinitionModal
-            selectedChartChangeHandler={selectedChartChangeHandler}
-            closeModal={()=>this.modalVisibilityHandler('showParamDefModal')}
-            showModal={this.state.showParamDefModal}
-            parameters={chart.parameters}/>
-        }
-        {
-          showValidationsModal &&
-          <ValidationsModal
-            selectedChartChangeHandler={selectedChartChangeHandler}
-            closeModal={()=>this.modalVisibilityHandler('showValidationsModal')}
-            showModal={showValidationsModal}
-            validations={chart.validations}/>
-        }
-        {
-          showShareModal &&
-          <ShareModal
-            selectedChartChangeHandler={selectedChartChangeHandler}
-            closeModal={()=>this.modalVisibilityHandler('showShareModal')}
-            showModal={showShareModal}
-            chartUrl={chart.chartUrl}/>
-        }
-        {
-          showTransformationsModal &&
-          <TransformationsModal
-            selectedChartChangeHandler={selectedChartChangeHandler}
-            closeModal={()=>this.modalVisibilityHandler('showTransformationsModal')}
-            showModal={showTransformationsModal}
-            transformations={chart.transformations}
-            chartColumns={chart.chartColumns}
-            pivotColumn={chart.pivotColumn}
-            metric={chart.metric}
-            columnsToMerge={chart.columnsToMerge}
-            newColumnName={chart.newColumnName}
-          />
+        { currentChartMode &&
+          <span>
+            <SplitButton className="run-btn-group" bsStyle='success' title='Run' id='run-button' onClick={onHandleTestButton}>
+              <MenuItem
+                eventKey='1'
+                onClick={()=>this.modalVisibilityHandler('showParamDefModal')}>
+                  Parameter Definitions
+              </MenuItem>
+            </SplitButton>
+            <Button
+              bsStyle='primary'
+              className='tab-component'
+              onClick={() => this.modalVisibilityHandler('showValidationsModal')}>
+              <img src={validationIcon} alt="squealyValidation"/>
+                Validations
+                <NotificationBadge
+                  count={chart.validations.length}
+                  effect={[null, null, null, null]}
+                  className='transformations-count-badge'
+                />
+            </Button>
+            <Button
+              bsStyle='primary'
+              className='tab-component'
+              onClick={()=>this.modalVisibilityHandler('showTransformationsModal')}
+            >
+              <img src={transformationIcon} alt="transformationIcon"/>Transformations
+              <NotificationBadge count={chart.transformations.length}
+                effect={[null, null, null, null]}
+                className='transformations-count-badge' />
+            </Button>
+            <Button bsStyle='primary' className='tab-component'
+              onClick={()=>this.modalVisibilityHandler('showShareModal')}>
+              <i className="fa fa-share-alt"/>
+              Share</Button>
+            {
+              showParamDefModal &&
+              <ParamDefinitionModal
+                selectedChartChangeHandler={selectedChartChangeHandler}
+                closeModal={()=>this.modalVisibilityHandler('showParamDefModal')}
+                showModal={this.state.showParamDefModal}
+                parameters={chart.parameters}/>
+            }
+            {
+              showValidationsModal &&
+              <ValidationsModal
+                selectedChartChangeHandler={selectedChartChangeHandler}
+                closeModal={()=>this.modalVisibilityHandler('showValidationsModal')}
+                showModal={showValidationsModal}
+                validations={chart.validations}/>
+            }
+            {
+              showShareModal &&
+              <ShareModal
+                selectedChartChangeHandler={selectedChartChangeHandler}
+                closeModal={()=>this.modalVisibilityHandler('showShareModal')}
+                showModal={showShareModal}
+                chartUrl={chart.chartUrl}/>
+            }
+            {
+              showTransformationsModal &&
+              <TransformationsModal
+                selectedChartChangeHandler={selectedChartChangeHandler}
+                closeModal={()=>this.modalVisibilityHandler('showTransformationsModal')}
+                showModal={showTransformationsModal}
+                transformations={chart.transformations}
+                chartColumns={chart.chartColumns}
+                pivotColumn={chart.pivotColumn}
+                metric={chart.metric}
+                columnsToMerge={chart.columnsToMerge}
+                newColumnName={chart.newColumnName}
+              />
+            }
+          </span>
         }
         <Button bsStyle='primary'
           className={'tab-component view-btn '+viewButton.className} 
-          title={viewButton.title}>
+          title={viewButton.title}
+          onClick={()=>updateViewMode(currentChartMode)}>
           {viewButton.icon}
           {viewButton.viewText}
         </Button>

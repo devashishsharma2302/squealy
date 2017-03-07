@@ -25,13 +25,11 @@ export default class ViewOnlyResults extends Component {
       })
       postApiRequest(DOMAIN_NAME+'squealy/'+ this.props.chart.url+'/', payloadObj,
           this.onSuccessTest, this.onErrorTest, 'table')
-      console.log(nextprops, payloadObj)
       this.setState({payloadObj: payloadObj})
     }
   }
 
   onSuccessTest = (response) => {
-    console.log(response)
     this.setState({chartData: response})
   }
 
