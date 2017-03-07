@@ -151,7 +151,7 @@ export default class ParamDefinitionModal extends Component {
               <th>Name</th>
               <th>Test Data</th>
               <th>Type</th>
-              <th>Default Value</th>
+              <th>Default</th>
               <th className="align-center clickable-element">
                 <i className="fa fa-plus"
                   aria-hidden="true" data-toggle="modal"

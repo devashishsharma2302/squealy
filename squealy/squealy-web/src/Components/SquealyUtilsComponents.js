@@ -28,7 +28,7 @@ export class SquealyModal extends Component {
           <Modal.Title>
             {modalHeader}
             <OverlayTrigger placement="right" overlay={tooltip}>
-              <i className="fa fa-info info-icon" aria-hidden="true"></i>
+              <i className="fa fa-question-circle-o info-icon" aria-hidden="true"></i>
             </OverlayTrigger>
           </Modal.Title>
         </Modal.Header>
