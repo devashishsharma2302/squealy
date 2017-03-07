@@ -70,3 +70,13 @@ tr.editable-table-row {
     color: $note-text-color-active;
   }
 }
+
+.no-charts {
+  text-align: center;
+  .instructions {
+    margin-top: 20%;
+  }
+  h2, h6 {
+    color: $text-color;
+  }
+}
