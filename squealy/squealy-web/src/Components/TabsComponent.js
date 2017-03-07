@@ -30,18 +30,9 @@ export default class TabsComponent extends Component {
 
   render() {
     const {
-      transformations,
+      chart,
       onHandleTestButton,
-      parameters,
-      testParameters,
-      selectedChartChangeHandler,
-      validations,
-      chartColumns,
-      pivotColumn,
-      metric,
-      columnsToMerge,
-      newColumnName,
-      chartUrl
+      selectedChartChangeHandler
     } = this.props
     const {
       showValidationsModal,
@@ -65,7 +56,7 @@ export default class TabsComponent extends Component {
           <img src={validationIcon} alt="squealyValidation"/>
             Validations
             <NotificationBadge
-              count={validations.length}
+              count={chart.validations.length}
               effect={[null, null, null, null]}
               className='transformations-count-badge'
             />
@@ -76,7 +67,7 @@ export default class TabsComponent extends Component {
           onClick={()=>this.modalVisibilityHandler('showTransformationsModal')}
         >
           <img src={transformationIcon} alt="transformationIcon"/>Transformations
-          <NotificationBadge count={transformations.length}
+          <NotificationBadge count={chart.transformations.length}
             effect={[null, null, null, null]}
             className='transformations-count-badge' />
         </Button>
@@ -90,7 +81,7 @@ export default class TabsComponent extends Component {
             selectedChartChangeHandler={selectedChartChangeHandler}
             closeModal={()=>this.modalVisibilityHandler('showParamDefModal')}
             showModal={this.state.showParamDefModal}
-            parameters={parameters}/>
+            parameters={chart.parameters}/>
         }
         {
           showValidationsModal &&
@@ -98,7 +89,7 @@ export default class TabsComponent extends Component {
             selectedChartChangeHandler={selectedChartChangeHandler}
             closeModal={()=>this.modalVisibilityHandler('showValidationsModal')}
             showModal={showValidationsModal}
-            validations={validations}/>
+            validations={chart.validations}/>
         }
         {
           showShareModal &&
@@ -106,7 +97,7 @@ export default class TabsComponent extends Component {
             selectedChartChangeHandler={selectedChartChangeHandler}
             closeModal={()=>this.modalVisibilityHandler('showShareModal')}
             showModal={showShareModal}
-            chartUrl={chartUrl}/>
+            chartUrl={chart.chartUrl}/>
         }
         {
           showTransformationsModal &&
@@ -114,12 +105,12 @@ export default class TabsComponent extends Component {
             selectedChartChangeHandler={selectedChartChangeHandler}
             closeModal={()=>this.modalVisibilityHandler('showTransformationsModal')}
             showModal={showTransformationsModal}
-            transformations={transformations}
-            chartColumns={chartColumns}
-            pivotColumn={pivotColumn}
-            metric={metric}
-            columnsToMerge={columnsToMerge}
-            newColumnName={newColumnName}
+            transformations={chart.transformations}
+            chartColumns={chart.chartColumns}
+            pivotColumn={chart.pivotColumn}
+            metric={chart.metric}
+            columnsToMerge={chart.columnsToMerge}
+            newColumnName={chart.newColumnName}
           />
         }
       </div>
