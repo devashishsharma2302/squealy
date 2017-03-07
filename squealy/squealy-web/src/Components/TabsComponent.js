@@ -32,8 +32,7 @@ export default class TabsComponent extends Component {
     const {
       chart,
       onHandleTestButton,
-      currentChartMode,
-      userPermission
+      selectedChartChangeHandler
     } = this.props
     const {
       showValidationsModal,
@@ -49,16 +48,16 @@ export default class TabsComponent extends Component {
       icon: <i className="fa fa-pencil"/>
     }
 
-    if (userPermission !== 'edit') {
-      viewButton.className = 'disabled'
-      viewButton.title = 'Please contact to Admin for write access'
-    }
-    if (currentChartMode === 'edit') {
+    if (chart.can_edit) {
       viewButton.viewText = 'View'
       viewButton.icon =  <i className="fa fa-eye"/>
+      // viewButton.className = 'disabled'
+      viewButton.title = 'Please contact to Admin for write access'
     } else {
       viewButton.viewText = 'Edit'
       viewButton.icon =  <i className="fa fa-pencil"/>
+      // viewButton.className = ''
+      viewButton.title = null
     }
 
     return (
