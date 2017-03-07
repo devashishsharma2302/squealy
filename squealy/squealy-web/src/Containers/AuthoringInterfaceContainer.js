@@ -24,7 +24,6 @@ export default class AuthoringInterfaceContainer extends Component {
   }
 
   componentDidMount() {
-    //TODO: Get charts from backend
     getApiRequest(DOMAIN_NAME+'charts/', null,
                     (response)=>this.loadInitialCharts(response),
                      this.loadInitialCharts, null)
@@ -48,6 +47,7 @@ export default class AuthoringInterfaceContainer extends Component {
     }
   }
 
+  // Updates the selected chart index and updates the selected chart name in the URL
   onChartDeleted = (index, callback) => {
     const {selectedChartIndex, charts} = this.state
     if(charts.length > 1) {
@@ -73,6 +73,8 @@ export default class AuthoringInterfaceContainer extends Component {
     }
   }
 
+  // Calls the Delete chart API and triggers onChartDelete function if the API
+  // is successfull
   chartDeletionHandler = (index, callback) => {
     const chartId = this.state.charts[index].id
     this.setState({'saveInProgress': true},
@@ -98,7 +100,6 @@ export default class AuthoringInterfaceContainer extends Component {
   loadInitialCharts = (response) => {
     let charts = [],
     tempChart = {}
-
     if (response && response.length !== 0) {
       response.map(chart => {
         tempChart = chart
@@ -108,7 +109,6 @@ export default class AuthoringInterfaceContainer extends Component {
       this.setState({charts: charts}, ()=> {
         const { selectedChartIndex, charts } = this.state
         const currentPath = window.location.pathname.split('/')
-
         // If there is a string after / , set the selected chart else set the
         // chart name in the URL
         if (currentPath[1] !== '') {
@@ -122,10 +122,13 @@ export default class AuthoringInterfaceContainer extends Component {
               }
             })
             if(chartIndex) {
-              this.setState({selectedChartIndex: chartIndex})
+              this.setState({selectedChartIndex: chartIndex}, this.setUrlPath)
             } else {
-              console.error('Chart not found')
+              alert('Chart not found')
+              this.setState({selectedChartIndex: 0}, this.setUrlPath)
             }
+          } else {
+            this.setUrlPath()
           }
         } else {
           this.setUrlPath()
@@ -137,13 +140,16 @@ export default class AuthoringInterfaceContainer extends Component {
     }
   }
 
+  // Updates the URL with the selected chart name
   setUrlPath() {
     const { selectedChartIndex, charts } = this.state
     const selectedChart = charts[selectedChartIndex]
-    const newUrl = '/' + selectedChart.name
+    const canEditUrl = (charts[selectedChartIndex].can_edit)?'edit':'view'
+    const newUrl = '/' + selectedChart.name + '/' + canEditUrl
     window.history.replaceState('', '', newUrl);
   }
 
+  // A generic function to handle change in any property inside the selected chart
   selectedChartChangeHandler = (key, value, callback=null, index) => {
     let charts = JSON.parse(JSON.stringify(this.state.charts)),
       chartIndex = index ? index : this.state.selectedChartIndex
@@ -154,6 +160,8 @@ export default class AuthoringInterfaceContainer extends Component {
     this.setState({charts: charts}, ()=>{this.saveChart(charts[chartIndex]); (callback) && callback()})
   }
 
+  // Updates the selected chart's chart data with the result set returned by the
+  // query written by the user
   onSuccessTest = (data) => {
     let currentChartData = [...this.state.charts]
     currentChartData[this.state.selectedChartIndex]['chartData'] = data
@@ -161,12 +169,16 @@ export default class AuthoringInterfaceContainer extends Component {
     this.setState({charts: currentChartData})
   }
 
+  // Updates the selected chart with the error message recieved from the backend
   onErrorTest = (e) => {
     let charts = JSON.parse(JSON.stringify(this.state.charts))
     charts[this.state.selectedChartIndex].apiErrorMsg = e.responseJSON.error
     this.setState({charts: charts})
   }
 
+  // Handles click event on run button. This function makes a POST call to get
+  // result set of the query written by the user and triggers onSuccessTest if
+  // the API is successfull
   onHandleTestButton = () => {
     const selectedChart = this.state.charts[this.state.selectedChartIndex]
     let transformations = selectedChart.transformations.map(transformation => {
