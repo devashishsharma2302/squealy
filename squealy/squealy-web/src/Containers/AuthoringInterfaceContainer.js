@@ -49,15 +49,15 @@ export default class AuthoringInterfaceContainer extends Component {
   }
 
   onChartDeleted = (index, callback) => {
-    if(this.state.charts.length > 1) {
-      let deletedChartId = this.state.charts[index].id
+    const {selectedChartIndex, charts} = this.state
+    if(charts.length > 1) {
       let charts = JSON.parse(JSON.stringify(this.state.charts))
       charts.splice(index, 1)
       this.setState({
         charts: charts,
-        selectedChartIndex: this.state.selectedChartIndex - 1,
-        'savedStatus': true,
-        'saveInProgress': false
+        selectedChartIndex: (selectedChartIndex !== 0)?selectedChartIndex - 1:selectedChartIndex,
+        savedStatus: true,
+        saveInProgress: false
       }, () => {
         callback.constructor === 'Function' || callback()
       })
@@ -65,8 +65,8 @@ export default class AuthoringInterfaceContainer extends Component {
       this.setState({
         charts: [getEmptyApiDefinition()],
         selectedChartIndex: 0,
-        'savedStatus': true,
-        'saveInProgress': false
+        savedStatus: true,
+        saveInProgress: false
       }, () => {
         callback.constructor === 'Function' ||callback()
       })
