@@ -1,4 +1,5 @@
 from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 from django.db import connections
 from django.shortcuts import render
 from django.db import transaction
@@ -30,7 +31,8 @@ jinjasql = JinjaSql()
 class ChartViewPermission(BasePermission):
 
     def has_permission(self, request, view):
-        return True
+        chart_url = request.resolver_match.kwargs.get('chart_url')
+        return request.user.has_perm('squealy.can_view_' + chart_url) or request.user.has_perm('squealy.can_edit_' + chart_url)
 
 class ChartView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
@@ -171,15 +173,42 @@ class ChartView(APIView):
         return table
 
 
+class ChartUpdatePermission(BasePermission):
+
+    def has_permission(self, request, view):
+        if request.method == 'POST' and request.data.get('chart'):
+            chart_data = request.data['chart']
+            if chart_data.get('id'):
+                # Chart update
+                return request.user.has_perm('squealy.can_edit_' + chart_data['url'])
+            else:
+                # Adding new chart
+                return request.user.has_perm('squealy.add_chart')
+        elif request.method == 'DELETE' and request.data.get('id'):
+            # Delete chart
+            return request.user.has_perm('squealy.delete_chart')
+        return True
+
+
 class ChartsLoaderView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
+    permission_classes.append(ChartUpdatePermission)
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request, *args, **kwargs):
+        permitted_charts = []
         charts = Chart.objects.all()
-        response = ChartSerializer(charts, many=True).data
-        return Response(response)
+        for chart in charts:
+            if request.user.has_perm('squealy.can_edit_' + chart.url):
+                chart_data = ChartSerializer(chart).data
+                chart_data['can_edit'] = True
+                permitted_charts.append(chart_data)
+            elif request.user.has_perm('squealy.can_view_' + chart.url):
+                chart_data = ChartSerializer(chart).data
+                chart_data['can_edit'] = False
+                permitted_charts.append(chart_data)
+        return Response(permitted_charts)
 
     def delete(self, request):
         """
@@ -187,6 +216,8 @@ class ChartsLoaderView(APIView):
         """
         data = request.data
         try:
+            chart_url = Chart.objects.filter(id=data['id']).first().url
+            Permission.objects.filter(codename__in=['can_view_' + chart_url, 'can_edit_' + chart_url]).delete()
             Chart.objects.filter(id=data['id']).first().delete()
         except Exception:
             ChartNotFoundException('A chart with id' + data['id'] + 'was not found')
@@ -198,9 +229,24 @@ class ChartsLoaderView(APIView):
         """
         try:
             data = request.data['chart']
+
             chart_object = Chart(id=data['id'], name=data['name'], url=data['url'], query=data['query'],
                                  type=data['type'], options=data['options'])
             chart_object.save()
+
+            # Create view/edit permissions
+            content_type = ContentType.objects.get_for_model(Chart)
+            Permission.objects.update_or_create(
+                codename='can_view_' + chart_object.url,
+                name='Can view ' + chart_object.url,
+                content_type=content_type,
+            )
+            Permission.objects.update_or_create(
+                codename='can_edit_' + chart_object.url,
+                name='Can edit ' + chart_object.url,
+                content_type=content_type,
+            )
+
             chart_id = chart_object.id
             Chart.objects.all().prefetch_related('transformations', 'parameters', 'validations')
 
@@ -256,8 +302,24 @@ class ChartsLoaderView(APIView):
         return Response(chart_id, status.HTTP_200_OK)
 
 
+class UserInformation(APIView):
+    permission_classes = SquealySettings.get_default_permission_classes()
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
+
+    def get(self, request):
+        response = {}
+        user = request.user
+        response['name'] = user.username
+        response['email'] = user.email
+        response['first_name'] = user.first_name
+        response['last_name'] = user.last_name
+        response['can_add_chart'] = user.has_perm('squealy.add_chart')
+        response['can_delete_chart'] = user.has_perm('squealy.delete_chart')
+        return Response(response)
+
+
 @api_view(['GET'])
-@permission_classes(SquealySettings.get('Authoring_Interface_Permission_Classes', (IsAdminUser, )))
 def squealy_interface(request):
     """
     Renders the squealy authoring interface template
