@@ -8,6 +8,20 @@
     "postdeploy": "python example/manage.py migrate"
   },
   "env": {
-    "QUERY_DB": "<mysql/postgres>://<username>:<password>@<host>:<port>/<database>"
+    "QUERY_DB": {
+      "description": "Enter your database URI in the following format <mysql/postgres>://<username>:<password>@<host>:<port>/<database>"
+    },
+    "CORS_ORIGIN_WHITELIST": {
+      "description": "In case you wish to access SQueaLy APIs from remote hosts, enter comma separated list of such hosts",
+      "required": false
+    },
+    "ADMIN_USERNAME": {
+      "description": "User name for the default admin user",
+      "value": "admin"
+    },
+    "ADMIN_PASS": {
+      "description": "Password for the default admin user. Do not share this passwords with ither users. You can create new users from the admin page and generate credentials for the new users",
+      "value": "admin@123"
+    }
   }
 }

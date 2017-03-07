@@ -148,3 +148,4 @@ CORS_ORIGIN_WHITELIST += (tuple(os.environ.get('CORS_ORIGIN_WHITELIST', '').spli
 SITE_READ_ONLY = True
 
 LOGIN_URL='/login/'
+LOGIN_REDIRECT_URL = '/'
