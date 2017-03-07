@@ -91,7 +91,7 @@ export default class ChartConfigModal extends Component {
         closeModal={this.props.closeModal}
         showModal={this.props.showModal}
         modalHeader='Chart Configurations'
-        helpText='lasdnsj'
+        helpText='Customize the look and feel of this chart here. Any configuration provided by Google Charts can be applied here'
         modalContent={modalContent}
         dialogClassName='chart-config-modal'
         noFooter={true}
