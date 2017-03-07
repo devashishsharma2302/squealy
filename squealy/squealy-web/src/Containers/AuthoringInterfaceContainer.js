@@ -48,14 +48,36 @@ export default class AuthoringInterfaceContainer extends Component {
     }
   }
 
-  onChartDeleted = () => {
-    this.setState({'savedStatus': true, 'saveInProgress': false})
+  onChartDeleted = (index, callback) => {
+    if(this.state.charts.length > 1) {
+      let deletedChartId = this.state.charts[index].id
+      let charts = JSON.parse(JSON.stringify(this.state.charts))
+      charts.splice(index, 1)
+      this.setState({
+        charts: charts,
+        selectedChartIndex: this.state.selectedChartIndex - 1,
+        'savedStatus': true,
+        'saveInProgress': false
+      }, () => {
+        callback.constructor === 'Function' || callback()
+      })
+    } else {
+      this.setState({
+        charts: [getEmptyApiDefinition()],
+        selectedChartIndex: 0,
+        'savedStatus': true,
+        'saveInProgress': false
+      }, () => {
+        callback.constructor === 'Function' ||callback()
+      })
+    }
   }
 
-  deleteChart = (id) => {
+  chartDeletionHandler = (index, callback) => {
+    const chartId = this.state.charts[index].id
     this.setState({'saveInProgress': true},
-                  apiCall(DOMAIN_NAME+'charts/', JSON.stringify({'id': id}), 'DELETE',
-                  this.onChartDeleted,this.onChartSaveError, null)
+                  apiCall(DOMAIN_NAME+'charts/', JSON.stringify({'id': chartId}), 'DELETE',
+                  () => this.onChartDeleted(index, callback),this.onChartSaveError, null)
     )
   }
 
@@ -83,11 +105,43 @@ export default class AuthoringInterfaceContainer extends Component {
         tempChart.testParameters = {}
         charts.push(tempChart)
       })
-      this.setState({charts: charts})
+      this.setState({charts: charts}, ()=> {
+        const { selectedChartIndex, charts } = this.state
+        const currentPath = window.location.pathname.split('/')
+
+        // If there is a string after / , set the selected chart else set the
+        // chart name in the URL
+        if (currentPath[1] !== '') {
+          const chartInUrl = currentPath[1]
+
+          if (charts[selectedChartIndex].name !== chartInUrl) {
+            let chartIndex = undefined
+            charts.map((chart, i) => {
+              if(chart.name === chartInUrl) {
+                chartIndex = i
+              }
+            })
+            if(chartIndex) {
+              this.setState({selectedChartIndex: chartIndex})
+            } else {
+              console.error('Chart not found')
+            }
+          }
+        } else {
+          this.setUrlPath()
+        }
+      })
     }
     else {
     this.initializeState()
     }
+  }
+
+  setUrlPath() {
+    const { selectedChartIndex, charts } = this.state
+    const selectedChart = charts[selectedChartIndex]
+    const newUrl = '/' + selectedChart.name
+    window.history.replaceState('', '', newUrl);
   }
 
   selectedChartChangeHandler = (key, value, callback=null, index) => {
@@ -143,25 +197,7 @@ export default class AuthoringInterfaceContainer extends Component {
                     this.onSuccessTest, this.onErrorTest, 'table')
   }
 
-  chartDeletionHandler = (index, callBackFunc) => {
-    if(this.state.charts.length > 1) {
-      let deletedChartId = this.state.charts[index].id
-      let charts = JSON.parse(JSON.stringify(this.state.charts))
-      charts.splice(index, 1)
-      this.setState({
-        charts: charts,
-        selectedChartIndex: this.state.selectedChartIndex - 1
-      }, () => {
-        this.deleteChart(deletedChartId)
-        callBackFunc.constructor === 'Function' || callBackFunc()
-      })
-    } else {
-      this.setState({charts: [getEmptyApiDefinition()], selectedChartIndex: 0}, () => {
-        this.deleteChart(deletedChartId)
-        callBackFunc.constructor === 'Function' || callBackFunc()
-      })
-    }
-  }
+  
 
   //Appends an empty API definition object to current API Definitions
   chartAdditionHandler = (name) => {
@@ -178,7 +214,7 @@ export default class AuthoringInterfaceContainer extends Component {
 
   //Changes the selected API index to the one which was clicked from the API list
   chartSelectionHandler = (index) => {
-    this.setState({selectedChartIndex: index})
+    this.setState({selectedChartIndex: index}, () => this.setUrlPath())
   }
 
   shouldComponentUpdate(nextProps, nextState) {
