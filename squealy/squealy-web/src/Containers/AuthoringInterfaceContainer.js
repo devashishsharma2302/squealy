@@ -4,7 +4,6 @@ import {
   getEmptyApiDefinition, postApiRequest, getApiRequest, apiCall, formatTestParameters, 
   getEmptyUserInfo } from './../Utils'
 import { DOMAIN_NAME } from './../Constant'
-import { CHART_DATA, USER_INFO, CHART_RESPONSE } from './../mockDataForAuthorization'
 
 export default class AuthoringInterfaceContainer extends Component {
   constructor(props) {
