@@ -111,7 +111,8 @@ export default class SideMenu extends Component {
       selectedChartIndex,
       chartSelectionHandler,
       chartDeletionHandler,
-      selectedChartChangeHandler} = this.props
+      selectedChartChangeHandler,
+      userInfo} = this.props
     
     return (
       <div className="full-height">
@@ -119,7 +120,11 @@ export default class SideMenu extends Component {
           <div className="side-menu-heading">
             <img src={chartIcon} alt="chart-icon"/>
             <span>Charts</span>
-            <i onClick={() => this.showChartDetailsModal('ADD')} className="fa fa-plus-circle add-new" aria-hidden="true"></i>
+            {
+              (userInfo.can_add_chart) ?
+                <i onClick={() => this.showChartDetailsModal('ADD')} className="fa fa-plus-circle add-new" aria-hidden="true"></i>
+                : null
+            }
           </div>
           <ul ref="chartListUl">
             {

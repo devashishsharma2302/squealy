@@ -1,9 +1,10 @@
 import React, {Component} from 'react'
 import MainComponent from './../Components/MainComponent'
 import {
-  getEmptyApiDefinition, postApiRequest, getApiRequest, apiCall, formatTestParameters
-} from './../Utils'
+  getEmptyApiDefinition, postApiRequest, getApiRequest, apiCall, formatTestParameters, 
+  getEmptyUserInfo } from './../Utils'
 import { DOMAIN_NAME } from './../Constant'
+import { CHART_DATA, USER_INFO, CHART_RESPONSE } from './../mockDataForAuthorization'
 
 export default class AuthoringInterfaceContainer extends Component {
   constructor(props) {
@@ -12,13 +13,14 @@ export default class AuthoringInterfaceContainer extends Component {
       charts: [getEmptyApiDefinition()],
       selectedChartIndex: 0,
       saveInProgress: false,
-      savedStatus: true
+      savedStatus: true,
+      userInfo: getEmptyUserInfo()
     }
   }
 
   initializeState = () => {
-    let charts = [getEmptyApiDefinition()]
-    this.setState({charts: charts, selectedChartIndex: 0},
+    let charts = [getEmptyApiDefinition()], userInfo = getEmptyUserInfo
+    this.setState({charts: charts, selectedChartIndex: 0, userInfo: userInfo},
      this.saveChart(this.state.charts[this.state.selectedChartIndex])
     )
   }
@@ -27,7 +29,9 @@ export default class AuthoringInterfaceContainer extends Component {
     getApiRequest(DOMAIN_NAME+'charts/', null,
                     (response)=>this.loadInitialCharts(response),
                      this.loadInitialCharts, null)
-
+    getApiRequest(DOMAIN_NAME+'user/', null,
+       (data) => {this.setState({userInfo: data})},
+        (error) => console.error(e), null)
   }
 
   onChartSaved = () => {
@@ -97,6 +101,7 @@ export default class AuthoringInterfaceContainer extends Component {
     )
   }
 
+
   loadInitialCharts = (response) => {
     let charts = [],
     tempChart = {}
@@ -136,7 +141,7 @@ export default class AuthoringInterfaceContainer extends Component {
       })
     }
     else {
-    this.initializeState()
+      this.initializeState()
     }
   }
 
@@ -226,7 +231,8 @@ export default class AuthoringInterfaceContainer extends Component {
 
   //Changes the selected API index to the one which was clicked from the API list
   chartSelectionHandler = (index) => {
-    this.setState({selectedChartIndex: index}, () => this.setUrlPath())
+    this.setState({selectedChartIndex: index},
+      () => this.setUrlPath())
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -236,11 +242,12 @@ export default class AuthoringInterfaceContainer extends Component {
   }
 
   render () {
-    const { charts, selectedChartIndex, parameters, savedStatus, saveInProgress} = this.state
+    const { charts, selectedChartIndex, parameters, savedStatus, saveInProgress, userInfo } = this.state
     const { googleDefined } = this.props
     return (
       <div className="parent-div container-fluid">
         <MainComponent
+          userInfo={userInfo}
           charts={charts}
           saveInProgress={saveInProgress}
           savedStatus={savedStatus}
