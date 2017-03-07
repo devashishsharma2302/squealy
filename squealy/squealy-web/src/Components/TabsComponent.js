@@ -32,7 +32,8 @@ export default class TabsComponent extends Component {
     const {
       chart,
       onHandleTestButton,
-      selectedChartChangeHandler
+      currentChartMode,
+      userPermission
     } = this.props
     const {
       showValidationsModal,
@@ -40,6 +41,26 @@ export default class TabsComponent extends Component {
       showTransformationsModal,
       showShareModal
     } = this.state
+
+    let viewButton = {
+      className: '',
+      title: null,
+      viewText: 'View',
+      icon: <i className="fa fa-pencil"/>
+    }
+
+    if (userPermission !== 'edit') {
+      viewButton.className = 'disabled'
+      viewButton.title = 'Please contact to Admin for write access'
+    }
+    if (currentChartMode === 'edit') {
+      viewButton.viewText = 'View'
+      viewButton.icon =  <i className="fa fa-eye"/>
+    } else {
+      viewButton.viewText = 'Edit'
+      viewButton.icon =  <i className="fa fa-pencil"/>
+    }
+
     return (
       <div>
         <SplitButton className="run-btn-group" bsStyle='success' title='Run' id='run-button' onClick={onHandleTestButton}>
@@ -113,6 +134,12 @@ export default class TabsComponent extends Component {
             newColumnName={chart.newColumnName}
           />
         }
+        <Button bsStyle='primary'
+          className={'tab-component view-btn '+viewButton.className} 
+          title={viewButton.title}>
+          {viewButton.icon}
+          {viewButton.viewText}
+        </Button>
       </div>
     )
   }
