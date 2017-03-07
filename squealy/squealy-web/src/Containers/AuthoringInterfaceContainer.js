@@ -33,8 +33,6 @@ export default class AuthoringInterfaceContainer extends Component {
     getApiRequest(DOMAIN_NAME+'user/', null,
        (data) => {this.setState({userInfo: data})},
         (error) => console.error(e), null)
-    // this.loadInitialCharts(CHART_DATA)
-    // this.setState({userInfo: USER_INFO})
   }
 
   onChartSaved = () => {

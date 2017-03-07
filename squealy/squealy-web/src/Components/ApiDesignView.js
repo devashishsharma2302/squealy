@@ -2,7 +2,6 @@ import React, {Component} from 'react'
 import QueryEditor from './QueryEditor'
 import ResultSection from './ResultSection'
 import TabsComponent from './TabsComponent'
-import GoogleChartsComponent from './GoogleChartsComponent'
 import ViewOnlyResults from './ViewModeResults'
 
 export default class ApiDesignView extends Component {
