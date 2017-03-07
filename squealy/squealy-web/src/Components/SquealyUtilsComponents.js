@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Modal} from 'react-bootstrap'
+import {Modal, OverlayTrigger, Tooltip} from 'react-bootstrap'
 
 export class SquealyModal extends Component {
 
@@ -13,14 +13,24 @@ export class SquealyModal extends Component {
       modalSize,
       closeModal,
       dialogClassName,
-      noFooter
+      noFooter,
+      helpText
     } = this.props
 
+    const tooltip = 
+      <Tooltip id={'tooltip' + modalId}>
+        {helpText}
+      </Tooltip>
 
     return (
       <Modal dialogClassName={dialogClassName} show={showModal} onHide={closeModal} key={modalId} bsSize={modalSize}>
         <Modal.Header closeButton>
-          <Modal.Title>{modalHeader}</Modal.Title>
+          <Modal.Title>
+            {modalHeader}
+            <OverlayTrigger placement="right" overlay={tooltip}>
+              <i className="fa fa-info info-icon" aria-hidden="true"></i>
+            </OverlayTrigger>
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {modalContent}

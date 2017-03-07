@@ -91,6 +91,7 @@ export default class ChartConfigModal extends Component {
         closeModal={this.props.closeModal}
         showModal={this.props.showModal}
         modalHeader='Chart Configurations'
+        helpText='lasdnsj'
         modalContent={modalContent}
         dialogClassName='chart-config-modal'
         noFooter={true}

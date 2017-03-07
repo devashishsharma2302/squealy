@@ -154,6 +154,7 @@ export default class SideMenu extends Component {
           showModal={showAddChartModal}
           modalHeader= {chartEditMode ? 'Rename Chart' : 'Create New Chart'}
           modalContent={addNewChartModalContent}
+          helpText=''
           saveChanges={this.chartAdditionModalSave} />
       </div>
     )
