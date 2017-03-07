@@ -149,9 +149,9 @@ export default class ParamDefinitionModal extends Component {
           <thead>
             <tr>
               <th>Name</th>
-              <th>Test value</th>
+              <th>Test Data</th>
               <th>Type</th>
-              <th>Default Value</th>
+              <th>Default</th>
               <th className="align-center clickable-element">
                 <i className="fa fa-plus"
                   aria-hidden="true" data-toggle="modal"
@@ -191,6 +191,7 @@ export default class ParamDefinitionModal extends Component {
         closeModal={this.props.closeModal}
         showModal={this.props.showModal}
         modalHeader='Add Parameters Definition'
+        helpText='Define your parameters here and provide values for them to test your query. The values under test data column are only for testing purposes.'
         modalContent={paramDefinitionEntry}
         noFooter={true} />
     )

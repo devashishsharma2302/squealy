@@ -166,6 +166,7 @@ export default class ValidationsModal extends Component {
         closeModal={this.props.closeModal}
         showModal={this.props.showModal}
         modalHeader='Validations'
+        helpText='Write queries to validate the API of this chart. The chart will not be accessible if any of these queries return no rows'
         modalContent={modalContent}
         noFooter={true}
       />
