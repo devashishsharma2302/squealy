@@ -47,8 +47,8 @@ export default class ChartConfigModal extends Component {
                 height="200px"
                 width="100%"
                 fontSize={15}
-                maxLine s={20}
-                minLines={12}
+                maxLines={20}
+                minLines={20}
                 highlightActiveLine={true}
                 onChange={this.onChangeHandler}
                 value={config}
@@ -68,7 +68,7 @@ export default class ChartConfigModal extends Component {
                 height="200px"
                 width="100%"
                 fontSize={15}
-                maxLine s={40}
+                maxLines={20}
                 minLines={20}
                 highlightActiveLine={false}
                 value={JSON.stringify(CHART_CONFIG_EXAMPLE, null, '\t')}
