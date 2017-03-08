@@ -328,7 +328,7 @@ class UserInformation(APIView):
 
 
 @api_view(['GET'])
-def squealy_interface(request):
+def squealy_interface(request, *args, **kwargs):
     """
     Renders the squealy authoring interface template
     """
