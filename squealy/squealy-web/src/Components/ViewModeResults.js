@@ -17,16 +17,25 @@ export default class ViewOnlyResults extends Component {
     }
   }
 
-  componentWillReceiveProps(nextprops) {
+
+  getInitialChart = (propsData) => {
     let payloadObj = JSON.parse(JSON.stringify(this.state.payloadObj))
-    if (nextprops.googleDefined) {
-      nextprops.chart.parameters.map((params) => {
-        payloadObj[params.name] = params.default_value
-      })
-      postApiRequest(DOMAIN_NAME+'squealy/'+ this.props.chart.url+'/', {params: payloadObj},
-          this.onSuccessTest, this.onErrorTest, 'table')
-      this.setState({payloadObj: payloadObj})
-    }
+    propsData.chart.parameters.map((params) => {
+      payloadObj[params.name] = params.default_value
+    })
+    postApiRequest(DOMAIN_NAME+'squealy/'+ propsData.chart.url+'/', {params: payloadObj},
+        this.onSuccessTest, this.onErrorTest, 'table')
+    this.setState({payloadObj: payloadObj})
+  }
+
+
+  componentDidMount() {
+    this.getInitialChart(this.props)
+  }
+
+
+  componentWillReceiveProps(nextprops) {
+    this.getInitialChart(nextprops)
   }
 
   onSuccessTest = (response) => {
@@ -45,7 +54,6 @@ export default class ViewOnlyResults extends Component {
       postApiRequest(DOMAIN_NAME+'squealy/'+ this.props.chart.url+'/', {params: payloadObj},
         this.onSuccessTest, this.onErrorTest, 'table')
     })
-    
   }
 
   render() {

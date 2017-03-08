@@ -14,13 +14,13 @@ export default class AuthoringInterfaceContainer extends Component {
       saveInProgress: false,
       savedStatus: true,
       userInfo: getEmptyUserInfo(),
-      currentChartMode: false
+      currentChartMode: null
     }
   }
 
   initializeState = () => {
     let charts = [getEmptyApiDefinition()], userInfo = getEmptyUserInfo
-    this.setState({charts: charts, selectedChartIndex: 0, userInfo: userInfo, currentChartMode: false},
+    this.setState({charts: charts, selectedChartIndex: 0, userInfo: userInfo, currentChartMode: null},
      this.saveChart(this.state.charts[this.state.selectedChartIndex])
     )
   }
