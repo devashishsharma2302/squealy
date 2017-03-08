@@ -114,8 +114,7 @@ export default class AuthoringInterfaceContainer extends Component {
         // chart name in the URL
         if (currentPath[1] !== '') {
           const chartInUrl = currentPath[1]
-
-          if (charts[selectedChartIndex].name !== chartInUrl) {
+          if (charts[selectedChartIndex].name !== decodeURIComponent(chartInUrl)) {
             let chartIndex = undefined
             charts.map((chart, i) => {
               if(chart.name === chartInUrl) {
@@ -216,6 +215,7 @@ export default class AuthoringInterfaceContainer extends Component {
     let charts = JSON.parse(JSON.stringify(this.state.charts)),
         newChart = getEmptyApiDefinition()
         newChart.name = name
+        newChart.can_edit = true
         newChart.url = name.replace(/ /g, '-').toLowerCase()
     let newChartIndex = charts.push(newChart) - 1
     this.setState({
