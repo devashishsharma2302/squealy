@@ -23,15 +23,13 @@ export default class ViewOnlyResults extends Component {
       nextprops.chart.parameters.map((params) => {
         payloadObj[params.name] = params.default_value
       })
-      postApiRequest(DOMAIN_NAME+'squealy/'+ this.props.chart.url+'/', payloadObj,
+      postApiRequest(DOMAIN_NAME+'squealy/'+ this.props.chart.url+'/', {params: payloadObj},
           this.onSuccessTest, this.onErrorTest, 'table')
-      console.log(nextprops, payloadObj)
       this.setState({payloadObj: payloadObj})
     }
   }
 
   onSuccessTest = (response) => {
-    console.log(response)
     this.setState({chartData: response})
   }
 
@@ -43,8 +41,11 @@ export default class ViewOnlyResults extends Component {
   onChangeFilter = (key, val) => {
     let payloadObj = JSON.parse(JSON.stringify(this.state.payloadObj))
     payloadObj[key] = val
-    postApiRequest(DOMAIN_NAME+'squealy/'+ this.props.chart.url+'/', payloadObj,
+    this.setState({payloadObj: payloadObj}, () => {
+      postApiRequest(DOMAIN_NAME+'squealy/'+ this.props.chart.url+'/', {params: payloadObj},
         this.onSuccessTest, this.onErrorTest, 'table')
+    })
+    
   }
 
   render() {
@@ -52,7 +53,6 @@ export default class ViewOnlyResults extends Component {
       chart,
       googleDefined
     } = this.props
-
     const filterType = {
       string: SquealyInput,
       date: SquealyDatePicker,
