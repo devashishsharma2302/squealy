@@ -9,20 +9,23 @@ export default class ApiDesignView extends Component {
     const { chart,selectedChartChangeHandler,
       selectedChartIndex,
       googleDefined,
-      onHandleTestButton
+      onHandleTestButton,
+      updateViewMode,
+      currentChartMode
     } = this.props
-
     return (
       <div className="full-height">
         <div className="col-md-12 tabs-container">
           <TabsComponent
             chart={chart}
+            updateViewMode={updateViewMode}
             onHandleTestButton={onHandleTestButton}
             selectedChartChangeHandler={selectedChartChangeHandler}
+            currentChartMode={currentChartMode}
             />
         </div>
         {
-          chart.can_edit && 
+          currentChartMode && 
           <div>
             <div className="col-md-12">
               <QueryEditor
@@ -43,7 +46,7 @@ export default class ApiDesignView extends Component {
           </div>
         }
         {
-          !chart.can_edit && 
+          currentChartMode === false && 
           <div className="col-md-12">
             <ViewOnlyResults
               chart={chart}

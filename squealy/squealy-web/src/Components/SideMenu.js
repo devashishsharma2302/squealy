@@ -140,14 +140,16 @@ export default class SideMenu extends Component {
               })
             }
             {
-              showLeftNavContextMenu && 
+              showLeftNavContextMenu && this.props.charts[leftMenuChartIndex].can_edit && 
                 <ul className="left-nav-menu" style={leftMenuPosition} 
                   onContextMenu={(e)=> {e.preventDefault()}}>
                   <li onClick={() => this.showChartDetailsModal('EDIT')}>Rename Chart 
                     <i className="fa fa-pencil"/></li>
-                  <li onClick={() => 
+                  {
+                    (userInfo.can_delete_chart) && <li onClick={() => 
                       this.props.chartDeletionHandler(leftMenuChartIndex, this.hideLeftMenu)}>
                     Delete Chart<i className="fa fa-trash-o"/></li>
+                  }
                   <li className="close-option" onClick={this.hideLeftMenu}>Close</li>
                 </ul>
             }

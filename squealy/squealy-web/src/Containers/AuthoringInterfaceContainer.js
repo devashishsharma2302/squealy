@@ -13,7 +13,8 @@ export default class AuthoringInterfaceContainer extends Component {
       selectedChartIndex: 0,
       saveInProgress: false,
       savedStatus: true,
-      userInfo: getEmptyUserInfo()
+      userInfo: getEmptyUserInfo(),
+      currentChartMode: null
     }
   }
 
@@ -47,13 +48,15 @@ export default class AuthoringInterfaceContainer extends Component {
   onChartDeleted = (index, callback) => {
     const {selectedChartIndex, charts} = this.state
     if(charts.length > 1) {
-      let charts = JSON.parse(JSON.stringify(this.state.charts))
+      let charts = JSON.parse(JSON.stringify(this.state.charts)),
+        newChartIndex = (selectedChartIndex !== 0)?selectedChartIndex - 1:selectedChartIndex
       charts.splice(index, 1)
       this.setState({
         charts: charts,
-        selectedChartIndex: (selectedChartIndex !== 0)?selectedChartIndex - 1:selectedChartIndex,
+        selectedChartIndex: newChartIndex,
         savedStatus: true,
-        saveInProgress: false
+        saveInProgress: false,
+        currentChartMode: (charts[newChartIndex].can_edit || false)
       }, () => {
         callback.constructor === 'Function' || callback()
       })
@@ -62,7 +65,8 @@ export default class AuthoringInterfaceContainer extends Component {
         charts: [],
         selectedChartIndex: 0,
         savedStatus: true,
-        saveInProgress: false
+        saveInProgress: false,
+        currentChartMode: false
       }, () => {
         callback.constructor === 'Function' ||callback()
       })
@@ -119,7 +123,7 @@ export default class AuthoringInterfaceContainer extends Component {
               }
             })
             if(chartIndex) {
-              this.setState({selectedChartIndex: chartIndex}, this.setUrlPath)
+              this.setState({selectedChartIndex: chartIndex, currentChartMode: charts[chartIndex].can_edit || false}, this.setUrlPath)
             } else {
               alert('Chart not found')
               this.setState({selectedChartIndex: 0}, this.setUrlPath)
@@ -138,8 +142,9 @@ export default class AuthoringInterfaceContainer extends Component {
   setUrlPath() {
     const { selectedChartIndex, charts } = this.state
     const selectedChart = charts[selectedChartIndex]
-    const canEditUrl = (charts[selectedChartIndex].can_edit)?'edit':'view'
+    const canEditUrl = (charts[selectedChartIndex].can_edit) ? 'edit' : 'view'
     const newUrl = '/' + selectedChart.name + '/' + canEditUrl
+    this.setState({currentChartMode: charts[selectedChartIndex].can_edit || false})
     window.history.replaceState('', '', newUrl);
   }
 
@@ -220,7 +225,7 @@ export default class AuthoringInterfaceContainer extends Component {
 
   //Changes the selected API index to the one which was clicked from the API list
   chartSelectionHandler = (index) => {
-    this.setState({selectedChartIndex: index},
+    this.setState({selectedChartIndex: index, currentChartMode: this.state.charts[index].can_edit || false},
       () => this.setUrlPath())
   }
 
@@ -230,8 +235,17 @@ export default class AuthoringInterfaceContainer extends Component {
     }
   }
 
+  updateViewMode = (val) => {
+    const { selectedChartIndex, charts } = this.state
+    const newUrl = '/' + charts[selectedChartIndex].name + '/' + (val ? 'view' : 'edit') + '/'
+    this.setState({currentChartMode: !val}, () => {
+      window.history.replaceState('', '', newUrl);
+    })
+  }
+
+
   render () {
-    const { charts, selectedChartIndex, parameters, savedStatus, saveInProgress, userInfo } = this.state
+    const { charts, selectedChartIndex, parameters, savedStatus, saveInProgress, userInfo, currentChartMode } = this.state
     const { googleDefined } = this.props
     return (
       <div className="parent-div container-fluid">
@@ -247,6 +261,8 @@ export default class AuthoringInterfaceContainer extends Component {
           chartSelectionHandler={this.chartSelectionHandler}
           chartDeletionHandler={this.chartDeletionHandler}
           selectedChartChangeHandler={this.selectedChartChangeHandler}
+          currentChartMode={currentChartMode}
+          updateViewMode={this.updateViewMode}
           />
       </div>
     )

@@ -8,7 +8,7 @@ export default class MainComponent extends Component {
   render() {
     const { charts, chartAdditionHandler, chartDeletionHandler,
       chartSelectionHandler, selectedChartIndex, googleDefined,
-      selectedChartChangeHandler, onHandleTestButton, parameters, savedStatus, saveInProgress, userInfo} = this.props
+      selectedChartChangeHandler, onHandleTestButton, parameters, savedStatus, saveInProgress, userInfo, updateViewMode, currentChartMode} = this.props
     return (
       <div className="full-height">
         <NavHeader savedStatus={savedStatus} saveInProgress={saveInProgress} userInfo={userInfo}/>
@@ -33,6 +33,8 @@ export default class MainComponent extends Component {
                 selectedChartIndex={selectedChartIndex}
                 googleDefined={googleDefined}
                 onHandleTestButton={onHandleTestButton}
+                updateViewMode={updateViewMode}
+                currentChartMode={currentChartMode}
               />
             : <div className='full-height no-charts'>
                 <div className='col-md-6 col-md-offset-3 instructions'>

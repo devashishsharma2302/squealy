@@ -17,9 +17,11 @@ export class SquealyDatePicker extends Component {
     } = this.props
     return(
       <Datetime
+        key={'date_picker_'+name}
         defaultValue={value}
         timeFormat={false}
         className={className}
+        dateFormat={DATE_FORMAT}
         onChange={
           (value)=>onChangeHandler(name, value.format(DATE_FORMAT))}
       />
