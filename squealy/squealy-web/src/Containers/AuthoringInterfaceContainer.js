@@ -56,7 +56,7 @@ export default class AuthoringInterfaceContainer extends Component {
       })
     } else {
       this.setState({
-        charts: [getEmptyApiDefinition()],
+        charts: [],
         selectedChartIndex: 0,
         savedStatus: true,
         saveInProgress: false
