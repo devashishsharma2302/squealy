@@ -18,6 +18,10 @@
       padding-right: 5px;
     }
   }
+
+  .view-btn {
+    float: right;
+  }
   .transformation-container {
     display: inline-block;
     background: red;
@@ -79,4 +83,9 @@ tr.editable-table-row {
   h2, h6 {
     color: $text-color;
   }
+}
+
+.view-filter {
+  display: flex;
+  padding: 15px 0;
 }

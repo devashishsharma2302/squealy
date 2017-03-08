@@ -8,27 +8,31 @@ export default class MainComponent extends Component {
   render() {
     const { charts, chartAdditionHandler, chartDeletionHandler,
       chartSelectionHandler, selectedChartIndex, googleDefined,
-      selectedChartChangeHandler, onHandleTestButton, parameters, savedStatus, saveInProgress} = this.props
+      selectedChartChangeHandler, onHandleTestButton, parameters, savedStatus, saveInProgress, userInfo} = this.props
     return (
       <div className="full-height">
-        <NavHeader savedStatus={savedStatus} saveInProgress={saveInProgress}/>
+        <NavHeader savedStatus={savedStatus} saveInProgress={saveInProgress} userInfo={userInfo}/>
         <div className="row side-menu-container">
           <div className="col-md-3 side-menu-parent">
-            <SideMenu chartAdditionHandler={chartAdditionHandler} 
+            <SideMenu 
+              userInfo={userInfo}
+              chartAdditionHandler={chartAdditionHandler} 
               charts={charts}
               selectedChartIndex={selectedChartIndex} 
               chartSelectionHandler={chartSelectionHandler}
               chartDeletionHandler={chartDeletionHandler}
-              selectedChartChangeHandler={selectedChartChangeHandler}/>
+              selectedChartChangeHandler={selectedChartChangeHandler}
+              />
           </div>
           <div className="col-md-9 api-design-container">
             {(charts.length)?
-            <ApiDesignView 
-              chart={charts[selectedChartIndex]}
-              selectedChartChangeHandler={selectedChartChangeHandler}
-              selectedChartIndex={selectedChartIndex}
-              googleDefined={googleDefined}
-              onHandleTestButton={onHandleTestButton}
+              <ApiDesignView
+                userInfo={userInfo}
+                chart={charts[selectedChartIndex]}
+                selectedChartChangeHandler={selectedChartChangeHandler}
+                selectedChartIndex={selectedChartIndex}
+                googleDefined={googleDefined}
+                onHandleTestButton={onHandleTestButton}
               />
             : <div className='full-height no-charts'>
                 <div className='col-md-6 col-md-offset-3 instructions'>

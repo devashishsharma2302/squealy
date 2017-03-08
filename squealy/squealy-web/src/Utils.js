@@ -147,6 +147,16 @@ export function getEmptyWidgetDefinition() {
   }
 }
 
+export function getEmptyUserInfo() {
+  return {
+    'first_name': '',
+    'last_name': '',
+    'name': 'none',
+    'email': '',
+    'can_add_chart': false,
+    'can_delete_chart': false
+  }
+}
 
 export function getEmptyParamDefinition(apiIndex) {
   return {
