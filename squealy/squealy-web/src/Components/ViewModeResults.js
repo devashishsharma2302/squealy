@@ -23,7 +23,7 @@ export default class ViewOnlyResults extends Component {
       nextprops.chart.parameters.map((params) => {
         payloadObj[params.name] = params.default_value
       })
-      postApiRequest(DOMAIN_NAME+'squealy/'+ this.props.chart.url+'/', payloadObj,
+      postApiRequest(DOMAIN_NAME+'squealy/'+ this.props.chart.url+'/', {params: payloadObj},
           this.onSuccessTest, this.onErrorTest, 'table')
       this.setState({payloadObj: payloadObj})
     }
