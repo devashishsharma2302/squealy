@@ -75,6 +75,16 @@ tr.editable-table-row {
   }
 }
 
+.no-charts {
+  text-align: center;
+  .instructions {
+    margin-top: 20%;
+  }
+  h2, h6 {
+    color: $text-color;
+  }
+}
+
 .view-filter {
   display: flex;
   padding: 15px 0;
