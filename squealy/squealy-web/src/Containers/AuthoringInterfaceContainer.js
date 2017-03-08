@@ -9,19 +9,12 @@ export default class AuthoringInterfaceContainer extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      charts: [getEmptyApiDefinition()],
+      charts: [],
       selectedChartIndex: 0,
       saveInProgress: false,
       savedStatus: true,
       userInfo: getEmptyUserInfo()
     }
-  }
-
-  initializeState = () => {
-    let charts = [getEmptyApiDefinition()], userInfo = getEmptyUserInfo
-    this.setState({charts: charts, selectedChartIndex: 0, userInfo: userInfo},
-     this.saveChart(this.state.charts[this.state.selectedChartIndex])
-    )
   }
 
   componentDidMount() {
@@ -66,7 +59,7 @@ export default class AuthoringInterfaceContainer extends Component {
       })
     } else {
       this.setState({
-        charts: [getEmptyApiDefinition()],
+        charts: [],
         selectedChartIndex: 0,
         savedStatus: true,
         saveInProgress: false
@@ -138,9 +131,6 @@ export default class AuthoringInterfaceContainer extends Component {
           this.setUrlPath()
         }
       })
-    }
-    else {
-      this.initializeState()
     }
   }
 

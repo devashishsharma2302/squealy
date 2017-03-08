@@ -40,3 +40,8 @@ class MalformedChartDataException(APIException):
 class TransformationException(APIException):
     status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     pass
+
+
+class DatabaseWriteException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    pass

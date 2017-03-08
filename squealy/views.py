@@ -13,10 +13,11 @@ from rest_framework import status
 
 from jinjasql import JinjaSql
 
+from squealy.constants import SQL_WRITE_BLACKLIST
 from squealy.serializers import ChartSerializer
 from .exceptions import RequiredParameterMissingException,\
                         ChartNotFoundException, MalformedChartDataException, \
-                        TransformationException
+                        TransformationException, DatabaseWriteException
 from .transformers import *
 from .formatters import *
 from .parameters import *
@@ -126,7 +127,14 @@ class ChartView(APIView):
         for validation in validations:
             run_validation(params, user, validation.query)
 
+    def _check_read_only_query(self, query):
+        if any(keyword in query.upper() for keyword in SQL_WRITE_BLACKLIST):
+            raise DatabaseWriteException('Database write commands not permitted in the query.')
+        pass
+
     def _execute_query(self, params, user, chart_query):
+        self._check_read_only_query(chart_query)
+
         query, bind_params = jinjasql.prepare_query(chart_query,
                                                     {
                                                      "params": params,

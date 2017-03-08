@@ -25,14 +25,22 @@ export default class MainComponent extends Component {
               />
           </div>
           <div className="col-md-9 api-design-container">
-            <ApiDesignView
-              userInfo={userInfo}
-              chart={charts[selectedChartIndex]}
-              selectedChartChangeHandler={selectedChartChangeHandler}
-              selectedChartIndex={selectedChartIndex}
-              googleDefined={googleDefined}
-              onHandleTestButton={onHandleTestButton}
+            {(charts.length)?
+              <ApiDesignView
+                userInfo={userInfo}
+                chart={charts[selectedChartIndex]}
+                selectedChartChangeHandler={selectedChartChangeHandler}
+                selectedChartIndex={selectedChartIndex}
+                googleDefined={googleDefined}
+                onHandleTestButton={onHandleTestButton}
               />
+            : <div className='full-height no-charts'>
+                <div className='col-md-6 col-md-offset-3 instructions'>
+                  <h2> No charts to show. </h2>
+                  <h6>Add a new chart if you see the plus icon in the side menu, or ask your administrator to add one for you.</h6>
+                </div>
+              </div>
+            }
           </div>
         </div>
       </div>
