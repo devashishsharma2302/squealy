@@ -215,6 +215,7 @@ export default class AuthoringInterfaceContainer extends Component {
     let charts = JSON.parse(JSON.stringify(this.state.charts)),
         newChart = getEmptyApiDefinition()
         newChart.name = name
+        newChart.can_edit = true
         newChart.url = name.replace(/ /g, '-').toLowerCase()
     let newChartIndex = charts.push(newChart) - 1
     this.setState({
