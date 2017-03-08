@@ -34,12 +34,16 @@ def create_default_superuser(apps, schema_editor):
 
     Title - Worldwide Buisiness Analytics Market Share
     */
-    select * from (select 'SAP' as 'company', 21 as 'share'
-               union select 'Oracle',14
-               union select 'IBM',13
-               union select 'SAS Institute',12
-               union select 'Microsoft', 9
-               union select 'Others', 31) as market_share;
+    SELECT  *
+    FROM (
+        VALUES
+        ('SAP', 21),
+        ('Oracle', 14),
+        ('IBM', 13),
+        ('SAS Institute', 12),
+        ('Microsoft', 9),
+        ('Others', 31)
+        ) AS market_share (company, share);
     """,
         type='PieChart',
         options={

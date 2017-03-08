@@ -126,7 +126,7 @@ export default class TabsComponent extends Component {
                 selectedChartChangeHandler={selectedChartChangeHandler}
                 closeModal={()=>this.modalVisibilityHandler('showShareModal')}
                 showModal={showShareModal}
-                chartUrl={chart.chartUrl}/>
+                chartUrl={chart.name}/>
             }
             {
               showTransformationsModal &&
