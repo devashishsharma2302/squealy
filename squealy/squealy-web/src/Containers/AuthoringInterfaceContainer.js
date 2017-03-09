@@ -246,12 +246,14 @@ export default class AuthoringInterfaceContainer extends Component {
     }
   }
 
-  updateViewMode = (val) => {
-    const { selectedChartIndex, charts } = this.state
-    const newUrl = '/' + charts[selectedChartIndex].name + '/' + (val ? 'view' : 'edit') + '/'
-    this.setState({currentChartMode: !val}, () => {
-      window.history.replaceState('', '', newUrl);
-    })
+  updateViewMode = (val, editPermission) => {
+    if (editPermission) {
+      const { selectedChartIndex, charts } = this.state
+      const newUrl = '/' + charts[selectedChartIndex].name + '/' + (val ? 'view' : 'edit') + '/'
+      this.setState({currentChartMode: !val}, () => {
+        window.history.replaceState('', '', newUrl);
+      })
+    }
   }
 
 

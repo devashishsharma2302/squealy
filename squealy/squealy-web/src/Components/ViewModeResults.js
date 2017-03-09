@@ -73,14 +73,18 @@ export default class ViewOnlyResults extends Component {
         {
           chart.parameters.map((params) => {
             const FilterReference = filterType[params.data_type]
-            return <FilterReference
-              className='col-md-4'
-              key={params.name}
-              name={params.name}
-              format={params.kwargs.hasOwnProperty('format') ? params.kwargs.format : false}
-              value={params.default_value}
-              onChangeHandler={this.onChangeFilter}
-            />
+            return (
+              <div className='col-md-6' key={'filter_'+params.name}>
+                <label>{params.name}</label>
+                <FilterReference
+                  className='view-mode-filter'
+                  name={params.name}
+                  format={params.kwargs.hasOwnProperty('format') ? params.kwargs.format : false}
+                  value={params.default_value}
+                  onChangeHandler={this.onChangeFilter}
+                />
+              </div>
+            )
           })
         }
         </div>

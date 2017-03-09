@@ -137,7 +137,7 @@ export default class TabsComponent extends Component {
                 selectedChartChangeHandler={selectedChartChangeHandler}
                 closeModal={()=>this.modalVisibilityHandler('showShareModal')}
                 showModal={showShareModal}
-                chartUrl={chart.chartUrl}/>
+                chartUrl={chart.name}/>
             }
             {
               showTransformationsModal &&
@@ -158,7 +158,7 @@ export default class TabsComponent extends Component {
         <Button bsStyle='primary'
           className={'tab-component view-btn '+viewButton.className} 
           title={viewButton.title}
-          onClick={()=>updateViewMode(currentChartMode)}>
+          onClick={()=>updateViewMode(currentChartMode, chart.can_edit)}>
           {viewButton.icon}
           {viewButton.viewText}
         </Button>
