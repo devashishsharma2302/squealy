@@ -14,7 +14,8 @@ export default class AuthoringInterfaceContainer extends Component {
       saveInProgress: false,
       savedStatus: true,
       userInfo: getEmptyUserInfo(),
-      currentChartMode: null
+      currentChartMode: null,
+      databases: []
     }
   }
 
@@ -25,6 +26,11 @@ export default class AuthoringInterfaceContainer extends Component {
     getApiRequest(DOMAIN_NAME+'user/', null,
        (data) => {this.setState({userInfo: data})},
         (error) => console.error(e), null)
+    getApiRequest(DOMAIN_NAME+'databases/', null,
+                  (data) => {
+                    this.setState({databases: data.databases})
+                  },
+                  (error) => console.error(error), null)
   }
 
   onChartSaved = () => {
@@ -36,7 +42,7 @@ export default class AuthoringInterfaceContainer extends Component {
   }
 
   saveChart = (chart) => {
-    if (chart.id) {
+    if (chart.id && chart.database) {
       this.setState({'saveInProgress': true},
             postApiRequest(DOMAIN_NAME+'charts/', {'chart': chart},
             this.onChartSaved,this.onChartSaveError, null)
@@ -179,6 +185,10 @@ export default class AuthoringInterfaceContainer extends Component {
   // the API is successfull
   onHandleTestButton = () => {
     const selectedChart = this.state.charts[this.state.selectedChartIndex]
+    if(!selectedChart.database) {
+      alert('Please select a database to run the query on')
+      return
+    }
     let transformations = selectedChart.transformations.map(transformation => {
         let kwargs = null
         if(transformation.value === 'split') {
@@ -247,7 +257,16 @@ export default class AuthoringInterfaceContainer extends Component {
 
 
   render () {
-    const { charts, selectedChartIndex, parameters, savedStatus, saveInProgress, userInfo, currentChartMode } = this.state
+    const {
+      charts,
+      selectedChartIndex,
+      parameters,
+      savedStatus,
+      saveInProgress,
+      userInfo,
+      currentChartMode,
+      databases
+    } = this.state
     const { googleDefined } = this.props
     return (
       <div className="parent-div container-fluid">
@@ -265,7 +284,8 @@ export default class AuthoringInterfaceContainer extends Component {
           selectedChartChangeHandler={this.selectedChartChangeHandler}
           currentChartMode={currentChartMode}
           updateViewMode={this.updateViewMode}
-          />
+          databases={databases}
+        />
       </div>
     )
   }

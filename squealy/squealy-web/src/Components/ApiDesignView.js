@@ -11,7 +11,8 @@ export default class ApiDesignView extends Component {
       googleDefined,
       onHandleTestButton,
       updateViewMode,
-      currentChartMode
+      currentChartMode,
+      databases,
     } = this.props
     return (
       <div className="full-height">
@@ -22,6 +23,7 @@ export default class ApiDesignView extends Component {
             onHandleTestButton={onHandleTestButton}
             selectedChartChangeHandler={selectedChartChangeHandler}
             currentChartMode={currentChartMode}
+            databases={databases}
             />
         </div>
         {

@@ -3,6 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import connections
 from django.shortcuts import render
 from django.db import transaction
+from django.conf import settings
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import permission_classes, api_view
@@ -29,11 +30,31 @@ from .validators import run_validation
 jinjasql = JinjaSql()
 
 
+class DatabaseView(APIView):
+    permission_classes = SquealySettings.get_default_permission_classes()
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
+
+    def get(self, request, *args, **kwargs):
+        try:
+            database_response = []
+            database = settings.DATABASES
+            for db in database:
+                database_response.append({
+                  'value': db,
+                  'label': database[db]['NAME']
+                })
+            return Response({'databases': database_response})
+        except Exception as e:
+            return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
+
+
 class ChartViewPermission(BasePermission):
 
     def has_permission(self, request, view):
         chart_url = request.resolver_match.kwargs.get('chart_url')
         return request.user.has_perm('squealy.can_view_' + chart_url) or request.user.has_perm('squealy.can_edit_' + chart_url)
+
 
 class ChartView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
@@ -86,10 +107,10 @@ class ChartView(APIView):
         # Run Validations
         validations = chart.validations.all()
         if validations:
-            self._run_validations(params, user, validations)
+            self._run_validations(params, user, validations, chart.database)
 
         # Execute the Query, and return a Table
-        table = self._execute_query(params, user, chart.query)
+        table = self._execute_query(params, user, chart.query, chart.database)
 
         # Run Transformations
         transformations = chart.transformations.all()
@@ -123,16 +144,16 @@ class ChartView(APIView):
                 params[param.name] = parameter_type(param.name, **kwargs).to_internal(params[param.name])
         return params
 
-    def _run_validations(self, params, user, validations):
+    def _run_validations(self, params, user, validations, db):
         for validation in validations:
-            run_validation(params, user, validation.query)
+            run_validation(params, user, validation.query, db)
 
     def _check_read_only_query(self, query):
         if any(keyword in query.upper() for keyword in SQL_WRITE_BLACKLIST):
             raise DatabaseWriteException('Database write commands not permitted in the query.')
         pass
 
-    def _execute_query(self, params, user, chart_query):
+    def _execute_query(self, params, user, chart_query, db):
         self._check_read_only_query(chart_query)
 
         query, bind_params = jinjasql.prepare_query(chart_query,
@@ -140,7 +161,7 @@ class ChartView(APIView):
                                                      "params": params,
                                                      "user": user
                                                     })
-        conn = connections['query_db']
+        conn = connections[db]
         with conn.cursor() as cursor:
             cursor.execute(query, bind_params)
             rows = []
@@ -237,9 +258,15 @@ class ChartsLoaderView(APIView):
         """
         try:
             data = request.data['chart']
-
-            chart_object = Chart(id=data['id'], name=data['name'], url=data['url'], query=data['query'],
-                                 type=data['type'], options=data['options'])
+            chart_object = Chart(
+                            id=data['id'],
+                            name=data['name'],
+                            url=data['url'],
+                            query=data['query'],
+                            type=data['type'],
+                            options=data['options'],
+                            database=data['database']
+                        )
             chart_object.save()
 
             # Create view/edit permissions
