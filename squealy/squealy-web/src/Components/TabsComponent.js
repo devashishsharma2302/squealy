@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Select from 'react-select'
 import { SplitButton, MenuItem, Button } from 'react-bootstrap'
 import NotificationBadge from 'react-notification-badge'
 import { Effect } from 'react-notification-badge'
@@ -34,8 +35,10 @@ export default class TabsComponent extends Component {
       onHandleTestButton,
       selectedChartChangeHandler,
       updateViewMode,
-      currentChartMode
+      currentChartMode,
+      databases,
     } = this.props
+
     const {
       showValidationsModal,
       showParamDefModal,
@@ -104,6 +107,14 @@ export default class TabsComponent extends Component {
               onClick={()=>this.modalVisibilityHandler('showShareModal')}>
               <i className="fa fa-share-alt"/>
               Share</Button>
+            <div className="selected-db-wrapper">
+              <Select
+                value={(chart.database)?chart.database:null}
+                options={databases}
+                onChange={(db) => {selectedChartChangeHandler('database', (db)?db.value:null)}}
+                placeholder={'Select Database'}
+              />
+            </div>
             {
               showParamDefModal &&
               <ParamDefinitionModal

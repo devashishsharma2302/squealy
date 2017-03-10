@@ -19,6 +19,38 @@
     }
   }
 
+  .selected-db-wrapper {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px;
+    min-width: 150px;
+
+    .Select-control {
+      border-radius: 28px;
+      background: $squealy-theme-blue;
+
+      .Select-value-label {
+        color: $white-color !important;
+      }
+
+      .Select-clear {
+        color: $white-color;
+      }
+
+      .Select-arrow {
+        border-color: $white-color transparent transparent;
+      }
+
+      .Select-placeholder {
+        color: $white-color;
+      }
+    }
+
+    .Select-menu-outer {
+      margin-top: 3px;
+    }
+  }
   .view-btn {
     float: right;
   }

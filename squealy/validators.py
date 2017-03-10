@@ -6,9 +6,9 @@ from squealy.exceptions import ValidationFailedException
 jinjasql = JinjaSql()
 
 
-def run_validation(params, user, query, error_message="Validation Failed"):
+def run_validation(params, user, query, db, error_message="Validation Failed"):
     query, bind_params = jinjasql.prepare_query(query, {"params": params, 'user': user})
-    conn = connections['query_db']
+    conn = connections[db]
     with conn.cursor() as cursor:
         cursor.execute(query, bind_params)
         data = cursor.fetchall()

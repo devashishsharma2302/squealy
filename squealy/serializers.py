@@ -7,5 +7,5 @@ class ChartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chart
         fields = ('id', 'name', 'url', 'query', 'type', 'options', 'account', 'transformations',
-                  'validations', 'parameters')
+                  'validations', 'parameters', 'database')
         depth = 1
