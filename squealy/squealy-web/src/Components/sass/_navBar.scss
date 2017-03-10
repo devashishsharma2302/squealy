@@ -31,15 +31,33 @@
   }
 }
 
-.navbar-default .navbar-nav > li > a {
-  font-size: 17px;
+.navbar-default{
+  .username-initial {
+    border: 2px solid white;
+    border-radius: 50%;
+    background: $squealy-theme-blue-active;
+    text-transform: uppercase;
+    margin-top: 3px;
+    > a {
+      padding: 10px 15px;
+      font-weight: bold;
+      color: $white-color !important;
+    }
+    &.dbl-letter > a {
+      padding: 10px 12px;
+    }
+  }
+
+  navbar-nav > li > a {
+    font-size: 17px;
+  }
 }
 
 .save-status {
   margin-top: 30px;
-  margin-right: 240px;
-  text-align: center;
   color: $text-color;
+  left: calc(50% - 60px);
+  position: absolute;
 }
 
 .nav-tabs {
@@ -55,9 +73,22 @@
     background-color: $white-color !important;
   }
 }
-.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
-  background-color: #fff;
+
+
+.nav-tabs > li.active > a,
+  .nav-tabs > li.active > a:hover,
+  .nav-tabs > li.active > a:focus {
+  background-color: $white-color;
   border: none;
   border-bottom: 3px solid $squealy-theme-blue;
   opacity: 1;
 }
+
+.navbar-default .navbar-nav > .open > a,
+  .navbar-default .navbar-nav > .open > a:hover,
+  .navbar-default .navbar-nav > .open > a:focus {
+    background-color: $white-color;
+    opacity: 1;
+}
+
+
