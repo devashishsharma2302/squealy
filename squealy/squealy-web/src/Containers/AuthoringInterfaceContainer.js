@@ -28,7 +28,6 @@ export default class AuthoringInterfaceContainer extends Component {
         (error) => console.error(e), null)
     getApiRequest(DOMAIN_NAME+'databases/', null,
                   (data) => {
-                    console.log(data)
                     this.setState({databases: data.databases})
                   },
                   (error) => console.error(error), null)
