@@ -34,7 +34,7 @@ export default class NavBar extends Component {
             <NavItem eventKey={1} className={'username-initial '+ (nameInitial.length > 1 ? 'dbl-letter' : '')}>
               <span>{nameInitial}</span>
             </NavItem>
-            <NavDropdown eventKey={2} title={userInfo.name} id='user-info-dropdown'>
+            <NavDropdown eventKey={2} title={userInfo.name} id='user_info_dropdown'>
                 <MenuItem eventKey={2.1}>{userInfo.email ? userInfo.email : 'No Email'}</MenuItem>
                 <MenuItem divider />
                 <MenuItem eventKey={2.2} href={baseUrl() + 'logout'}>Logout</MenuItem>
