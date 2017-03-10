@@ -3,7 +3,7 @@ import AccordionTab from './AccordionTab'
 import AceEditor from 'react-ace'
 import 'brace/mode/sql'
 import 'brace/theme/tomorrow'
-import { fetchQueryParamsFromQuery, getEmptyParamDefinition,
+import { fetchQueryParamsFromQuery, getEmptyParamDefinition, fetchSessionParamsFromQuery,
   checkObjectAlreadyExists} from './../Utils'
 
 export default class QueryEditor extends Component {
@@ -23,15 +23,27 @@ export default class QueryEditor extends Component {
     const {selectedChartChangeHandler} = this.props
     let {editorContent} = this.state,
       currentParams = JSON.parse(JSON.stringify(this.props.parameters)),
-      testParamArray = fetchQueryParamsFromQuery(editorContent),
-      newParamObj = {}
-
+      paramArray = fetchQueryParamsFromQuery(editorContent),
+      userParamArray = fetchSessionParamsFromQuery(editorContent),
+      newParamObj = {}, objIndex
 
     //Generate parameters in testParameters
-    testParamArray.map((param) => {
-      if (param && !checkObjectAlreadyExists(currentParams, 'name', param)) {
+    paramArray.map((param) => {
+      objIndex = checkObjectAlreadyExists(currentParams, 'name', param)
+      if (param && (objIndex === -1 || (objIndex >= 0 && currentParams[objIndex].type !== 1))) {
         newParamObj = getEmptyParamDefinition()
         newParamObj.name = param
+        newParamObj.type = 1
+        currentParams.push(newParamObj)
+      }
+    })
+
+    userParamArray.map((param) => {
+      objIndex = checkObjectAlreadyExists(currentParams, 'name', param)
+      if (param && (objIndex === -1 || (objIndex >= 0 && currentParams[objIndex].type !== 2))) {
+        newParamObj = getEmptyParamDefinition()
+        newParamObj.name = param
+        newParamObj.type = 2
         currentParams.push(newParamObj)
       }
     })

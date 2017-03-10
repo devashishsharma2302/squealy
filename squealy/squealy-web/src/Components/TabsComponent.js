@@ -52,7 +52,7 @@ export default class TabsComponent extends Component {
 
     if (chart.can_edit) {
       viewButton.className = ''
-      viewButton.title = 'Please contact to Admin for write access'
+      viewButton.title = null
       if (currentChartMode) {
         viewButton.viewText = 'View'
         viewButton.icon =  <i className="fa fa-eye"/>

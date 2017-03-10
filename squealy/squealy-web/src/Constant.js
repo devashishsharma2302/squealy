@@ -41,6 +41,16 @@ export const PARAM_FORMAT_OPTIONS = [
   }
 ]
 
+export const PARAM_TYPE_OPTIONS = [
+  {
+    label: 'User',
+    value: 'user'
+  }, {
+    label: 'Query',
+    value: 'query'
+  }
+]
+
 export const AVAILABLE_TRANSFORMATIONS = [
   {
     value: 'transpose',
@@ -136,6 +146,7 @@ export const GRID_PADDING = 15
 export const GRID_HEIGHT = 20
 
 export const GRID_WIDTH_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+export const PARAM_TYPE_MAP = {1: 'query', 2: 'user'}
 
 export const CHART_CONFIG_EXAMPLE = {
   'width': 400,

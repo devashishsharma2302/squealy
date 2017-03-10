@@ -161,6 +161,7 @@ export function getEmptyUserInfo() {
 export function getEmptyParamDefinition(apiIndex) {
   return {
     name: '',
+    type: 1,
     data_type: 'string',
     mandatory: false,
     default_value: '',
@@ -233,17 +234,17 @@ export function fetchQueryParamsFromQuery(text) {
   return paramsArray
 }
 
-// export function fetchSessionParamsFromQuery(text) {
-//   let regExpForParams = /{{\s*user\.([^\s}%]+)\s*}}/g,
-//       regExpForExp = /{%[^(%})]*user\.([^\s}%]+)[^({%)]*%}/g,
-//       paramsArray = []
+export function fetchSessionParamsFromQuery(text) {
+  let regExpForParams = /{{\s*user\.([^\s}%]+)\s*}}/g,
+      regExpForExp = /{%[^(%})]*user\.([^\s}%]+)[^({%)]*%}/g,
+      paramsArray = []
 
 
-//   paramsArray = execRegexGroupedMulValues(regExpForParams, text, paramsArray)
-//   paramsArray = execRegexGroupedMulValues(regExpForExp, text, paramsArray)
+  paramsArray = execRegexGroupedMulValues(regExpForParams, text, paramsArray)
+  paramsArray = execRegexGroupedMulValues(regExpForExp, text, paramsArray)
 
-//   return paramsArray
-// }
+  return paramsArray
+}
 
 export function isJsonString(str) {
     try {
@@ -258,10 +259,10 @@ export function isJsonString(str) {
 export function checkObjectAlreadyExists (data, keyName, value) {
   for (let i = 0; i < data.length; i++) {
     if (data[i].hasOwnProperty(keyName) && data[i][keyName] === value) {
-      return true
+      return i
     }
   }
-  return false
+  return -1
 }
 
 export function formatTestParameters (paramDefintion) {
