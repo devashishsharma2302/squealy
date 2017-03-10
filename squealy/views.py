@@ -107,7 +107,7 @@ class ChartView(APIView):
         # Run Validations
         validations = chart.validations.all()
         if validations:
-            self._run_validations(params, user, validations)
+            self._run_validations(params, user, validations, chart.database)
 
         # Execute the Query, and return a Table
         table = self._execute_query(params, user, chart.query, chart.database)
@@ -144,9 +144,9 @@ class ChartView(APIView):
                 params[param.name] = parameter_type(param.name, **kwargs).to_internal(params[param.name])
         return params
 
-    def _run_validations(self, params, user, validations):
+    def _run_validations(self, params, user, validations, db):
         for validation in validations:
-            run_validation(params, user, validation.query)
+            run_validation(params, user, validation.query, db)
 
     def _check_read_only_query(self, query):
         if any(keyword in query.upper() for keyword in SQL_WRITE_BLACKLIST):
