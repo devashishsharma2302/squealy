@@ -46,7 +46,7 @@ class JWTAuthentication(object):
                 if group_object:
                     group_object.user_set.add(user)
             return user
-        except (    jwt.InvalidTokenError, KeyError):
+        except (jwt.InvalidTokenError, KeyError):
             return None
 
     def _extract_token(self, request):
