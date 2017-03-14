@@ -38,11 +38,8 @@ export default class AccordionTab extends Component {
 
 
   render() {
-
    
     const {heading} = this.props
-
-    const newColor = 'red'
     const AccordionHeader = (
       <div className='accordion-header'>
         <div>
