@@ -1,17 +1,11 @@
 import React,{Component} from 'react'
-import {Accordian , Panel} from 'react-bootstrap'
 import { SquealyModal } from './SquealyUtilsComponents'
 import AceEditor from 'react-ace'
 import 'brace/mode/sql'
 import 'brace/theme/tomorrow'
 import { query1,query2,query3,descQuery1_1,descQuery1_2,descQuery2,descQuery3 } from './../Constant'
 
-export default class HelpModal extends Component {
-
-    constructor(props) {
-        super(props)
-    }
-
+export default class JinjasqlDescription extends Component {
 
     render() {
     
@@ -31,7 +25,7 @@ export default class HelpModal extends Component {
             fontSize={15}
             readOnly={true}
             />
-          <div className="helpDescrition">
+          <div className="codeDescription">
             <ul>
               <li><p>{descQuery1_1}</p></li>
               <li><p>{descQuery1_2}</p></li>
@@ -52,7 +46,7 @@ export default class HelpModal extends Component {
             height="auto"
             readOnly={true}
             />
-          <div className="helpDescrition">
+          <div className="codeDescription">
             <ul>
               <li><p> {descQuery2}</p></li>
             </ul>
@@ -72,8 +66,9 @@ export default class HelpModal extends Component {
             fontSize={15}
             height="auto"
             readOnly={true}
+            maxLines="20"
             />
-          <div className="helpDescrition">
+          <div className="codeDescription">
             <ul>
               <li><p>{descQuery3}</p></li>
             </ul>

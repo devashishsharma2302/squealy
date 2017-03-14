@@ -4,7 +4,7 @@ import { SquealyModal } from './SquealyUtilsComponents'
 import AceEditor from 'react-ace'
 import 'brace/mode/sql'
 import 'brace/theme/tomorrow'
-import HelpModal from './HelpModal'
+import JinjasqlDescription from './HelpModal'
 
 
 export default class AccordionTab extends Component {
@@ -27,26 +27,15 @@ export default class AccordionTab extends Component {
     this.setState({ accordionHeaderIcon: 'fa-angle-down' })
   }
 
-
-  showHelpModalOnClick = () => {
-    this.setState({ showHelpModal: true })
-  }
-
   closeHelpModal = () => {
     this.setState({ showModal: false })
   }
+
   showModalInWindow = (event) => {
-    console.log(event)
-    let e = event
-    e.stopPropagation();
-    e.nativeEvent.stopImmediatePropagation()
-    console.log('hey guys')
+    event.stopPropagation();
     this.setState({ showModal: true })
   }
 
-  testFunction = () => {
-    console.log('hello')
-  }
 
   render() {
 
@@ -64,7 +53,7 @@ export default class AccordionTab extends Component {
 
           }
           <i className={'fa fa-2x param-heading-icon ' + this.state.accordionHeaderIcon} />
-          <HelpModal 
+          <JinjasqlDescription 
             modalHeader={"Learn By Example"}
             modalId={1}
             showModal={this.state.showModal}
