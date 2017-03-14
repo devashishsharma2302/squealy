@@ -1,15 +1,5 @@
-from __future__ import unicode_literals
-
-import datetime
-from django.contrib.auth.models import User
-from django.test import TestCase, RequestFactory
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
-from rest_framework.permissions import IsAuthenticated, DjangoModelPermissionsOrAnonReadOnly
-
-from squealy.exceptions import RequiredParameterMissingException, DateParseException, DateTimeParseException
-from squealy.views import SqlApiView
-from squealy.apigenerator import ApiGenerator
-from os.path import dirname, abspath, join
+from .test_base_file import SquealyTestCases
+from squealy.transformers import *
 
 
 # class ParameterSubstitutionView(SqlApiView):
