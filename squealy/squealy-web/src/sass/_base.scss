@@ -199,18 +199,18 @@ hr {
   border-color: $squealy-success-active;  
 }
 
-.helpContainer {
+.help-container {
   width: 100%;
   height: auto;
 
-  .codeDescriptionContainer {
+  .code-description-container {
     display: flex;
     flex-direction: row;
     width: 100%;
     height: auto;
     justify-content: space-around;
     padding: 20px;
-    .codeDescription {
+    .code-description {
       width: 50%;
       padding: 20px;
     }

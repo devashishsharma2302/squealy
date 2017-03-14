@@ -10,8 +10,8 @@ export default class JinjasqlDescription extends Component {
     render() {
     
     const helpContent = (
-      <div className="helpContainer">
-        <div className="codeDescriptionContainer">
+      <div className="help-container">
+        <div className="code-description-container">
           <AceEditor
             mode="sql"
             theme="tomorrow"
@@ -25,14 +25,14 @@ export default class JinjasqlDescription extends Component {
             fontSize={15}
             readOnly={true}
             />
-          <div className="codeDescription">
+          <div className="code-description">
             <ul>
               <li><p>{descQuery1_1}</p></li>
               <li><p>{descQuery1_2}</p></li>
             </ul>
           </div>
         </div>
-        <div className="codeDescriptionContainer">
+        <div className="code-description-container">
           <AceEditor
             mode="sql"
             theme="tomorrow"
@@ -46,14 +46,14 @@ export default class JinjasqlDescription extends Component {
             height="auto"
             readOnly={true}
             />
-          <div className="codeDescription">
+          <div className="code-description">
             <ul>
               <li><p> {descQuery2}</p></li>
             </ul>
 
           </div>
         </div>
-        <div className="codeDescriptionContainer">
+        <div className="code-description-container">
           <AceEditor
             mode="sql"
             theme="tomorrow"
@@ -68,7 +68,7 @@ export default class JinjasqlDescription extends Component {
             readOnly={true}
             maxLines="20"
             />
-          <div className="codeDescription">
+          <div className="code-description">
             <ul>
               <li><p>{descQuery3}</p></li>
             </ul>
