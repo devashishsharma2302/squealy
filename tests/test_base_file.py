@@ -47,7 +47,7 @@ class BaseTestCases(TestCase):
 
 
     def create_chart(self):
-        chart = Chart.objects.create(url='dgchart',query='select name,sum(salary) from employee_db group by name;',name='dgchart',format='SimpleFormatter',type='ColumnChart',database='default')
+        chart = Chart.objects.create(url='dgchart',query='select name,sum(experience) as experience,sum(salary) as salary from employee_db group by name;',name='dgchart',format='SimpleFormatter',type='ColumnChart',database='default')
         return chart
 
 
