@@ -10,10 +10,6 @@ class FormattersTestCase(BaseTestCases):
         BaseTestCases.create_schema(self)
         self.chart = BaseTestCases.create_chart(self)
 
-    def test_hi(self):
-        print ('hello bro')
-        self.assertEqual(200,200)
-
     def test_simple_formatter(self):
         response = self.client.get('/squealy/' + self.chart.name + '/')
         json_response = response.json()
