@@ -82,10 +82,7 @@ module.exports = {
     // We also include JSX as a common component filename extension to support
     // some tools, although we do not recommend using it, see:
     // https://github.com/facebookincubator/create-react-app/issues/290
-    extensions: ['.js', '.json', '.jsx', ''],
-    alias: {
-      jquery: node_dir + '/jquery/dist/jquery.min.js',
-    }
+    extensions: ['.js', '.json', '.jsx', '']
   },
   
   module: {
@@ -106,8 +103,6 @@ module.exports = {
         loader: 'babel',
         
       },
-      { test: require.resolve("jquery"), loader: 'expose?$' },
-      { test: require.resolve("jquery"), loader: "imports?jQuery=jquery" },
       // The notation here is somewhat confusing.
       // "postcss" loader applies autoprefixer to our CSS.
       // "css" loader resolves paths in CSS and adds assets as dependencies.

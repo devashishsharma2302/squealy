@@ -66,7 +66,7 @@ export default class JinjasqlDescription extends Component {
             fontSize={15}
             height="auto"
             readOnly={true}
-            maxLines="20"
+            maxLines={20}
             />
           <div className="code-description">
             <ul>

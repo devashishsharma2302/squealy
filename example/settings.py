@@ -84,6 +84,7 @@ from squealy.utils import extra_dj_database_urls
 DATABASES = extra_dj_database_urls(os.environ.get('QUERY_DB'))
 
 
+
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 
