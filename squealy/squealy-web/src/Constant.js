@@ -260,5 +260,4 @@ const query1 = 'SELECT project, timesheet, hours FROM timesheet WHERE start_date
 
     
 export {query1,query2,query3,descQuery1_1,descQuery1_2,descQuery2,descQuery3}
-
-        
+export const DOCUMENT_URL = 'https://github.com/hashedin/squealy/#squealy'

@@ -266,11 +266,18 @@ export function checkObjectAlreadyExists (data, keyName, value) {
   return -1
 }
 
-export function formatTestParameters (paramDefintion) {
-  let testParams = {}
+export function formatTestParameters (paramDefintion, key, valueKey) {
+  let testParams = {
+    params: {},
+    user: {}
+  }
 
   paramDefintion.map((param) => {
-    testParams[param['name']] = param['test_value']
+    if (param.type === 1) {
+      testParams.params[param[key]] = param[valueKey]
+    } else {
+      testParams.user[param[key]] = param[valueKey]
+    }
   })
   return testParams
 }

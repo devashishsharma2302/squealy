@@ -103,10 +103,6 @@ export default class TabsComponent extends Component {
                 effect={[null, null, null, null]}
                 className='transformations-count-badge' />
             </Button>
-            <Button bsStyle='primary' className='tab-component'
-              onClick={()=>this.modalVisibilityHandler('showShareModal')}>
-              <i className="fa fa-share-alt"/>
-              Share</Button>
             <div className="selected-db-wrapper">
               <Select
                 value={(chart.database)?chart.database:null}
@@ -115,6 +111,10 @@ export default class TabsComponent extends Component {
                 placeholder={'Select Database'}
               />
             </div>
+            <Button bsStyle='primary' className='tab-component'
+              onClick={()=>this.modalVisibilityHandler('showShareModal')}>
+              <i className="fa fa-share-alt"/>
+              Share</Button>
             {
               showParamDefModal &&
               <ParamDefinitionModal
