@@ -47,12 +47,12 @@ export const AVAILABLE_TRANSFORMATIONS = [
     label: 'Transpose'
   },
   {
-    value: 'merge',
-    label: 'Merge'
-  },
-  {
     value: 'split',
     label: 'Split'
+  },
+  {
+    value: 'merge',
+    label: 'Merge'
   }
 ]
 
