@@ -91,6 +91,7 @@ export default class TransformationsModal extends Component {
       showModal,
       closeModal,
     } = this.props
+
     const {
       transformations,
       columnsToMerge,
@@ -98,6 +99,7 @@ export default class TransformationsModal extends Component {
       metric,
       newColumnName
     } = this.state
+
     let columnNames = []
     if(chart.chartData.cols) {
       columnNames = chart.chartData.cols.map(column => {
@@ -111,7 +113,7 @@ export default class TransformationsModal extends Component {
       <div className="modal-container">
         <div className='row add-modal-content'>
           <div className='col-md-12'>
-            <label htmlFor='validationQuery' className='col-md-3'>
+            <label className='col-md-3'>
               Select Transformation:
             </label>
             <div className="col-md-7">
