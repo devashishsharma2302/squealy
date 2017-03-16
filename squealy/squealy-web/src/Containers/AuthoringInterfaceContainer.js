@@ -189,26 +189,6 @@ export default class AuthoringInterfaceContainer extends Component {
       alert('Please select a database to run the query on')
       return
     }
-    let transformations = selectedChart.transformations.map(transformation => {
-        let kwargs = null
-        if(transformation.value === 'split') {
-          kwargs = {
-            pivot_column: selectedChart.pivotColumn.value,
-            metric_column: selectedChart.metric.value
-          }
-        }
-        if(transformation.value === 'merge') {
-          kwargs = {
-            columns_to_merge: selectedChart.columnsToMerge.map(column=>column.value),
-            new_column_name: selectedChart.newColumnName
-          }
-        }
-        return {
-          name: transformation.value,
-          kwargs: kwargs
-      }
-    })
-
 
     let payloadObj = {
       params: formatTestParameters(selectedChart.parameters)

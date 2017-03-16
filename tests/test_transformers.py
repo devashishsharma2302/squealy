@@ -1,15 +1,43 @@
-from __future__ import unicode_literals
-
-import datetime
+from .test_base_file import BaseTestCases
+from squealy.transformers import *
 from django.contrib.auth.models import User
-from django.test import TestCase, RequestFactory
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
-from rest_framework.permissions import IsAuthenticated, DjangoModelPermissionsOrAnonReadOnly
+from squealy.models import Chart,Transformation
 
-from squealy.exceptions import RequiredParameterMissingException, DateParseException, DateTimeParseException
-from squealy.views import SqlApiView
-from squealy.apigenerator import ApiGenerator
-from os.path import dirname, abspath, join
+
+class TransformersTestCase(BaseTestCases):
+
+    def setUp(self):
+        BaseTestCases.create_mock_user(self)
+        BaseTestCases.create_mock_client(self)
+        BaseTestCases.create_schema(self)
+        self.chart = BaseTestCases.create_chart(self)
+        self.transform_object = Transformation.objects.create(chart=self.chart)
+
+    def test_transpose_transformation(self):
+        response = self.client.get('/squealy/' + self.chart.name + '/')
+        jsonResponse = response.json()
+        self.assertDictEqual(jsonResponse,{u'data': [[u'experience', 6, 15, 10, 5, 15], [u'salary', 9, 7, 4, 11, 10]], u'columns': [u'name', u'test3', u'test4', u'test2', u'test1', u'test5']})
+
+    def test_split_transformation(self):
+        self.transform_object.name = 2
+        self.transform_object.kwargs = {"metric_column": "salary", "pivot_column": "name"}
+        self.transform_object.save()
+        respone = self.client.get('/squealy/' + self.chart.name + '/')
+        json_response = respone.json()
+        self.assertDictEqual(json_response,{u'data': [[u'-', 9, u'-', u'-', u'-', 6], [u'-', u'-', u'-', u'-', 7, 15], [u'-', u'-', 4, u'-', u'-', 10], [11, u'-', u'-', u'-', u'-', 5], [u'-', u'-', u'-', 10, u'-', 15]], u'columns': [u'test1', u'test3', u'test2', u'test5', u'test4', u'experience']})
+
+    def test_merge_transformation(self):
+        self.transform_object.name = 3
+        self.transform_object.kwargs = {"columns_to_merge": ["experience", "salary"], "new_column_name": "new"}
+        self.transform_object.save()
+        respone = self.client.get('/squealy/' + self.chart.name + '/')
+        json_response = respone.json()
+        self.assertDictEqual(json_response,{u'data': [[u'test3', 6], [u'test3', 9], [u'test4', 15], [u'test4', 7], [u'test2', 10], [u'test2', 4], [u'test1', 5], [u'test1', 11], [u'test5', 15], [u'test5', 10]], u'columns': [u'name', u'new']})
+
+    def tearDown(self):
+        Chart.objects.all().delete()
+        Transformation.objects.all().delete()
+        BaseTestCases.delete_schema(self)
 
 
 # class ParameterSubstitutionView(SqlApiView):

@@ -145,12 +145,7 @@ export default class TabsComponent extends Component {
                 selectedChartChangeHandler={selectedChartChangeHandler}
                 closeModal={()=>this.modalVisibilityHandler('showTransformationsModal')}
                 showModal={showTransformationsModal}
-                transformations={chart.transformations}
-                chartColumns={chart.chartColumns}
-                pivotColumn={chart.pivotColumn}
-                metric={chart.metric}
-                columnsToMerge={chart.columnsToMerge}
-                newColumnName={chart.newColumnName}
+                chart={chart}
               />
             }
           </span>
