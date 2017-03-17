@@ -260,3 +260,4 @@ GROUP BY u.username, a.name`,
 
 export { query1, query2, query3, descQuery1, descQuery2, descQuery3 }
 export const DOCUMENT_URL = 'https://github.com/hashedin/squealy/#squealy'
+export const JINJASQL_DOC_URL = 'https://github.com/hashedin/jinjasql#generate-sql-queries-using-a-jinja-template-without-worrying-about-sql-injection'
