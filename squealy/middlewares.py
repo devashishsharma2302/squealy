@@ -40,7 +40,8 @@ class JWTAuthentication(object):
             if not user:
                 user = User(username=user_name)
                 user.save()
-            groups = token_params['groups']
+
+            groups = token_params.get('groups', [])
             for group_name in groups:
                 group_object = Group.objects.filter(name=group_name).first()
                 if group_object:

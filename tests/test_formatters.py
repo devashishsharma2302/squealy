@@ -1,14 +1,13 @@
-from .test_base_file import BaseTestCases
+from .test_base_file import BaseTestCase
 from squealy.models import Chart
 
 
-
-class FormattersTestCase(BaseTestCases):
+class FormattersTestCase(BaseTestCase):
     def setUp(self):
-        BaseTestCases.create_mock_user(self)
-        BaseTestCases.create_mock_client(self)
-        BaseTestCases.create_schema(self)
-        self.chart = BaseTestCases.create_chart(self)
+        BaseTestCase.create_mock_user(self)
+        BaseTestCase.create_mock_client(self)
+        BaseTestCase.create_schema(self)
+        self.chart = BaseTestCase.create_chart(self)
 
     def test_simple_formatter(self):
         response = self.client.get('/squealy/' + self.chart.name + '/')
@@ -25,5 +24,5 @@ class FormattersTestCase(BaseTestCases):
 
     def tearDown(self):
         Chart.objects.all().delete()
-        BaseTestCases.delete_schema(self)
+        BaseTestCase.delete_schema(self)
 

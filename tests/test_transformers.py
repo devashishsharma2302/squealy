@@ -1,16 +1,16 @@
-from .test_base_file import BaseTestCases
+from .test_base_file import BaseTestCase
 from squealy.transformers import *
 from django.contrib.auth.models import User
 from squealy.models import Chart,Transformation
 
 
-class TransformersTestCase(BaseTestCases):
+class TransformersTestCase(BaseTestCase):
 
     def setUp(self):
-        BaseTestCases.create_mock_user(self)
-        BaseTestCases.create_mock_client(self)
-        BaseTestCases.create_schema(self)
-        self.chart = BaseTestCases.create_chart(self)
+        BaseTestCase.create_mock_user(self)
+        BaseTestCase.create_mock_client(self)
+        BaseTestCase.create_schema(self)
+        self.chart = BaseTestCase.create_chart(self)
         self.transform_object = Transformation.objects.create(chart=self.chart)
 
     def test_transpose_transformation(self):
@@ -37,7 +37,7 @@ class TransformersTestCase(BaseTestCases):
     def tearDown(self):
         Chart.objects.all().delete()
         Transformation.objects.all().delete()
-        BaseTestCases.delete_schema(self)
+        BaseTestCase.delete_schema(self)
 
 
 # class ParameterSubstitutionView(SqlApiView):
