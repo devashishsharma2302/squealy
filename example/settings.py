@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+from .utils import extract_dj_database_urls
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -81,8 +82,7 @@ WSGI_APPLICATION = 'example.wsgi.application'
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
 # Database for reports generation. Pass the DATABASE_URL variable from environment.
-from squealy.utils import extra_dj_database_urls
-DATABASES = extra_dj_database_urls(os.environ.get('QUERY_DB'))
+DATABASES = extract_dj_database_urls(os.environ.get('QUERY_DB'))
 
 
 
