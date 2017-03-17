@@ -22,16 +22,16 @@ class TransformersTestCase(BaseTestCases):
         self.transform_object.name = 2
         self.transform_object.kwargs = {"metric_column": "salary", "pivot_column": "name"}
         self.transform_object.save()
-        respone = self.client.get('/squealy/' + self.chart.name + '/')
-        json_response = respone.json()
+        response = self.client.get('/squealy/' + self.chart.name + '/')
+        json_response = response.json()
         self.assertDictEqual(json_response,{u'data': [[u'-', 9, u'-', u'-', u'-', 6], [u'-', u'-', u'-', u'-', 7, 15], [u'-', u'-', 4, u'-', u'-', 10], [11, u'-', u'-', u'-', u'-', 5], [u'-', u'-', u'-', 10, u'-', 15]], u'columns': [u'test1', u'test3', u'test2', u'test5', u'test4', u'experience']})
 
     def test_merge_transformation(self):
         self.transform_object.name = 3
         self.transform_object.kwargs = {"columns_to_merge": ["experience", "salary"], "new_column_name": "new"}
         self.transform_object.save()
-        respone = self.client.get('/squealy/' + self.chart.name + '/')
-        json_response = respone.json()
+        response = self.client.get('/squealy/' + self.chart.name + '/')
+        json_response = response.json()
         self.assertDictEqual(json_response,{u'data': [[u'test3', 6], [u'test3', 9], [u'test4', 15], [u'test4', 7], [u'test2', 10], [u'test2', 4], [u'test1', 5], [u'test1', 11], [u'test5', 15], [u'test5', 10]], u'columns': [u'name', u'new']})
 
     def tearDown(self):

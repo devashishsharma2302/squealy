@@ -25,7 +25,7 @@ export function postApiRequest(uri, data, onSuccessCallback,
 }
 
 export function baseUrl() {
-  return 'http://localhost:8000' + '/'
+  return window.location.origin + '/'
 }
 /**
  * @module Utils
