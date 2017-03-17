@@ -352,6 +352,7 @@ class UserInformation(APIView):
         response['last_name'] = user.last_name
         response['can_add_chart'] = user.has_perm('squealy.add_chart')
         response['can_delete_chart'] = user.has_perm('squealy.delete_chart')
+        response['isAdmin'] = user.is_superuser
         return Response(response)
 
 
