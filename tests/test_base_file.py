@@ -14,6 +14,7 @@ class BaseTestCases(TestCase):
     def create_mock_user(self):
         user = User.objects.create(username="foo")
         user.set_password('baz')
+        user.is_superuser = True
         user.save()
 
     def create_mock_client(self):
