@@ -9,7 +9,8 @@ import {
   query3,
   descQuery1,
   descQuery2,
-  descQuery3
+  descQuery3,
+  JINJASQL_DOC_URL
 } from './../Constant'
 
 export default class JinjasqlDescription extends Component {
@@ -80,10 +81,7 @@ export default class JinjasqlDescription extends Component {
         <br />
         <h5>
           Click
-          <a
-          href="https://github.com/hashedin/jinjasql#generate-sql-queries-using-a-jinja-template-without-worrying-about-sql-injection"
-          target="_blank"
-          >
+          <a href={JINJASQL_DOC_URL} target="_blank">
             here
           </a>
           to read more about Jinjasql
