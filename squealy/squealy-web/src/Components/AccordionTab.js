@@ -45,13 +45,18 @@ export default class AccordionTab extends Component {
         <div>
           {
             (heading === 'Query')
-              ? <h2 className="param-heading">{heading}<a><i className="fa fa-question-circle" onClick={this.showModalInWindow}></i></a></h2>
+              ? <h2 className="param-heading">{heading}
+                  <i
+                    className="fa fa-question-circle-o info-icon"
+                    onClick={this.showModalInWindow}
+                  />
+                </h2>
               : <h2 className="param-heading">{heading}</h2>
 
           }
           <i className={'fa fa-2x param-heading-icon ' + this.state.accordionHeaderIcon} />
           <JinjasqlDescription 
-            modalHeader={"Learn By Example"}
+            modalHeader={"Jinjasql usage guide"}
             modalId={1}
             showModal={this.state.showModal}
             modalSize={"large"}
