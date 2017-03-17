@@ -4,7 +4,7 @@ export let CHART_DATA = [
     'name':'test-chart',
     'url':'test-chart',
     'can_edit': true,
-    'query':'select a.name,sum(b.hrs) as \'Spent Hours\' from\n(select * from timesheet_timesheet where day between \n{{params.start_date}} and  {{params.end_date}} ) b join timesheet_timesheettype a\non a.id=b.type_id where b.project_code = {{params.project_code}} group by a.name;',
+    'query':'Select 1,2,4',
     'type':'ColumnChart',
     'options':{
 
@@ -49,7 +49,7 @@ export let CHART_DATA = [
         'data_type':'string',
         'mandatory':false,
         'default_value':'',
-        'test_value':'FROL',
+        'test_value':'HASHEDIN',
         'type':1,
         'kwargs':{
 
@@ -64,7 +64,7 @@ export let CHART_DATA = [
     'name':'test22',
     'url':'test22',
     'can_edit': true,
-    'query':'select a.name,sum(b.hrs) as \'Spent Hours\' from\n(select * from timesheet_timesheet where day between \n{{params.start_date}} and  {{params.end_date}} ) b join timesheet_timesheettype a\non a.id=b.type_id where b.project_code = {{params.project_code}} group by a.name;',
+    'query':'select 2,4,5',
     'type':'LineChart',
     'options':{
 
@@ -108,7 +108,7 @@ export let CHART_DATA = [
         'name':'project_code',
         'data_type':'string',
         'mandatory':false,
-        'default_value':'FROL',
+        'default_value':'TEST',
         'test_value':'HASHEDIN',
         'type':1,
         'kwargs':{
@@ -123,7 +123,7 @@ export let CHART_DATA = [
     'name':'test1ghs',
     'url':'test1ghs',
     'can_edit': true,
-    'query':'select a.name,sum(b.hrs) as \'Spent Hours\' from\n(select * from timesheet_timesheet where day between \n{{params.start_date}} and  {{params.end_date}} ) b join timesheet_timesheettype a\non a.id=b.type_id where b.project_code = {{params.project_code}} group by a.name;',
+    'query':'select 1,2,4',
     'type':'AreaChart',
     'options':{
       'chartArea':{
@@ -247,8 +247,8 @@ export let CHART_DATA = [
         'name':'project_code',
         'data_type':'string',
         'mandatory':false,
-        'default_value':'FROL',
-        'test_value':'FROL',
+        'default_value':'HASHEDIN',
+        'test_value':'HASHEDIN',
         'type':1,
         'kwargs':{
 
@@ -258,231 +258,3 @@ export let CHART_DATA = [
     ]
   }
 ]
-
-
-export let CHART_RESPONSE = {
-  'rows': [
-    {
-      'c':[
-        {
-          'v':'Client Meet'
-        },
-        {
-          'v':6.333333333333333
-        }
-      ]
-    },
-    {
-      'c':[
-        {
-          'v':'Consulting'
-        },
-        {
-          'v':2.5
-        }
-      ]
-    },
-    {
-      'c':[
-        {
-          'v':'Debug'
-        },
-        {
-          'v':4.833333333333333
-        }
-      ]
-    },
-    {
-      'c':[
-        {
-          'v':'Design'
-        },
-        {
-          'v':107.0
-        }
-      ]
-    },
-    {
-      'c':[
-        {
-          'v':'Dev'
-        },
-        {
-          'v':48.0
-        }
-      ]
-    },
-    {
-      'c':[
-        {
-          'v':'Documentation'
-        },
-        {
-          'v':4.333333333333333
-        }
-      ]
-    },
-    {
-      'c':[
-        {
-          'v':'Email'
-        },
-        {
-          'v':10.083333333333332
-        }
-      ]
-    },
-    {
-      'c':[
-        {
-          'v':'Finance'
-        },
-        {
-          'v':6.583333333333337
-        }
-      ]
-    },
-    {
-      'c':[
-        {
-          'v':'Help'
-        },
-        {
-          'v':7.0
-        }
-      ]
-    },
-    {
-      'c':[
-        {
-          'v':'Internal'
-        },
-        {
-          'v':27.416666666666668
-        }
-      ]
-    },
-    {
-      'c':[
-        {
-          'v':'Interview'
-        },
-        {
-          'v':9.83333333333334
-        }
-      ]
-    },
-    {
-      'c':[
-        {
-          'v':'Learning'
-        },
-        {
-          'v':81.5
-        }
-      ]
-    },
-    {
-      'c':[
-        {
-          'v':'Meeting'
-        },
-        {
-          'v':170.15
-        }
-      ]
-    },
-    {
-      'c':[
-        {
-          'v':'Onboarding'
-        },
-        {
-          'v':9.0
-        }
-      ]
-    },
-    {
-      'c':[
-        {
-          'v':'Other'
-        },
-        {
-          'v':231.9666666666667
-        }
-      ]
-    },
-    {
-      'c':[
-        {
-          'v':'Planning'
-        },
-        {
-          'v':6.166666666666666
-        }
-      ]
-    },
-    {
-      'c':[
-        {
-          'v':'PMO'
-        },
-        {
-          'v':4.25
-        }
-      ]
-    },
-    {
-      'c':[
-        {
-          'v':'Pre-sales'
-        },
-        {
-          'v':1.083333333333333
-        }
-      ]
-    },
-    {
-      'c':[
-        {
-          'v':'Proposals'
-        },
-        {
-          'v':3.0
-        }
-      ]
-    },
-    {
-      'c':[
-        {
-          'v':'Review'
-        },
-        {
-          'v':13.333333333333325
-        }
-      ]
-    },
-    {
-      'c':[
-        {
-          'v':'Training'
-        },
-        {
-          'v':28.166666666666668
-        }
-      ]
-    }
-  ],
-  'cols':[
-    {
-      'type':'string',
-      'id':'name',
-      'label':'name'
-    },
-    {
-      'type':'number',
-      'id':'Spent Hours',
-      'label':'Spent Hours'
-    }
-  ]
-}
