@@ -1,3 +1,5 @@
+import React, { Component } from 'react'
+
 import {
   RESPONSE_FORMATS,
   GOOGLE_CHART_TYPE_OPTIONS
@@ -25,7 +27,7 @@ export function postApiRequest(uri, data, onSuccessCallback,
 }
 
 export function baseUrl() {
-  return window.location.origin + '/'
+  return 'http://localhost:8000' + '/'
 }
 /**
  * @module Utils
@@ -280,4 +282,13 @@ export function formatTestParameters (paramDefintion, key, valueKey) {
     }
   })
   return testParams
+}
+
+
+export const ErrorMessage = ({classValue, message}) => {
+  return (
+    <div className={classValue}>
+      <p>{ message }</p>
+    </div>
+  )
 }
