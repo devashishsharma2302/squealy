@@ -13,7 +13,8 @@ export default class ViewOnlyResults extends Component {
     super()
     this.state = {
       payloadObj: {},
-      chartData: {}
+      chartData: {},
+      errorMessage: null
     }
   }
 
@@ -37,11 +38,11 @@ export default class ViewOnlyResults extends Component {
   }
 
   onSuccessTest = (response) => {
-    this.setState({chartData: response})
+    this.setState({chartData: response, errorMessage: null})
   }
 
   onErrorTest = (e) => {
-    console.log('error', e)
+    this.setState({errorMessage: e.responseJSON.error})
   }
 
 
@@ -90,13 +91,15 @@ export default class ViewOnlyResults extends Component {
         </div>
         <div className="visualchart">
           {
-            googleDefined && this.state.chartData.hasOwnProperty('rows') ?
+            this.state.errorMessage ?
+            <div className='error-box'><span>{this.state.errorMessage}</span></div>
+            : (googleDefined && this.state.chartData.hasOwnProperty('rows') ?
               <GoogleChartsComponent
                 chartData={this.state.chartData}
                 options={chart.options}
                 chartType={chart.type}
                 id={'visualisation_' + chart.id} />
-              : null
+              : null)
           }
         </div>
       </div>

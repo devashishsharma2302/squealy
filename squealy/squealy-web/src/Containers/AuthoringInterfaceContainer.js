@@ -42,7 +42,7 @@ export default class AuthoringInterfaceContainer extends Component {
   }
 
   saveChart = (chart) => {
-    if (chart.id && chart.database) {
+    if (chart.id) {
       this.setState({'saveInProgress': true},
             postApiRequest(DOMAIN_NAME+'charts/', {'chart': chart},
             this.onChartSaved,this.onChartSaveError, null)

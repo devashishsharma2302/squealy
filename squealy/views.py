@@ -73,7 +73,10 @@ class ChartView(APIView):
         params = request.GET.copy()
         user = request.user
 
-        data = self._process_chart_query(chart, params, user)
+        if not chart.database:
+            raise ChartNotFoundException('Database is not selected')
+        else:
+            data = self._process_chart_query(chart, params, user)
         return Response(data)
 
     def post(self, request, chart_url=None, *args, **kwargs):
@@ -87,9 +90,10 @@ class ChartView(APIView):
             chart = Chart.objects.filter(url=chart_url).prefetch_related(*chart_attributes).first()
             if not chart:
                 raise ChartNotFoundException('No charts found at this path')
-
-
-            data = self._process_chart_query(chart, params, user)
+            if not chart.database:
+                raise ChartNotFoundException('Database is not selected')
+            else:
+                data = self._process_chart_query(chart, params, user)
             return Response(data)
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)

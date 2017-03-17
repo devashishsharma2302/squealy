@@ -14,14 +14,15 @@
 }
 
 .error-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   min-height: 85px;
   background: $warning-bg-color;
   color: $red-color;
   font-size: 17px;
   font-family: Roboto Bold;
-  text-align: center;
   padding: 10px;
-  line-height: 2;
 }
 
 
@@ -39,6 +40,13 @@
     }
   }
 }
+
+.visualchart {
+  > .error-box {
+    margin-top: 50px;
+  }
+}
+
 
 .json-response-wrapper {
   max-height: 350px;
