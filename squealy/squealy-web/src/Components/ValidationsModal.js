@@ -15,19 +15,13 @@ export default class ValidationsModal extends Component {
       validationName: '',
       validationQuery: '',
       checkNameFilledError: false,
-      checkQueryFilledError: false,
+      checkQueryFilledError: false
 
     }
   }
-
   //Handle onBlur events Input and Query fields
-  updateOnBlur = (key,validation) => {
-
-    console.log(this.state[validation])
-    let checkError = false
-    if (this.state[validation] === ''){
-      checkError = true
-    }
+  updateOnBlur = (key, validation) => {
+    let checkError= this.state[validation] === '' ? true : false
     this.setState({
       [key] : checkError
     })
@@ -64,7 +58,9 @@ export default class ValidationsModal extends Component {
         checkQueryFilledError: true
       })
     }
-    if (flag) return ;
+    if (flag) {
+      return ;
+    }
     let newValidation = {
       name: validationName,
       query: validationQuery
@@ -103,10 +99,17 @@ export default class ValidationsModal extends Component {
   }
 
   // Updates form fields
-  onChangeHandler = (key, value) => {
-    console.log(key, value)
-
-    this.setState({ [key]: value })
+  onChangeHandler = (key, value,v) => {
+    let result;
+    if (value !== '') {
+      result = false
+    } else {
+      result = true
+    }
+    this.setState({
+       [key]: value,
+       [v]:result 
+      })
   }
 
   render() {
@@ -127,7 +130,7 @@ export default class ValidationsModal extends Component {
               type='text'
               name='paramName'
               value={validationName}
-              onChange={(e) => this.onChangeHandler('validationName', e.target.value)}
+              onChange={(e) => this.onChangeHandler('validationName', e.target.value,'checkNameFilledError')}
               onBlur={() => this.updateOnBlur('checkNameFilledError','validationName')}
               />
             {
@@ -153,7 +156,7 @@ export default class ValidationsModal extends Component {
                 minLines={12}
                 highlightActiveLine={true}
                 editorProps={{ $blockScrolling: true }}
-                onChange={(value) => this.onChangeHandler('validationQuery', value)}
+                onChange={(value) => this.onChangeHandler('validationQuery', value,'checkQueryFilledError')}
                 value={validationQuery}
                 onBlur={() => this.updateOnBlur('checkQueryFilledError','validationQuery')}
                 />
