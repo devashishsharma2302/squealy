@@ -45,7 +45,7 @@ export default class SideMenu extends Component {
     //e.pageY calculating height from ul.
     //FIXME: Hardcoded 10px to show menu at accurate position. Need to check why do we need to add it?
     let leftMenuPosition = {
-      top: e.pageY - this.refs.chartListUl.offsetTop - 10,
+      top: e.pageY - (this.refs.chartListUl ? this.refs.chartListUl.offsetTop : 0) - 10,
       left: e.pageX
     },
     flag = (index !== this.state.leftMenuChartIndex) || !this.state.showLeftNavContextMenu
@@ -99,7 +99,7 @@ export default class SideMenu extends Component {
       <div className="row">
         <div className="col-md-12">
           <label className='col-md-4'>Name: </label>
-          <input type='text' value={chartName} onChange={this.newChartNameChanged} />
+          <input className='chart-name-input' type='text' value={chartName} onChange={this.newChartNameChanged} />
         </div>
       </div>
     )
@@ -146,7 +146,7 @@ export default class SideMenu extends Component {
                   <li onClick={() => this.showChartDetailsModal('EDIT')}>Rename Chart 
                     <i className="fa fa-pencil"/></li>
                   {
-                    (userInfo.can_delete_chart) && <li onClick={() => 
+                    (userInfo.can_delete_chart) && <li className='delete-chart' onClick={() => 
                       this.props.chartDeletionHandler(leftMenuChartIndex, this.hideLeftMenu)}>
                     Delete Chart<i className="fa fa-trash-o"/></li>
                   }
