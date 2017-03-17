@@ -41,6 +41,16 @@ export const PARAM_FORMAT_OPTIONS = [
   }
 ]
 
+export const PARAM_TYPE_OPTIONS = [
+  {
+    label: 'User',
+    value: 'user'
+  }, {
+    label: 'Query',
+    value: 'query'
+  }
+]
+
 export const AVAILABLE_TRANSFORMATIONS = [
   {
     value: 'transpose',
@@ -136,6 +146,7 @@ export const GRID_PADDING = 15
 export const GRID_HEIGHT = 20
 
 export const GRID_WIDTH_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+export const PARAM_TYPE_MAP = {1: 'query', 2: 'user'}
 
 export const CHART_CONFIG_EXAMPLE = {
   'width': 400,
@@ -247,7 +258,5 @@ GROUP BY u.username, a.name`,
       descQuery2 = 'Behind the scene Jinjasql uses Jinja2 Templating Engine which provides {% if %}, {% elif %} and {% else %} tags to implement conditional statements. These tags can be used anywhere in the query as shown in this example. ',
       descQuery3 = 'You can even use macros for doing complex calculation in your query. One usecase could be writing a macro to calculate number of weekend between two given dates. In this example we create a macro for MYSQL\'s between caluse.' 
 
-    
 export { query1, query2, query3, descQuery1, descQuery2, descQuery3 }
-
-        
+export const DOCUMENT_URL = 'https://github.com/hashedin/squealy/#squealy'
