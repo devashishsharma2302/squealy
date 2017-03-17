@@ -6,9 +6,23 @@ import ApiDesignView from './ApiDesignView'
 export default class MainComponent extends Component {
   
   render() {
-    const { charts, chartAdditionHandler, chartDeletionHandler,
-      chartSelectionHandler, selectedChartIndex, googleDefined,
-      selectedChartChangeHandler, onHandleTestButton, parameters, savedStatus, saveInProgress, userInfo, updateViewMode, currentChartMode} = this.props
+    const {
+      charts,
+      chartAdditionHandler,
+      chartDeletionHandler,
+      chartSelectionHandler,
+      selectedChartIndex,
+      googleDefined,
+      selectedChartChangeHandler,
+      onHandleTestButton,
+      parameters,
+      savedStatus,
+      saveInProgress,
+      userInfo,
+      updateViewMode,
+      currentChartMode,
+      databases
+    } = this.props
     return (
       <div className="full-height">
         <NavHeader savedStatus={savedStatus} saveInProgress={saveInProgress} userInfo={userInfo}/>
@@ -35,6 +49,7 @@ export default class MainComponent extends Component {
                 onHandleTestButton={onHandleTestButton}
                 updateViewMode={updateViewMode}
                 currentChartMode={currentChartMode}
+                databases={databases}
               />
             : <div className='full-height no-charts'>
                 <div className='col-md-6 col-md-offset-3 instructions'>

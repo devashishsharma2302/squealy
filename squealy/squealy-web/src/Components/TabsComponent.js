@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Select from 'react-select'
 import { SplitButton, MenuItem, Button } from 'react-bootstrap'
 import NotificationBadge from 'react-notification-badge'
 import { Effect } from 'react-notification-badge'
@@ -34,8 +35,10 @@ export default class TabsComponent extends Component {
       onHandleTestButton,
       selectedChartChangeHandler,
       updateViewMode,
-      currentChartMode
+      currentChartMode,
+      databases,
     } = this.props
+
     const {
       showValidationsModal,
       showParamDefModal,
@@ -52,7 +55,7 @@ export default class TabsComponent extends Component {
 
     if (chart.can_edit) {
       viewButton.className = ''
-      viewButton.title = 'Please contact to Admin for write access'
+      viewButton.title = null
       if (currentChartMode) {
         viewButton.viewText = 'View'
         viewButton.icon =  <i className="fa fa-eye"/>
@@ -100,6 +103,14 @@ export default class TabsComponent extends Component {
                 effect={[null, null, null, null]}
                 className='transformations-count-badge' />
             </Button>
+            <div className="selected-db-wrapper">
+              <Select
+                value={(chart.database)?chart.database:null}
+                options={databases}
+                onChange={(db) => {selectedChartChangeHandler('database', (db)?db.value:null)}}
+                placeholder={'Select Database'}
+              />
+            </div>
             <Button bsStyle='primary' className='tab-component'
               onClick={()=>this.modalVisibilityHandler('showShareModal')}>
               <i className="fa fa-share-alt"/>
@@ -134,12 +145,7 @@ export default class TabsComponent extends Component {
                 selectedChartChangeHandler={selectedChartChangeHandler}
                 closeModal={()=>this.modalVisibilityHandler('showTransformationsModal')}
                 showModal={showTransformationsModal}
-                transformations={chart.transformations}
-                chartColumns={chart.chartColumns}
-                pivotColumn={chart.pivotColumn}
-                metric={chart.metric}
-                columnsToMerge={chart.columnsToMerge}
-                newColumnName={chart.newColumnName}
+                chart={chart}
               />
             }
           </span>
