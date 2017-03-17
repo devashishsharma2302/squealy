@@ -190,9 +190,7 @@ export default class AuthoringInterfaceContainer extends Component {
       return
     }
 
-    let payloadObj = {
-      params: formatTestParameters(selectedChart.parameters)
-    }
+    let payloadObj = formatTestParameters(selectedChart.parameters, 'name', 'test_value')
     postApiRequest(DOMAIN_NAME+'squealy/'+selectedChart.url+'/', payloadObj,
                     this.onSuccessTest, this.onErrorTest, 'table')
   }
