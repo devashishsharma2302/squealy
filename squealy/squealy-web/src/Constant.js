@@ -79,6 +79,16 @@ export const DATE_FORMAT_OPTIONS = [
   }
 ]
 
+export const PARAM_TYPE_OPTIONS = [
+  {
+    label: 'User',
+    value: 'user'
+  }, {
+    label: 'Query',
+    value: 'query'
+  }
+]
+
 
 export const TIME_FORMAT_OPTIONS = [
   {
@@ -102,12 +112,12 @@ export const AVAILABLE_TRANSFORMATIONS = [
     label: 'Transpose'
   },
   {
-    value: 'merge',
-    label: 'Merge'
-  },
-  {
     value: 'split',
     label: 'Split'
+  },
+  {
+    value: 'merge',
+    label: 'Merge'
   }
 ]
 

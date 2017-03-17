@@ -87,6 +87,14 @@ tr.editable-table-row {
 .param-heading {
   font-family: Roboto Bold;
   color: $text-color;
+
+  .info-icon {
+    position: absolute;
+    top: 11px;
+    left: 73px;
+    font-size: 18px;
+    cursor: pointer;
+  }
 }
 
 .run-btn-group {

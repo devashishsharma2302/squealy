@@ -113,6 +113,7 @@ export default class AuthoringInterfaceContainer extends Component {
         tempChart.testParameters = {}
         charts.push(tempChart)
       })
+      console.log(charts)
       this.setState({charts: charts}, ()=> {
         const { selectedChartIndex, charts } = this.state
         const currentPath = window.location.pathname.split('/')
@@ -189,30 +190,8 @@ export default class AuthoringInterfaceContainer extends Component {
       alert('Please select a database to run the query on')
       return
     }
-    let transformations = selectedChart.transformations.map(transformation => {
-        let kwargs = null
-        if(transformation.value === 'split') {
-          kwargs = {
-            pivot_column: selectedChart.pivotColumn.value,
-            metric_column: selectedChart.metric.value
-          }
-        }
-        if(transformation.value === 'merge') {
-          kwargs = {
-            columns_to_merge: selectedChart.columnsToMerge.map(column=>column.value),
-            new_column_name: selectedChart.newColumnName
-          }
-        }
-        return {
-          name: transformation.value,
-          kwargs: kwargs
-      }
-    })
 
-
-    let payloadObj = {
-      params: formatTestParameters(selectedChart.parameters)
-    }
+    let payloadObj = formatTestParameters(selectedChart.parameters, 'name', 'test_value')
     postApiRequest(DOMAIN_NAME+'squealy/'+selectedChart.url+'/', payloadObj,
                     this.onSuccessTest, this.onErrorTest, 'table')
   }

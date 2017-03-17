@@ -27,9 +27,13 @@ export class SquealyModal extends Component {
         <Modal.Header closeButton>
           <Modal.Title>
             {modalHeader}
-            <OverlayTrigger placement="right" overlay={tooltip}>
-              <i className="fa fa-question-circle-o info-icon" aria-hidden="true"></i>
-            </OverlayTrigger>
+            {helpText?
+              <OverlayTrigger placement="right" overlay={tooltip}>
+                <i className="fa fa-question-circle-o info-icon" aria-hidden="true"></i>
+              </OverlayTrigger>
+            :
+              null
+            }
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

@@ -3,7 +3,15 @@ import { SquealyModal } from './SquealyUtilsComponents'
 import AceEditor from 'react-ace'
 import 'brace/mode/sql'
 import 'brace/theme/tomorrow'
-import { query1,query2,query3,descQuery1_1,descQuery1_2,descQuery2,descQuery3 } from './../Constant'
+import {
+  query1,
+  query2,
+  query3,
+  descQuery1,
+  descQuery2,
+  descQuery3,
+  JINJASQL_DOC_URL
+} from './../Constant'
 
 export default class JinjasqlDescription extends Component {
 
@@ -11,7 +19,11 @@ export default class JinjasqlDescription extends Component {
     
     const helpContent = (
       <div className="help-container">
+        <h5>Writing parameterized query</h5>
         <div className="code-description-container">
+          <div className="code-description">
+            <p>{descQuery1}</p>
+          </div>
           <AceEditor
             mode="sql"
             theme="tomorrow"
@@ -25,14 +37,13 @@ export default class JinjasqlDescription extends Component {
             fontSize={15}
             readOnly={true}
             />
-          <div className="code-description">
-            <ul>
-              <li><p>{descQuery1_1}</p></li>
-              <li><p>{descQuery1_2}</p></li>
-            </ul>
-          </div>
         </div>
+        <br />
+        <h5>Conditional statements in the query</h5>
         <div className="code-description-container">
+          <div className="code-description">
+            <p> {descQuery2}</p>
+          </div>
           <AceEditor
             mode="sql"
             theme="tomorrow"
@@ -43,17 +54,16 @@ export default class JinjasqlDescription extends Component {
             wrapEnabled={true}
             fontSize={15}
             width="50%"
-            height="auto"
+            height="100px"
             readOnly={true}
-            />
-          <div className="code-description">
-            <ul>
-              <li><p> {descQuery2}</p></li>
-            </ul>
-
-          </div>
+          />
         </div>
+        <br />
+        <h5>Using macros</h5>
         <div className="code-description-container">
+          <div className="code-description">
+            <p>{descQuery3}</p>
+          </div>
           <AceEditor
             mode="sql"
             theme="tomorrow"
@@ -64,16 +74,18 @@ export default class JinjasqlDescription extends Component {
             wrapEnabled={true}
             width="50%"
             fontSize={15}
-            height="auto"
+            height="270px"
             readOnly={true}
-            maxLines="20"
             />
-          <div className="code-description">
-            <ul>
-              <li><p>{descQuery3}</p></li>
-            </ul>
-          </div>
         </div>
+        <br />
+        <h5>
+          Click
+          <a href={JINJASQL_DOC_URL} target="_blank">
+            here
+          </a>
+          to read more about Jinjasql
+        </h5>
       </div>
     )
 

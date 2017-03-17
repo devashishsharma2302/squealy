@@ -55,7 +55,7 @@ export default class TabsComponent extends Component {
 
     if (chart.can_edit) {
       viewButton.className = ''
-      viewButton.title = 'Please contact to Admin for write access'
+      viewButton.title = null
       if (currentChartMode) {
         viewButton.viewText = 'View'
         viewButton.icon =  <i className="fa fa-eye"/>
@@ -103,10 +103,6 @@ export default class TabsComponent extends Component {
                 effect={[null, null, null, null]}
                 className='transformations-count-badge' />
             </Button>
-            <Button bsStyle='primary' className='tab-component'
-              onClick={()=>this.modalVisibilityHandler('showShareModal')}>
-              <i className="fa fa-share-alt"/>
-              Share</Button>
             <div className="selected-db-wrapper">
               <Select
                 value={(chart.database)?chart.database:null}
@@ -115,6 +111,10 @@ export default class TabsComponent extends Component {
                 placeholder={'Select Database'}
               />
             </div>
+            <Button bsStyle='primary' className='tab-component'
+              onClick={()=>this.modalVisibilityHandler('showShareModal')}>
+              <i className="fa fa-share-alt"/>
+              Share</Button>
             {
               showParamDefModal &&
               <ParamDefinitionModal
@@ -145,12 +145,7 @@ export default class TabsComponent extends Component {
                 selectedChartChangeHandler={selectedChartChangeHandler}
                 closeModal={()=>this.modalVisibilityHandler('showTransformationsModal')}
                 showModal={showTransformationsModal}
-                transformations={chart.transformations}
-                chartColumns={chart.chartColumns}
-                pivotColumn={chart.pivotColumn}
-                metric={chart.metric}
-                columnsToMerge={chart.columnsToMerge}
-                newColumnName={chart.newColumnName}
+                chart={chart}
               />
             }
           </span>
