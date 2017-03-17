@@ -74,7 +74,7 @@ export default class AuthoringInterfaceContainer extends Component {
         saveInProgress: false,
         currentChartMode: false
       }, () => {
-        callback.constructor === 'Function' ||callback()
+        callback.constructor === 'Function' || callback()
       })
     }
   }
