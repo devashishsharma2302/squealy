@@ -154,9 +154,12 @@ export default class AuthoringInterfaceContainer extends Component {
   }
 
   // A generic function to handle change in any property inside the selected chart
-  selectedChartChangeHandler = (key, value, callback=null, index) => {
+  selectedChartChangeHandler = (key, value, callback=null, index=null) => {
     let charts = JSON.parse(JSON.stringify(this.state.charts)),
-      chartIndex = index ? index : this.state.selectedChartIndex
+      chartIndex = parseInt(index, 10) //To avoid unexpected errors with value 0
+    
+    chartIndex = chartIndex >= 0 ? chartIndex : this.state.selectedChartIndex
+
     charts[chartIndex][key] = value
     if (key === 'name') {
       charts[chartIndex].url = value.replace(/ /g, '-').toLowerCase()
@@ -166,11 +169,13 @@ export default class AuthoringInterfaceContainer extends Component {
 
   // Updates the selected chart's chart data with the result set returned by the
   // query written by the user
-  onSuccessTest = (data) => {
+  onSuccessTest = (data, callback) => {
     let currentChartData = [...this.state.charts]
     currentChartData[this.state.selectedChartIndex]['chartData'] = data
     currentChartData[this.state.selectedChartIndex].apiErrorMsg = null
-    this.setState({charts: currentChartData})
+    this.setState({charts: currentChartData}, () => {
+      callback ? callback() : null
+    })
   }
 
   // Updates the selected chart with the error message recieved from the backend
@@ -183,7 +188,7 @@ export default class AuthoringInterfaceContainer extends Component {
   // Handles click event on run button. This function makes a POST call to get
   // result set of the query written by the user and triggers onSuccessTest if
   // the API is successfull
-  onHandleTestButton = () => {
+  onHandleTestButton = (callback=null) => {
     const selectedChart = this.state.charts[this.state.selectedChartIndex]
     if(!selectedChart.database) {
       alert('Please select a database to run the query on')
@@ -192,17 +197,18 @@ export default class AuthoringInterfaceContainer extends Component {
 
     let payloadObj = formatTestParameters(selectedChart.parameters, 'name', 'test_value')
     postApiRequest(DOMAIN_NAME+'squealy/'+selectedChart.url+'/', payloadObj,
-                    this.onSuccessTest, this.onErrorTest, 'table')
+                    this.onSuccessTest, this.onErrorTest, callback)
   }
 
   
 
   //Appends an empty API definition object to current API Definitions
-  chartAdditionHandler = (name) => {
+  chartAdditionHandler = (name, database) => {
     //TODO: open the addition modal and add the new chart to state also making it the selected chart
     let charts = JSON.parse(JSON.stringify(this.state.charts)),
         newChart = getEmptyApiDefinition()
         newChart.name = name
+        newChart.database = database
         newChart.can_edit = true
         newChart.url = name.replace(/ /g, '-').toLowerCase()
     let newChartIndex = charts.push(newChart) - 1

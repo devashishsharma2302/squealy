@@ -1,12 +1,9 @@
 import moment from 'moment'
 import {baseUrl} from './Utils'
+
 export const DOMAIN_NAME = baseUrl()
 export const SIDE_BAR_WIDTH = '21%'
-export const YAML_INDENTATION = 4
-export const YAML_CONTENT_TYPE = 'application/yaml'
 export const RESPONSE_FORMATS = {
-
-// the formatter class is the class name that is to be exported to yaml file.
   table: {
     displayName: 'Table',
     formatter: 'table'

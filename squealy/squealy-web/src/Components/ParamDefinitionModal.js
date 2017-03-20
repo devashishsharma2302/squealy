@@ -95,11 +95,12 @@ export default class ParamDefinitionModal extends Component {
       () => {
         this.setState({showParamDefForm: false, editMode: false})
         this.editArrayIndex = -1
+        this.props.updateNoteHandler(false)
       })
   }
 
   render() {
-    const {parameters, selectedChartChangeHandler} = this.props
+    const {parameters, selectedChartChangeHandler, note} = this.props
     const addParamDefFormContent =
       <div className="modal-container">
         <div className='row add-modal-content'>
@@ -168,6 +169,7 @@ export default class ParamDefinitionModal extends Component {
 
     const paramDefinitionEntry =
       <div>
+        {note ? <p className="note-text">{note}</p> : null}
         <table className="table table-hover api-param-def-table">
           <thead>
             <tr>
@@ -189,10 +191,10 @@ export default class ParamDefinitionModal extends Component {
               parameters.length ?
                 parameters.map((param, i) => {
                   return (
-                    <tr key={'param_row_' + i}>
+                    <tr key={'param_row_' + i} onClick={() => this.handleEditParam(i)}
+                      className='param-row'>
                       <td>{param.type}</td>
-                      <td onClick={() => this.handleEditParam(i)}
-                        className='param-name'>{param.name}</td>
+                      <td className='param-name'>{param.name}</td>
                       <td>{param.test_value}</td>
                       <td>{param.data_type ? param.data_type : '--'}</td>
                       <td>{param.default_value ? param.default_value : '--'}</td>
