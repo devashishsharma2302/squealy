@@ -22,6 +22,10 @@
     "ADMIN_PASS": {
       "description": "Password for the default admin user. Do not share this passwords with ither users. You can create new users from the admin page and generate credentials for the new users",
       "value": "admin@123"
-    }
+    },
+    "JWT_KEY": {
+      "description": "This is the key used for authentication via jwt accessToken",
+      "required": false
+    },
   }
 }
