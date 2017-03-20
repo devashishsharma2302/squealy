@@ -56,7 +56,7 @@ export default class ResultSection extends Component {
       <AccordionTab heading='Results'>
         {
           errorMessage ?
-            <div className='error-box'>{errorMessage}</div>
+            <div className='error-box'><span>{errorMessage}</span></div>
             : resultSectionOnSuccess
         }
         <ChartConfigModal
