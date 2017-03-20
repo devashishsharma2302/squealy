@@ -3,7 +3,12 @@ import AccordionTab from './AccordionTab'
 import { Tab, Tabs } from 'react-bootstrap'
 import GoogleChartsComponent from './GoogleChartsComponent'
 import { SquealyDropdown } from './SquealyUtilsComponents'
-import { postApiRequest, formatTestParameters } from './../Utils'
+import {
+  postApiRequest,
+  formatTestParameters,
+  getUrlParams,
+  setUrlParams
+} from './../Utils'
 import { DOMAIN_NAME } from './../Constant'
 import {SquealyDatePicker, SquealyInput, SquealyDatetimePicker} from './Filters'
 
@@ -13,17 +18,22 @@ export default class ViewOnlyResults extends Component {
     super()
     this.state = {
       payloadObj: {},
-      chartData: {}
+      chartData: {},
+      errorMessage: null
     }
   }
 
 
   getInitialChart = (propsData) => {
     let payloadObj = JSON.parse(JSON.stringify(this.state.payloadObj))
-    payloadObj = formatTestParameters(propsData.chart.parameters, 'name', 'default_value')
+    if(JSON.stringify(getUrlParams()) === '{}'){
+      payloadObj = formatTestParameters(propsData.chart.parameters, 'name', 'default_value')
+    } else {
+      payloadObj = {params: getUrlParams()}
+    }
     postApiRequest(DOMAIN_NAME+'squealy/'+ propsData.chart.url+'/', payloadObj,
         this.onSuccessTest, this.onErrorTest, 'table')
-    this.setState({payloadObj: payloadObj})
+    this.setState({payloadObj: payloadObj}, this.updateUrl)
   }
 
 
@@ -31,17 +41,12 @@ export default class ViewOnlyResults extends Component {
     this.getInitialChart(this.props)
   }
 
-
-  componentWillReceiveProps(nextprops) {
-    this.getInitialChart(nextprops)
-  }
-
   onSuccessTest = (response) => {
-    this.setState({chartData: response})
+    this.setState({chartData: response, errorMessage: null})
   }
 
   onErrorTest = (e) => {
-    console.log('error', e)
+    this.setState({errorMessage: e.responseJSON.error})
   }
 
 
@@ -49,9 +54,15 @@ export default class ViewOnlyResults extends Component {
     let payloadObj = JSON.parse(JSON.stringify(this.state.payloadObj))
     payloadObj.params[key] = val
     this.setState({payloadObj: payloadObj}, () => {
+      this.updateUrl()
       postApiRequest(DOMAIN_NAME+'squealy/'+ this.props.chart.url+'/', payloadObj,
         this.onSuccessTest, this.onErrorTest, 'table')
     })
+  }
+
+  updateUrl = () => {
+    const { payloadObj } = this.state
+    setUrlParams(payloadObj.params)
   }
 
   render() {
@@ -90,13 +101,15 @@ export default class ViewOnlyResults extends Component {
         </div>
         <div className="visualchart">
           {
-            googleDefined && this.state.chartData.hasOwnProperty('rows') ?
+            this.state.errorMessage ?
+            <div className='error-box'><span>{this.state.errorMessage}</span></div>
+            : (googleDefined && this.state.chartData.hasOwnProperty('rows') ?
               <GoogleChartsComponent
                 chartData={this.state.chartData}
                 options={chart.options}
                 chartType={chart.type}
                 id={'visualisation_' + chart.id} />
-              : null
+              : null)
           }
         </div>
       </div>

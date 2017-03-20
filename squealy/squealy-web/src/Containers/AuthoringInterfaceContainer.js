@@ -42,7 +42,7 @@ export default class AuthoringInterfaceContainer extends Component {
   }
 
   saveChart = (chart) => {
-    if (chart.id && chart.database) {
+    if (chart.id) {
       this.setState({'saveInProgress': true},
             postApiRequest(DOMAIN_NAME+'charts/', {'chart': chart},
             this.onChartSaved,this.onChartSaveError, null)
@@ -74,7 +74,7 @@ export default class AuthoringInterfaceContainer extends Component {
         saveInProgress: false,
         currentChartMode: false
       }, () => {
-        callback.constructor === 'Function' ||callback()
+        callback.constructor === 'Function' || callback()
       })
     }
   }
@@ -129,7 +129,7 @@ export default class AuthoringInterfaceContainer extends Component {
               }
             })
             if(chartIndex) {
-              this.setState({selectedChartIndex: chartIndex, currentChartMode: charts[chartIndex].can_edit || false}, this.setUrlPath)
+              this.setState({selectedChartIndex: chartIndex}, this.setUrlPath)
             } else {
               alert('Chart not found')
               this.setState({selectedChartIndex: 0}, this.setUrlPath)
@@ -146,11 +146,11 @@ export default class AuthoringInterfaceContainer extends Component {
 
   // Updates the URL with the selected chart name
   setUrlPath() {
-    const { selectedChartIndex, charts } = this.state
+    const { selectedChartIndex, charts, currentChartMode } = this.state
     const selectedChart = charts[selectedChartIndex]
-    const canEditUrl = (charts[selectedChartIndex].can_edit) ? 'edit' : 'view'
-    const newUrl = '/' + selectedChart.name + '/' + canEditUrl
-    this.setState({currentChartMode: charts[selectedChartIndex].can_edit || false})
+    const canEditUrl = (charts[selectedChartIndex].can_edit && !window.location.pathname.includes('view')) ? 'edit' : 'view'
+    const newUrl = '/' + selectedChart.name + '/' + canEditUrl + window.location.search
+    this.setState({currentChartMode: charts[selectedChartIndex].can_edit && !window.location.pathname.includes('view') || false})
     window.history.replaceState('', '', newUrl);
   }
 
@@ -239,8 +239,8 @@ export default class AuthoringInterfaceContainer extends Component {
 
   //Changes the selected API index to the one which was clicked from the API list
   chartSelectionHandler = (index) => {
-    this.setState({selectedChartIndex: index, currentChartMode: this.state.charts[index].can_edit || false},
-      () => this.setUrlPath())
+    window.history.replaceState('', '', window.location.pathname);
+    this.setState({selectedChartIndex: index, currentChartMode: this.state.charts[index].can_edit || false}, this.setUrlPath)
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -252,10 +252,9 @@ export default class AuthoringInterfaceContainer extends Component {
   updateViewMode = (val, editPermission) => {
     if (editPermission) {
       const { selectedChartIndex, charts } = this.state
-      const newUrl = '/' + charts[selectedChartIndex].name + '/' + (val ? 'view' : 'edit') + '/'
-      this.setState({currentChartMode: !val}, () => {
-        window.history.replaceState('', '', newUrl);
-      })
+      const newUrl = '/' + charts[selectedChartIndex].name + '/' + (val ? 'view' : 'edit/') 
+      window.history.replaceState('', '', newUrl);
+      this.setState({currentChartMode: !val})
     }
   }
 

@@ -83,10 +83,7 @@ WSGI_APPLICATION = 'example.wsgi.application'
 
 
 # Database for reports generation. Pass the DATABASE_URL variable from environment.
-db_from_env = dj_database_url.config(conn_max_age=500)
-query_db = dj_database_url.parse(os.environ.get('QUERY_DB'), conn_max_age=500)
-DATABASES['query_db'] = query_db
-DATABASES['default'] = db_from_env
+DATABASES = extract_dj_database_urls(os.environ.get('QUERY_DB'))
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators

@@ -26,8 +26,6 @@ from .utils import SquealySettings
 from .table import Table
 from .models import Chart, Transformation, Validation, Parameter
 from .validators import run_validation
-from django.contrib.auth.models import User
-
 
 jinjasql = JinjaSql()
 
@@ -54,7 +52,6 @@ class DatabaseView(APIView):
 class ChartViewPermission(BasePermission):
 
     def has_permission(self, request, view):
-        request.user = User.objects.get(username="daksh")
         chart_url = request.resolver_match.kwargs.get('chart_url')
         return request.user.has_perm('squealy.can_view_' + chart_url) or request.user.has_perm('squealy.can_edit_' + chart_url)
 
@@ -75,8 +72,11 @@ class ChartView(APIView):
             raise ChartNotFoundException('No charts found at this path')
         params = request.GET.copy()
         user = request.user
-        user = request.user = User.objects.get(username="daksh")
-        data = self._process_chart_query(chart, params, user)
+
+        if not chart.database:
+            raise ChartNotFoundException('Database is not selected')
+        else:
+            data = self._process_chart_query(chart, params, user)
         return Response(data)
 
     def post(self, request, chart_url=None, *args, **kwargs):
@@ -90,9 +90,10 @@ class ChartView(APIView):
             chart = Chart.objects.filter(url=chart_url).prefetch_related(*chart_attributes).first()
             if not chart:
                 raise ChartNotFoundException('No charts found at this path')
-
-
-            data = self._process_chart_query(chart, params, user)
+            if not chart.database:
+                raise ChartNotFoundException('Database is not selected')
+            else:
+                data = self._process_chart_query(chart, params, user)
             return Response(data)
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
@@ -208,7 +209,6 @@ class ChartView(APIView):
 class ChartUpdatePermission(BasePermission):
 
     def has_permission(self, request, view):
-        request.user = request.user = User.objects.get(username="daksh")
         if request.method == 'POST' and request.data.get('chart'):
             chart_data = request.data['chart']
             if chart_data.get('id'):
@@ -230,7 +230,6 @@ class ChartsLoaderView(APIView):
     authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request, *args, **kwargs):
-        request.user = User.objects.get(username="daksh")
         permitted_charts = []
         charts = Chart.objects.all()
         for chart in charts:
@@ -349,7 +348,6 @@ class UserInformation(APIView):
     authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request):
-        request.user = User.objects.get(username="daksh")
         response = {}
         user = request.user
         response['name'] = user.username
