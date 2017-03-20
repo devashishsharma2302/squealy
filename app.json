@@ -26,6 +26,6 @@
     "JWT_KEY": {
       "description": "This is the key used for authentication via jwt accessToken",
       "required": false
-    },
+    }
   }
 }
