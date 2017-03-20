@@ -3,15 +3,7 @@ import { SquealyModal } from './SquealyUtilsComponents'
 import AceEditor from 'react-ace'
 import 'brace/mode/sql'
 import 'brace/theme/tomorrow'
-import {
-  query1,
-  query2,
-  query3,
-  descQuery1,
-  descQuery2,
-  descQuery3,
-  JINJASQL_DOC_URL
-} from './../Constant'
+import { helpText,JINJASQL_DOC_URL } from './../Constant'
 
 export default class JinjasqlDescription extends Component {
 
@@ -22,7 +14,7 @@ export default class JinjasqlDescription extends Component {
         <h5>Writing parameterized query</h5>
         <div className="code-description-container">
           <div className="code-description">
-            <p>{descQuery1}</p>
+            <p>{helpText.descQuery1}</p>
           </div>
           <AceEditor
             mode="sql"
@@ -30,7 +22,7 @@ export default class JinjasqlDescription extends Component {
             onChange={this.testFunction}
             name="UNIQUE_ID_OF_DIV"
             editorProps={{ $blockScrolling: true }}
-            value={query1}
+            value={helpText.query1}
             wrapEnabled={true}
             width="50%"
             height="auto"
@@ -42,7 +34,7 @@ export default class JinjasqlDescription extends Component {
         <h5>Conditional statements in the query</h5>
         <div className="code-description-container">
           <div className="code-description">
-            <p> {descQuery2}</p>
+            <p> {helpText.descQuery2}</p>
           </div>
           <AceEditor
             mode="sql"
@@ -50,7 +42,7 @@ export default class JinjasqlDescription extends Component {
             onChange={this.testFunction}
             name="UNIQUE_ID_OF_DIV"
             editorProps={{ $blockScrolling: true }}
-            value={query2}
+            value={helpText.query2}
             wrapEnabled={true}
             fontSize={15}
             width="50%"
@@ -62,7 +54,7 @@ export default class JinjasqlDescription extends Component {
         <h5>Using macros</h5>
         <div className="code-description-container">
           <div className="code-description">
-            <p>{descQuery3}</p>
+            <p>{helpText.descQuery3}</p>
           </div>
           <AceEditor
             mode="sql"
@@ -70,7 +62,7 @@ export default class JinjasqlDescription extends Component {
             onChange={this.testFunction}
             name="UNIQUE_ID_OF_DIV"
             editorProps={{ $blockScrolling: true }}
-            value={query3}
+            value={helpText.query3}
             wrapEnabled={true}
             width="50%"
             fontSize={15}

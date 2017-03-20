@@ -16,81 +16,72 @@ export default class ParamDefinitionModal extends Component {
 
       selectedDateFormat: 'DD-MM-YYYY',
       selectedDateTimeFormat: 'DD-MM-YYYY LT',
-      selectedTimeFormat: 'LT',
       errorName: false,
       errorTestValue: false,
       errorDefaultValue: false,
-
+      validateFormat : false,
     }
   }
   editMode = false
   editArrayIndex = -1
 
 
-  //Intermediate function def
-  updateCheckFormat = (checkField, errorField) => {
-    let typeSelectedValue = null
-    if (this.state.selectedValue == 'date')
-      typeSelectedValue = 'selectedDateFormat'
-    else if (this.state.selectedValue == 'datetime')
-      typeSelectedValue = 'selectedDateTimeFormat'
-    this.checkFormat(checkField, errorField, typeSelectedValue)
-  }
 
   //Fuction to check if date entered is according to the format
-  checkFormat = (checkField, errorField, typeFormat) => {
-    if (this.state.selectedValue == 'date' || this.state.selectedValue == 'datetime') {
+  checkFormat = (checkField, errorField) => {
+     let typeFormat = 'string'
+    if (this.state.selectedValue == 'date')
+      typeFormat = 'selectedDateFormat'
+    else if (this.state.selectedValue == 'datetime')
+      typeFormat = 'selectedDateTimeFormat'
+
+let change = this.state.errorName || this.state.errorTestValue || this.state.errorDefaultValue
+
+if (this.state.selectedValue == 'date' || this.state.selectedValue == 'datetime') {
       if (checkField === 'name') {
         if (this.state.paramDefinition[checkField] === '') {
-          this.setState({
-            [errorField]: true
-          })
+          change = true
+          this.setState({ [errorField]: true })
         } else {
-          this.setState({
-            [errorField]: false
-          })
+          this.setState({ [errorField]: false })
         }
       } else {
         if (moment(this.state.paramDefinition[checkField], this.state[typeFormat], true).isValid() == false) {
-          this.setState({
-            [errorField]: true
-          })
+          change = true
+          this.setState({ [errorField]: true})
         } else {
-          this.setState({
-            [errorField]: false
-          })
+          this.setState({ [errorField]: false})
         }
       }
     } else {
       if (this.state.paramDefinition[checkField] === '') {
-        this.setState({
-          [errorField]: true
-        })
+        change = true
+        this.setState({ [errorField]: true })
       } else {
-        this.setState({
-          [errorField]: false
-        })
+        this.setState({ [errorField]: false })
       }
     }
+    return change
   }
-  //Function to validate if right format of date is entered
-  setDateFormat = (dateFormat) => {
-    let newDateTimeFormat = dateFormat + ' ' + this.state.selectedTimeFormat
+
+  
+  setInputDateFormat = (setDate) => {
+    //Function to validate the format 
+    let timeStampDate = moment().format(setDate)
+    let checked_date = timeStampDate
+    let y = moment(checked_date, setDate).format(setDate)
+
     this.setState({
-      selectedDateFormat: dateFormat,
-      selectedDateTimeFormat: newDateTimeFormat
+      selectedDateFormat : setDate
     })
   }
 
-  //funciton to validate time format
-  setTimeFormat = (timeFormat) => {
-    let newDateTimeFormat = this.state.selectedDateFormat + ' ' + timeFormat
-    //console.log(moment('13-12-2014 15:00','DD-MM-YYYY HH:mm',true).isValid(),'hello')
+  setInputDateTimeFormat = (setDateTime) => {
     this.setState({
-      selectedTimeFormat: timeFormat,
-      selectedDateTimeFormat: newDateTimeFormat
+      selectedDateTimeFormat: setDateTime
     })
   }
+
   //Function to open add param form and initialize form values
   addParamDefHandler = () => {
     this.setState({
@@ -148,46 +139,13 @@ export default class ParamDefinitionModal extends Component {
     this.setState({ paramDefinition: getEmptyParamDefinition(), selectedValue: 'string' })
   }
 
-  saveParamHandler = (typeFormat) => {
-    let checkError = false
-    if (this.state.paramDefinition.name === '') {
-      checkError = true
-      this.setState({
-        errorName: true
-      })
+  saveParamHandler = () => {
+    let checkVar = this.checkFormat('name','errorName')
+    checkVar = this.checkFormat('test_value','errorTestValue') || checkVar
+    checkVar = this.checkFormat('default_value', 'errorDefaultValue') || checkVar
+    if (checkVar){
+      return ;
     }
-    if (this.state.selectedValue === 'date' || this.state.selectedValue == 'datetime') {
-      if (moment(this.state.paramDefinition.test_value, this.state[typeFormat], true).isValid === false) {
-        checkError = true
-        this.setState({
-          errorTestValue: true
-        })
-      }
-
-      if (moment(this.state.paramDefinition.default_value, this.state[typeFormat], true).isValid === false) {
-        checkError = true
-        this.setState({
-          errorDefaultValue: true
-        })
-      }
-    } else {
-      if (this.state.paramDefinition.test_value === '') {
-        checkError = true
-        this.setState({
-          errorTestValue: true
-        })
-      }
-      if (this.state.paramDefinition.default_value === '') {
-        checkError = true
-        this.setState({
-          errorDefaultValue: true
-        })
-      }
-
-    }
-
-    if (checkError) return;
-
     let selectedChartParamDef = [...this.props.parameters]
     if (this.editMode) {
       selectedChartParamDef[this.editArrayIndex] = this.state.paramDefinition
@@ -213,7 +171,7 @@ export default class ParamDefinitionModal extends Component {
             <label htmlFor='paramName' className='col-md-4'>Name: </label>
             <input type='text' name='paramName' value={this.state.paramDefinition.name}
               onChange={(e) => this.onChangeParamHandler('name', e.target.value)}
-              onBlur={() => this.updateCheckFormat('name', 'errorName')} />
+              onBlur={() => this.checkFormat('name', 'errorName')} />
             {
               this.state.errorName &&
               <ErrorMessage classValue={'col-md-8 pull-right validation-error'} message={'Error in name'} />
@@ -224,7 +182,7 @@ export default class ParamDefinitionModal extends Component {
             <label htmlFor='testValue' className='col-md-4'>Test Value: </label>
             <input type='text' name='testValue' value={this.state.paramDefinition.test_value}
               onChange={(e) => this.onChangeParamHandler('test_value', e.target.value)}
-              onBlur={() => this.updateCheckFormat('test_value', 'errorTestValue')}/>
+              onBlur={() => this.checkFormat('test_value', 'errorTestValue')}/>
             {
               this.state.errorTestValue &&
               <ErrorMessage classValue={'col-md-8 pull-right validation-error'} message={'Error in Test Value'} />
@@ -239,33 +197,28 @@ export default class ParamDefinitionModal extends Component {
               selectedValue={this.state.selectedValue} />
           </div>
           {
-            (this.state.selectedValue === 'date')
-              ? <div className='col-md-12'>
+            (this.state.selectedValue === 'date') &&
+               <div className='col-md-12'>
                 <label htmlFor='selectedValueFormat' className='col-md-4'>Date Format: </label>
-                <SquealyDropdown
-                  options={DATE_FORMAT_OPTIONS}
-                  name='paramFormat'
-                  onChangeHandler={this.setDateFormat}
-                  selectedValue={this.state.selectedDateFormat} />
+              <input type='text' name='name1' value={this.state.selectedDateFormat}
+              onChange={(e) => this.setInputDateFormat(e.target.value)}/>
+              {
+                (this.state.selectedValue === 'date') && this.state.validateFormat && 
+                <ErrorMessage classValue={''} message={'Enter valid date format'} />
+              }
               </div>
-              : null
           }
 
           {
             (this.state.selectedValue === 'datetime')
               ? <div className='col-md-12'>
                 <label htmlFor='selectedValueFormat' className='col-md-4'>DateTime Format: </label>
-                <SquealyDropdown
-                  options={DATE_FORMAT_OPTIONS}
-                  name='paramFormat'
-                  onChangeHandler={this.setDateFormat}
-                  selectedValue={this.state.selectedDateFormat} />
-                <SquealyDropdown
-                  options={TIME_FORMAT_OPTIONS}
-                  name='paramFormat'
-                  onChangeHandler={this.setTimeFormat}
-                  selectedValue={this.state.selectedTimeFormat} />
-
+              <input type='text' name='name3' value={this.state.selectedDateTimeFormat}
+              onChange={(e) => this.setInputDateTimeFormat(e.target.value)}/>
+                            {
+                (this.state.selectedValue === 'datetime') && this.state.validateFormat && 
+                <ErrorMessage classValue={''} message={'Enter valid datetime format'} />
+              }
               </div>
               : null
           }
@@ -282,7 +235,7 @@ export default class ParamDefinitionModal extends Component {
             <input type='text' name='defaultValues'
               value={this.state.paramDefinition.default_value}
               onChange={(e) => this.onChangeParamHandler('default_value', e.target.value)}
-              onBlur={() => this.updateCheckFormat('default_value', 'errorDefaultValue')} />
+              onBlur={() => this.checkFormat('default_value', 'errorDefaultValue')} />
             {
               this.state.errorDefaultValue &&
               <ErrorMessage classValue={'col-md-8 pull-right validation-error'} message={'Error in Default Value'} />
@@ -291,14 +244,7 @@ export default class ParamDefinitionModal extends Component {
           </div>
           <div className='col-md-12 param-form-footer'>
             <button className='btn btn-default' onClick={this.closeParamForm}>Cancel</button>
-            <button className='btn btn-info' onClick={() => {
-              let typeSelectedValue = null
-              if (this.state.selectedValue == 'date')
-                typeSelectedValue = 'selectedDateFormat'
-              else if (this.state.selectedValue == 'datetime')
-                typeSelectedValue = 'selectedDateTimeFormat'
-              this.saveParamHandler(typeSelectedValue)
-            } }>Save</button>
+            <button className='btn btn-info' onClick={this.saveParamHandler}>Save</button>
           </div>
         </div>
       </div>

@@ -284,12 +284,13 @@ export const CHART_CONFIG_EXAMPLE = {
 export const GOOGLE_CHART_DOC = 'https://developers.google.com/chart/interactive/docs/gallery/areachart#configuration-options'
 
 
-const query1 = 'SELECT project, timesheet, hours FROM timesheet WHERE start_date = {{ params.start_date }}',
-      query2 = `SELECT project, timesheet, hours FROM timesheet WHERE start_date = {{ params.start_date }}
+const helpText = {
+  query1:'SELECT project, timesheet, hours FROM timesheet WHERE start_date = {{ params.start_date }}',
+  query2:`SELECT project, timesheet, hours FROM timesheet WHERE start_date = {{ params.start_date }}
                 {% if params.project_id %} 
                 AND project_id = {{ params.project_id }}
                 {% endif %}`,
-      query3 = `{% macro dates(date1, date2) -%}
+  query3:`{% macro dates(date1, date2) -%}
                   between {{ date1 }} and {{ date2 }}
                 {%- endmacro  %}
 
@@ -307,12 +308,13 @@ const query1 = 'SELECT project, timesheet, hours FROM timesheet WHERE start_date
                 {% else %}
                   5
                 {% endif %}`,
-      descQuery1_1 = 'To pass a variable in a query , you should place a variable in {{ }}',
-      descQuery1_2 = '{{ params.start_date }} is the variable that is being passed in the query . As soon as you write the query, an entry with name "start_date" is created in "parameter defination modal" . You can edit the defination of the entry and change the diffrent properties of the entry',
-      descQuery2 = 'Squealy uses Jinja2 Templating Engine which allows us to use {% if %} tag and {% for %} tag',
-      descQuery3 = 'Jinja2 also provides a feature of adding a macro , that can also be extensivly used .'
+  descQuery1_1:'To pass a variable in a query , you should place a variable in {{ }}',
+  descQuery1_2:'{{ params.start_date }} is the variable that is being passed in the query . As soon as you write the query, an entry with name "start_date" is created in "parameter defination modal" . You can edit the defination of the entry and change the diffrent properties of the entry',
+  descQuery2:'Squealy uses Jinja2 Templating Engine which allows us to use {% if %} tag and {% for %} tag',
+  descQuery3:'Jinja2 also provides a feature of adding a macro , that can also be extensivly used .'
 
+}
     
-export {query1,query2,query3,descQuery1_1,descQuery1_2,descQuery2,descQuery3}
+export {helpText}
 
         
