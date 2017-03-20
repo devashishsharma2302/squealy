@@ -1,3 +1,5 @@
+import os
+
 import jwt
 from django.contrib.auth import login
 from django.contrib.auth.models import User, Group
@@ -34,7 +36,8 @@ class JWTAuthentication(object):
         """
         try:
             # TODO: extract the secret from the env.
-            token_params = jwt.decode(token, 'secret', algorithms=['HS256'])
+            jwt_key = os.environ.get('JWT_KEY')
+            token_params = jwt.decode(token, jwt_key, algorithms=['HS256'])
             user_name = token_params['username']
             user = User.objects.filter(username=user_name).first()
             if not user:
