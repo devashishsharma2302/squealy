@@ -62,17 +62,17 @@ export default class ViewOnlyResults extends Component {
     } = this.props
     const filterType = {
       string: SquealyInput,
+      number: SquealyInput,
       date: SquealyDatePicker,
       datetime: SquealyDatetimePicker
     }
-    
     return (
       <div>
         <div className="view-filter">
         {
           chart.parameters.map((params) => {
             if (params.type === 1) {
-              const FilterReference = filterType[params.data_type]
+              const FilterReference = filterType[params.data_type] || SquealyInput
               return (
                 <div className='col-md-6' key={'filter_'+params.name}>
                   <label>{params.name}</label>
