@@ -231,7 +231,7 @@ class ChartsLoaderView(APIView):
 
     def get(self, request, *args, **kwargs):
         permitted_charts = []
-        charts = Chart.objects.all()
+        charts = Chart.objects.order_by('id').all()
         for chart in charts:
             if request.user.has_perm('squealy.can_edit_' + chart.url):
                 chart_data = ChartSerializer(chart).data
