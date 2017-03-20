@@ -36,6 +36,7 @@ export default class MainComponent extends Component {
               chartSelectionHandler={chartSelectionHandler}
               chartDeletionHandler={chartDeletionHandler}
               selectedChartChangeHandler={selectedChartChangeHandler}
+              databases={databases}
               />
           </div>
           <div className="col-md-9 api-design-container">
