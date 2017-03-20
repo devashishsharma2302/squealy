@@ -38,7 +38,6 @@ sdict = {
         'jinjasql',
         'django',
         'djangorestframework',
-        'PyYAML>=3',
         'arrow>=0.8.0'
     ],
     'classifiers' : [

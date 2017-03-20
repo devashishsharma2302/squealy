@@ -27,7 +27,12 @@ export default class TabsComponent extends Component {
 
   // A generic method which handles just the visibility of modals
   modalVisibilityHandler = (modalName) => {
-    this.setState({[modalName]: !this.state[modalName]})
+    const {chart, onHandleTestButton} = this.props
+    if (modalName === 'showTransformationsModal' && !chart.hasOwnProperty('chartData')) {
+      onHandleTestButton(()=>this.setState({[modalName]: !this.state[modalName]}))
+    } else {
+      this.setState({[modalName]: !this.state[modalName]})
+    }
   }
 
   /**
