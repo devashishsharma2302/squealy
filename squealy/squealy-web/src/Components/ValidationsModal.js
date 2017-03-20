@@ -4,6 +4,7 @@ import 'brace/mode/sql'
 import 'brace/theme/tomorrow'
 
 import { SquealyModal } from './SquealyUtilsComponents'
+import { ErrorMessage } from './../Utils'
 
 export default class ValidationsModal extends Component {
 
@@ -135,9 +136,7 @@ export default class ValidationsModal extends Component {
               />
             {
               this.state.checkNameFilledError &&
-              <div className="col-md-10 pull-right validation-error">
-                <p>Please Enter the name of validation Modal</p>
-              </div>
+              <ErrorMessage classValue={"col-md-10 pull-right validation-error"} message={"Please Enter the name of validation Modal"}/>
             }
           </div>
           <div className='col-md-12'>
@@ -163,9 +162,7 @@ export default class ValidationsModal extends Component {
             </div>
             {
               this.state.checkQueryFilledError &&
-              <div className="col-md-10 pull-right validation-error">
-                <p>Please Enter Query</p>
-              </div>
+              <ErrorMessage classValue={"col-md-10 pull-right validation-error"} message={"Please Enter Query"} />
             }
           </div>
           <div className='col-md-12 param-form-footer'>
