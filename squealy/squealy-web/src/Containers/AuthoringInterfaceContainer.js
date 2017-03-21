@@ -190,33 +190,11 @@ export default class AuthoringInterfaceContainer extends Component {
   // the API is successfull
   onHandleTestButton = (callback=null) => {
     const selectedChart = this.state.charts[this.state.selectedChartIndex]
-    if(!selectedChart.database) {
-      alert('Please select a database to run the query on')
-      return
-    }
-
-    let error = this.checkParameters(selectedChart.parameters)
-    if (error[0]) {
-      alert('Parameters blank : ' + error[1])
-      return 
-    }
     let payloadObj = formatTestParameters(selectedChart.parameters, 'name', 'test_value')
     postApiRequest(DOMAIN_NAME+'squealy/'+selectedChart.url+'/', payloadObj,
                     this.onSuccessTest, this.onErrorTest, callback)
   }
 
-  
-  //Check if the formal parameters are not empty
-  checkParameters = (parameters) => {
-    let flag = false,errorParameters = ''
-    for (let paramIndex=0;paramIndex < parameters.length;paramIndex++){
-      if (parameters[paramIndex].default_value === '' || parameters[paramIndex].test_value === ''){
-        errorParameters += ' ' + parameters[paramIndex].name
-        flag = true                
-      }
-    }
-    return [flag,errorParameters]
-  }
 
   //Appends an empty API definition object to current API Definitions
   chartAdditionHandler = (name, database) => {
