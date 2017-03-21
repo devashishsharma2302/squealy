@@ -3,6 +3,7 @@ import Select from 'react-select'
 import 'react-select/dist/react-select.css'
 import { SquealyModal, SquealyDropdown } from './SquealyUtilsComponents'
 import { AVAILABLE_TRANSFORMATIONS } from './../Constant'
+import { ErrorMessage } from './../Utils'
 
 export default class TransformationsModal extends Component {
   constructor(props) {
@@ -42,6 +43,7 @@ export default class TransformationsModal extends Component {
   }
 
   handleChange = (key, value) => {
+    
     this.setState({[key]: value})
   }
 
@@ -61,8 +63,7 @@ export default class TransformationsModal extends Component {
           name: 1,
           kwargs: {}
         })
-      }
-      else if (transformation.value === 'split') {
+      } else if (transformation.value === 'split') {
         actualTransformations.push({
           name: 2,
           kwargs: {
@@ -81,7 +82,8 @@ export default class TransformationsModal extends Component {
       }
     })
 
-    this.props.selectedChartChangeHandler('transformations', actualTransformations)
+    this.props.selectedChartChangeHandler(
+      'transformations', actualTransformations, this.props.closeModal)
   }
 
   render () {

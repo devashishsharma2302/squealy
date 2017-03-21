@@ -21,8 +21,8 @@ export default class GoogleChartWrapper extends Component {
       containerId: id,
       options: {
         ...options,
-        'height': 350,
-        'width': '100%',
+        'height': 'auto',
+        'width': '100%'
       }
     });
     wrapper.draw();

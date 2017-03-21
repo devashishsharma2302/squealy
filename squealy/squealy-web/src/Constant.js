@@ -1,12 +1,9 @@
 import moment from 'moment'
 import {baseUrl} from './Utils'
+
 export const DOMAIN_NAME = baseUrl()
 export const SIDE_BAR_WIDTH = '21%'
-export const YAML_INDENTATION = 4
-export const YAML_CONTENT_TYPE = 'application/yaml'
 export const RESPONSE_FORMATS = {
-
-// the formatter class is the class name that is to be exported to yaml file.
   table: {
     displayName: 'Table',
     formatter: 'table'
@@ -41,44 +38,6 @@ export const PARAM_FORMAT_OPTIONS = [
   }
 ]
 
-export const DATE_FORMAT_OPTIONS = [
-  {
-    label: 'DD-MM-YYYY',
-    value: 'DD-MM-YYYY'
-  }, {
-    label:'DD-MM-YY',
-    value:'DD-MM-YY'
-  }, {
-    label:'YY-MM-DD',
-    value:'YY-MM-DD'
-  }, {
-    label:'DD-MMM-YYYY',
-    value:'DD-MMM-YYYY'
-  }, {
-    label:'DD-MMM-YY',
-    value:'DD-MMM-YY'
-  },
-    {
-    label: 'DD/MM/YYYY',
-    value: 'DD/MM/YYYY'
-  }, {
-    label:'DD/MM/YY',
-    value:'DD/MM/YY'
-  }, {
-    label:'YY/MM/DD',
-    value:'YY/MM/DD'
-  }, {
-    label:'DD/MMM/YYYY',
-    value:'DD/MMM/YYYY'
-  }, {
-    label:'DD/MMM/YY',
-    value:'DD/MMM/YY'
-  },
-  {
-
-  }
-]
-
 export const PARAM_TYPE_OPTIONS = [
   {
     label: 'User',
@@ -89,23 +48,6 @@ export const PARAM_TYPE_OPTIONS = [
   }
 ]
 
-
-export const TIME_FORMAT_OPTIONS = [
-  {
-    label:'HH:mm:ss',
-    value:'HH:mm:ss'
-  },{
-    label:'HH:mm',
-    value:'HH:mm'
-  }, {
-    label:'h:mm:ss A',
-    value:'h:mm:ss A'
-  } , {
-    label:'h:mm:ss AM/PM',
-    value:'LT'
-  }
-
-]
 export const AVAILABLE_TRANSFORMATIONS = [
   {
     value: 'transpose',

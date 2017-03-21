@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { SquealyModal, SquealyDropdown } from './SquealyUtilsComponents'
-import { PARAM_FORMAT_OPTIONS, DATE_FORMAT_OPTIONS, DATE_FORMAT_LIST, TIME_FORMAT_OPTIONS } from './../Constant'
+import { PARAM_FORMAT_OPTIONS } from './../Constant'
 import { getEmptyParamDefinition, ErrorMessage } from './../Utils'
 import moment from 'moment'
 
@@ -12,6 +12,7 @@ export default class ParamDefinitionModal extends Component {
       showParamDefForm: false,
       selectedValue: 'string',
       query: '',
+      selectedType: 'query',
       paramDefinition: getEmptyParamDefinition(),
 
       selectedDateFormat: 'DD-MM-YYYY',
@@ -22,7 +23,6 @@ export default class ParamDefinitionModal extends Component {
       validateFormat : false,
     }
   }
-  editMode = false
   editArrayIndex = -1
 
 
@@ -64,13 +64,7 @@ if (this.state.selectedValue == 'date' || this.state.selectedValue == 'datetime'
     return change
   }
 
-  
   setInputDateFormat = (setDate) => {
-    //Function to validate the format 
-    let timeStampDate = moment().format(setDate)
-    let checked_date = timeStampDate
-    let y = moment(checked_date, setDate).format(setDate)
-
     this.setState({
       selectedDateFormat : setDate
     })
@@ -86,8 +80,10 @@ if (this.state.selectedValue == 'date' || this.state.selectedValue == 'datetime'
   addParamDefHandler = () => {
     this.setState({
       showParamDefForm: true,
+      editMode: false,
       paramDefinition: getEmptyParamDefinition(),
-      selectedDataType: 'string'
+      selectedDataType: 'string',
+      selectedType: 'query'
     })
   }
 
@@ -110,23 +106,30 @@ if (this.state.selectedValue == 'date' || this.state.selectedValue == 'datetime'
   paramFormatSelectionHandler = (value) => {
     let currentParamDefinition = JSON.parse(JSON.stringify(this.state.paramDefinition))
     currentParamDefinition['data_type'] = value
-    this.setState({ selectedValue: value, paramDefinition: currentParamDefinition })
+    this.setState({selectedFormatValue: value, paramDefinition: currentParamDefinition})
+  }
+
+  paramTypeSelectionHandler = (value) => {
+    let currentParamDefinition = JSON.parse(JSON.stringify(this.state.paramDefinition))
+    currentParamDefinition['type'] = (value === 'query') ? 1 : 2
+    this.setState({selectedType: value, paramDefinition: currentParamDefinition})
   }
 
   onChangeParamHandler = (key, value) => {
     let currentParamDefinition = JSON.parse(JSON.stringify(this.state.paramDefinition))
     currentParamDefinition[key] = value
-    this.setState({ paramDefinition: currentParamDefinition })
+    this.setState({paramDefinition: currentParamDefinition})
   }
 
   handleEditParam = (index) => {
     this.setState({ showParamDefForm: true }, () => {
       let currentParamDefinition = this.props.parameters[index]
-      this.editMode = true
       this.editArrayIndex = index
       this.setState({
-        selectedValue: currentParamDefinition.data_type,
-        paramDefinition: currentParamDefinition
+        editMode: true,
+        selectedFormatValue: currentParamDefinition.data_type,
+        paramDefinition: currentParamDefinition,
+        selectedType: PARAM_TYPE_MAP[currentParamDefinition.type]
       })
     })
 
@@ -136,7 +139,14 @@ if (this.state.selectedValue == 'date' || this.state.selectedValue == 'datetime'
     let currentParameters = [...this.props.parameters]
     currentParameters.splice(index, 1)
     this.props.selectedChartChangeHandler('parameters', currentParameters)
-    this.setState({ paramDefinition: getEmptyParamDefinition(), selectedValue: 'string' })
+    if (index === this.editArrayIndex) {
+      this.setState({
+        paramDefinition: getEmptyParamDefinition(),
+        selectedFormatValue: 'string', 
+        selectedType: 'query',
+        showParamDefForm: (index === this.editArrayIndex) ? false : this.state.showParamDefForm
+      })
+    }
   }
 
   saveParamHandler = () => {
@@ -147,7 +157,7 @@ if (this.state.selectedValue == 'date' || this.state.selectedValue == 'datetime'
       return ;
     }
     let selectedChartParamDef = [...this.props.parameters]
-    if (this.editMode) {
+    if (this.state.editMode) {
       selectedChartParamDef[this.editArrayIndex] = this.state.paramDefinition
     } else {
       selectedChartParamDef.push(this.state.paramDefinition)
@@ -155,18 +165,29 @@ if (this.state.selectedValue == 'date' || this.state.selectedValue == 'datetime'
 
     this.props.selectedChartChangeHandler('parameters', selectedChartParamDef,
       () => {
-        this.setState({ showParamDefForm: false })
-        this.editMode = false
+        this.setState({showParamDefForm: false, editMode: false})
         this.editArrayIndex = -1
+        this.props.updateNoteHandler(false)
       })
   }
 
 
   render() {
-    const {parameters, selectedChartChangeHandler} = this.props
+    const {parameters, selectedChartChangeHandler, note} = this.props
     const addParamDefFormContent =
-      <div className='modal-container'>
+      <div className="modal-container">
         <div className='row add-modal-content'>
+          {
+            !this.state.editMode &&
+              <div className='col-md-12'>
+                <label htmlFor='paramType' className='col-md-4'>Type: </label>
+                <SquealyDropdown
+                  options={PARAM_TYPE_OPTIONS}
+                  name='paramType'
+                  onChangeHandler={this.paramTypeSelectionHandler}
+                  selectedValue={this.state.selectedType} />
+              </div>
+          }
           <div className='col-md-12'>
             <label htmlFor='paramName' className='col-md-4'>Name: </label>
             <input type='text' name='paramName' value={this.state.paramDefinition.name}
@@ -179,7 +200,7 @@ if (this.state.selectedValue == 'date' || this.state.selectedValue == 'datetime'
             }
           </div>
           <div className='col-md-12'>
-            <label htmlFor='testValue' className='col-md-4'>Test Value: </label>
+            <label htmlFor='testValue' className='col-md-4'>Test Data: </label>
             <input type='text' name='testValue' value={this.state.paramDefinition.test_value}
               onChange={(e) => this.onChangeParamHandler('test_value', e.target.value)}
               onBlur={() => this.checkFormat('test_value', 'errorTestValue')}/>
@@ -188,39 +209,34 @@ if (this.state.selectedValue == 'date' || this.state.selectedValue == 'datetime'
               <ErrorMessage classValue={'col-md-8 pull-right validation-error'} message={'Error in Test Value'} />
             }
           </div>
-          <div className='col-md-12'>
-            <label htmlFor='paramFormat' className='col-md-4'>Type: </label>
-            <SquealyDropdown
-              options={PARAM_FORMAT_OPTIONS}
-              name='paramFormat'
-              onChangeHandler={this.paramFormatSelectionHandler}
-              selectedValue={this.state.selectedValue} />
-          </div>
-          {
-            (this.state.selectedValue === 'date') &&
-               <div className='col-md-12'>
-                <label htmlFor='selectedValueFormat' className='col-md-4'>Date Format: </label>
-              <input type='text' name='name1' value={this.state.selectedDateFormat}
-              onChange={(e) => this.setInputDateFormat(e.target.value)}/>
+          { this.state.selectedType === 'query' &&
+            <div>
+              <div className='col-md-12'>
+                <label htmlFor='paramFormat' className='col-md-4'>Format: </label>
+                <SquealyDropdown
+                  options={PARAM_FORMAT_OPTIONS}
+                  name='paramFormat'
+                  onChangeHandler={this.paramFormatSelectionHandler}
+                  selectedValue={this.state.selectedFormatValue} />
+              </div>
               {
                 (this.state.selectedValue === 'date') && this.state.validateFormat && 
                 <ErrorMessage classValue={''} message={'Enter valid date format'} />
               }
+              <div className='col-md-12'>
+                <label htmlFor='mandatoryField' className='col-md-4'>Mandatory: </label>
+                <input type='checkbox' name='mandatoryField'
+                  value={this.state.paramDefinition.mandatory}
+                  checked={this.state.paramDefinition.mandatory}
+                  onChange={(e) => this.onChangeParamHandler('mandatory', e.target.checked)} />
               </div>
-          }
-
-          {
-            (this.state.selectedValue === 'datetime')
-              ? <div className='col-md-12'>
-                <label htmlFor='selectedValueFormat' className='col-md-4'>DateTime Format: </label>
-              <input type='text' name='name3' value={this.state.selectedDateTimeFormat}
-              onChange={(e) => this.setInputDateTimeFormat(e.target.value)}/>
-                            {
-                (this.state.selectedValue === 'datetime') && this.state.validateFormat && 
-                <ErrorMessage classValue={''} message={'Enter valid datetime format'} />
-              }
+              <div className='col-md-12'>
+                <label htmlFor='defaultValues' className='col-md-4'>Default Value: </label>
+                <input type='text' name='defaultValues'
+                  value={this.state.paramDefinition.default_value}
+                  onChange={(e) => this.onChangeParamHandler('default_value', e.target.value)} />
               </div>
-              : null
+            </div>
           }
 
           <div className='col-md-12'>
@@ -243,23 +259,26 @@ if (this.state.selectedValue == 'date' || this.state.selectedValue == 'datetime'
             }
           </div>
           <div className='col-md-12 param-form-footer'>
-            <button className='btn btn-default' onClick={this.closeParamForm}>Cancel</button>
-            <button className='btn btn-info' onClick={this.saveParamHandler}>Save</button>
+            <button className="btn btn-default" onClick={this.closeParamForm}>Cancel</button>
+            <button className="btn btn-info" onClick={this.saveParamHandler}>Save</button>
           </div>
         </div>
       </div>
+
     const paramDefinitionEntry =
       <div>
-        <table className='table table-hover api-param-def-table'>
+        {note ? <p className="note-text">{note}</p> : null}
+        <table className="table table-hover api-param-def-table">
           <thead>
             <tr>
+              <th>Type</th>
               <th>Name</th>
               <th>Test Data</th>
-              <th>Type</th>
+              <th>Format</th>
               <th>Default</th>
-              <th className='align-center clickable-element'>
-                <i className='fa fa-plus'
-                  aria-hidden='true' data-toggle='modal'
+              <th className="align-center clickable-element">
+                <i className="fa fa-plus"
+                  aria-hidden="true" data-toggle="modal"
                   onClick={this.addParamDefHandler}>
                 </i>
               </th>
@@ -270,15 +289,16 @@ if (this.state.selectedValue == 'date' || this.state.selectedValue == 'datetime'
               parameters.length ?
                 parameters.map((param, i) => {
                   return (
-                    <tr key={'param_row_' + i}>
-                      <td onClick={() => this.handleEditParam(i)}
-                        className='param-name'>{param.name}</td>
+                    <tr key={'param_row_' + i} onClick={() => this.handleEditParam(i)}
+                      className='param-row'>
+                      <td>{param.type}</td>
+                      <td className='param-name'>{param.name}</td>
                       <td>{param.test_value}</td>
-                      <td>{param.data_type}</td>
-                      <td>{param.default_value}</td>
-                      <td className='align-center clickable-element'>
-                        <i className='fa fa-trash-o' aria-hidden='true'
-                          onClick={() => this.deleteEntry(i, 'paramDefinition')} />
+                      <td>{param.data_type ? param.data_type : '--'}</td>
+                      <td>{param.default_value ? param.default_value : '--'}</td>
+                      <td className="align-center clickable-element">
+                        <i className="fa fa-trash-o" aria-hidden="true"
+                        onClick={() => this.deleteEntry(i, 'paramDefinition')} />
                       </td>
                     </tr>
                   )

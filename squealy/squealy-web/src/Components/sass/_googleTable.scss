@@ -13,6 +13,9 @@
 }
 
 .google-visualization-table {
+  > div:first-child {
+    max-height: 400px !important;
+  }
   .gradient {
     background-image: none !important;
   }
@@ -20,5 +23,4 @@
   .google-visualization-table-table td {
     padding: 8px 1.35em;
   }
-} 
-
+}

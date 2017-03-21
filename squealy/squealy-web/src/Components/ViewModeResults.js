@@ -26,10 +26,11 @@ export default class ViewOnlyResults extends Component {
 
   getInitialChart = (propsData) => {
     let payloadObj = JSON.parse(JSON.stringify(this.state.payloadObj))
-    if(JSON.stringify(getUrlParams()) === '{}'){
-      payloadObj = formatTestParameters(propsData.chart.parameters, 'name', 'default_value')
-    } else {
+
+    if (getUrlParams && getUrlParams.constructor === Object) {
       payloadObj = {params: getUrlParams()}
+    } else {
+      payloadObj = formatTestParameters(propsData.chart.parameters, 'name', 'default_value')
     }
     postApiRequest(DOMAIN_NAME+'squealy/'+ propsData.chart.url+'/', payloadObj,
         this.onSuccessTest, this.onErrorTest, 'table')
@@ -72,17 +73,17 @@ export default class ViewOnlyResults extends Component {
     } = this.props
     const filterType = {
       string: SquealyInput,
+      number: SquealyInput,
       date: SquealyDatePicker,
       datetime: SquealyDatetimePicker
     }
-    
     return (
       <div>
         <div className="view-filter">
         {
           chart.parameters.map((params) => {
             if (params.type === 1) {
-              const FilterReference = filterType[params.data_type]
+              const FilterReference = filterType[params.data_type] || SquealyInput
               return (
                 <div className='col-md-6' key={'filter_'+params.name}>
                   <label>{params.name}</label>

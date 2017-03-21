@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react'
+import Select from 'react-select'
 import chartIcon from './../images/charts_icon.png'
 import dashboardIcon from './../images/dashboard_icon.png'
 import { SquealyModal } from './SquealyUtilsComponents'
@@ -11,6 +12,7 @@ export default class SideMenu extends Component {
       leftMenuChartIndex: null,
       showAddChartModal: false,
       chartName: '',
+      database: null,
       chartEditMode: false,
       leftMenuPosition: {
         top: 0,
@@ -59,11 +61,13 @@ export default class SideMenu extends Component {
 
   showChartDetailsModal = (action) => {
     let charts = JSON.parse(JSON.stringify(this.props.charts)),
-      selectedChartName = (action === 'EDIT') ? charts[this.state.leftMenuChartIndex].name : '' 
+      selectedChartName = (action === 'EDIT') ? charts[this.state.leftMenuChartIndex].name : '',
+      database = (action === 'EDIT') ? charts[this.state.leftMenuChartIndex].database : null
 
     this.setState({ 
       showAddChartModal: true,
       chartName: selectedChartName,
+      database: database,
       showLeftNavContextMenu: false,
       chartEditMode: action === 'EDIT' ? true : false
     })
@@ -75,15 +79,23 @@ export default class SideMenu extends Component {
   }
 
   chartAdditionModalSave = (e) => {
-    if (this.state.chartEditMode) {
+    const {leftMenuChartIndex, chartName, database, chartEditMode} = this.state
+    if (chartEditMode) {
       this.props.selectedChartChangeHandler(
-        'name', this.state.chartName, null, this.state.leftMenuChartIndex)
+        'name', chartName, null, leftMenuChartIndex)
     } else {
-      this.props.chartAdditionHandler(this.state.chartName)
+      this.props.chartAdditionHandler(chartName, database)
     }
     this.setState({ showAddChartModal: false, leftMenuChartIndex: null })
   }
 
+  onChangeDatabase = (db) => {
+    let dbVal = db ? db.value : null
+    this.setState({database: dbVal}, () => {
+      this.state.chartEditMode ? 
+        this.props.selectedChartChangeHandler('database', dbVal, null, this.state.leftMenuChartIndex) : null
+    })
+  }
 
   render() {
     const {
@@ -92,19 +104,10 @@ export default class SideMenu extends Component {
       showLeftNavContextMenu,
       leftMenuPosition,
       showAddChartModal,
-      chartEditMode
+      chartEditMode,
+      database
     } = this.state
 
-    const addNewChartModalContent = (
-      <div className="row">
-        <div className="col-md-12">
-          <label className='col-md-4'>Name: </label>
-          <input className='chart-name-input' type='text' value={chartName} onChange={this.newChartNameChanged} />
-        </div>
-      </div>
-    )
-
-    let listClassName = ''
     const {
       charts,
       chartAdditionHandler,
@@ -112,7 +115,31 @@ export default class SideMenu extends Component {
       chartSelectionHandler,
       chartDeletionHandler,
       selectedChartChangeHandler,
-      userInfo} = this.props
+      userInfo,
+      databases
+    } = this.props
+
+    const addNewChartModalContent = (
+      <div className='app-modal-content'>
+        <div className="row">
+          <label className='col-md-4'>Name: </label>
+          <input className='chart-name-input' type='text' value={chartName} onChange={this.newChartNameChanged} />
+        </div>
+        <div className='row'>
+          <label className='col-md-4'>Databse: </label>
+          <div className='col-md-8 chart-modal-db'>
+            <Select
+              value={(database) ? database : null}
+              options={databases}
+              onChange={this.onChangeDatabase}
+              placeholder={'Select Database'}
+            />
+          </div>
+        </div>
+      </div>
+    )
+
+    let listClassName = ''
     
     return (
       <div className="full-height">

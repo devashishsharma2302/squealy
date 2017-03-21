@@ -43,17 +43,15 @@ export default class ValidationsModal extends Component {
 
   // Handles validation addition/updation
   onClickSave = () => {
-    
     const { selectedValidation, validationName, validationQuery } = this.state
     let flag = false
-    if (validationName === '') {
+    if (!validationName) {
       flag = true
       this.setState({
         checkNameFilledError : true
       })
     }
-
-    if (validationQuery === ''){
+    if (!validationQuery){
       flag = true
       this.setState({
         checkQueryFilledError: true
@@ -109,8 +107,7 @@ export default class ValidationsModal extends Component {
     }
     this.setState({
        [key]: value,
-       [v]:result 
-      })
+       [v]:result })
   }
 
   render() {
@@ -217,8 +214,7 @@ export default class ValidationsModal extends Component {
         modalHeader='Validations'
         helpText='Write queries to validate the API of this chart. The chart will not be accessible if any of these queries return no rows'
         modalContent={modalContent}
-        noFooter={true}
-        />
+        noFooter={true}/>
     )
   }
 
