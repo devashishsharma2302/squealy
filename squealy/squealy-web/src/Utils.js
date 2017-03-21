@@ -1,4 +1,3 @@
-import React, { Component } from 'react'
 import {
   RESPONSE_FORMATS,
   GOOGLE_CHART_TYPE_OPTIONS

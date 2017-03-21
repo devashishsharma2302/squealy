@@ -27,9 +27,6 @@ from .table import Table
 from .models import Chart, Transformation, Validation, Parameter
 from .validators import run_validation
 
-
-from django.contrib.auth.models import User
-
 jinjasql = JinjaSql()
 
 
