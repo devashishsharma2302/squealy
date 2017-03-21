@@ -207,7 +207,8 @@ export default class AuthoringInterfaceContainer extends Component {
         newChart.url = name.replace(/ /g, '-').toLowerCase()
     let newChartIndex = charts.push(newChart) - 1
     this.setState({
-      charts: charts
+      charts: charts,
+      selectedChartIndex: newChartIndex
     }, ()=>this.saveNewChart(newChartIndex))
   }
 

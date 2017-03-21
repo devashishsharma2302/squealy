@@ -11,10 +11,6 @@
     "QUERY_DB": {
       "description": "Enter your database URI in the following format <mysql/postgres>://<username>:<password>@<host>:<port>/<database>"
     },
-    "CORS_ORIGIN_WHITELIST": {
-      "description": "In case you wish to access SQueaLy APIs from remote hosts, enter comma separated list of such hosts",
-      "required": false
-    },
     "ADMIN_USERNAME": {
       "description": "User name for the default admin user",
       "value": "admin"
@@ -24,7 +20,7 @@
       "value": "admin@123"
     },
     "JWT_KEY": {
-      "description": "This is the key used for authentication via jwt accessToken",
+      "description": " This is the shared private key that will be used to decode the JWT token. This is required for optionally enabling JWT Authentication mechanism that would enable the user to login via an access token parameter in the url or request body. Refer the squealy documentation for more information on setting up JWT Authentication.",
       "required": false
     }
   }
