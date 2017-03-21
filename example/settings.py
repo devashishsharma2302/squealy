@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'squealy',
+    'corsheaders',
     'rest_framework',
 ]
 
@@ -128,6 +129,13 @@ STATICFILES_DIRS = [
 
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
+CORS_ORIGIN_WHITELIST = (
+    'localhost:3000',
+    '127.0.0.1'
+)
+
+
+CORS_ORIGIN_WHITELIST += (tuple(os.environ.get('CORS_ORIGIN_WHITELIST', '').split(',')))
 
 # Set to False to allow writes
 SITE_READ_ONLY = True
