@@ -26,10 +26,11 @@ export default class ViewOnlyResults extends Component {
 
   getInitialChart = (propsData) => {
     let payloadObj = JSON.parse(JSON.stringify(this.state.payloadObj))
-    if(JSON.stringify(getUrlParams()) === '{}'){
-      payloadObj = formatTestParameters(propsData.chart.parameters, 'name', 'default_value')
-    } else {
+
+    if (getUrlParams && getUrlParams.constructor === Object) {
       payloadObj = {params: getUrlParams()}
+    } else {
+      payloadObj = formatTestParameters(propsData.chart.parameters, 'name', 'default_value')
     }
     postApiRequest(DOMAIN_NAME+'squealy/'+ propsData.chart.url+'/', payloadObj,
         this.onSuccessTest, this.onErrorTest, 'table')
