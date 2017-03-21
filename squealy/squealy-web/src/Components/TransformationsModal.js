@@ -61,8 +61,7 @@ export default class TransformationsModal extends Component {
           name: 1,
           kwargs: {}
         })
-      }
-      else if (transformation.value === 'split') {
+      } else if (transformation.value === 'split') {
         actualTransformations.push({
           name: 2,
           kwargs: {
@@ -81,7 +80,8 @@ export default class TransformationsModal extends Component {
       }
     })
 
-    this.props.selectedChartChangeHandler('transformations', actualTransformations)
+    this.props.selectedChartChangeHandler(
+      'transformations', actualTransformations, this.props.closeModal)
   }
 
   render () {

@@ -45,7 +45,7 @@ export class SquealyModal extends Component {
               <button onClick={closeModal} className="btn btn-default">Close</button>
               {
                 saveChanges ? 
-                  <button onClick={saveChanges} className="btn btn-info">Save</button>
+                  <button onClick={saveChanges} className="btn btn-primary">Save</button>
                 : null}
             </Modal.Footer>
         }
