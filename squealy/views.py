@@ -27,6 +27,9 @@ from .table import Table
 from .models import Chart, Transformation, Validation, Parameter
 from .validators import run_validation
 
+
+from django.contrib.auth.models import User
+
 jinjasql = JinjaSql()
 
 
@@ -39,11 +42,13 @@ class DatabaseView(APIView):
         try:
             database_response = []
             database = settings.DATABASES
+
             for db in database:
-                database_response.append({
-                  'value': db,
-                  'label': database[db]['NAME']
-                })
+                if db != 'default':
+                    database_response.append({
+                      'value': db,
+                      'label': database[db]['NAME']
+                    })
             return Response({'databases': database_response})
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
@@ -71,8 +76,7 @@ class ChartView(APIView):
         if not chart:
             raise ChartNotFoundException('No charts found at this path')
         params = request.GET.copy()
-        user = request.user
-
+        user = request.user = request.user
         if not chart.database:
             raise ChartNotFoundException('Database is not selected')
         else:
@@ -231,7 +235,7 @@ class ChartsLoaderView(APIView):
 
     def get(self, request, *args, **kwargs):
         permitted_charts = []
-        charts = Chart.objects.all()
+        charts = Chart.objects.order_by('id').all()
         for chart in charts:
             if request.user.has_perm('squealy.can_edit_' + chart.url):
                 chart_data = ChartSerializer(chart).data

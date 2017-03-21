@@ -14,6 +14,7 @@ export default class ParamDefinitionModal extends Component {
       query: '',
       selectedType: 'query',
       paramDefinition: getEmptyParamDefinition(),
+      editMode: false,
 
       selectedDateFormat: 'DD-MM-YYYY',
       selectedDateTimeFormat: 'DD-MM-YYYY LT',
@@ -90,16 +91,6 @@ if (this.state.selectedValue == 'date' || this.state.selectedValue == 'datetime'
   //Function to open close param form
   closeParamForm = () => {
     this.setState({ showParamDefForm: false })
-  }
-
-  //Function to change param definition. It can be Custom or Predefined type like Date, DateTime, String
-  onChangeParamDefType = (value) => {
-    let currentParamDefinition = JSON.parse(JSON.stringify(this.state.paramDefinition))
-    currentParamDefinition['data_type'] = this.state.selectedDataType
-    this.setState({
-      selectedDataType: currentParamDefinition.data_type,
-      paramDefinition: currentParamDefinition
-    })
   }
 
   //Function to select Type for Predefined params
@@ -196,7 +187,6 @@ if (this.state.selectedValue == 'date' || this.state.selectedValue == 'datetime'
             {
               this.state.errorName &&
               <ErrorMessage classValue={'col-md-8 pull-right validation-error'} message={'Error in name'} />
-
             }
           </div>
           <div className='col-md-12'>
@@ -234,30 +224,15 @@ if (this.state.selectedValue == 'date' || this.state.selectedValue == 'datetime'
                 <label htmlFor='defaultValues' className='col-md-4'>Default Value: </label>
                 <input type='text' name='defaultValues'
                   value={this.state.paramDefinition.default_value}
-                  onChange={(e) => this.onChangeParamHandler('default_value', e.target.value)} />
+                  onChange={(e) => this.onChangeParamHandler('default_value', e.target.value)} 
+                  onBlur={() => this.checkFormat('default_value', 'errorDefaultValue')}/>
               </div>
+              {
+                this.state.errorDefaultValue &&
+                <ErrorMessage classValue={'col-md-8 pull-right validation-error'} message={'Error in Default Value'} />
+              }
             </div>
           }
-
-          <div className='col-md-12'>
-            <label htmlFor='mandatoryField' className='col-md-4'>Mandatory: </label>
-            <input type='checkbox' name='mandatoryField'
-              value={this.state.paramDefinition.mandatory}
-              checked={this.state.paramDefinition.mandatory}
-              onChange={(e) => this.onChangeParamHandler('mandatory', e.target.checked)} />
-          </div>
-          <div className='col-md-12'>
-            <label htmlFor='defaultValues' className='col-md-4'>Default Value: </label>
-            <input type='text' name='defaultValues'
-              value={this.state.paramDefinition.default_value}
-              onChange={(e) => this.onChangeParamHandler('default_value', e.target.value)}
-              onBlur={() => this.checkFormat('default_value', 'errorDefaultValue')} />
-            {
-              this.state.errorDefaultValue &&
-              <ErrorMessage classValue={'col-md-8 pull-right validation-error'} message={'Error in Default Value'} />
-
-            }
-          </div>
           <div className='col-md-12 param-form-footer'>
             <button className="btn btn-default" onClick={this.closeParamForm}>Cancel</button>
             <button className="btn btn-info" onClick={this.saveParamHandler}>Save</button>
