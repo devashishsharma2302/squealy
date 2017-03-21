@@ -209,14 +209,12 @@ export default class AuthoringInterfaceContainer extends Component {
   //Check if the formal parameters are not empty
   checkParameters = (parameters) => {
     let flag = false,errorParameters = ''
-    console.log(parameters.length)
     for (let paramIndex=0;paramIndex < parameters.length;paramIndex++){
       if (parameters[paramIndex].default_value === '' || parameters[paramIndex].test_value === ''){
         errorParameters += ' ' + parameters[paramIndex].name
         flag = true                
       }
     }
-    console.log(flag)
     return [flag,errorParameters]
   }
 
