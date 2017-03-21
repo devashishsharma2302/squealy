@@ -2,9 +2,7 @@ import React, { Component } from 'react'
 import AceEditor from 'react-ace'
 import 'brace/mode/sql'
 import 'brace/theme/tomorrow'
-
-import { SquealyModal } from './SquealyUtilsComponents'
-import { ErrorMessage } from './../Utils'
+import { SquealyModal,ErrorMessage } from './SquealyUtilsComponents'
 
 export default class ValidationsModal extends Component {
 
@@ -88,7 +86,7 @@ export default class ValidationsModal extends Component {
     this.setState({
       validationQuery: '',
       validationName: '',
-      selectedValidation: undefined,
+      selectedValidation: undefined
     })
   }
 
@@ -99,12 +97,7 @@ export default class ValidationsModal extends Component {
 
   // Updates form fields
   onChangeHandler = (key, value,v) => {
-    let result;
-    if (value !== '') {
-      result = false
-    } else {
-      result = true
-    }
+    let result = (value !== '') ? false : true
     this.setState({
        [key]: value,
        [v]:result })

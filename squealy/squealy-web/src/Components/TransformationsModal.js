@@ -1,9 +1,8 @@
 import React, { Component} from 'react'
 import Select from 'react-select'
 import 'react-select/dist/react-select.css'
-import { SquealyModal, SquealyDropdown } from './SquealyUtilsComponents'
+import { SquealyModal, SquealyDropdown,ErrorMessage } from './SquealyUtilsComponents'
 import { AVAILABLE_TRANSFORMATIONS } from './../Constant'
-import { ErrorMessage } from './../Utils'
 
 export default class TransformationsModal extends Component {
   constructor(props) {

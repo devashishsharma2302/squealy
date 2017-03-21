@@ -76,7 +76,7 @@ class ChartView(APIView):
         if not chart:
             raise ChartNotFoundException('No charts found at this path')
         params = request.GET.copy()
-        user = request.user = request.user
+        user = request.user
         if not chart.database:
             raise ChartNotFoundException('Database is not selected')
         else:

@@ -283,15 +283,6 @@ export function formatTestParameters (paramDefintion, key, valueKey) {
   return testParams
 }
 
-
-export const ErrorMessage = ({classValue, message}) => {
-  return (
-    <div className={classValue}>
-      <p>{ message }</p>
-    </div>
-  )
-}
-
 export function getUrlParams() {
   let pageURL = decodeURIComponent(window.location.search.substring(1)),
         urlVariables = pageURL.split('&'),
