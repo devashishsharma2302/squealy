@@ -40,9 +40,7 @@ export default class TransformationsModal extends Component {
       newColumnName: newColumnName
     }
   }
-
-  handleChange = (key, value) => {
-    
+  handleChange = (key, value) => { 
     this.setState({[key]: value})
   }
 
@@ -207,5 +205,4 @@ export default class TransformationsModal extends Component {
       />
     )
   }
-  
 }

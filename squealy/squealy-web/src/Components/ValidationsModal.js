@@ -5,7 +5,6 @@ import 'brace/theme/tomorrow'
 import { SquealyModal,ErrorMessage } from './SquealyUtilsComponents'
 
 export default class ValidationsModal extends Component {
-
   constructor() {
     super()
     this.state = {
@@ -20,7 +19,7 @@ export default class ValidationsModal extends Component {
   }
   //Handle onBlur events Input and Query fields
   updateOnBlur = (key, validation) => {
-    let checkError= this.state[validation] === '' ? true : false
+    let checkError= !this.state[validation] ? true : false
     this.setState({
       [key] : checkError
     })
@@ -36,9 +35,7 @@ export default class ValidationsModal extends Component {
       validationQuery: validations[index].query,
       showForm: true
     })
-
   }
-
   // Handles validation addition/updation
   onClickSave = () => {
     const { selectedValidation, validationName, validationQuery } = this.state
@@ -94,15 +91,13 @@ export default class ValidationsModal extends Component {
   formVisibilityHandler = () => {
     this.setState({ showForm: !this.state.showForm })
   }
-
   // Updates form fields
   onChangeHandler = (key, value,v) => {
-    let result = (value !== '') ? false : true
+    let result = (!value) ? false : true
     this.setState({
        [key]: value,
        [v]:result })
   }
-
   render() {
     const { selectedChartChangeHandler, validations } = this.props
     const {
@@ -210,5 +205,4 @@ export default class ValidationsModal extends Component {
         noFooter={true}/>
     )
   }
-
 }
