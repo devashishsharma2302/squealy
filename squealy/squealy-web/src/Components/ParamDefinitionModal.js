@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { SquealyModal, SquealyDropdown } from './SquealyUtilsComponents'
-import { PARAM_FORMAT_OPTIONS } from './../Constant'
+import { PARAM_TYPE_OPTIONS ,PARAM_FORMAT_OPTIONS } from './../Constant'
 import { getEmptyParamDefinition, ErrorMessage } from './../Utils'
 import moment from 'moment'
 
