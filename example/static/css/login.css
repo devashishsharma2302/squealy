@@ -5,7 +5,7 @@
   vertical-align: middle;
   border: 1px solid #ddd;
   box-shadow: 0px 3px 7px 0px #ddd;
-  margin-top: 10%;
+  margin-top: 2%;
 }
 
 .form-signin-heading {
@@ -45,4 +45,8 @@ label {
   color: #fff;
 }
 
-
+.login-error {
+  display: flex;
+  justify-content: center;
+  margin-top: 8%;
+}
