@@ -81,28 +81,70 @@ SQueaLy provides some transformation functions for processing the data after exe
 - **Merge:** This merges two columns into a single column and distributes the data accordingly.
 - **Split:** This is an alternative to pivoting the table. Chose a column to split and a metric column that is to be distributed.
 
+### JWT Authentication
+SQueaLy provides a mechanism to log in a user via an access token that would help in sharing some other application's user-base with squealy without the need to import the users in SQueaLy database.
+- **JWT_KEY** - This is setup in the environment while deploying SQueaLy app. This is the private key that is shared between squealy and the other application which is directing users to SQueaLy. 
+- **Token encoding**: Use the above key to create a jwt token in your application with the following payload:
+    ``` js
+    {
+    "username": "foo", //Squealy assumes the authenticity of this user is handeled by the directing application.
+    
+    "groups": ["g1", "g2", "g3"] //List of django permission groups that this user belongs to.
+    }
+    ```
+- **Sending the token**: You can send this token as a url parameter in a GET request or as a body parameter in a POST request to any of the squealy APIs. SQueaLy would ensure to login the user before handling the request.
+
+
 # Development
 ## Backend setup
-Activate a virtual environment
+**Activate a virtual environment**
 ```
 virtualenv venv
 source venv/bin/activate
 ```
 
-Installing dependencies
+**Installing dependencies**
 ```
+cd example
 pip install -r requirements.txt
 ```
-
-Running the server
+**Database Setup**
+SQuealy needs a postgres database to run. Create a database and a user with **Create DB** role. (To run test cases). Use the following command on psql to grant this access to a user:
 ```
-cd app/
+ALTER USER username CREATEDB;
+```
+Note the URL of this database for use in the next step. The URL will be of the following format:
+```
+<mysql/postgres>://<username>:<password>@<host>:<port>/<database>
+```
+For further help regarding postgres setup, click on one of the following links:
+- [For Mac OSX.](https://www.codementor.io/devops/tutorial/getting-started-postgresql-server-mac-osx)
+- [For Linux.](http://www.yolinux.com/TUTORIALS/LinuxTutorialPostgreSQL.html)
+
+**Setting up environment variables**
+Before running the server, make sure to set the following environment variables using this command:
+```
+export KEY=VALUE
+```
+- DATABASE_URL - **(Required)** This is the database that will be used by squealy internally for user management.
+- QUERY_DB - **(Required)** This is the DB used to run the queries on. Enter comma separated URLs for multiple DBs.
+- ADMIN_USERNAME - **(Required)** This is the default admin's username that would be created with the first migration command.
+- ADMIN_PASS - **(Required)** This is the password for the default admin user.
+- JWT_KEY - This is the shared private key that will be used to decode the JWT token. This is required for optionally enabling JWT Authentication mechanism that would enable the user to login via an access token parameter in the url or request body. For more information refer [above](#jwt-authentication). 
+
+**Running the migrations**
+```
+python manage.py migrate
+```
+
+**Running the server**
+```
 python manage.py runserver
 ```
 
 Running test cases
 ```
-python manage.py test tests
+python manage.py test tests --settings=test_settings
 ```
 
 ## Frontend setup
