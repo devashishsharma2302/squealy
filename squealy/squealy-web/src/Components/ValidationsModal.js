@@ -92,11 +92,11 @@ export default class ValidationsModal extends Component {
     this.setState({ showForm: !this.state.showForm })
   }
   // Updates form fields
-  onChangeHandler = (key, value,v) => {
+  onChangeHandler = (key, value,errorField) => {
     let result = (!value) ? false : true
     this.setState({
        [key]: value,
-       [v]:result })
+       [errorField]:result })
   }
   render() {
     const { selectedChartChangeHandler, validations } = this.props

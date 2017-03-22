@@ -25,8 +25,21 @@ export default class ParamDefinitionModal extends Component {
   }
   editArrayIndex = -1
 
-  //Fuction to check if date entered is according to the format
-  checkFormat = (checkField, errorField) => {
+
+  //Function to validate string
+  validateString = (checkField,errorField) => {
+    let change = this.state.errorName || this.state.errorTestValue || this.state.errorDefaultValue
+    if (this.state.paramDefinition[checkField] === '') {
+        change = true
+        this.setState({ [errorField]: true })
+      } else {
+        this.setState({ [errorField]: false })
+      }
+      return change
+  }
+
+  //Function to validate Date and DateTime
+  validateTestAndDefaultValueFormat = (checkField,errorField) => {
     let typeFormat = 'string'
     if (this.state.selectedFormatValue === 'date') {
       typeFormat = 'selectedDateFormat'
@@ -34,16 +47,9 @@ export default class ParamDefinitionModal extends Component {
     else if (this.state.selectedFormatValue === 'datetime') {
       typeFormat = 'selectedDateTimeFormat'
     }
-
     let change = this.state.errorName || this.state.errorTestValue || this.state.errorDefaultValue
-
-    if (checkField === 'name' || (this.state.selectedFormatValue !== 'date' && this.state.selectedFormatValue !== 'datetime')) {
-      if (this.state.paramDefinition[checkField] === '') {
-        change = true
-        this.setState({ [errorField]: true })
-      } else {
-        this.setState({ [errorField]: false })
-      }
+    if (this.state.selectedFormatValue !== 'date' && this.state.selectedFormatValue !== 'datetime') {
+        change = this.validateString(checkField,errorField) || change
     } else {
       if (moment(this.state.paramDefinition[checkField], this.state[typeFormat], true).isValid() == false) {
         change = true
@@ -54,7 +60,7 @@ export default class ParamDefinitionModal extends Component {
     }
     return change
   }
-
+ 
   setInputDateFormat = (setDate) => {
     this.setState({
       selectedDateFormat: setDate
@@ -131,9 +137,9 @@ export default class ParamDefinitionModal extends Component {
   }
 
   saveParamHandler = () => {
-    let checkVar = this.checkFormat('name', 'errorName')
-    checkVar = this.checkFormat('test_value', 'errorTestValue') || checkVar
-    checkVar = this.checkFormat('default_value', 'errorDefaultValue') || checkVar
+    let checkVar = this.validateString('name', 'errorName')
+    checkVar = this.validateTestAndDefaultValueFormat('test_value', 'errorTestValue') || checkVar
+    checkVar = this.validateTestAndDefaultValueFormat('default_value', 'errorDefaultValue') || checkVar
     if (checkVar) {
       return;
     }
@@ -173,7 +179,7 @@ export default class ParamDefinitionModal extends Component {
             <label htmlFor='paramName' className='col-md-4'>Name: </label>
             <input type='text' name='paramName' value={this.state.paramDefinition.name}
               onChange={(e) => this.onChangeParamHandler('name', e.target.value)}
-              onBlur={() => this.checkFormat('name', 'errorName')} />
+              onBlur={() => this.validateString('name','errorName')} />
             {
               this.state.errorName &&
               <ErrorMessage classValue={'col-md-8 pull-right validation-error'} message={'Error in name'} />
@@ -183,7 +189,7 @@ export default class ParamDefinitionModal extends Component {
             <label htmlFor='testValue' className='col-md-4'>Test Data: </label>
             <input type='text' name='testValue' value={this.state.paramDefinition.test_value}
               onChange={(e) => this.onChangeParamHandler('test_value', e.target.value)}
-              onBlur={() => this.checkFormat('test_value', 'errorTestValue')} />
+              onBlur={() => this.validateTestAndDefaultValueFormat('test_value', 'errorTestValue')} />
             {
               this.state.errorTestValue &&
               <ErrorMessage classValue={'col-md-8 pull-right validation-error'} message={'Error in Test Value'} />
@@ -238,7 +244,7 @@ export default class ParamDefinitionModal extends Component {
                 <input type='text' name='defaultValues'
                   value={this.state.paramDefinition.default_value}
                   onChange={(e) => this.onChangeParamHandler('default_value', e.target.value)}
-                  onBlur={() => this.checkFormat('default_value', 'errorDefaultValue')} />
+                  onBlur={() => this.validateTestAndDefaultValueFormat('default_value', 'errorDefaultValue')} />
               </div>
               {
                 this.state.errorDefaultValue &&
