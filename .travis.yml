@@ -16,6 +16,7 @@ install:
 
 services:
   - mysql
+  - postgresql
 
 script: sh run_tests.sh
 
