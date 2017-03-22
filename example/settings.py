@@ -82,7 +82,8 @@ WSGI_APPLICATION = 'example.wsgi.application'
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
 # Database for reports generation. Pass the DATABASE_URL variable from environment.
-DATABASES = extract_dj_database_urls(os.environ.get('QUERY_DB'))
+if os.environ.get('QUERY_DB'):
+    DATABASES = extract_dj_database_urls(os.environ.get('QUERY_DB'))
 
 
 
