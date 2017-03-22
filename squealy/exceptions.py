@@ -45,3 +45,8 @@ class TransformationException(APIException):
 class DatabaseWriteException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     pass
+
+
+class InvalidDateRangeException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    pass
