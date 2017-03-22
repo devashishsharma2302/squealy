@@ -282,7 +282,6 @@ export function formatTestParameters (paramDefintion, key, valueKey) {
   return testParams
 }
 
-
 export function getUrlParams() {
   let pageURL = decodeURIComponent(window.location.search.substring(1)),
         urlVariables = pageURL.split('&'),
@@ -298,6 +297,7 @@ export function setUrlParams(newParams) {
   let queryString = Object.keys(newParams).map(function(k) {
     return encodeURIComponent(k) + '=' + encodeURIComponent(newParams[k])
   }).join('&')
-  var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?" + queryString;
+  var newurl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + queryString;
   window.history.replaceState({path: newurl},'',newurl);
 }
+

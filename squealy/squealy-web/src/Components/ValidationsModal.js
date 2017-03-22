@@ -1,20 +1,28 @@
-import React, { Component} from 'react'
+import React, { Component } from 'react'
 import AceEditor from 'react-ace'
 import 'brace/mode/sql'
 import 'brace/theme/tomorrow'
-
-import { SquealyModal } from './SquealyUtilsComponents'
+import { SquealyModal,ErrorMessage } from './SquealyUtilsComponents'
 
 export default class ValidationsModal extends Component {
-
   constructor() {
     super()
     this.state = {
       selectedValidation: undefined,
       showForm: false,
       validationName: '',
-      validationQuery: ''
+      validationQuery: '',
+      checkNameFilledError: false,
+      checkQueryFilledError: false
+
     }
+  }
+  //Handle onBlur events Input and Query fields
+  updateOnBlur = (key, validation) => {
+    let checkError= !this.state[validation] ? true : false
+    this.setState({
+      [key] : checkError
+    })
   }
 
   // Handles validation editing
@@ -27,24 +35,38 @@ export default class ValidationsModal extends Component {
       validationQuery: validations[index].query,
       showForm: true
     })
-
   }
-
   // Handles validation addition/updation
   onClickSave = () => {
     const { selectedValidation, validationName, validationQuery } = this.state
-    let newValidation  = {
+    let flag = false
+    if (!validationName) {
+      flag = true
+      this.setState({
+        checkNameFilledError : true
+      })
+    }
+    if (!validationQuery){
+      flag = true
+      this.setState({
+        checkQueryFilledError: true
+      })
+    }
+    if (flag) {
+      return ;
+    }
+    let newValidation = {
       name: validationName,
       query: validationQuery
     }
     let newValidations = JSON.parse(JSON.stringify(this.props.validations))
-    if(selectedValidation !== undefined) {
+    if (selectedValidation !== undefined) {
       newValidations[selectedValidation].name = newValidation.name
       newValidations[selectedValidation].query = newValidation.query
     } else {
       newValidations.push(newValidation)
     }
-    this.props.selectedChartChangeHandler('validations', newValidations, ()=> {
+    this.props.selectedChartChangeHandler('validations', newValidations, () => {
       this.clearFormFields()
       this.formVisibilityHandler()
     })
@@ -52,7 +74,7 @@ export default class ValidationsModal extends Component {
 
   // Handles validation deletion
   validationDeletionHandler = (validationIndex) => {
-    let newValidations = this.props.validations.filter((validation, index)=>index!=validationIndex)
+    let newValidations = this.props.validations.filter((validation, index) => index != validationIndex)
     this.props.selectedChartChangeHandler('validations', newValidations)
   }
 
@@ -67,22 +89,24 @@ export default class ValidationsModal extends Component {
 
   // Handles the visibility of validation form
   formVisibilityHandler = () => {
-    this.setState({showForm: !this.state.showForm})
+    this.setState({ showForm: !this.state.showForm })
   }
-
   // Updates form fields
-  onChangeHandler = (key, value) => {
-    this.setState({[key]: value})
+  onChangeHandler = (key, value,errorField) => {
+    let result = (!value) ? false : true
+    this.setState({
+       [key]: value,
+       [errorField]:result })
   }
-
-  render () {
-    const { testParameters, selectedChartChangeHandler, validations } = this.props
+  render() {
+    const { selectedChartChangeHandler, validations } = this.props
     const {
       selectedValidation,
       showForm,
       validationName,
       validationQuery
     } = this.state
+
     const form =
       <div className="modal-container">
         <div className='row add-modal-content'>
@@ -92,8 +116,13 @@ export default class ValidationsModal extends Component {
               type='text'
               name='paramName'
               value={validationName}
-              onChange={(e)=>this.onChangeHandler('validationName', e.target.value)}
+              onChange={(e) => this.onChangeHandler('validationName', e.target.value,'checkNameFilledError')}
+              onBlur={() => this.updateOnBlur('checkNameFilledError','validationName')}
               />
+            {
+              this.state.checkNameFilledError &&
+              <ErrorMessage classValue={"col-md-10 pull-right validation-error"} message={"Please Enter the name of validation Modal"}/>
+            }
           </div>
           <div className='col-md-12'>
             <label htmlFor='validationQuery' className='col-md-2'>
@@ -110,11 +139,16 @@ export default class ValidationsModal extends Component {
                 maxLines={20}
                 minLines={12}
                 highlightActiveLine={true}
-                editorProps={{$blockScrolling: true}}
-                onChange={(value)=>this.onChangeHandler('validationQuery', value)}
+                editorProps={{ $blockScrolling: true }}
+                onChange={(value) => this.onChangeHandler('validationQuery', value,'checkQueryFilledError')}
                 value={validationQuery}
-              />
+                onBlur={() => this.updateOnBlur('checkQueryFilledError','validationQuery')}
+                />
             </div>
+            {
+              this.state.checkQueryFilledError &&
+              <ErrorMessage classValue={"col-md-10 pull-right validation-error"} message={"Please Enter Query"} />
+            }
           </div>
           <div className='col-md-12 param-form-footer'>
             <button className="btn btn-default" onClick={this.formVisibilityHandler}>Cancel</button>
@@ -139,15 +173,15 @@ export default class ValidationsModal extends Component {
             </tr>
           </thead>
           <tbody>
-            {(validations)?
-              validations.map((validation, index)=>
+            {(validations) ?
+              validations.map((validation, index) =>
                 <tr key={'validation_row_' + index}>
                   <td
-                    onClick={()=>this.updateFormFields(index)}
+                    onClick={() => this.updateFormFields(index)}
                     className='param-name'>{validation.name}</td>
                   <td className="align-center clickable-element">
-                    <i className="fa fa-trash-o" aria-hidden="true" 
-                    onClick={() => this.validationDeletionHandler(index)} />
+                    <i className="fa fa-trash-o" aria-hidden="true"
+                      onClick={() => this.validationDeletionHandler(index)} />
                   </td>
                 </tr>
               )
@@ -156,7 +190,7 @@ export default class ValidationsModal extends Component {
             }
           </tbody>
         </table>
-        {(showForm)?form:null}
+        {(showForm) ? form : null}
       </div>
 
     return (
@@ -168,9 +202,7 @@ export default class ValidationsModal extends Component {
         modalHeader='Validations'
         helpText='Write queries to validate the API of this chart. The chart will not be accessible if any of these queries return no rows'
         modalContent={modalContent}
-        noFooter={true}
-      />
+        noFooter={true}/>
     )
   }
-  
 }
