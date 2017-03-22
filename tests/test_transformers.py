@@ -24,7 +24,6 @@ class TransformersTestCase(BaseTestCase):
         self.transform_object.save()
         response = self.client.get('/squealy/' + self.chart.name + '/')
         json_response = response.json()
-        print response.json()
         self.assertDictEqual(json_response,{u'data': [[u'-', 9, u'-', u'-', u'-', 6], [u'-', u'-', u'-', u'-', 7, 15], [u'-', u'-', 4, u'-', u'-', 10], [11, u'-', u'-', u'-', u'-', 5], [u'-', u'-', u'-', 10, u'-', 15]], u'columns': [u'test1', u'test3', u'test2', u'test5', u'test4', u'experience']})
 
     def test_merge_transformation(self):
