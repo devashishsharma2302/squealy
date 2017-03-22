@@ -80,3 +80,25 @@ class Validation(models.Model):
 
     def __unicode__(self):
         return self.chart.name
+
+
+
+class ScheduledReport(models.Model):
+
+    subject = models.CharField(max_length=200)
+    last_run_at = models.DateTimeField()
+    next_run_at = models.DateTimeField()
+    cron_expression = models.CharField(max_length=200)
+
+
+class ReportRecepient(models.Model):
+
+    email = models.EmailField()
+    report = models.ForeignKey(ScheduledReport, related_name='reportrecep')
+
+class ReportParameter(models.Model):
+
+    parameter_name = models.CharField(max_length=300)
+    parameter_value = models.CharField(max_length=300)
+    report = models.ForeignKey(ScheduledReport, related_name='reportparam')
+
