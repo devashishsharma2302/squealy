@@ -25,7 +25,7 @@ class BaseTestCase(TestCase):
     def create_schema(self):
         """
         This method creates an employee table which has four columns:
-        name, experience, datae of joining and salary
+        name, experience, date of joining and salary
         After creating the table, we populate it with
         """
         with connection.cursor() as c:
@@ -53,6 +53,6 @@ class BaseTestCase(TestCase):
 
     def delete_schema(self):
         with connection.cursor() as c:
-            query3 = "DROP TABLE employee_db"
-            c.execute(query3)
+            query = "DROP TABLE employee_db"
+            c.execute(query)
 

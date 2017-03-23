@@ -1,3 +1,7 @@
+from collections import OrderedDict
+
+from django.utils.datastructures import OrderedSet
+
 from .table import Table
 
 
@@ -38,24 +42,28 @@ class Split(TableTransformer):
         pivot_column_index = table.columns.index(pivot_column)
         # Find the index of the metric column
         metric_column_index = table.columns.index(metric_column)
-        new_split_columns = set()
+        new_split_columns = OrderedSet([])
         # Get values of new columns
         for data in table.data:
             new_split_columns.add(data[pivot_column_index])
         new_split_columns = list(new_split_columns)
+
         # Set the metric for the new columns
+        grouping_column_index = 0
+        new_split_data = OrderedDict()
+        new_data = []
         for index,data in enumerate(table.data):
             temp_metric = data[metric_column_index]
-            # Delete the metric column data as metric would be displayed in the new columns
-            del table.data[index][metric_column_index]
             temp_pivot_value = data[pivot_column_index]
-            # Delete the pivot column data as it has been split into multiple columns
-            del table.data[index][pivot_column_index]
-            table.data[index] = table.data[index][:pivot_column_index] + [(temp_metric if i==new_split_columns.index(temp_pivot_value) else '-') for i in range(len(new_split_columns))] + table.data[index][pivot_column_index:]
-        # Delete the metric and pivot column
-        del table.columns[metric_column_index]
-        del table.columns[pivot_column_index]
-        table.columns = table.columns[:pivot_column_index] + [column for column in new_split_columns] + table.columns[pivot_column_index:]
+            temp_grouping_column = data[grouping_column_index]
+            if not new_split_data.get(temp_grouping_column):
+                new_split_data[temp_grouping_column] = ['-']*len(new_split_columns)
+            new_split_data[temp_grouping_column][new_split_columns.index(temp_pivot_value)] = temp_metric
+
+        for key in new_split_data:
+            new_data.append([key] + new_split_data[key])
+        table.columns = table.columns[:pivot_column_index] + [column for column in new_split_columns]
+        table.data = new_data
         return table
 
 

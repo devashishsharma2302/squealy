@@ -12,9 +12,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from jinjasql import JinjaSql
 
 from squealy.constants import SQL_WRITE_BLACKLIST
+from squealy.jinjasql_loader import configure_jinjasql
 from squealy.serializers import ChartSerializer
 from .exceptions import RequiredParameterMissingException,\
                         ChartNotFoundException, MalformedChartDataException, \
@@ -27,8 +27,8 @@ from .table import Table
 from .models import Chart, Transformation, Validation, Parameter
 from .validators import run_validation
 
-jinjasql = JinjaSql()
 
+jinjasql = configure_jinjasql()
 
 class DatabaseView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
