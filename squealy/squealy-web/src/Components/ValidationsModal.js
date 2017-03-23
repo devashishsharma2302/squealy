@@ -24,7 +24,6 @@ export default class ValidationsModal extends Component {
       [key] : checkError
     })
   }
-
   // Handles validation editing
   updateFormFields = (index) => {
     const { selectedValidation, validationName, validationQuery } = this.state
@@ -96,7 +95,7 @@ export default class ValidationsModal extends Component {
     let result = (!value) ? false : true
     this.setState({
        [key]: value,
-       [errorField]:result })
+       [errorField]:!result })
   }
   render() {
     const { selectedChartChangeHandler, validations } = this.props
