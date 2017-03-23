@@ -36,7 +36,7 @@ export default class AuthoringInterfaceContainer extends Component {
   onChartSaved = (response, callback=null) => {
     this.setState({'savedStatus': true, 'saveInProgress': false}, 
       () => {
-        callback.constructor === Function ? callback() : null
+        callback && callback.constructor === Function ? callback() : null
       }
     )
   }
@@ -68,7 +68,7 @@ export default class AuthoringInterfaceContainer extends Component {
         saveInProgress: false,
         currentChartMode: (charts[newChartIndex].can_edit || false)
       }, () => {
-        callback.constructor === 'Function' || callback()
+        callback && callback.constructor === Function || callback()
       })
     } else {
       this.setState({
@@ -78,7 +78,7 @@ export default class AuthoringInterfaceContainer extends Component {
         saveInProgress: false,
         currentChartMode: false
       }, () => {
-        callback.constructor === 'Function' || callback()
+        callback && callback.constructor === Function || callback()
       })
     }
   }
