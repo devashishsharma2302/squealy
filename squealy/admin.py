@@ -19,7 +19,6 @@ class ScheduledReportAdmin(admin.ModelAdmin):
     """
     model = ScheduledReport
     list_display = ('id', 'chart', 'get_recipients', 'get_parameters')
-    fields = ('chart', 'subject', 'cron_expression')
     inlines = [
         ScheduledReportParamAdmin,
         ReportRecipientAdmin
