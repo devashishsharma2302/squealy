@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { SquealyModal, SquealyDropdown, ErrorMessage } from './SquealyUtilsComponents'
-import { PARAM_TYPE_OPTIONS, PARAM_FORMAT_OPTIONS, PARAM_TYPE_MAP } from './../Constant'
+import { PARAM_TYPE_OPTIONS, PARAM_FORMAT_OPTIONS, PARAM_TYPE_MAP, PARAM_FORMAT_MAP } from './../Constant'
 import { getEmptyParamDefinition } from './../Utils'
 import moment from 'moment'
 
@@ -62,15 +62,12 @@ export default class ParamDefinitionModal extends Component {
     return change
   }
  
-  setInputDateFormat = (setDate) => {
+  setInputDateFormat = (setDate, stateKey) => {
+    let paramDef = JSON.parse(JSON.stringify(this.state.paramDefinition))
+    paramDef.kwargs.format = setDate
     this.setState({
-      selectedDateFormat: setDate
-    })
-  }
-
-  setInputDateTimeFormat = (setDateTime) => {
-    this.setState({
-      selectedDateTimeFormat: setDateTime
+      [stateKey]: setDate,
+      paramDefinition: paramDef
     })
   }
 
@@ -111,11 +108,17 @@ export default class ParamDefinitionModal extends Component {
   }
 
   handleEditParam = (e, index) => {
+    const {parameters} = this.props
+    let dateFormatType = parameters[index].data_type === 'date' || null,
+      dateTimeFormatType =  parameters[index].data_type === 'datetime' || null
     this.setState({ showParamDefForm: true }, () => {
       let currentParamDefinition = this.props.parameters[index]
       this.editArrayIndex = index
+
       this.setState({
         editMode: true,
+        selectedDateFormat: dateFormatType ? currentParamDefinition.kwargs.format : '',
+        selectedDateTimeFormat: dateTimeFormatType ? currentParamDefinition.kwargs.format : '',
         selectedFormatValue: currentParamDefinition.data_type,
         paramDefinition: currentParamDefinition,
         selectedType: PARAM_TYPE_MAP[currentParamDefinition.type]
@@ -224,7 +227,7 @@ export default class ParamDefinitionModal extends Component {
                 <label htmlFor='dateFormat' className='col-md-4'>Date Format: </label>
                 <div className='col-md-8'>
                   <input type='text' name='dateFormat' value={this.state.selectedDateFormat}
-                    onChange={(e) => this.setInputDateFormat(e.target.value)} />
+                    onChange={(e) => this.setInputDateFormat(e.target.value, 'selectedDateFormat')} />
                 </div>
                 {
                   (this.state.selectedFormatValue === 'date') && this.state.validateFormat &&
@@ -238,7 +241,7 @@ export default class ParamDefinitionModal extends Component {
               <div className='col-md-8'>
                 <input type='text' name='dateTimeFormatDropdown' 
                   value={this.state.selectedDateTimeFormat}
-                  onChange={(e) => this.setInputDateTimeFormat(e.target.value)} />
+                  onChange={(e) => this.setInputDateFormat(e.target.value, 'selectedDateTimeFormat')} />
               </div>
               {
                 (this.state.selectedFormatValue === 'datetime') && this.state.validateFormat &&
@@ -310,7 +313,7 @@ export default class ParamDefinitionModal extends Component {
                       <td>{param.type}</td>
                       <td className='param-name'>{param.name}</td>
                       <td>{param.test_value}</td>
-                      <td>{param.data_type ? param.data_type : '--'}</td>
+                      <td>{param.data_type ? PARAM_FORMAT_MAP[param.data_type] : '--'}</td>
                       <td>{param.default_value ? param.default_value : '--'}</td>
                       <td className="align-center clickable-element" name='deleteParam'
                         onClick={(e) => this.deleteEntry(e, i, 'paramDefinition')}>
