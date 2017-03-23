@@ -1,3 +1,5 @@
+from django.db import connection
+
 from .test_base_file import BaseTestCase
 from squealy.transformers import *
 from django.contrib.auth.models import User
@@ -13,18 +15,55 @@ class TransformersTestCase(BaseTestCase):
         self.chart = BaseTestCase.create_chart(self)
         self.transform_object = Transformation.objects.create(chart=self.chart)
 
+    def _create_schema_for_split(self):
+        with connection.cursor() as c:
+            query = 'CREATE TABLE employee_monthly_salary (name VARCHAR(5), month varchar(10), salary INT)'
+            values_list = [
+                        ["emp1", "Jan", 40000],
+                        ["emp1", "Feb", 40500],
+                        ["emp2", "Jan", 50000],
+                        ["emp3", "Feb", 60000],
+                        ["emp4", "Jan", 70000],
+                        ["emp5", "Jan", 45000],
+                        ["emp5", "Feb", 46000],
+                        ["emp6", "Jan", 41000],
+                        ["emp6", "Feb", 48000],
+                        ["emp6", "Mar", 48000],
+                        ["emp6", "Apr", 48000],
+                        ]
+            c.execute(query)
+            for value in values_list:
+                query1 = 'INSERT INTO employee_monthly_salary VALUES('+`str(value[0])`+','+`str(value[1])`+','+`value[2]`+')'
+                c.execute(query1)
+
+        self.chart = Chart.objects.create(url='test-split',
+                                          query=""" select name, month, salary
+                                                    from employee_monthly_salary;
+                                                    """,
+                                          name='Testing split', format='SimpleFormatter',
+                                          type='ColumnChart',
+                                          database='default')
+
     def test_transpose_transformation(self):
         response = self.client.get('/squealy/' + self.chart.name + '/')
         jsonResponse = response.json()
         self.assertDictEqual(jsonResponse,{u'data': [[u'experience', 6, 15, 10, 5, 15], [u'salary', 9, 7, 4, 11, 10]], u'columns': [u'name', u'test3', u'test4', u'test2', u'test1', u'test5']})
 
     def test_split_transformation(self):
+        self._create_schema_for_split()
         self.transform_object.name = 2
-        self.transform_object.kwargs = {"metric_column": "salary", "pivot_column": "name"}
+        self.transform_object.chart = self.chart
+        self.transform_object.kwargs = {"metric_column": "salary", "pivot_column": "month"}
         self.transform_object.save()
-        response = self.client.get('/squealy/' + self.chart.name + '/')
+        response = self.client.get('/squealy/' + self.chart.url + '/')
         json_response = response.json()
-        self.assertDictEqual(json_response,{u'data': [[u'-', 9, u'-', u'-', u'-', 6], [u'-', u'-', u'-', u'-', 7, 15], [u'-', u'-', 4, u'-', u'-', 10], [11, u'-', u'-', u'-', u'-', 5], [u'-', u'-', u'-', 10, u'-', 15]], u'columns': [u'test1', u'test3', u'test2', u'test5', u'test4', u'experience']})
+        self.assertDictEqual(json_response,{u'data': [[u'emp1', 40000, 40500, u'-', u'-'],
+                                                      [u'emp2', 50000, u'-', u'-', u'-'],
+                                                      [u'emp3', u'-', 60000, u'-', u'-'],
+                                                      [u'emp4', 70000, u'-', u'-', u'-'],
+                                                      [u'emp5', 45000, 46000, u'-', u'-'],
+                                                      [u'emp6', 41000, 48000, 48000, 48000]],
+                                            u'columns': [u'name', u'Jan', u'Feb', u'Mar', u'Apr']})
 
     def test_merge_transformation(self):
         self.transform_object.name = 3
