@@ -45,10 +45,10 @@ a[role="menuitem"] > i.fa {
 
 select {
   min-width: 119px;
-  padding: 5px;
+  padding: 7px;
   border: 1px solid $border-color;
   background: white;
-  border-radius: 8px;
+  border-radius: 4px;
 }
 
 input[type='text'] {
@@ -56,6 +56,11 @@ input[type='text'] {
   min-width: 200px;
   border-radius: 4px;
   border: 1px solid $border-color;
+}
+
+input[type='checkbox'] {
+  width: 23px;
+  height: 24px;
 }
 
 .modal-body {
@@ -146,11 +151,6 @@ input[type='radio'] {
   height: 21px;
 }
 
-input[type='checkbox'] {
-  width: 23px;
-  height: 19px;
-}
-
 h2, .h2 {
   font-size: 20px;
 }
@@ -163,6 +163,7 @@ h2, .h2 {
 
 label {
   font-weight: 500;
+  line-height: 2;
 }
 
 h3, .h3 {

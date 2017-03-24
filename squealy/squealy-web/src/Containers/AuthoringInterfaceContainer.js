@@ -33,19 +33,23 @@ export default class AuthoringInterfaceContainer extends Component {
                   (error) => console.error(error), null)
   }
 
-  onChartSaved = () => {
-    this.setState({'savedStatus': true, 'saveInProgress': false})
+  onChartSaved = (response, callback=null) => {
+    this.setState({'savedStatus': true, 'saveInProgress': false}, 
+      () => {
+        callback && callback.constructor === Function ? callback() : null
+      }
+    )
   }
 
   onChartSaveError = (e) => {
     this.setState({'savedStatus': false, 'saveInProgress': false})
   }
 
-  saveChart = (chart) => {
+  saveChart = (chart, callback=null) => {
     if (chart.id) {
       this.setState({'saveInProgress': true},
             postApiRequest(DOMAIN_NAME+'charts/', {'chart': chart},
-            this.onChartSaved,this.onChartSaveError, null)
+            this.onChartSaved,this.onChartSaveError, callback)
       )
     }
   }
@@ -64,7 +68,7 @@ export default class AuthoringInterfaceContainer extends Component {
         saveInProgress: false,
         currentChartMode: (charts[newChartIndex].can_edit || false)
       }, () => {
-        callback.constructor === 'Function' || callback()
+        callback && callback.constructor === Function || callback()
       })
     } else {
       this.setState({
@@ -74,7 +78,7 @@ export default class AuthoringInterfaceContainer extends Component {
         saveInProgress: false,
         currentChartMode: false
       }, () => {
-        callback.constructor === 'Function' || callback()
+        callback && callback.constructor === Function || callback()
       })
     }
   }
@@ -164,7 +168,9 @@ export default class AuthoringInterfaceContainer extends Component {
     if (key === 'name') {
       charts[chartIndex].url = value.replace(/ /g, '-').toLowerCase()
     }
-    this.setState({charts: charts}, ()=>{this.saveChart(charts[chartIndex]); (callback) && callback()})
+    this.setState({charts: charts}, ()=>{
+      this.saveChart(charts[chartIndex], callback)
+    })
   }
 
   // Updates the selected chart's chart data with the result set returned by the
