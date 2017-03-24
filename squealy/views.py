@@ -1,6 +1,7 @@
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db import connections
+from django.db.utils import IntegrityError
 from django.shortcuts import render
 from django.db import transaction
 from django.conf import settings
@@ -18,7 +19,7 @@ from squealy.jinjasql_loader import configure_jinjasql
 from squealy.serializers import ChartSerializer
 from .exceptions import RequiredParameterMissingException,\
                         ChartNotFoundException, MalformedChartDataException, \
-                        TransformationException, DatabaseWriteException
+                        TransformationException, DatabaseWriteException, DuplicateUrlException
 from .transformers import *
 from .formatters import *
 from .parameters import *
@@ -340,6 +341,8 @@ class ChartsLoaderView(APIView):
 
         except KeyError as e:
             raise MalformedChartDataException("Key Error - " + str(e.args))
+        except IntegrityError as e:
+            raise DuplicateUrlException('A chart with this url already exists')
 
         return Response(chart_id, status.HTTP_200_OK)
 
