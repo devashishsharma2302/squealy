@@ -28,7 +28,7 @@ export default class ParamDefinitionModal extends Component {
 
   //Function to validate string
   validateString = (checkField,errorField) => {
-    let change = this.state.errorName || this.state.errorTestValue || this.state.errorDefaultValue
+    let change = false
     if (this.state.paramDefinition[checkField] === '') {
         change = true
         this.setState({ [errorField]: true })
@@ -47,7 +47,7 @@ export default class ParamDefinitionModal extends Component {
     else if (this.state.selectedFormatValue === 'datetime') {
       typeFormat = 'selectedDateTimeFormat'
     }
-    let change = this.state.errorName || this.state.errorTestValue || this.state.errorDefaultValue
+    let change = false
     if (this.state.selectedFormatValue !== 'date' && this.state.selectedFormatValue !== 'datetime') {
         change = this.validateString(checkField,errorField) || change
     } else {
@@ -102,10 +102,10 @@ export default class ParamDefinitionModal extends Component {
     this.setState({ selectedType: value, paramDefinition: currentParamDefinition })
   }
 
-  onChangeParamHandler = (key, value) => {
+  onChangeParamHandler = (key, value,errorField) => {
     let currentParamDefinition = JSON.parse(JSON.stringify(this.state.paramDefinition))
     currentParamDefinition[key] = value
-    this.setState({ paramDefinition: currentParamDefinition })
+    this.setState({ paramDefinition: currentParamDefinition },(errorField === 'errorName')? ()=> this.validateString(key,errorField) : () => this.validateTestAndDefaultValueFormat(key, errorField))
   }
 
   handleEditParam = (index) => {
@@ -136,7 +136,7 @@ export default class ParamDefinitionModal extends Component {
     }
   }
 
-  saveParamHandler = () => {
+  saveParamHandler = (e) => {
     let checkVar = this.validateString('name', 'errorName')
     checkVar = this.validateTestAndDefaultValueFormat('test_value', 'errorTestValue') || checkVar
     checkVar = this.validateTestAndDefaultValueFormat('default_value', 'errorDefaultValue') || checkVar
@@ -178,8 +178,7 @@ export default class ParamDefinitionModal extends Component {
           <div className='col-md-12'>
             <label htmlFor='paramName' className='col-md-4'>Name: </label>
             <input type='text' name='paramName' value={this.state.paramDefinition.name}
-              onChange={(e) => this.onChangeParamHandler('name', e.target.value)}
-              onBlur={() => this.validateString('name','errorName')} />
+              onChange={(e) => this.onChangeParamHandler('name', e.target.value,'errorName')}/>
             {
               this.state.errorName &&
               <ErrorMessage classValue={'col-md-8 pull-right validation-error'} message={'Error in name'} />
@@ -188,8 +187,7 @@ export default class ParamDefinitionModal extends Component {
           <div className='col-md-12'>
             <label htmlFor='testValue' className='col-md-4'>Test Data: </label>
             <input type='text' name='testValue' value={this.state.paramDefinition.test_value}
-              onChange={(e) => this.onChangeParamHandler('test_value', e.target.value)}
-              onBlur={() => this.validateTestAndDefaultValueFormat('test_value', 'errorTestValue')} />
+              onChange={(e) => this.onChangeParamHandler('test_value', e.target.value,'errorTestValue')}/>
             {
               this.state.errorTestValue &&
               <ErrorMessage classValue={'col-md-8 pull-right validation-error'} message={'Error in Test Value'} />
@@ -243,8 +241,7 @@ export default class ParamDefinitionModal extends Component {
                 <label htmlFor='defaultValues' className='col-md-4'>Default Value: </label>
                 <input type='text' name='defaultValues'
                   value={this.state.paramDefinition.default_value}
-                  onChange={(e) => this.onChangeParamHandler('default_value', e.target.value)}
-                  onBlur={() => this.validateTestAndDefaultValueFormat('default_value', 'errorDefaultValue')} />
+                  onChange={(e) => this.onChangeParamHandler('default_value', e.target.value,'errorDefaultValue')}/>
               </div>
               {
                 this.state.errorDefaultValue &&
@@ -254,7 +251,7 @@ export default class ParamDefinitionModal extends Component {
           }
           <div className='col-md-12 param-form-footer'>
             <button className="btn btn-default" onClick={this.closeParamForm}>Cancel</button>
-            <button className="btn btn-info" onClick={this.saveParamHandler}>Save</button>
+            <button className="btn btn-info" onClick={this.saveParamHandler }>Save</button>
           </div>
         </div>
       </div>
