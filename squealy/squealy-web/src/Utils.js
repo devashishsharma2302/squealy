@@ -1,8 +1,7 @@
 import {
-  RESPONSE_FORMATS,
   GOOGLE_CHART_TYPE_OPTIONS
 } from './Constant'
-import FileSaver from 'filesaver.js-npm'
+
 /*!*************************************************************************
 [Utils.js]
 *****************************************************************************/
@@ -162,6 +161,7 @@ export function getEmptyUserInfo() {
 export function getEmptyParamDefinition(apiIndex) {
   return {
     name: '',
+    order: 0,
     type: 1,
     data_type: 'string',
     mandatory: false,

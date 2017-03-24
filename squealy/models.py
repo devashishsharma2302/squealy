@@ -49,6 +49,7 @@ class Parameter(models.Model):
     default_value = models.CharField(max_length=200, null=True, blank=True)
     test_value = models.CharField(max_length=200, null=True, blank=True)
     type = models.IntegerField(default=1, choices=PARAMETER_TYPES)
+    order = models.IntegerField(null=True, blank=True)
     kwargs = fields.JSONField(null=True, blank=True, default={})
 
     def __unicode__(self):

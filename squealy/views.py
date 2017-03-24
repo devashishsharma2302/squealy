@@ -320,6 +320,7 @@ class ChartsLoaderView(APIView):
                                                  default_value=parameter['default_value'],
                                                  test_value=parameter['test_value'], chart=chart_object,
                                                  type=parameter['type'],
+                                                 order=parameter['order'],
                                                  kwargs=parameter['kwargs'])
                     parameter_object.save()
                     parameter_ids.append(parameter_object.id)

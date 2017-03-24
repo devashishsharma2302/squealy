@@ -20,7 +20,7 @@ export default class ParamDefinitionModal extends Component {
       errorName: false,
       errorTestValue: false,
       errorDefaultValue: false,
-      validateFormat: false,
+      validateFormat: false
     }
   }
   
@@ -40,7 +40,7 @@ export default class ParamDefinitionModal extends Component {
   }
 
   //Function to validate Date and DateTime
-  validateParamValueFormat = (checkField,errorField) => {
+  validateParamValueFormat = (checkField, errorField) => {
     let typeFormat = 'string'
     if (this.state.selectedFormatValue === 'date') {
       typeFormat = 'selectedDateFormat'
@@ -50,7 +50,7 @@ export default class ParamDefinitionModal extends Component {
     }
     let change = this.state.errorName || this.state.errorTestValue || this.state.errorDefaultValue
     if (this.state.selectedFormatValue !== 'date' && this.state.selectedFormatValue !== 'datetime') {
-        change = this.validateString(checkField,errorField) || change
+        change = this.validateString(checkField, errorField) || change
     } else {
       if (moment(this.state.paramDefinition[checkField], this.state[typeFormat], true).isValid() == false) {
         change = true
@@ -78,7 +78,8 @@ export default class ParamDefinitionModal extends Component {
       editMode: false,
       paramDefinition: getEmptyParamDefinition(),
       selectedDataType: 'string',
-      selectedType: 'query'
+      selectedType: 'query',
+      order: this.props.parameters.length+1
     })
   }
 
@@ -111,8 +112,10 @@ export default class ParamDefinitionModal extends Component {
     const {parameters} = this.props
     let dateFormatType = parameters[index].data_type === 'date' || null,
       dateTimeFormatType =  parameters[index].data_type === 'datetime' || null
+    
     this.setState({ showParamDefForm: true }, () => {
-      let currentParamDefinition = this.props.parameters[index]
+      let currentParamDefinition = JSON.parse(JSON.stringify(this.props.parameters[index]))
+      currentParamDefinition.order = currentParamDefinition.order === null ? '' : currentParamDefinition.order
       this.editArrayIndex = index
 
       this.setState({
@@ -141,20 +144,37 @@ export default class ParamDefinitionModal extends Component {
     }
   }
 
+
+  updateOrderOfCharts = (obj1, obj2) => {
+    let firstObjOrder = obj1.order === '' ? Number.MAX_VALUE : parseInt(obj1.order),
+      secondObjOrder = obj2.order === '' ? Number.MAX_VALUE : parseInt(obj2.order)
+
+    if (firstObjOrder < secondObjOrder) {
+      return -1
+    }
+    if (firstObjOrder > secondObjOrder) {
+      return 1
+    }
+    return 0
+  }
+
+
   saveParamHandler = () => {
     let checkVar = this.validateString('name', 'errorName')
     checkVar = this.validateParamValueFormat('test_value', 'errorTestValue') || checkVar
     checkVar = this.validateParamValueFormat('default_value', 'errorDefaultValue') || checkVar
+    let curParamDef = JSON.parse(JSON.stringify(this.state.paramDefinition))
     if (checkVar) {
-      return;
+      return
     }
     let selectedChartParamDef = [...this.props.parameters]
+    curParamDef.order = curParamDef.order === '' ? null : curParamDef.order
     if (this.state.editMode) {
-      selectedChartParamDef[this.editArrayIndex] = this.state.paramDefinition
+      selectedChartParamDef[this.editArrayIndex] = curParamDef
     } else {
-      selectedChartParamDef.push(this.state.paramDefinition)
+      selectedChartParamDef.push(curParamDef)
     }
-
+    selectedChartParamDef.sort(this.updateOrderOfCharts)
     this.props.selectedChartChangeHandler('parameters', selectedChartParamDef,
       () => {
         this.setState({ showParamDefForm: false, editMode: false })
@@ -195,6 +215,14 @@ export default class ParamDefinitionModal extends Component {
               <ErrorMessage classValue={'col-md-8 pull-right validation-error'}
                 message={'Error in name'} />
             }
+          </div>
+          <div className='row'>
+            <label className='col-md-4' htmlFor='orderVal'>Order:</label>
+            <div className='col-md-8'>
+              <input type='number' name='orderVal'
+                value={this.state.paramDefinition.order}
+                onChange={(e) => this.onChangeParamHandler('order', e.target.value)} />
+            </div>
           </div>
           <div className='row'>
             <label htmlFor='testValue' className='col-md-4'>Test Data: </label>
