@@ -14,9 +14,9 @@ export default class ValidationsModal extends Component {
       validationQuery: '',
       checkNameFilledError: false,
       checkQueryFilledError: false
-
     }
   }
+
   //Handle onBlur events Input and Query fields
   updateOnBlur = (key, validation) => {
     let checkError= !this.state[validation] ? true : false
@@ -42,7 +42,7 @@ export default class ValidationsModal extends Component {
     if (!validationName) {
       flag = true
       this.setState({
-        checkNameFilledError : true
+        checkNameFilledError: true
       })
     }
     if (!validationQuery){
@@ -52,7 +52,7 @@ export default class ValidationsModal extends Component {
       })
     }
     if (flag) {
-      return ;
+      return
     }
     let newValidation = {
       name: validationName,
@@ -72,9 +72,11 @@ export default class ValidationsModal extends Component {
   }
 
   // Handles validation deletion
-  validationDeletionHandler = (validationIndex) => {
+  validationDeletionHandler = (e, validationIndex) => {
+    e.stopPropagation()
     let newValidations = this.props.validations.filter((validation, index) => index != validationIndex)
-    this.props.selectedChartChangeHandler('validations', newValidations)
+    this.props.selectedChartChangeHandler('validations', newValidations,
+      () => {this.setState({showForm: false})})
   }
 
   // Clears form field values
@@ -90,6 +92,16 @@ export default class ValidationsModal extends Component {
   formVisibilityHandler = () => {
     this.setState({ showForm: !this.state.showForm })
   }
+
+  addValidation = () => {
+    this.setState({
+      showForm: true,
+      validationQuery: '',
+      validationName: '',
+      selectedValidation: undefined
+    })
+  }
+
   // Updates form fields
   onChangeHandler = (key, value,errorField) => {
     let result = (value) ? false : true
@@ -97,6 +109,7 @@ export default class ValidationsModal extends Component {
        [key]: value,
        [errorField]:result })
   }
+
   render() {
     const { selectedChartChangeHandler, validations } = this.props
     const {
@@ -166,7 +179,7 @@ export default class ValidationsModal extends Component {
                 <i
                   className="fa fa-plus"
                   aria-hidden="true" data-toggle="modal"
-                  onClick={this.formVisibilityHandler}>
+                  onClick={this.addValidation}>
                 </i>
               </th>
             </tr>
@@ -174,13 +187,12 @@ export default class ValidationsModal extends Component {
           <tbody>
             {(validations) ?
               validations.map((validation, index) =>
-                <tr key={'validation_row_' + index}>
-                  <td
-                    onClick={() => this.updateFormFields(index)}
-                    className='param-name'>{validation.name}</td>
+                <tr key={'validation_row_' + index} 
+                  onClick={() => this.updateFormFields(index)}>
+                  <td className='param-name'>{validation.name}</td>
                   <td className="align-center clickable-element">
                     <i className="fa fa-trash-o" aria-hidden="true"
-                      onClick={() => this.validationDeletionHandler(index)} />
+                      onClick={(e) => this.validationDeletionHandler(e, index)} />
                   </td>
                 </tr>
               )

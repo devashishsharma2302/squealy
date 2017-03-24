@@ -38,6 +38,13 @@ export const PARAM_FORMAT_OPTIONS = [
   }
 ]
 
+export const PARAM_FORMAT_MAP = {
+  datetime: 'DateTime',
+  string: 'String',
+  date: 'Date',
+  number: 'Number'
+}
+
 export const PARAM_TYPE_OPTIONS = [
   {
     label: 'User',
