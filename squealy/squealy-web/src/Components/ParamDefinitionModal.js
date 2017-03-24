@@ -104,7 +104,7 @@ export default class ParamDefinitionModal extends Component {
   onChangeParamHandler = (key, value,errorField) => {
     let currentParamDefinition = JSON.parse(JSON.stringify(this.state.paramDefinition))
     currentParamDefinition[key] = value
-    this.setState({ paramDefinition: currentParamDefinition },(errorField === 'errorName')? ()=> this.validateString(key,errorField) : () => this.validateTestAndDefaultValueFormat(key, errorField))
+    this.setState({ paramDefinition: currentParamDefinition },(errorField === 'errorName')? ()=> this.validateString(key,errorField) : () => this.validateParamValueFormat(key, errorField))
   }
 
   handleEditParam = (e, index) => {
@@ -269,8 +269,7 @@ export default class ParamDefinitionModal extends Component {
               <div className='col-md-8'>
                 <input type='text' name='defaultValues'
                   value={this.state.paramDefinition.default_value}
-                  onChange={(e) => this.onChangeParamHandler('default_value', e.target.value)}
- 		onChange={(e) => this.onChangeParamHandler('default_value', e.target.value,'errorDefaultValue')} />
+ 		              onChange={(e) => this.onChangeParamHandler('default_value', e.target.value,'errorDefaultValue')} />
               </div>
               {
                 this.state.errorDefaultValue &&
