@@ -124,7 +124,6 @@ export default class ParamDefinitionModal extends Component {
         selectedType: PARAM_TYPE_MAP[currentParamDefinition.type]
       })
     })
-
   }
 
   deleteEntry = (e, index, fieldName) => {
@@ -163,7 +162,6 @@ export default class ParamDefinitionModal extends Component {
         this.props.updateNoteHandler(false)
       })
   }
-
 
   render() {
     const {parameters, selectedChartChangeHandler, note} = this.props
@@ -341,5 +339,3 @@ export default class ParamDefinitionModal extends Component {
     )
   }
 }
-
-
