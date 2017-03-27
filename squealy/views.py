@@ -5,6 +5,9 @@ from django.db.utils import IntegrityError
 from django.shortcuts import render
 from django.db import transaction
 from django.conf import settings
+from django.core.mail import send_mail
+from django.template import loader
+from django.http import HttpResponse
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import permission_classes, api_view
@@ -25,7 +28,8 @@ from .formatters import *
 from .parameters import *
 from .utils import SquealySettings
 from .table import Table
-from .models import Chart, Transformation, Validation, Parameter
+from .models import Chart, Transformation, Validation, Parameter, \
+    ScheduledReport, ReportParameter, ReportRecipient
 from .validators import run_validation
 
 
@@ -59,47 +63,51 @@ class ChartViewPermission(BasePermission):
         return request.user.has_perm('squealy.can_view_' + chart_url) or request.user.has_perm('squealy.can_edit_' + chart_url)
 
 
-class ChartView(APIView):
-    permission_classes = SquealySettings.get_default_permission_classes()
-    permission_classes.append(ChartViewPermission)
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
-    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
+def temp_report(request, chart_url):
+    template = loader.get_template('report_template.html')
+    scheduled_reports = ScheduledReport.objects.all()
+    user = request.user
 
-    def get(self, request, chart_url=None, *args, **kwargs):
+    for report in scheduled_reports:
+        report_parameters = ReportParameter.objects.filter(report=report)
+        param_dict = {}
+
+        for parameter in report_parameters:
+            param_dict[parameter.parameter_name] = parameter.parameter_value
+        chart_data = ChartProcessor().fetch_chart_data(chart_url, param_dict, user)
+        chart = Chart.objects.get(url=chart_url)
+        context = {
+            'charts': chart_data,
+            'name': chart.name
+        }
+        report_template = template.render(context, request)
+        recipients = list(ReportRecipient.objects.filter(report=report).values_list('email', flat=True))
+
+        try:
+            send_mail(report.subject, 'Here is the message.', 'hashedinsquealy@gmail.com',
+            recipients, fail_silently=False, html_message=report_template)
+        except Exception as e:
+            return HttpResponse('Unable to send email')
+
+    return HttpResponse('Mail sent successfully')
+
+
+class ChartProcessor(object):
+
+    def fetch_chart_data(self, chart_url, params, user):
         """
-        This is the API endpoint for executing the query and returning the data for a particular chart
+        This method gets the chart data
         """
         chart_attributes = ['parameters', 'validations', 'transformations']
         chart = Chart.objects.filter(url=chart_url).prefetch_related(*chart_attributes).first()
+
         if not chart:
-            raise ChartNotFoundException('No charts found at this path')
-        params = request.GET.copy()
-        user = request.user
+            raise ChartNotFoundException('Chart not found')
 
         if not chart.database:
             raise ChartNotFoundException('Database is not selected')
-        else:
-            data = self._process_chart_query(chart, params, user)
-        return Response(data)
 
-    def post(self, request, chart_url=None, *args, **kwargs):
-        """
-        This is the endpoint for running and testing queries from the authoring interface
-        """
-        try:
-            params = request.data.get('params', {})
-            user = request.data.get('user', None)
-            chart_attributes = ['parameters', 'validations', 'transformations']
-            chart = Chart.objects.filter(url=chart_url).prefetch_related(*chart_attributes).first()
-            if not chart:
-                raise ChartNotFoundException('No charts found at this path')
-            if not chart.database:
-                raise ChartNotFoundException('Database is not selected')
-            else:
-                data = self._process_chart_query(chart, params, user)
-            return Response(data)
-        except Exception as e:
-            return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
+        return self._process_chart_query(chart, params, user)
 
     def _process_chart_query(self, chart, params, user):
         """
@@ -207,6 +215,34 @@ class ChartView(APIView):
             raise TransformationException("Error in transformation - " + e.message)
 
         return table
+
+
+class ChartView(APIView):
+    permission_classes = SquealySettings.get_default_permission_classes()
+    permission_classes.append(ChartViewPermission)
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
+
+    def get(self, request, chart_url=None, *args, **kwargs):
+        """
+        This is the API endpoint for executing the query and returning the data for a particular chart
+        """
+        params = request.GET.copy()
+        user = request.user
+        data = ChartProcessor().fetch_chart_data(chart_url, params, user)
+        return Response(data)
+
+    def post(self, request, chart_url=None, *args, **kwargs):
+        """
+        This is the endpoint for running and testing queries from the authoring interface
+        """
+        try:
+            params = request.data.get('params', {})
+            user = request.data.get('user', None)
+            data = ChartProcessor().fetch_chart_data(chart_url, params, user)
+            return Response(data)
+        except Exception as e:
+            return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
 
 
 class ChartUpdatePermission(BasePermission):

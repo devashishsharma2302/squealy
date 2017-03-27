@@ -21,9 +21,9 @@ export class SquealyDatePicker extends Component {
         defaultValue={value}
         timeFormat={false}
         className={className}
-        dateFormat={DATE_FORMAT}
+        dateFormat={format ? format : DATE_FORMAT}
         onChange={
-          (value)=>onChangeHandler(name, value.format(DATE_FORMAT))}
+          (value)=>onChangeHandler(name, value.format(format ? format : DATE_FORMAT))}
       />
     )
   }
