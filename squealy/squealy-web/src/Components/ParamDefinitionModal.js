@@ -146,9 +146,8 @@ export default class ParamDefinitionModal extends Component {
 
 
   updateOrderOfCharts = (obj1, obj2) => {
-    let firstObjOrder = obj1.order === '' ? Number.MAX_VALUE : parseInt(obj1.order),
-      secondObjOrder = obj2.order === '' ? Number.MAX_VALUE : parseInt(obj2.order)
-
+    let firstObjOrder = obj1.order === '' ? Number.MAX_VALUE : parseInt(obj1.order, 10),
+      secondObjOrder = obj2.order === '' ? Number.MAX_VALUE : parseInt(obj2.order, 10)
     if (firstObjOrder < secondObjOrder) {
       return -1
     }
