@@ -42,7 +42,6 @@ def get_date_diff(start_date, end_date, parameter):
         'years': len(list(rrule.rrule(rrule.YEARLY, dtstart=start_date, until=end_date))),
         'weeks': len(list(rrule.rrule(rrule.WEEKLY, dtstart=start_date, until=end_date)))
     }
-    print diff_map[parameter]
     return diff_map[parameter]
 
 
