@@ -19,8 +19,7 @@ export default class ViewOnlyResults extends Component {
     this.state = {
       payloadObj: {},
       chartData: {},
-      errorMessage: null,
-      chartType: ''
+      errorMessage: null
     }
   }
 
@@ -32,11 +31,15 @@ export default class ViewOnlyResults extends Component {
       payloadObj = { params: getUrlParams() }
     } else {
       payloadObj = formatTestParameters(propsData.chart.parameters, 'name', 'default_value')
-      payloadObj.params['chartType'] = propsData.chart.type
     }
     postApiRequest(DOMAIN_NAME + 'squealy/' + propsData.chart.url + '/', payloadObj,
       this.onSuccessTest, this.onErrorTest, 'table')
-    this.setState({ payloadObj: payloadObj, chartType: propsData.chart.type }, this.updateUrl)
+    payloadObj.params['chartType'] = propsData.chart.type
+    const getUrlParameters = getUrlParams()
+    if (getUrlParameters.chartType !== undefined) {
+      payloadObj.params['chartType'] = getUrlParameters.chartType
+    }
+    this.setState({ payloadObj: payloadObj }, this.updateUrl)
   }
 
 
@@ -73,7 +76,6 @@ export default class ViewOnlyResults extends Component {
     payloadObj.params['chartType'] = value
     this.setState({
       payloadObj: payloadObj,
-      chartType: value
     }, () => this.updateUrl())
   }
 
@@ -113,12 +115,14 @@ export default class ViewOnlyResults extends Component {
 
         </div>
         <div className="chart-type-select">
-          <SquealyDropdown
-            name='chartType'
-            options={GOOGLE_CHART_TYPE_OPTIONS}
-            selectedValue={this.state.chartType}
-            //onChangeHandler={(value) => selectedChartChangeHandler('type', value,null,null,2)}
-            onChangeHandler={(value) => this.updateChartType(value)} />
+          {this.state.payloadObj.params &&
+            <SquealyDropdown
+              name='chartType'
+              options={GOOGLE_CHART_TYPE_OPTIONS}
+              selectedValue={this.state.payloadObj.params['chartType']}
+              //onChangeHandler={(value) => selectedChartChangeHandler('type', value,null,null,2)}
+              onChangeHandler={(value) => this.updateChartType(value)} />
+          }
         </div>
         <div className="visualchart">
           {
@@ -128,7 +132,7 @@ export default class ViewOnlyResults extends Component {
                 <GoogleChartsComponent
                   chartData={this.state.chartData}
                   options={chart.options}
-                  chartType={this.state.chartType}
+                  chartType={this.state.payloadObj.params['chartType']}
                   id={'visualisation_' + chart.id} />
                 : null)
           }
