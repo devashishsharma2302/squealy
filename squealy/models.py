@@ -55,6 +55,7 @@ class Parameter(models.Model):
     def __unicode__(self):
         return self.name
 
+
 class Transformation(models.Model):
     """
     This represents the transformations that are applied after retrieving
@@ -81,22 +82,25 @@ class Validation(models.Model):
     def __unicode__(self):
         return self.chart.name
 
+
 class ScheduledReport(models.Model):
     '''
         Contains email subject and junctures when the email has to be send
     '''
     subject = models.CharField(max_length=200)
-    last_run_at = models.DateTimeField()
-    next_run_at = models.DateTimeField()
+    last_run_at = models.DateTimeField(null=True, blank=True)
+    next_run_at = models.DateTimeField(null=True, blank=True)
     cron_expression = models.CharField(max_length=200)
+    chart = models.ForeignKey(Chart, related_name='scheduled_report')
 
 
-class ReportRecepient(models.Model):
+class ReportRecipient(models.Model):
     '''
         Stores all the recepeints of the given reports
     '''
     email = models.EmailField()
     report = models.ForeignKey(ScheduledReport, related_name='reportrecep')
+
 
 class ReportParameter(models.Model):
     '''
