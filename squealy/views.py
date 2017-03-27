@@ -216,7 +216,7 @@ class ChartUpdatePermission(BasePermission):
             chart_data = request.data['chart']
             if chart_data.get('id'):
                 # Chart update
-                return request.user.has_perm('squealy.can_edit_' + chart_data['url'])
+                return request.user.has_perm('squealy.can_edit_' + str(chart_data['id']))
             else:
                 # Adding new chart
                 return request.user.has_perm('squealy.add_chart')
@@ -236,11 +236,11 @@ class ChartsLoaderView(APIView):
         permitted_charts = []
         charts = Chart.objects.order_by('id').all()
         for chart in charts:
-            if request.user.has_perm('squealy.can_edit_' + chart.url):
+            if request.user.has_perm('squealy.can_edit_' + str(chart.id)):
                 chart_data = ChartSerializer(chart).data
                 chart_data['can_edit'] = True
                 permitted_charts.append(chart_data)
-            elif request.user.has_perm('squealy.can_view_' + chart.url):
+            elif request.user.has_perm('squealy.can_view_' + str(chart.id)):
                 chart_data = ChartSerializer(chart).data
                 chart_data['can_edit'] = False
                 permitted_charts.append(chart_data)
@@ -252,8 +252,8 @@ class ChartsLoaderView(APIView):
         """
         data = request.data
         try:
-            chart_url = Chart.objects.filter(id=data['id']).first().url
-            Permission.objects.filter(codename__in=['can_view_' + chart_url, 'can_edit_' + chart_url]).delete()
+            chart = Chart.objects.filter(id=data['id']).first()
+            Permission.objects.filter(codename__in=['can_view_' + str(chart.id), 'can_edit_' + str(chart.id)]).delete()
             Chart.objects.filter(id=data['id']).first().delete()
         except Exception:
             ChartNotFoundException('A chart with id' + data['id'] + 'was not found')
@@ -278,16 +278,31 @@ class ChartsLoaderView(APIView):
 
             # Create view/edit permissions
             content_type = ContentType.objects.get_for_model(Chart)
-            Permission.objects.update_or_create(
-                codename='can_view_' + chart_object.url,
+
+            # View permission
+            perm_id = None
+            perm = Permission.objects.filter(codename='can_view_' + str(chart_object.id)).first()
+            if perm:
+                perm_id = perm.id
+
+            Permission(
+                id=perm_id,
+                codename='can_view_' + str(chart_object.id),
                 name='Can view ' + chart_object.url,
                 content_type=content_type,
-            )
-            Permission.objects.update_or_create(
-                codename='can_edit_' + chart_object.url,
+            ).save()
+
+            # Edit permission
+            perm_id = None
+            perm = Permission.objects.filter(codename='can_edit_' + str(chart_object.id)).first()
+            if perm:
+                perm_id = perm.id
+            Permission(
+                id=perm_id,
+                codename='can_edit_' + str(chart_object.id),
                 name='Can edit ' + chart_object.url,
                 content_type=content_type,
-            )
+            ).save()
 
             chart_id = chart_object.id
             Chart.objects.all().prefetch_related('transformations', 'parameters', 'validations')
