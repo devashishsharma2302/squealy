@@ -32,7 +32,6 @@ def get_date_diff(start_date, end_date, parameter):
     """
     Returns the difference of month/days/week/years dependending on the parameter
     """
-    print start_date, end_date, parameter
     start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d')
     end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d')
 
