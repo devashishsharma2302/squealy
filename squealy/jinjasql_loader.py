@@ -14,7 +14,7 @@ def configure_jinjasql():
     """
     utils = """
         {% macro date_range(day, range) -%}
-            {{day |safe}} between {{range | calculate_start_date}} and {{get_today()}}
+            {{day |safe}} between {{calculate_start_date(range)}} and {{get_today()}}
         {%- endmacro %}
         {% macro date_diff(start_date, end_date, parameter) -%}
             {{ get_date_diff(start_date, end_date, parameter) }}
@@ -22,8 +22,8 @@ def configure_jinjasql():
         """
     loader = DictLoader({"utils.sql": utils})
     env = Environment(loader=loader)
-    env.filters['calculate_start_date'] = calculate_start_date
     env.globals['get_date_diff'] = get_date_diff
+    env.globals['calculate_start_date'] = calculate_start_date
     env.globals['get_today'] = get_today
     return JinjaSql(env)
 
