@@ -120,7 +120,6 @@ export default class ViewOnlyResults extends Component {
               name='chartType'
               options={GOOGLE_CHART_TYPE_OPTIONS}
               selectedValue={this.state.payloadObj.params['chartType']}
-              //onChangeHandler={(value) => selectedChartChangeHandler('type', value,null,null,2)}
               onChangeHandler={(value) => this.updateChartType(value)} />
           }
         </div>
