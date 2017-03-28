@@ -35,7 +35,6 @@ class JWTAuthentication(object):
         Add the user to groups that are provoded in the jwt token.
         """
         try:
-            # TODO: extract the secret from the env.
             jwt_key = os.environ.get('JWT_KEY')
             token_params = jwt.decode(token, jwt_key, algorithms=['HS256'])
             user_name = token_params['username']
