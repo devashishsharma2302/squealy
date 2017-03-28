@@ -30,7 +30,7 @@ from .table import Table
 from .models import Chart, Transformation, Validation, Parameter, \
     ScheduledReport, ReportParameter, ReportRecipient
 from .validators import run_validation
-
+from datetime import datetime,timedelta
 
 jinjasql = configure_jinjasql()
 
@@ -62,9 +62,10 @@ class ChartViewPermission(BasePermission):
         return request.user.has_perm('squealy.can_view_' + chart_url) or request.user.has_perm('squealy.can_edit_' + chart_url)
 
 
-def temp_report(request, chart_url):
+def send_report(request, chart_url):
     template = loader.get_template('report_template.html')
-    scheduled_reports = ScheduledReport.objects.all()
+    current_time = datetime.utcnow().replace(second=0,microsecond=0)
+    scheduled_reports = ScheduledReport.objects.filter(next_run_at__range=(current_time+timedelta(minutes=-1),current_time))
     user = request.user
 
     for report in scheduled_reports:
