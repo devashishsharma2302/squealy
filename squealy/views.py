@@ -64,6 +64,7 @@ class ChartViewPermission(BasePermission):
 
 
 def send_report(request, chart_url):
+  
     template = loader.get_template('report_template.html')
     current_time = datetime.utcnow().replace(second=0,microsecond=0)
     scheduled_reports = ScheduledReport.objects.filter(next_run_at__range=(current_time+timedelta(minutes=-1),current_time))
