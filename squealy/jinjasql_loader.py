@@ -3,9 +3,9 @@ from jinja2 import DictLoader
 from jinja2 import Environment
 from jinjasql import JinjaSql
 from dateutil.relativedelta import relativedelta
+from dateutil import rrule
 
 from squealy.exceptions import InvalidDateRangeException
-
 
 
 def configure_jinjasql():
@@ -14,14 +14,34 @@ def configure_jinjasql():
     """
     utils = """
         {% macro date_range(day, range) -%}
-            {{day |safe}} between {{range | calculate_start_date}} and {{get_today()}}
+            {{day |safe}} between {{calculate_start_date(range)}} and {{get_today()}}
+        {%- endmacro %}
+        {% macro date_diff(start_date, end_date, parameter) -%}
+            {{ get_date_diff(start_date, end_date, parameter) }}
         {%- endmacro %}
         """
     loader = DictLoader({"utils.sql": utils})
     env = Environment(loader=loader)
-    env.filters['calculate_start_date'] = calculate_start_date
+    env.globals['get_date_diff'] = get_date_diff
+    env.globals['calculate_start_date'] = calculate_start_date
     env.globals['get_today'] = get_today
     return JinjaSql(env)
+
+
+def get_date_diff(start_date, end_date, parameter):
+    """
+    Returns the difference of month/days/week/years dependending on the parameter
+    """
+    start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+    end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d')
+
+    diff_map = {
+        'days': len(list(rrule.rrule(rrule.DAILY, dtstart=start_date, until=end_date))),
+        'months': len(list(rrule.rrule(rrule.MONTHLY, dtstart=start_date, until=end_date))),
+        'years': len(list(rrule.rrule(rrule.YEARLY, dtstart=start_date, until=end_date))),
+        'weeks': len(list(rrule.rrule(rrule.WEEKLY, dtstart=start_date, until=end_date)))
+    }
+    return diff_map[parameter]
 
 
 def calculate_start_date(range):
