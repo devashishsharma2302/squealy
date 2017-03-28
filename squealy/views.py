@@ -63,13 +63,14 @@ class ChartViewPermission(BasePermission):
         return request.user.has_perm('squealy.can_view_' + chart_url) or request.user.has_perm('squealy.can_edit_' + chart_url)
 
 
-def temp_report(request, chart_url):
+def temp_report(request):
     template = loader.get_template('report_template.html')
     scheduled_reports = ScheduledReport.objects.all()
     user = request.user
 
     for report in scheduled_reports:
         report_parameters = ReportParameter.objects.filter(report=report)
+        chart_url = report.chart.url
         param_dict = {}
 
         for parameter in report_parameters:
