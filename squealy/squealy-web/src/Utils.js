@@ -284,13 +284,12 @@ export function formatTestParameters (paramDefintion, key, valueKey) {
 
 export function getUrlParams() {
   let pageURL = decodeURIComponent(window.location.search.substring(1)),
-        urlVariables = pageURL.split('&'),
-        parameterName,
-        i
-    if(pageURL === ''){
-      return new Object
-    }
-    return JSON.parse('{"' + decodeURI(pageURL).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
+    parameterName,
+    i
+  if(pageURL === '') {
+    return null
+  }
+  return JSON.parse('{"' + decodeURI(pageURL).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
 }
 
 export function setUrlParams(newParams) {
