@@ -9,11 +9,12 @@ export default class SideMenu extends Component {
     super()
     this.state = {
       showLeftNavContextMenu: false,
-      leftMenuChartIndex: null,
+      clickedChartIndex: null,
       showAddChartModal: false,
       chartName: '',
       database: null,
       chartEditMode: false,
+      chartNameError: '',
       leftMenuPosition: {
         top: 0,
         left: 0
@@ -37,7 +38,7 @@ export default class SideMenu extends Component {
 
   hideLeftMenu = (e) => {
     this.setState({
-      leftMenuChartIndex: null,
+      clickedChartIndex: null,
       showLeftNavContextMenu: false
     })
   }
@@ -50,10 +51,10 @@ export default class SideMenu extends Component {
       top: e.pageY - (this.refs.chartListUl ? this.refs.chartListUl.offsetTop : 0) - 10,
       left: e.pageX
     },
-    flag = (index !== this.state.leftMenuChartIndex) || !this.state.showLeftNavContextMenu
+    flag = (index !== this.state.clickedChartIndex) || !this.state.showLeftNavContextMenu
 
     this.setState({
-      leftMenuChartIndex: flag ? index : null,
+      clickedChartIndex: flag ? index : null,
       showLeftNavContextMenu: flag,
       leftMenuPosition: leftMenuPosition
     })
@@ -61,11 +62,12 @@ export default class SideMenu extends Component {
 
   showChartDetailsModal = (action) => {
     let charts = JSON.parse(JSON.stringify(this.props.charts)),
-      selectedChartName = (action === 'EDIT') ? charts[this.state.leftMenuChartIndex].name : '',
-      database = (action === 'EDIT') ? charts[this.state.leftMenuChartIndex].database : null
+      selectedChartName = (action === 'EDIT') ? charts[this.state.clickedChartIndex].name : '',
+      database = (action === 'EDIT') ? charts[this.state.clickedChartIndex].database : null
 
     this.setState({ 
       showAddChartModal: true,
+      chartNameError: '',
       chartName: selectedChartName,
       database: database,
       showLeftNavContextMenu: false,
@@ -74,38 +76,45 @@ export default class SideMenu extends Component {
   }
 
   selectChartHandler = (index, action) => {
-    this.setState({showLeftNavContextMenu: false, leftMenuChartIndex: null})
+    this.setState({showLeftNavContextMenu: false, clickedChartIndex: null})
     this.props.chartSelectionHandler(index)
   }
 
   chartAdditionModalSave = (e) => {
-    const {leftMenuChartIndex, chartName, database, chartEditMode} = this.state
+    const {clickedChartIndex, chartName, database, chartEditMode} = this.state
+    let onSuccess = ()=>{this.setState({ showAddChartModal: false, clickedChartIndex: null, chartNameError: '' })},
+        onFailure = (error) => {this.setState({chartNameError: JSON.parse(error.responseText).detail})}
     if (chartEditMode) {
       this.props.selectedChartChangeHandler(
-        'name', chartName, null, leftMenuChartIndex)
+        'name', chartName, onSuccess, clickedChartIndex, onFailure)
     } else {
-      this.props.chartAdditionHandler(chartName, database)
+      this.props.chartAdditionHandler(chartName, database,
+        //Success
+        onFailure,
+        //Failue
+        onFailure)
     }
-    this.setState({ showAddChartModal: false, leftMenuChartIndex: null })
+    
   }
 
   onChangeDatabase = (db) => {
     let dbVal = db ? db.value : null
     this.setState({database: dbVal}, () => {
       this.state.chartEditMode ? 
-        this.props.selectedChartChangeHandler('database', dbVal, null, this.state.leftMenuChartIndex) : null
+        this.props.selectedChartChangeHandler('database', dbVal, null, this.state.clickedChartIndex) : null
     })
   }
 
   render() {
     const {
-      leftMenuChartIndex,
+      clickedChartIndex,
       chartName,
       showLeftNavContextMenu,
       leftMenuPosition,
       showAddChartModal,
       chartEditMode,
-      database
+      database,
+      chartNameError
     } = this.state
 
     const {
@@ -121,6 +130,7 @@ export default class SideMenu extends Component {
 
     const addNewChartModalContent = (
       <div className='app-modal-content'>
+        <span className='chart-name-error'> {chartNameError} </span>
         <div className="row">
           <label className='col-md-4'>Name: </label>
           <input className='chart-name-input' type='text' value={chartName} onChange={this.newChartNameChanged} />
@@ -157,7 +167,7 @@ export default class SideMenu extends Component {
             {
               charts.map((chart, index) => {
                 listClassName = (index === selectedChartIndex) ? 'selected-chart' : ''
-                listClassName += (leftMenuChartIndex === index) ? ' right-button-clicked' : ''
+                listClassName += (clickedChartIndex === index) ? ' right-button-clicked' : ''
                 return (
                   <li onClick={() => this.selectChartHandler(index)} key={index}
                     className={listClassName}
@@ -167,14 +177,14 @@ export default class SideMenu extends Component {
               })
             }
             {
-              showLeftNavContextMenu && this.props.charts[leftMenuChartIndex].can_edit && 
+              showLeftNavContextMenu && this.props.charts[clickedChartIndex].can_edit && 
                 <ul className="left-nav-menu" style={leftMenuPosition} 
                   onContextMenu={(e)=> {e.preventDefault()}}>
                   <li onClick={() => this.showChartDetailsModal('EDIT')}>Rename Chart 
                     <i className="fa fa-pencil"/></li>
                   {
                     (userInfo.can_delete_chart) && <li className='delete-chart' onClick={() => 
-                      this.props.chartDeletionHandler(leftMenuChartIndex, this.hideLeftMenu)}>
+                      this.props.chartDeletionHandler(clickedChartIndex, this.hideLeftMenu)}>
                     Delete Chart<i className="fa fa-trash-o"/></li>
                   }
                   <li className="close-option" onClick={this.hideLeftMenu}>Close</li>

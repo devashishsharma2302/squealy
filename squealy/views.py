@@ -393,7 +393,7 @@ class ChartsLoaderView(APIView):
         except KeyError as e:
             raise MalformedChartDataException("Key Error - " + str(e.args))
         except IntegrityError as e:
-            raise DuplicateUrlException('A chart with this url already exists')
+            raise DuplicateUrlException('A chart with this name already exists')
 
         return Response(chart_id, status.HTTP_200_OK)
 
