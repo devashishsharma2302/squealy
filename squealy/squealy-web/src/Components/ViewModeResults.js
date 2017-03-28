@@ -31,13 +31,14 @@ export default class ViewOnlyResults extends Component {
       payloadObj = { params: getUrlParams() }
     } else {
       payloadObj = formatTestParameters(propsData.chart.parameters, 'name', 'default_value')
+
     }
     postApiRequest(DOMAIN_NAME + 'squealy/' + propsData.chart.url + '/', payloadObj,
       this.onSuccessTest, this.onErrorTest, 'table')
     payloadObj.params['chartType'] = propsData.chart.type
-    const getUrlParameters = getUrlParams()
-    if (getUrlParameters.chartType !== undefined) {
-      payloadObj.params['chartType'] = getUrlParameters.chartType
+    const urlParameters = getUrlParams()
+    if (urlParameters.chartType !== undefined) {
+      payloadObj.params['chartType'] = urlParameters.chartType
     }
     this.setState({ payloadObj: payloadObj }, this.updateUrl)
   }
@@ -75,8 +76,7 @@ export default class ViewOnlyResults extends Component {
     let payloadObj = JSON.parse(JSON.stringify(this.state.payloadObj))
     payloadObj.params['chartType'] = value
     this.setState({
-      payloadObj: payloadObj,
-    }, () => this.updateUrl())
+      payloadObj: payloadObj }, this.updateUrl)
   }
 
   render() {
