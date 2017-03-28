@@ -1,5 +1,6 @@
 coverage==4.0.3
 Django==1.10.2
+django-celery==3.2.1
 djangorestframework==3.5.1
 django-nose==1.4.4
 jinjasql==0.1.4
@@ -12,3 +13,4 @@ gunicorn==19.6.0
 whitenoise==3.3.0
 PyJWT==1.4.2
 croniter===0.3.16
+requests==2.12.3
