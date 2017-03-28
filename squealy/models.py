@@ -95,7 +95,9 @@ class ScheduledReport(models.Model):
     chart = models.ForeignKey(Chart, related_name='scheduled_report')
 
     def save(self,*args,**kwargs):
-
+        '''
+        function to evaluate "next_run_at" using the cron expression
+        '''
         self.last_run_at = datetime.now()
         iter = croniter(self.cron_expression,self.last_run_at)
         self.next_run_at = iter.get_next(datetime)
