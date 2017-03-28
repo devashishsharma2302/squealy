@@ -50,3 +50,8 @@ class DatabaseWriteException(APIException):
 class InvalidDateRangeException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     pass
+
+
+class DuplicateUrlException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    pass

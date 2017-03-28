@@ -22,10 +22,10 @@ class Chart(models.Model):
     This represents an API for generating a chart or report.
     """
     account = models.ForeignKey(Account, null=True, blank=True)
-    url = models.CharField(max_length=2000)
+    url = models.CharField(max_length=255, unique=True)
     query = models.TextField()
     # To be updated to be in sync with the authoring interface UI.
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=255)
     # To accommodate custom formatting function paths too.
     format = models.CharField(max_length=50,
                               default="GoogleChartsFormatter")

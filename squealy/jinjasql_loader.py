@@ -7,19 +7,18 @@ from dateutil.relativedelta import relativedelta
 from squealy.exceptions import InvalidDateRangeException
 
 
-
 def configure_jinjasql():
     """
     Configure the environment and return jinjaSql object
     """
     utils = """
         {% macro date_range(day, range) -%}
-            {{day |safe}} between {{range | calculate_start_date}} and {{get_today()}}
+            {{day |safe}} between {{calculate_start_date(range)}} and {{get_today()}}
         {%- endmacro %}
         """
     loader = DictLoader({"utils.sql": utils})
     env = Environment(loader=loader)
-    env.filters['calculate_start_date'] = calculate_start_date
+    env.globals['calculate_start_date'] = calculate_start_date
     env.globals['get_today'] = get_today
     return JinjaSql(env)
 
