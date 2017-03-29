@@ -33,23 +33,29 @@ export default class AuthoringInterfaceContainer extends Component {
                   (error) => console.error(error), null)
   }
 
-  onChartSaved = (response, callback=null) => {
-    this.setState({'savedStatus': true, 'saveInProgress': false}, 
+  onChartSaved = (response, charts, callback=null) => {
+    this.setState({'savedStatus': true, 'saveInProgress': false, charts: charts}, 
       () => {
         callback && callback.constructor === Function ? callback() : null
       }
     )
   }
 
-  onChartSaveError = (e) => {
-    this.setState({'savedStatus': false, 'saveInProgress': false})
+  onChartSaveError = (err, callback=null) => {
+    this.setState({'savedStatus': false, 'saveInProgress': false}, 
+  		() => {
+		callback && callback.constructor === Function ? callback(err) : null
+  		}
+	)
   }
 
-  saveChart = (chart, callback=null) => {
+  saveChart = (charts, chartIndex, onSuccess=null, onFailure=null) => {
+    let chart = charts[chartIndex]
     if (chart.id) {
       this.setState({'saveInProgress': true},
             postApiRequest(DOMAIN_NAME+'charts/', {'chart': chart},
-            this.onChartSaved,this.onChartSaveError, callback)
+            (response) =>this.onChartSaved(response, charts, onSuccess),
+            (error)=>this.onChartSaveError(error, onFailure), null)
       )
     }
   }
@@ -93,17 +99,19 @@ export default class AuthoringInterfaceContainer extends Component {
     )
   }
 
-  onNewChartSaved = (newChartIndex, id) => {
+  onNewChartSaved = (newChart, id, onSuccess) => {
     let charts = JSON.parse(JSON.stringify(this.state.charts))
+    let newChartIndex = charts.push(newChart) - 1
     charts[newChartIndex].id = id
-    this.setState({'charts': charts, 'savedStatus': true, 'saveInProgress': false},
-     ()=> this.saveChart(charts[newChartIndex]))
+    this.setState({'charts': charts, selectedChartIndex: newChartIndex,
+     'savedStatus': true, 'saveInProgress': false},
+     onSuccess)
   }
 
-  saveNewChart = (newChartIndex) => {
+  saveNewChart = (newChart, onSuccess, onFailure) => {
     this.setState({'saveInProgress': true},
-          postApiRequest(DOMAIN_NAME+'charts/', {'chart': this.state.charts[newChartIndex]},
-          (id) => this.onNewChartSaved(newChartIndex, id),this.onChartSaveError, null)
+          postApiRequest(DOMAIN_NAME+'charts/', {'chart': newChart},
+          (id) => this.onNewChartSaved(newChart, id, onSuccess),(err)=>this.onChartSaveError(err, onFailure), null)
     )
   }
 
@@ -158,7 +166,7 @@ export default class AuthoringInterfaceContainer extends Component {
   }
 
   // A generic function to handle change in any property inside the selected chart
-  selectedChartChangeHandler = (key, value, callback=null, index=null) => {
+  selectedChartChangeHandler = (key, value, onSuccess=null, index=null, onFailure=null) => {
     let charts = JSON.parse(JSON.stringify(this.state.charts)),
       chartIndex = parseInt(index, 10) //To avoid unexpected errors with value 0
     
@@ -168,9 +176,9 @@ export default class AuthoringInterfaceContainer extends Component {
     if (key === 'name') {
       charts[chartIndex].url = value.replace(/ /g, '-').toLowerCase()
     }
-    this.setState({charts: charts}, ()=>{
-      this.saveChart(charts[chartIndex], callback)
-    })
+    
+    this.saveChart(charts, chartIndex, onSuccess, onFailure)
+    
   }
 
   // Updates the selected chart's chart data with the result set returned by the
@@ -203,19 +211,14 @@ export default class AuthoringInterfaceContainer extends Component {
 
 
   //Appends an empty API definition object to current API Definitions
-  chartAdditionHandler = (name, database) => {
-    //TODO: open the addition modal and add the new chart to state also making it the selected chart
-    let charts = JSON.parse(JSON.stringify(this.state.charts)),
-        newChart = getEmptyApiDefinition()
-        newChart.name = name
-        newChart.database = database
-        newChart.can_edit = true
-        newChart.url = name.replace(/ /g, '-').toLowerCase()
-    let newChartIndex = charts.push(newChart) - 1
-    this.setState({
-      charts: charts,
-      selectedChartIndex: newChartIndex
-    }, ()=>this.saveNewChart(newChartIndex))
+  chartAdditionHandler = (name, database, onSuccess, onFailure) => {
+    let newChart = getEmptyApiDefinition()
+    newChart.name = name
+    newChart.database = database
+    newChart.can_edit = true
+    newChart.url = name.replace(/ /g, '-').toLowerCase()
+ 
+    this.saveNewChart(newChart, onSuccess, onFailure)
   }
 
   //Changes the selected API index to the one which was clicked from the API list
