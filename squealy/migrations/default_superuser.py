@@ -7,14 +7,13 @@ import os
 from django.db import migrations
 from django.contrib.auth.hashers import make_password
 
-
 def create_default_superuser(apps, schema_editor):
     """
     Creates a default super user
     """
     User = apps.get_model('auth', 'user')
-    username = os.environ.get('ADMIN_USERNAME')
-    password =  os.environ.get('ADMIN_PASS')
+    username = os.environ.get('ADMIN_USERNAME', 'admin')
+    password =  os.environ.get('ADMIN_PASS', 'admin@123')
     default_super_user = User(
         username=username,
         is_superuser=True,
@@ -78,6 +77,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('squealy', '0001_initial'),
+        ('auth', '0001_initial'),
     ]
 
     operations = [
