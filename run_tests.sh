@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-python example/manage.py test tests
+python manage.py test
 cd squealy/squealy-web/
 npm install 
 npm run test

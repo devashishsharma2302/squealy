@@ -1,11 +1,8 @@
-import jwt
 from django.db import transaction
 from django.db.utils import IntegrityError
 
 from .test_base_file import BaseTestCase
 from squealy.models import Chart
-from django.test import Client
-from test.test_support import EnvironmentVarGuard
 
 
 class ChartsTestCase(BaseTestCase):
