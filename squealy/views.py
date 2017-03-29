@@ -46,11 +46,11 @@ class DatabaseView(APIView):
             database = settings.DATABASES
 
             for db in database:
-                if db != 'default':
-                    database_response.append({
-                      'value': db,
-                      'label': database[db]['NAME']
-                    })
+                # if db != 'default':
+                database_response.append({
+                  'value': db,
+                  'label': database[db]['NAME']
+                })
             return Response({'databases': database_response})
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
