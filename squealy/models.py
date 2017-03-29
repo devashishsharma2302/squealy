@@ -2,9 +2,25 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.postgres import fields
-
+from datetime import datetime
+from croniter import croniter
 from .constants import TRANSFORMATION_TYPES, PARAMETER_TYPES, COLUMN_TYPES
+import json
 
+class CustomJSONField(models.TextField):
+    def __init__(self, *args, **kwargs):
+        super(CustomJSONField, self).__init__(args, kwargs)
+    
+    def from_db_value(self, value, expression, connection, context):
+        if value is None:
+            return {}
+        return json.loads(value)
+
+    def to_python(self, value):
+        if value is None:
+            return {}
+
+        return json.dumps(value)
 
 class Account(models.Model):
     """
@@ -15,7 +31,6 @@ class Account(models.Model):
 
     def __unicode__(self):
         return self.name
-
 
 class Chart(models.Model):
     """
@@ -30,12 +45,11 @@ class Chart(models.Model):
     format = models.CharField(max_length=50,
                               default="GoogleChartsFormatter")
     type = models.CharField(max_length=20, default="ColumnChart")
-    options = fields.JSONField(null=True, blank=True)
+    options = CustomJSONField(null=True, blank=True)
     database = models.CharField(max_length=100, null=True, blank=True)
 
     def __unicode__(self):
         return self.name + "( /" + self.url + ")"
-
 
 class Filter(models.Model):
     """
@@ -63,8 +77,7 @@ class Parameter(models.Model):
     default_value = models.CharField(max_length=200, null=True, blank=True)
     test_value = models.CharField(max_length=200, null=True, blank=True)
     type = models.IntegerField(default=1, choices=PARAMETER_TYPES)
-    order = models.IntegerField(null=True, blank=True)
-    kwargs = fields.JSONField(null=True, blank=True, default={})
+    kwargs = CustomJSONField(null=True, blank=True, default={})
 
     def __unicode__(self):
         return self.name
@@ -78,11 +91,10 @@ class Transformation(models.Model):
 
     chart = models.ForeignKey(Chart, related_name='transformations')
     name = models.IntegerField(default=1, choices=TRANSFORMATION_TYPES)
-    kwargs = fields.JSONField(null=True, blank=True, default={})
+    kwargs = CustomJSONField(null=True, blank=True, default={})
 
     def __unicode__(self):
         return TRANSFORMATION_TYPES[self.name-1][1]
-
 
 class Validation(models.Model):
     """
