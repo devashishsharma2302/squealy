@@ -7,7 +7,7 @@ from datetime import datetime
 class ScheduledReportForm(ModelForm):
     class Meta:
         model = ScheduledReport
-        fields = ['chart', 'subject', 'cron_expression']
+        fields = ['subject', 'cron_expression']
         help_texts = {'cron_expression': 'Scheduled time is considered in UTC'}
 
     def clean(self):
