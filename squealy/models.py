@@ -90,7 +90,14 @@ class ScheduledReport(models.Model):
     last_run_at = models.DateTimeField(null=True, blank=True)
     next_run_at = models.DateTimeField(null=True, blank=True)
     cron_expression = models.CharField(max_length=200)
-    chart = models.ForeignKey(Chart, related_name='scheduled_report')
+
+
+class ScheduledReportChart(models.Model):
+    '''
+        Many to many mapping between charts and cheduled reports
+    '''
+    chart = models.ForeignKey(Chart)
+    report = models.ForeignKey(ScheduledReport)
 
 
 class ReportRecipient(models.Model):
