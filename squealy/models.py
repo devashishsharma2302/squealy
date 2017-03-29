@@ -2,7 +2,8 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.postgres import fields
-
+from datetime import datetime
+from croniter import croniter
 from .constants import TRANSFORMATION_TYPES, PARAMETER_TYPES, COLUMN_TYPES
 
 
@@ -86,12 +87,21 @@ class ScheduledReport(models.Model):
     '''
         Contains email subject and junctures when the email has to be send
     '''
+
     subject = models.CharField(max_length=200)
     last_run_at = models.DateTimeField(null=True, blank=True)
     next_run_at = models.DateTimeField(null=True, blank=True)
     cron_expression = models.CharField(max_length=200)
     chart = models.ForeignKey(Chart, related_name='scheduled_report')
 
+    def save(self,*args,**kwargs):
+        '''
+        function to evaluate "next_run_at" using the cron expression
+        '''
+        self.last_run_at = datetime.now()
+        iter = croniter(self.cron_expression,self.last_run_at)
+        self.next_run_at = iter.get_next(datetime)
+        super(ScheduledReport,self).save(*args,**kwargs)
 
 class ReportRecipient(models.Model):
     '''
