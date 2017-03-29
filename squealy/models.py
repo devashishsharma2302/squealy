@@ -8,9 +8,6 @@ from .constants import TRANSFORMATION_TYPES, PARAMETER_TYPES, COLUMN_TYPES
 import json
 
 class CustomJSONField(models.TextField):
-    def __init__(self, *args, **kwargs):
-        super(CustomJSONField, self).__init__(args, kwargs)
-    
     def from_db_value(self, value, expression, connection, context):
         if value is None:
             return {}
