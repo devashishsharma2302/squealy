@@ -29,7 +29,6 @@ class CustomJSONField(models.TextField):
         else:
             return value
 
-        return json.dumps(value)
 
 class Account(models.Model):
     """
