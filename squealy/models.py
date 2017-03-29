@@ -13,7 +13,10 @@ class CustomJSONField(models.TextField):
     def from_db_value(self, value, expression, connection, context):
         if value is None:
             return {}
-        return json.dumps(value)
+        elif isinstance(value, basestring):
+            return json.loads(value)
+        else:
+            return value
 
     def get_prep_value(self, value):
         return json.dumps(value)
@@ -51,7 +54,7 @@ class Chart(models.Model):
     format = models.CharField(max_length=50,
                               default="GoogleChartsFormatter")
     type = models.CharField(max_length=20, default="ColumnChart")
-    options = CustomJSONField(null=True, blank=True, default='{}')
+    options = CustomJSONField(null=True, blank=True, default={})
     database = models.CharField(max_length=100, null=True, blank=True)
 
     def __unicode__(self):
@@ -70,7 +73,7 @@ class Parameter(models.Model):
     default_value = models.CharField(max_length=200, null=True, blank=True)
     test_value = models.CharField(max_length=200, null=True, blank=True)
     type = models.IntegerField(default=1, choices=PARAMETER_TYPES)
-    kwargs = CustomJSONField(null=True, blank=True, default='{}')
+    kwargs = CustomJSONField(null=True, blank=True, default={})
 
     def __unicode__(self):
         return self.name
@@ -84,7 +87,7 @@ class Transformation(models.Model):
 
     chart = models.ForeignKey(Chart, related_name='transformations')
     name = models.IntegerField(default=1, choices=TRANSFORMATION_TYPES)
-    kwargs = CustomJSONField(null=True, blank=True, default='{}')
+    kwargs = CustomJSONField(null=True, blank=True, default={})
 
     def __unicode__(self):
         return TRANSFORMATION_TYPES[self.name-1][1]
