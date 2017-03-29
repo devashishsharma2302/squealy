@@ -90,11 +90,10 @@ export default class SideMenu extends Component {
     } else {
       this.props.chartAdditionHandler(chartName, database,
         //Success
-        onFailure,
+        onSuccess,
         //Failue
         onFailure)
     }
-    
   }
 
   onChangeDatabase = (db) => {
