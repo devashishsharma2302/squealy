@@ -56,13 +56,6 @@ class DatabaseView(APIView):
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
 
 
-class ChartViewPermission(BasePermission):
-
-    def has_permission(self, request, view):
-        chart_url = request.resolver_match.kwargs.get('chart_url')
-        return request.user.has_perm('squealy.can_view_' + chart_url) or request.user.has_perm('squealy.can_edit_' + chart_url)
-
-
 def send_report(request, chart_url):
   
     template = loader.get_template('report_template.html')
@@ -242,6 +235,14 @@ class ChartProcessor(object):
             raise TransformationException("Error in transformation - " + e.message)
 
         return table
+
+
+class ChartViewPermission(BasePermission):
+
+    def has_permission(self, request, view):
+        chart_url = request.resolver_match.kwargs.get('chart_url')
+        chart = Chart.objects.get(url=chart_url)
+        return request.user.has_perm('squealy.can_view_' + str(chart.id)) or request.user.has_perm('squealy.can_edit_' + str(chart.id))
 
 
 class ChartView(APIView):
