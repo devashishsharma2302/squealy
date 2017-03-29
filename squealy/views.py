@@ -74,35 +74,8 @@ def add_report_content(content=None):
     <title>Title</title>
 
 </head>
-<body>
-		{% block content %}
-			<div class="report-container" style="margin-bottom:5%;border:1px solid #e8e8e8;border-radius: 4px 4px 4px 4px;">
-        <h4 class="table-heading" style="width: 100%;background-color: #008dc1;color: #ffffff;margin: 0;padding: 15px;text-align: left;text-transform: capitalize;">{{ name }}</h4>
-	<div class="table-scroll" style="overflow: auto;max-height: 342px;">
-	    <table style="width: 100%;border-spacing: 0;display: table;border-spacing: 2px;border-color: grey;border-collapse: collapse;">
-	    {% if charts %}
-	    	<tbody>
-		        <tr style="font-weight:bold;">
-		        {% for col in charts.cols %}
-		           <th style="padding: 8px;line-height: 1.5;vertical-align: middle;text-align: left">{{ col.label }}</th>
-		        {% endfor %}
-		        </tr>
-		        {% for row in charts.rows %}
-		            <tr>
-		                {% for eachcol in row.c %}
-		                    <td style="padding: 8px;line-height: 1.5;vertical-align: middle;border-top: 1px solid #ddd;"> {{ eachcol.v }} </td>
-		                {% endfor %}
-		            </tr>
-		        {% endfor %}
-			</tbody>
-	    {% else %}
-	        <p>No charts</p>
-	    {% endif %}
-	    </table>
-    </div>
-		{% endblock %}
+<body> ''' + str(content) + '''
 
-    </div>
 </body>
 </html>
     '''
@@ -125,8 +98,8 @@ def send_report(request, chart_url):
     #template = loader.get_template('report_template.html')
     current_time = datetime.utcnow()
     #change it to minutes
-    scheduled_reports = ScheduledReport.objects.filter(next_run_at__range=(current_time+timedelta(days=-1),current_time))
-    print (current_time+timedelta(days=-1),current_time)
+    scheduled_reports = ScheduledReport.objects.filter(next_run_at__range=(current_time+timedelta(days=-1),current_time+timedelta(days=1)))
+    print (current_time+timedelta(days=-1),current_time+timedelta(days=1))
     print (scheduled_reports)
     user = request.user
 
@@ -141,23 +114,31 @@ def send_report(request, chart_url):
         chart_data = ChartProcessor().fetch_chart_data(chart_url, param_dict, user)
         chart = Chart.objects.get(url=chart_url)
         context = {
-            'charts': chart_data,
-            'name': chart.name
+            'charts':[
+                {
+                    'name':chart.name,
+                    'chart_data': chart_data
+                },
+                {
+                    'name': chart.name,
+                    'chart_data' : chart_data
+                }
+            ]
         }
-        add_report_content()
+        print (chart_data)
+        add_report_content(report.template)
         template = loader.get_template('report_template.html')
         report_template = template.render(context, request)
         recipients = list(ReportRecipient.objects.filter(report=report).values_list('email', flat=True))
 
         try:
-            print ('hello')
-
-            # send_mail(report.subject, 'Here is the message.', 'hashedinsquealy@gmail.com',
-            # recipients, fail_silently=False, html_message=report_template)
+            send_mail(report.subject, 'Here is the message.', 'hashedinsquealy@gmail.com',
+            ['daksh.gautam@hashedin.com'], fail_silently=False, html_message=report_template)
 
             #report.save() #should i do it earlier or do it right now
         except Exception as e:
             return HttpResponse('Unable to send email')
+
 
         delete_report_content()
     return HttpResponse('Mail sent successfully')
