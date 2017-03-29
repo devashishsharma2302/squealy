@@ -32,6 +32,7 @@ from .models import Chart, Transformation, Validation, Parameter, \
     ScheduledReport, ReportParameter, ReportRecipient
 from .validators import run_validation
 from datetime import datetime,timedelta
+from squealy.models import ScheduledReportChart
 
 jinjasql = configure_jinjasql()
 
@@ -63,36 +64,44 @@ class ChartViewPermission(BasePermission):
         return request.user.has_perm('squealy.can_view_' + chart_url) or request.user.has_perm('squealy.can_edit_' + chart_url)
 
 
-def send_report(request, chart_url):
-  
+def send_emails():
     template = loader.get_template('report_template.html')
-    current_time = datetime.utcnow().replace(second=0,microsecond=0)
-    scheduled_reports = ScheduledReport.objects.filter(next_run_at__range=(current_time+timedelta(minutes=-1),current_time))
-    user = request.user
-
-    for report in scheduled_reports:
-        report_parameters = ReportParameter.objects.filter(report=report)
-        chart_url = report.chart.url
+    current_time = datetime.utcnow().replace(second=0, microsecond=0)
+    scheduled_reports = ScheduledReport.objects.filter(
+                            next_run_at__range=(
+                                current_time+timedelta(minutes=-1), current_time
+                            )
+                        )
+    # TODO: Try to reduce the db queries here
+    for scheduled_report in scheduled_reports:
+        report_parameters = ReportParameter.objects.filter(report=scheduled_report)
         param_dict = {}
 
         for parameter in report_parameters:
             param_dict[parameter.parameter_name] = parameter.parameter_value
-        chart_data = ChartProcessor().fetch_chart_data(chart_url, param_dict, user)
-        chart = Chart.objects.get(url=chart_url)
-        context = {
-            'charts': chart_data,
-            'name': chart.name
+        recipients = list(ReportRecipient.objects.filter(report=scheduled_report).values_list('email', flat=True))
+
+        template_context = {
+            "charts": []
         }
-        report_template = template.render(context, request)
-        recipients = list(ReportRecipient.objects.filter(report=report).values_list('email', flat=True))
+        filtered_scheduled_reports = ScheduledReportChart.objects.filter(report=scheduled_report)
+
+        for report in filtered_scheduled_reports:
+            template_context['charts'].append(
+                {
+                    "data": ChartProcessor().fetch_chart_data(report.chart.url, param_dict, {}),
+                    "name": report.chart.name
+                }
+            )
+        report_template = template.render(template_context)
 
         try:
-            send_mail(report.subject, 'Here is the message.', 'hashedinsquealy@gmail.com',
-            recipients, fail_silently=False, html_message=report_template)
+            send_mail(
+                scheduled_report.subject, 'Here is the message.', 'hashedinsquealy@gmail.com',
+                recipients, fail_silently=False, html_message=report_template
+            )
         except Exception as e:
             return HttpResponse('Unable to send email')
-
-    return HttpResponse('Mail sent successfully')
 
 
 class ChartProcessor(object):

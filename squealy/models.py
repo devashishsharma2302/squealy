@@ -93,6 +93,18 @@ class ScheduledReport(models.Model):
     next_run_at = models.DateTimeField(null=True, blank=True)
     cron_expression = models.CharField(max_length=200)
 
+    def save(self, *args, **kwargs):
+        '''
+            function to evaluate "next_run_at" using the cron expression
+        '''
+        self.last_run_at = datetime.now()
+        iter = croniter(self.cron_expression, self.last_run_at)
+        self.next_run_at = iter.get_next(datetime)
+        super(ScheduledReport, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        return self.subject
+
 
 class ScheduledReportChart(models.Model):
     '''
@@ -101,14 +113,6 @@ class ScheduledReportChart(models.Model):
     chart = models.ForeignKey(Chart)
     report = models.ForeignKey(ScheduledReport)
 
-    def save(self,*args,**kwargs):
-        '''
-        function to evaluate "next_run_at" using the cron expression
-        '''
-        self.last_run_at = datetime.now()
-        iter = croniter(self.cron_expression,self.last_run_at)
-        self.next_run_at = iter.get_next(datetime)
-        super(ScheduledReport,self).save(*args,**kwargs)
 
 class ReportRecipient(models.Model):
     '''

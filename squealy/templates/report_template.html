@@ -1,35 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-
+   <meta charset="UTF-8">
+   <title>Title</title>
 </head>
 <body>
-	<div class="report-container" style="margin-bottom:5%;border:1px solid #e8e8e8;border-radius: 4px 4px 4px 4px;">
-        <h4 class="table-heading" style="width: 100%;background-color: #008dc1;color: #ffffff;margin: 0;padding: 15px;text-align: left;text-transform: capitalize;">{{ name }}</h4>
-	<div class="table-scroll" style="overflow: auto;max-height: 342px;">
-	    <table style="width: 100%;border-spacing: 0;display: table;border-spacing: 2px;border-color: grey;border-collapse: collapse;">
-	    {% if charts %}
-	    	<tbody>
-		        <tr style="font-weight:bold;">
-		        {% for col in charts.cols %}
-		            <th style="padding: 8px;line-height: 1.5;vertical-align: middle;text-align: left">{{ col.label }}</th>
-		        {% endfor %}
-		        </tr>
-		        {% for row in charts.rows %}
-		            <tr>
-		                {% for eachcol in row.c %}
-		                    <td style="padding: 8px;line-height: 1.5;vertical-align: middle;border-top: 1px solid #ddd;"> {{ eachcol.v }} </td>
-		                {% endfor %}
-		            </tr>
-		        {% endfor %}
-			</tbody>
-	    {% else %}
-	        <p>No charts</p>
-	    {% endif %}
-	    </table>
-    </div>
+    <div class="report-container" style="margin-bottom:5%;border:1px solid #e8e8e8 ;border-radius: 4px 4px 4px 4px;">
+      {% for chart in charts %}
+        <h4 class="table-heading" style="width: 100%;background-color: #008dc1 ;color: #ffffff ;margin: 0;padding: 15px;text-align: left;text-transform: capitalize;">{{ chart.name }}</h4>
+	    <div class="table-scroll" style="overflow: auto;max-height: 342px;">
+	        <table style="width: 100%;border-spacing: 0;display: table;border-spacing: 2px;border-color: grey;border-collapse: collapse;">
+	            <tbody>
+	                <tr style="font-weight:bold;">
+	                {% for col in data.cols %}
+	                    <th style="padding: 8px;line-height: 1.5;vertical-align: middle;text-align: left">{{ col.label }}</th>
+	                {% endfor %}
+	                </tr>
+	                {% for row in data.rows %}
+	                    <tr>
+	                        {% for eachcol in row.c %}
+	                            <td style="padding: 8px;line-height: 1.5;vertical-align: middle;border-top: 1px solid #ddd;"> {{ eachcol.v }} </td>
+	                        {% endfor %}
+	                    </tr>
+	                {% endfor %}
+	            </tbody>
+	        </table>
+	    </div>
+	  {% endfor %}
     </div>
 </body>
 </html>

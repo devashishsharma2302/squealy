@@ -1,7 +1,8 @@
 from django.contrib import admin
 
 from squealy.models import Account, Chart, Parameter,\
-    Transformation, Validation, ScheduledReport, ReportParameter, ReportRecipient
+    Transformation, Validation, ScheduledReport, ReportParameter,\
+    ReportRecipient, ScheduledReportChart
 from forms import ScheduledReportForm
 
 
@@ -18,7 +19,7 @@ class ScheduledReportAdmin(admin.ModelAdmin):
         List display for Scheduled reports in Django admin
     """
     model = ScheduledReport
-    list_display = ('id', 'chart', 'get_recipients', 'get_parameters')
+    list_display = ('id', 'get_recipients', 'get_parameters')
     inlines = [
         ScheduledReportParamAdmin,
         ReportRecipientAdmin
@@ -93,3 +94,4 @@ admin.site.register(Parameter, ParameterAdmin)
 admin.site.register(Transformation, TransformationAdmin)
 admin.site.register(Validation, ValidationAdmin)
 admin.site.register(ScheduledReport, ScheduledReportAdmin)
+admin.site.register(ScheduledReportChart)
