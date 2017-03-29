@@ -7,17 +7,25 @@ from croniter import croniter
 from .constants import TRANSFORMATION_TYPES, PARAMETER_TYPES, COLUMN_TYPES
 import json
 
+
 class CustomJSONField(models.TextField):
+
     def from_db_value(self, value, expression, connection, context):
         if value is None:
             return {}
-        return json.loads(value)
+        return json.dumps(value)
+
+    def get_prep_value(self, value):
+        return json.dumps(value)
 
     def to_python(self, value):
         if value is None:
             return {}
+        elif isinstance(value, basestring):
+            return json.loads(value)
+        else:
+            return value
 
-        return json.dumps(value)
 
 class Account(models.Model):
     """
@@ -28,6 +36,7 @@ class Account(models.Model):
 
     def __unicode__(self):
         return self.name
+
 
 class Chart(models.Model):
     """
@@ -42,11 +51,12 @@ class Chart(models.Model):
     format = models.CharField(max_length=50,
                               default="GoogleChartsFormatter")
     type = models.CharField(max_length=20, default="ColumnChart")
-    options = CustomJSONField(null=True, blank=True)
+    options = CustomJSONField(null=True, blank=True, default='{}')
     database = models.CharField(max_length=100, null=True, blank=True)
 
     def __unicode__(self):
         return self.name + "( /" + self.url + ")"
+
 
 class Parameter(models.Model):
     """
@@ -60,10 +70,11 @@ class Parameter(models.Model):
     default_value = models.CharField(max_length=200, null=True, blank=True)
     test_value = models.CharField(max_length=200, null=True, blank=True)
     type = models.IntegerField(default=1, choices=PARAMETER_TYPES)
-    kwargs = CustomJSONField(null=True, blank=True, default={})
+    kwargs = CustomJSONField(null=True, blank=True, default='{}')
 
     def __unicode__(self):
         return self.name
+
 
 class Transformation(models.Model):
     """
@@ -73,10 +84,11 @@ class Transformation(models.Model):
 
     chart = models.ForeignKey(Chart, related_name='transformations')
     name = models.IntegerField(default=1, choices=TRANSFORMATION_TYPES)
-    kwargs = CustomJSONField(null=True, blank=True, default={})
+    kwargs = CustomJSONField(null=True, blank=True, default='{}')
 
     def __unicode__(self):
         return TRANSFORMATION_TYPES[self.name-1][1]
+
 
 class Validation(models.Model):
     """
@@ -92,9 +104,9 @@ class Validation(models.Model):
 
 
 class ScheduledReport(models.Model):
-    '''
+    """
         Contains email subject and junctures when the email has to be send
-    '''
+    """
 
     subject = models.CharField(max_length=200)
     last_run_at = models.DateTimeField(null=True, blank=True)
@@ -103,26 +115,27 @@ class ScheduledReport(models.Model):
     chart = models.ForeignKey(Chart, related_name='scheduled_report')
 
     def save(self,*args,**kwargs):
-        '''
+        """
         function to evaluate "next_run_at" using the cron expression
-        '''
+        """
         self.last_run_at = datetime.now()
         iter = croniter(self.cron_expression,self.last_run_at)
         self.next_run_at = iter.get_next(datetime)
         super(ScheduledReport,self).save(*args,**kwargs)
 
+
 class ReportRecipient(models.Model):
-    '''
+    """
         Stores all the recepeints of the given reports
-    '''
+    """
     email = models.EmailField()
     report = models.ForeignKey(ScheduledReport, related_name='reportrecep')
 
 
 class ReportParameter(models.Model):
-    '''
+    """
         Stores the parameter and its values for every scheduled report
-    '''
+    """
     parameter_name = models.CharField(max_length=300)
     parameter_value = models.CharField(max_length=300)
     report = models.ForeignKey(ScheduledReport, related_name='reportparam')

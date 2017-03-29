@@ -37,7 +37,7 @@ class ChartsTestCase(BaseTestCase):
             self.assertEqual(response.status_code, 200)
             response = self.client.post('/charts/', payload, content_type='application/json')
             self.assertEqual(response.status_code, 400)
-            self.assertEqual(response.data, {"detail": "A chart with this url already exists"})
+            self.assertEqual(response.data, {"detail": "A chart with this name already exists"})
 
     def tearDown(self):
         BaseTestCase.delete_schema(self)
