@@ -56,9 +56,6 @@ class DatabaseView(APIView):
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
 
 
-
-
-
 def add_report_content(content=None):
     file = open('templates/report_template.html', 'w')
     content = '''
