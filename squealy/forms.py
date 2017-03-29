@@ -1,5 +1,5 @@
 from models import ScheduledReport
-from django.forms import ModelForm, ValidationError
+from django.forms import ModelForm, ValidationError, Textarea
 from croniter import croniter
 from datetime import datetime
 
@@ -7,8 +7,11 @@ from datetime import datetime
 class ScheduledReportForm(ModelForm):
     class Meta:
         model = ScheduledReport
-        fields = ['chart', 'subject', 'cron_expression']
+        fields = ['chart', 'subject', 'template', 'cron_expression']
         help_texts = {'cron_expression': 'Scheduled time is considered in UTC'}
+        widgets = {
+            'template': Textarea(attrs={'cols': 80, 'rows': 25})
+        }
 
     def clean(self):
         cleaned_data = super(ScheduledReportForm, self).clean()

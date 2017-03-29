@@ -93,6 +93,7 @@ class ScheduledReport(models.Model):
     next_run_at = models.DateTimeField(null=True, blank=True)
     cron_expression = models.CharField(max_length=200)
     chart = models.ForeignKey(Chart, related_name='scheduled_report')
+    template = models.TextField(null=True,blank=True)
 
     def save(self,*args,**kwargs):
         '''

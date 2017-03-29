@@ -8,6 +8,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.template import loader
 from django.http import HttpResponse
+from django.conf import settings
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import permission_classes, api_view
@@ -63,14 +64,74 @@ class ChartViewPermission(BasePermission):
         return request.user.has_perm('squealy.can_view_' + chart_url) or request.user.has_perm('squealy.can_edit_' + chart_url)
 
 
+def add_report_content(content=None):
+    file = open('templates/report_template.html','w')
+    content = '''
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<body>
+		{% block content %}
+			<div class="report-container" style="margin-bottom:5%;border:1px solid #e8e8e8;border-radius: 4px 4px 4px 4px;">
+        <h4 class="table-heading" style="width: 100%;background-color: #008dc1;color: #ffffff;margin: 0;padding: 15px;text-align: left;text-transform: capitalize;">{{ name }}</h4>
+	<div class="table-scroll" style="overflow: auto;max-height: 342px;">
+	    <table style="width: 100%;border-spacing: 0;display: table;border-spacing: 2px;border-color: grey;border-collapse: collapse;">
+	    {% if charts %}
+	    	<tbody>
+		        <tr style="font-weight:bold;">
+		        {% for col in charts.cols %}
+		           <th style="padding: 8px;line-height: 1.5;vertical-align: middle;text-align: left">{{ col.label }}</th>
+		        {% endfor %}
+		        </tr>
+		        {% for row in charts.rows %}
+		            <tr>
+		                {% for eachcol in row.c %}
+		                    <td style="padding: 8px;line-height: 1.5;vertical-align: middle;border-top: 1px solid #ddd;"> {{ eachcol.v }} </td>
+		                {% endfor %}
+		            </tr>
+		        {% endfor %}
+			</tbody>
+	    {% else %}
+	        <p>No charts</p>
+	    {% endif %}
+	    </table>
+    </div>
+		{% endblock %}
+
+    </div>
+</body>
+</html>
+    '''
+    file.write(content)
+    file.close()
+
+
+def delete_report_content():
+    with open('templates/report_template.html', 'w'):
+        pass
+
 def send_report(request, chart_url):
-  
-    template = loader.get_template('report_template.html')
-    current_time = datetime.utcnow().replace(second=0,microsecond=0)
-    scheduled_reports = ScheduledReport.objects.filter(next_run_at__range=(current_time+timedelta(minutes=-1),current_time))
+
+    # print (settings.AUTHORISATION_TOKEN,'----------------')
+    # if (request.META['HTTP_AUTHTOKEN'] != settings.AUTHORISATION_TOKEN):
+    #     print ('Sorry wrong authorisation token')
+    #     return
+    #
+    # return
+    #template = loader.get_template('report_template.html')
+    current_time = datetime.utcnow()
+    #change it to minutes
+    scheduled_reports = ScheduledReport.objects.filter(next_run_at__range=(current_time+timedelta(days=-1),current_time))
+    print (current_time+timedelta(days=-1),current_time)
+    print (scheduled_reports)
     user = request.user
 
     for report in scheduled_reports:
+        add_report_content()
         report_parameters = ReportParameter.objects.filter(report=report)
         chart_url = report.chart.url
         param_dict = {}
@@ -83,15 +144,22 @@ def send_report(request, chart_url):
             'charts': chart_data,
             'name': chart.name
         }
+        add_report_content()
+        template = loader.get_template('report_template.html')
         report_template = template.render(context, request)
         recipients = list(ReportRecipient.objects.filter(report=report).values_list('email', flat=True))
 
         try:
-            send_mail(report.subject, 'Here is the message.', 'hashedinsquealy@gmail.com',
-            recipients, fail_silently=False, html_message=report_template)
+            print ('hello')
+
+            # send_mail(report.subject, 'Here is the message.', 'hashedinsquealy@gmail.com',
+            # recipients, fail_silently=False, html_message=report_template)
+
+            #report.save() #should i do it earlier or do it right now
         except Exception as e:
             return HttpResponse('Unable to send email')
 
+        delete_report_content()
     return HttpResponse('Mail sent successfully')
 
 
