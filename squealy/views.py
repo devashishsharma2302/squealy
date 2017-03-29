@@ -22,7 +22,8 @@ from squealy.jinjasql_loader import configure_jinjasql
 from squealy.serializers import ChartSerializer, FilterSerializer
 from .exceptions import RequiredParameterMissingException,\
                         ChartNotFoundException, MalformedChartDataException, \
-                        TransformationException, DatabaseWriteException, DuplicateUrlException
+                        TransformationException, DatabaseWriteException, DuplicateUrlException,\
+                        FilterNotFoundException
 from .transformers import *
 from .formatters import *
 from .parameters import *
@@ -70,7 +71,7 @@ def send_report(request, chart_url):
 
         for parameter in report_parameters:
             param_dict[parameter.parameter_name] = parameter.parameter_value
-        chart_data = ChartProcessor().fetch_chart_data(chart_url, param_dict, user)
+        chart_data = DataProcessor().fetch_chart_data(chart_url, param_dict, user)
         chart = Chart.objects.get(url=chart_url)
         context = {
             'charts': chart_data,
@@ -88,7 +89,7 @@ def send_report(request, chart_url):
     return HttpResponse('Mail sent successfully')
 
 
-class ChartProcessor(object):
+class DataProcessor(object):
 
     def fetch_chart_data(self, chart_url, params, user):
         """
@@ -118,7 +119,7 @@ class ChartProcessor(object):
             raise ChartNotFoundException('Database is not selected')
 
         # Execute the Query, and return a Table
-        table = self._execute_query(params, user, filter.query, filter.database)
+        table = self._execute_query(params, user, filter_obj.query, filter_obj.database)
         data = self._format(table, 'json')
 
         return data
@@ -251,7 +252,7 @@ class ChartView(APIView):
         """
         params = request.GET.copy()
         user = request.user
-        data = ChartProcessor().fetch_chart_data(chart_url, params, user)
+        data = DataProcessor().fetch_chart_data(chart_url, params, user)
         return Response(data)
 
     def post(self, request, chart_url=None, *args, **kwargs):
@@ -261,7 +262,7 @@ class ChartView(APIView):
         try:
             params = request.data.get('params', {})
             user = request.data.get('user', None)
-            data = ChartProcessor().fetch_chart_data(chart_url, params, user)
+            data = DataProcessor().fetch_chart_data(chart_url, params, user)
             return Response(data)
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
@@ -484,8 +485,8 @@ class FilterView(APIView):
         This is the API endpoint for executing the query and returning the data for a particular Filter
         """
         user = request.user
-        params = request.params
-        data = ChartProcessor().fetch_filter_data(filter_url, params, user)
+        params = []
+        data = DataProcessor().fetch_filter_data(filter_url, params, user)
         return Response(data)
 
 
@@ -519,7 +520,7 @@ class FilterLoaderView(APIView):
             Permission.objects.filter(codename__in=['can_edit_' + str(chart.id)]).delete()
             Filter.objects.filter(id=data['id']).first().delete()
         except Exception:
-            ChartNotFoundException('A filter with id' + data['id'] + 'was not found')
+            FilterNotFoundException('A filter with id' + data['id'] + 'was not found')
         return Response({})
 
     def post(self, request):

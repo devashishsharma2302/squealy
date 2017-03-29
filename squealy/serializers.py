@@ -14,5 +14,5 @@ class ChartSerializer(serializers.ModelSerializer):
 class FilterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Filter
-        fields = ('id', 'name', 'url', 'query', 'database')
+        fields = '__all__'
         depth = 1
