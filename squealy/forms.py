@@ -2,7 +2,7 @@ from models import ScheduledReport
 from django.forms import ModelForm, ValidationError, Textarea
 from croniter import croniter
 from datetime import datetime
-
+from squealyproj.widgets import HtmlEditor
 
 class ScheduledReportForm(ModelForm):
     class Meta:
@@ -10,7 +10,7 @@ class ScheduledReportForm(ModelForm):
         fields = ['chart', 'subject', 'template', 'cron_expression']
         help_texts = {'cron_expression': 'Scheduled time is considered in UTC'}
         widgets = {
-            'template': Textarea(attrs={'cols': 80, 'rows': 25})
+            'template': HtmlEditor()
         }
 
     def clean(self):

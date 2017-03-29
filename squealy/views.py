@@ -17,13 +17,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-
 from squealy.constants import SQL_WRITE_BLACKLIST
 from squealy.jinjasql_loader import configure_jinjasql
 from squealy.serializers import ChartSerializer
-from .exceptions import RequiredParameterMissingException,\
-                        ChartNotFoundException, MalformedChartDataException, \
-                        TransformationException, DatabaseWriteException, DuplicateUrlException
+from .exceptions import RequiredParameterMissingException, \
+    ChartNotFoundException, MalformedChartDataException, \
+    TransformationException, DatabaseWriteException, DuplicateUrlException
 from .transformers import *
 from .formatters import *
 from .parameters import *
@@ -32,9 +31,10 @@ from .table import Table
 from .models import Chart, Transformation, Validation, Parameter, \
     ScheduledReport, ReportParameter, ReportRecipient
 from .validators import run_validation
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 
 jinjasql = configure_jinjasql()
+
 
 class DatabaseView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
@@ -49,8 +49,8 @@ class DatabaseView(APIView):
             for db in database:
                 # if db != 'default':
                 database_response.append({
-                  'value': db,
-                  'label': database[db]['NAME']
+                    'value': db,
+                    'label': database[db]['NAME']
                 })
             return Response({'databases': database_response})
         except Exception as e:
@@ -58,26 +58,22 @@ class DatabaseView(APIView):
 
 
 class ChartViewPermission(BasePermission):
-
     def has_permission(self, request, view):
         chart_url = request.resolver_match.kwargs.get('chart_url')
-        return request.user.has_perm('squealy.can_view_' + chart_url) or request.user.has_perm('squealy.can_edit_' + chart_url)
+        return request.user.has_perm('squealy.can_view_' + chart_url) or request.user.has_perm(
+            'squealy.can_edit_' + chart_url)
 
 
 def add_report_content(content=None):
-    file = open('templates/report_template.html','w')
+    file = open('templates/report_template.html', 'w')
     content = '''
     <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-
-</head>
-<body> ''' + str(content) + '''
-
-</body>
-</html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Title</title>
+        </head>
+        <body> ''' + str(content) + '''</body></html>
     '''
     file.write(content)
     file.close()
@@ -87,20 +83,11 @@ def delete_report_content():
     with open('templates/report_template.html', 'w'):
         pass
 
-def send_report(request, chart_url):
 
-    # print (settings.AUTHORISATION_TOKEN,'----------------')
-    # if (request.META['HTTP_AUTHTOKEN'] != settings.AUTHORISATION_TOKEN):
-    #     print ('Sorry wrong authorisation token')
-    #     return
-    #
-    # return
-    #template = loader.get_template('report_template.html')
+def send_report(request):
     current_time = datetime.utcnow()
-    #change it to minutes
-    scheduled_reports = ScheduledReport.objects.filter(next_run_at__range=(current_time+timedelta(days=-1),current_time+timedelta(days=1)))
-    print (current_time+timedelta(days=-1),current_time+timedelta(days=1))
-    print (scheduled_reports)
+    scheduled_reports = ScheduledReport.objects.filter(
+        next_run_at__range=(current_time + timedelta(minutes=-1), current_time))
     user = request.user
 
     for report in scheduled_reports:
@@ -113,19 +100,19 @@ def send_report(request, chart_url):
             param_dict[parameter.parameter_name] = parameter.parameter_value
         chart_data = ChartProcessor().fetch_chart_data(chart_url, param_dict, user)
         chart = Chart.objects.get(url=chart_url)
+        #Customize content
         context = {
-            'charts':[
+            'charts': [
                 {
-                    'name':chart.name,
+                    'name': chart.name,
                     'chart_data': chart_data
                 },
                 {
                     'name': chart.name,
-                    'chart_data' : chart_data
+                    'chart_data': chart_data
                 }
             ]
         }
-        print (chart_data)
         add_report_content(report.template)
         template = loader.get_template('report_template.html')
         report_template = template.render(context, request)
@@ -133,13 +120,11 @@ def send_report(request, chart_url):
 
         try:
             send_mail(report.subject, 'Here is the message.', 'hashedinsquealy@gmail.com',
-            ['daksh.gautam@hashedin.com'], fail_silently=False, html_message=report_template)
+                      recipients, fail_silently=False, html_message=report_template)
 
-            #report.save() #should i do it earlier or do it right now
+            report.save()
         except Exception as e:
             return HttpResponse('Unable to send email')
-
-
         delete_report_content()
     return HttpResponse('Mail sent successfully')
 
@@ -193,8 +178,8 @@ class ChartProcessor(object):
         for index, param in enumerate(parameter_definitions):
             # Default values
             if param.default_value and \
-                    param.default_value!= '' and \
-                    params.get(param.name) in [None, '']:
+                            param.default_value != '' and \
+                            params.get(param.name) in [None, '']:
                 params[param.name] = param.default_value
 
             # Check for missing required parameters
@@ -225,8 +210,8 @@ class ChartProcessor(object):
 
         query, bind_params = jinjasql.prepare_query(chart_query,
                                                     {
-                                                     "params": params,
-                                                     "user": user
+                                                        "params": params,
+                                                        "user": user
                                                     })
         conn = connections[db]
         with conn.cursor() as cursor:
@@ -298,7 +283,6 @@ class ChartView(APIView):
 
 
 class ChartUpdatePermission(BasePermission):
-
     def has_permission(self, request, view):
         if request.method == 'POST' and request.data.get('chart'):
             chart_data = request.data['chart']
@@ -354,14 +338,14 @@ class ChartsLoaderView(APIView):
         try:
             data = request.data['chart']
             chart_object = Chart(
-                            id=data['id'],
-                            name=data['name'],
-                            url=data['url'],
-                            query=data['query'],
-                            type=data['type'],
-                            options=data['options'],
-                            database=data['database']
-                        )
+                id=data['id'],
+                name=data['name'],
+                url=data['url'],
+                query=data['query'],
+                type=data['type'],
+                options=data['options'],
+                database=data['database']
+            )
             chart_object.save()
 
             # Create view/edit permissions
@@ -397,7 +381,7 @@ class ChartsLoaderView(APIView):
 
             request.user.user_permissions.add(view_perm)
             request.user.user_permissions.add(edit_perm)
-            
+
             chart_id = chart_object.id
             Chart.objects.all().prefetch_related('transformations', 'parameters', 'validations')
 
