@@ -8,6 +8,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.template import loader
 from django.http import HttpResponse
+from django.conf import settings
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import permission_classes, api_view
@@ -16,13 +17,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-
 from squealy.constants import SQL_WRITE_BLACKLIST
 from squealy.jinjasql_loader import configure_jinjasql
 from squealy.serializers import ChartSerializer
-from .exceptions import RequiredParameterMissingException,\
-                        ChartNotFoundException, MalformedChartDataException, \
-                        TransformationException, DatabaseWriteException, DuplicateUrlException
+from .exceptions import RequiredParameterMissingException, \
+    ChartNotFoundException, MalformedChartDataException, \
+    TransformationException, DatabaseWriteException, DuplicateUrlException
 from .transformers import *
 from .formatters import *
 from .parameters import *
@@ -34,6 +34,7 @@ from .validators import run_validation
 from datetime import datetime, timedelta
 
 jinjasql = configure_jinjasql()
+
 
 class DatabaseView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
@@ -56,7 +57,12 @@ class DatabaseView(APIView):
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
 
 
-
+<<<<<<< HEAD
+class ChartViewPermission(BasePermission):
+    def has_permission(self, request, view):
+        chart_url = request.resolver_match.kwargs.get('chart_url')
+        return request.user.has_perm('squealy.can_view_' + chart_url) or request.user.has_perm(
+            'squealy.can_edit_' + chart_url)
 
 
 def add_report_content(content=None):
@@ -83,6 +89,13 @@ def send_report(request):
     current_time = datetime.utcnow()
     scheduled_reports = ScheduledReport.objects.filter(
         next_run_at__range=(current_time + timedelta(minutes=-1), current_time))
+=======
+def send_report(request, chart_url):
+  
+    template = loader.get_template('report_template.html')
+    current_time = datetime.utcnow().replace(second=0,microsecond=0)
+    scheduled_reports = ScheduledReport.objects.filter(next_run_at__range=(current_time+timedelta(minutes=-1),current_time))
+>>>>>>> upstream/phase-2
     user = request.user
 
     for report in scheduled_reports:
@@ -173,8 +186,8 @@ class ChartProcessor(object):
         for index, param in enumerate(parameter_definitions):
             # Default values
             if param.default_value and \
-                    param.default_value!= '' and \
-                    params.get(param.name) in [None, '']:
+                            param.default_value != '' and \
+                            params.get(param.name) in [None, '']:
                 params[param.name] = param.default_value
 
             # Check for missing required parameters
@@ -205,8 +218,8 @@ class ChartProcessor(object):
 
         query, bind_params = jinjasql.prepare_query(chart_query,
                                                     {
-                                                     "params": params,
-                                                     "user": user
+                                                        "params": params,
+                                                        "user": user
                                                     })
         conn = connections[db]
         with conn.cursor() as cursor:
@@ -286,7 +299,6 @@ class ChartView(APIView):
 
 
 class ChartUpdatePermission(BasePermission):
-
     def has_permission(self, request, view):
         if request.method == 'POST' and request.data.get('chart'):
             chart_data = request.data['chart']
