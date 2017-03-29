@@ -19,7 +19,7 @@ from rest_framework import status
 
 from squealy.constants import SQL_WRITE_BLACKLIST
 from squealy.jinjasql_loader import configure_jinjasql
-from squealy.serializers import ChartSerializer
+from squealy.serializers import ChartSerializer, FilterSerializer
 from .exceptions import RequiredParameterMissingException,\
                         ChartNotFoundException, MalformedChartDataException, \
                         TransformationException, DatabaseWriteException, DuplicateUrlException
@@ -29,7 +29,7 @@ from .parameters import *
 from .utils import SquealySettings
 from .table import Table
 from .models import Chart, Transformation, Validation, Parameter, \
-    ScheduledReport, ReportParameter, ReportRecipient
+    ScheduledReport, ReportParameter, ReportRecipient, Filter
 from .validators import run_validation
 
 
@@ -109,6 +109,30 @@ class ChartProcessor(object):
             raise ChartNotFoundException('Database is not selected')
 
         return self._process_chart_query(chart, params, user)
+
+
+    def fetch_filter_data(self, filter_url, params, user):
+        filter = Filter.objects.filter(url=filter_url).first()
+
+        if not filter:
+            raise ChartNotFoundException('Filter not found')
+
+        if not filter.database:
+            raise ChartNotFoundException('Database is not selected')
+
+        # Parse Parameters
+        # parameter_definitions = filter.parameters.all()
+        # if parameter_definitions:
+        #     params = self._parse_params(params, parameter_definitions)
+
+        # Execute the Query, and return a Table
+        table = self._execute_query(params, user, filter.query, filter.database)
+
+        # Format the table according to google charts / highcharts etc
+        data = self._format(table, 'json')
+
+        return data
+
 
     def _process_chart_query(self, chart, params, user):
         """
@@ -416,6 +440,103 @@ class UserInformation(APIView):
         response['can_delete_chart'] = user.has_perm('squealy.delete_chart')
         response['isAdmin'] = user.is_superuser
         return Response(response)
+
+
+class FilterEditPermission(BasePermission):
+
+    def has_permission(self, request, view):
+        filter_url = request.resolver_match.kwargs.get('url')
+        return request.user.has_perm('squealy.can_edit_' + filter_url)
+
+
+class FilterView(APIView):
+    permission_classes = SquealySettings.get_default_permission_classes()
+    permission_classes.append(FilterEditPermission)
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
+
+    def get(self, request, filter_url=None, *args, **kwargs):
+        """
+        This is the API endpoint for executing the query and returning the data for a particular Filter
+        """
+        user = request.user
+        # params = request.params
+        data = ChartProcessor().fetch_filter_data(filter_url, [], user)
+        return Response(data)
+
+
+class FilterLoadView(APIView):
+    permission_classes = SquealySettings.get_default_permission_classes()
+    permission_classes.append(FilterEditPermission)
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
+
+    def get(self, request, *args, **kwargs):
+        filters = Filter.objects.order_by('id').all()
+        permitted_filters = []
+        for filter in filters:
+            filter_data = FilterSerializer(filter).data
+            if request.user.has_perm('squealy.can_edit_' + str(filter.id)):
+                filter_data['can_edit'] = True
+            permitted_filters.append(filter_data)
+
+        return Response(permitted_filters)
+
+    def delete(self, request):
+        """
+        To delete a chart
+        """
+        data = request.data
+        try:
+            chart = Filter.objects.filter(id=data['id']).first()
+            Permission.objects.filter(codename__in=['can_edit_' + str(chart.id)]).delete()
+            Filter.objects.filter(id=data['id']).first().delete()
+        except Exception:
+            ChartNotFoundException('A filter with id' + data['id'] + 'was not found')
+        return Response({})
+
+    def post(self, request):
+        """
+        To save or update chart objects
+        """
+        try:
+            data = request.data['filter']
+            filter_object = Filter(
+                            id=data['id'],
+                            name=data['name'],
+                            url=data['url'],
+                            query=data['query'],
+                            format=data['format'],
+                            database=data['database']
+                        )
+            filter_object.save()
+
+            # Create edit permissions
+            content_type = ContentType.objects.get_for_model(Filter)
+
+
+            # Edit permission
+            perm_id = None
+            perm = Permission.objects.filter(codename='can_edit_' + str(filter_object.id)).first()
+            if perm:
+                perm_id = perm.id
+            Permission(
+                id=perm_id,
+                codename='can_edit_' + str(filter_object.id),
+                name='Can edit ' + filter_object.url,
+                content_type=content_type,
+            ).save()
+
+            filter_id = filter_object.id
+            Filter.objects.all()
+
+
+        except KeyError as e:
+            raise MalformedChartDataException("Key Error - " + str(e.args))
+        except IntegrityError as e:
+            raise DuplicateUrlException('A filter with this url already exists')
+
+        return Response(filter_id, status.HTTP_200_OK)
 
 
 @api_view(['GET'])

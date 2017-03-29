@@ -37,6 +37,20 @@ class Chart(models.Model):
         return self.name + "( /" + self.url + ")"
 
 
+class Filter(models.Model):
+    """
+    This represents an API for generating a dropdown filter.
+    """
+    url = models.CharField(max_length=255, unique=True)
+    query = models.TextField()
+    # To be updated to be in sync with the authoring interface UI.
+    name = models.CharField(max_length=255)
+    database = models.CharField(max_length=100, null=True, blank=True)
+
+    def __unicode__(self):
+        return self.name + "( /" + self.url + ")"
+
+
 class Parameter(models.Model):
     """
     This represents a parameter injected in the query
