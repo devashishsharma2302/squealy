@@ -47,21 +47,14 @@ class DatabaseView(APIView):
             database = settings.DATABASES
 
             for db in database:
-                if db != 'default':
-                    database_response.append({
-                      'value': db,
-                      'label': database[db]['NAME']
-                    })
+                # if db != 'default':
+                database_response.append({
+                  'value': db,
+                  'label': database[db]['NAME']
+                })
             return Response({'databases': database_response})
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
-
-
-class ChartViewPermission(BasePermission):
-
-    def has_permission(self, request, view):
-        chart_url = request.resolver_match.kwargs.get('chart_url')
-        return request.user.has_perm('squealy.can_view_' + chart_url) or request.user.has_perm('squealy.can_edit_' + chart_url)
 
 
 def send_emails():
@@ -229,6 +222,14 @@ class ChartProcessor(object):
         return table
 
 
+class ChartViewPermission(BasePermission):
+
+    def has_permission(self, request, view):
+        chart_url = request.resolver_match.kwargs.get('chart_url')
+        chart = Chart.objects.get(url=chart_url)
+        return request.user.has_perm('squealy.can_view_' + str(chart.id)) or request.user.has_perm('squealy.can_edit_' + str(chart.id))
+
+
 class ChartView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
     permission_classes.append(ChartViewPermission)
@@ -333,25 +334,31 @@ class ChartsLoaderView(APIView):
             if perm:
                 perm_id = perm.id
 
-            Permission(
+            view_perm = Permission(
                 id=perm_id,
                 codename='can_view_' + str(chart_object.id),
                 name='Can view ' + chart_object.url,
                 content_type=content_type,
-            ).save()
+            )
+            view_perm.save()
 
             # Edit permission
             perm_id = None
             perm = Permission.objects.filter(codename='can_edit_' + str(chart_object.id)).first()
             if perm:
                 perm_id = perm.id
-            Permission(
+
+            edit_perm = Permission(
                 id=perm_id,
                 codename='can_edit_' + str(chart_object.id),
                 name='Can edit ' + chart_object.url,
                 content_type=content_type,
-            ).save()
+            )
+            edit_perm.save()
 
+            request.user.user_permissions.add(view_perm)
+            request.user.user_permissions.add(edit_perm)
+            
             chart_id = chart_object.id
             Chart.objects.all().prefetch_related('transformations', 'parameters', 'validations')
 
@@ -405,7 +412,7 @@ class ChartsLoaderView(APIView):
         except KeyError as e:
             raise MalformedChartDataException("Key Error - " + str(e.args))
         except IntegrityError as e:
-            raise DuplicateUrlException('A chart with this url already exists')
+            raise DuplicateUrlException('A chart with this name already exists')
 
         return Response(chart_id, status.HTTP_200_OK)
 

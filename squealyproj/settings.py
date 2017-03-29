@@ -91,7 +91,7 @@ DATABASES = {
 }
 
 # Database for reports generation. Pass the DATABASE_URL variable from environment.
-# DATABASES = extract_dj_database_urls(os.environ.get('QUERY_DB'))
+extract_dj_database_urls(os.environ.get('QUERY_DB'), DATABASES)
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
