@@ -167,8 +167,8 @@ if 'test' in sys.argv:
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
+
     INSTALLED_APPS = INSTALLED_APPS + ['django_nose',]
     TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-
     NOSE_ARGS = ['--with-coverage',
                  '--cover-package=squealy']
