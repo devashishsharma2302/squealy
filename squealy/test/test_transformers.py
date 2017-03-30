@@ -47,7 +47,7 @@ class TransformersTestCase(BaseTestCase):
     def test_transpose_transformation(self):
         response = self.client.get('/squealy/' + self.chart.name + '/')
         jsonResponse = response.json()
-        self.assertDictEqual(jsonResponse,{u'data': [[u'experience', 6, 15, 10, 5, 15], [u'salary', 9, 7, 4, 11, 10]], u'columns': [u'name', u'test3', u'test4', u'test2', u'test1', u'test5']})
+        self.assertDictEqual(jsonResponse,{u'data': [[u'experience', 5, 10, 6, 15, 15], [u'salary', 11, 4, 9, 7, 10]], u'columns': [u'name', u'test1', u'test2', u'test3', u'test4', u'test5']})
 
     def test_split_transformation(self):
         self._create_schema_for_split()
@@ -71,7 +71,7 @@ class TransformersTestCase(BaseTestCase):
         self.transform_object.save()
         response = self.client.get('/squealy/' + self.chart.name + '/')
         json_response = response.json()
-        self.assertDictEqual(json_response,{u'data': [[u'test3', 6], [u'test3', 9], [u'test4', 15], [u'test4', 7], [u'test2', 10], [u'test2', 4], [u'test1', 5], [u'test1', 11], [u'test5', 15], [u'test5', 10]], u'columns': [u'name', u'new']})
+        self.assertDictEqual(json_response,{u'data': [[u'test1', 5], [u'test1', 11], [u'test2', 10], [u'test2', 4], [u'test3', 6], [u'test3', 9], [u'test4', 15], [u'test4', 7], [u'test5', 15], [u'test5', 10]], u'columns': [u'name', u'new']})
 
     def tearDown(self):
         Chart.objects.all().delete()
