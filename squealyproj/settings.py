@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 import djcelery
+
 from .utils import extract_dj_database_urls
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -160,7 +161,6 @@ EMAIL_PORT = os.environ.get('EMAIL_PORT')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Celery settings
-
 BROKER_URL = 'django://'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'

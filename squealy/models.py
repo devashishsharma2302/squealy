@@ -130,18 +130,20 @@ class ScheduledReport(models.Model):
 
 
 class ScheduledReportChart(models.Model):
-    '''
+    """
         Many to many mapping between charts and cheduled reports
-    '''
-    chart = models.ForeignKey(Chart)
-    report = models.ForeignKey(ScheduledReport)
+    """
 
+    chart = models.ForeignKey(Chart, related_name='scheduledreportchart')
+    report = models.ForeignKey(ScheduledReport,
+                               related_name='relatedscheduledreport')
 
 
 class ReportRecipient(models.Model):
     """
         Stores all the recepeints of the given reports
     """
+
     email = models.EmailField()
     report = models.ForeignKey(ScheduledReport, related_name='reportrecep')
 
@@ -150,6 +152,7 @@ class ReportParameter(models.Model):
     """
         Stores the parameter and its values for every scheduled report
     """
+
     parameter_name = models.CharField(max_length=300)
     parameter_value = models.CharField(max_length=300)
     report = models.ForeignKey(ScheduledReport, related_name='reportparam')
