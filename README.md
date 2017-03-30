@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.org/hashedin/squealy.svg?branch=phase-2)](https://travis-ci.org/hashedin/squealy)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
 
-SQueaLy is an open-source, self-deployable application that runs on Django. It is a microservice for BI tools which fastracks the process of creating authorized APIs. It gives you the power to analyze and visualize your organizational data in an environment that is completely owned by you. Hence, making it the most suitable solution for generating charts and reports out of sensitive data.
+SQueaLy is an open-source, self-deployable application that runs on Django. It is a microservice for business intelegence and analytics which provides reporting APIs with fine grained security and fastracks your development. It gives you the power to analyze and visualize your organizational data in an environment that is completely owned by you. Hence, making it the most suitable solution for generating charts and reports out of sensitive data.
 
 ## When to use SQueaLy
 
