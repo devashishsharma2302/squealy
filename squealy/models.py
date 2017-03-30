@@ -60,6 +60,7 @@ class Chart(models.Model):
     def __unicode__(self):
         return self.name + "( /" + self.url + ")"
 
+
 class Filter(models.Model):
     """
     This represents an API for generating a dropdown filter.
@@ -129,8 +130,11 @@ class ScheduledReport(models.Model):
     last_run_at = models.DateTimeField(null=True, blank=True)
     next_run_at = models.DateTimeField(null=True, blank=True)
     cron_expression = models.CharField(max_length=200)
+    template = models.TextField(
+                null=True, blank=True,
+                help_text="Add '{% include 'report.html' %}' to include your reports in mail")
 
-    def save(self,*args,**kwargs):
+    def save(self, *args, **kwargs):
         """
         function to evaluate "next_run_at" using the cron expression
         """

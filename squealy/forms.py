@@ -1,14 +1,21 @@
-from models import ScheduledReport
-from django.forms import ModelForm, ValidationError
-from croniter import croniter
 from datetime import datetime
+
+from croniter import croniter
+from django.forms import ModelForm, ValidationError
+
+from models import ScheduledReport
+from squealy.widgets import HtmlEditor
 
 
 class ScheduledReportForm(ModelForm):
     class Meta:
         model = ScheduledReport
         fields = ['subject', 'cron_expression']
+        fields = ['subject', 'template', 'cron_expression']
         help_texts = {'cron_expression': 'Scheduled time is considered in UTC'}
+        widgets = {
+            'template': HtmlEditor()
+        }
 
     def clean(self):
         cleaned_data = super(ScheduledReportForm, self).clean()

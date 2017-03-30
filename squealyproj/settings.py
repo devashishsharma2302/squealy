@@ -11,11 +11,8 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
-<<<<<<< HEAD
 import djcelery
-=======
 import sys
->>>>>>> upstream/phase-2
 
 from .utils import extract_dj_database_urls
 
