@@ -1,8 +1,11 @@
-from models import ScheduledReport
-from django.forms import ModelForm, ValidationError, Textarea
-from croniter import croniter
 from datetime import datetime
-from squealyproj.widgets import HtmlEditor
+
+from croniter import croniter
+from django.forms import ModelForm, ValidationError
+
+from models import ScheduledReport
+from squealy.widgets import HtmlEditor
+
 
 class ScheduledReportForm(ModelForm):
     class Meta:
