@@ -4,17 +4,17 @@
 [![Build Status](https://travis-ci.org/hashedin/squealy.svg?branch=phase-2)](https://travis-ci.org/hashedin/squealy)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
 
-SQueaLy is an open-source, self-deployable application that runs on Django. It is a microservice for business intelegence and analytics which provides reporting APIs with fine grained security and fastracks your development. It gives you the power to analyze and visualize your organizational data in an environment that is completely owned by you. Hence, making it the most suitable solution for generating charts and reports out of sensitive data.
+SQueaLy is an open-source, self-deployable application that runs on Django. It is a micro service for business intelligence and analytics which provides reporting APIs with fine-grained security and fast tracks your development. It gives you the power to analyze and visualize your organizational data in an environment that is completely owned by you. Hence, making it the most suitable solution for generating charts and reports out of sensitive data.
 
 ## When to use SQueaLy
 
 **When you want charts and reports in your application at a hot pace**  
 
-Using SQueaLy, creating APIs for your reports/charts and visualizing the output is super quick. Just write the query to fetch the data from your database and use the SQueaLy's authoring interface to visualize the output. Once satisfied, give your users the permission to view/edit the report and share the URL of your report. That's it !
+Using SQueaLy, creating APIs for your reports/charts and visualizing the output is super quick. Just write the query to fetch the data from your database and use the SQueaLy's authoring interface to visualize the output. Once satisfied, give your users the permission to view/edit the report and share the URL of your report. That's it!
 
 **When you want fine grained security in your reporting APIs**  
 
-You can provide not only chart level view permissions but also user/parameter level permissions. To make that one liner straighformard, consider the following use case.  
+You can provide not only chart level view permissions but also user/parameter level permissions. To make that one liner straighforward, consider the following use case.  
 You have a chain of hotels based on multiple locations. You create 5 reports which are to be viewed by the managers of each hotel but you don't want the manager of one location to view the report of the hotels not managed by him.  
 Now if you write this logic in your own code, it is going to take a lot of time but using SQueLy, this can be done in seconds.
 
@@ -24,7 +24,7 @@ SQueaLy also provides you the interface to schedule emails with reports embedded
 - Group the reports you want to send in the email
 - Write a [cron expression](http://docwiki.embarcadero.com/Connect/en/Writing_a_CRON_Expression) to schedule the email
 
-Not just that. For whitelabling, you can even customize the look and feel of the email message by providing the HTML for it 
+Not just that. For white labling, you can even customize the look and feel of the email message by providing the HTML for it 
 
 
 ## Key Features
@@ -33,7 +33,7 @@ Not just that. For whitelabling, you can even customize the look and feel of the
 Just click on the 'deploy-to-Heroku' button, login to your Heroku account, enter environment variables and the application will be deployed under your account and domain.
 
 **JSFiddle like interface to test and visualize the output**  
-SQueaLy provides you a user friendly editor like interface to test and debug your queries/APIs.
+SQueaLy provides you a user-friendly editor like interface to test and debug your queries/APIs.
 
 **Your data is always secure**  
 
@@ -41,7 +41,7 @@ All the database credentials and secret keys are stored as environment variables
 
 **More than just SQL**  
 
-SQueaLy uses JinjaSQL behind the scenes which gives you power to **use JINJA inside the sql query**. For more details, check out [JinjaSQL](https://github.com/hashedin/jinjasql/).
+SQueaLy uses JinjaSQL behind the scenes which gives you power to **use JINJA inside the SQL query**. For more details, check out [JinjaSQL](https://github.com/hashedin/jinjasql/).
 
 **Permission based model**  
 
@@ -53,12 +53,12 @@ You can set up multiple database connections and specify the database to use whi
 
 **Scheduled emails embedded with reports**  
 
-SQueaLy comes with email solutions as well. You can schedule emails embedded with the charts/reports you had created by just writting a [cron expression](http://docwiki.embarcadero.com/Connect/en/Writing_a_CRON_Expression)  
+SQueaLy comes with email solutions as well. You can schedule emails embedded with the charts/reports you had created by just writing a [cron expression](http://docwiki.embarcadero.com/Connect/en/Writing_a_CRON_Expression)  
 
 ## Requirements
 
 1. An account on [Heroku](https://www.heroku.com/)
-2. A databse accessible from the internet
+2. A database accessible from the internet
 
 ## Database Support
 
@@ -90,7 +90,7 @@ For non-Django folks: By default, the admin user has all permissions.
 SQueaLy generates APIs in real-time corresponding to each chart. Just hit the API corresponding to your chart_url,
 **NOTE:** The chart_url is the chart name in lower case, replacing spaced by hyphen ('-')
 
-``` html
+``` 
 <your_domain>/squealy/<chart_url>?<param_name>=<value>&<param_name>=<value>
 ```
 This API will return the data in the format that is compatible with **GoogleCharts**.
@@ -104,8 +104,8 @@ SELECT * from some_table
 WHERE some_value = {{params.foo}};
 ```
 
-In the view mode, these parameter values would be extracted from the filters, but if you are using the API for a SQueaLy has created for the chart, the you need to pass these as query parameter like this:
-``` html
+In the view mode, these parameter values would be extracted from the filters, but if you are using the API, then you need to pass these parameters in the url like this:
+```
 <your_domain>/squealy/<chart_url>?<param_name>=<value>&<param_name>=<value>
 ```
 
@@ -139,9 +139,9 @@ SQueaLy provides a mechanism to log in a user via an access token that would hel
 - **Token encoding**: Use the above key to create a jwt token in your application with the following payload:
     ``` js
     {
-    "username": "foo", //Squealy assumes the authenticity of this user is handeled by the directing application.
+    "username": "foo", //Squealy assumes the authenticity of this user is handled by the directing application.
     
-    "groups": ["g1", "g2", "g3"] //List of django permission groups that this user belongs to.
+    "groups": ["g1", "g2", "g3"] //List of Django permission groups that this user belongs to.
     }
     ```
 - **Sending the token**: You can send this token as a url parameter in a GET request or as a body parameter in a POST request to any of the squealy APIs. SQueaLy would ensure to login the user before handling the request.
