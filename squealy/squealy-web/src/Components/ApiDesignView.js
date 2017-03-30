@@ -6,24 +6,31 @@ import ViewOnlyResults from './ViewModeResults'
 
 export default class ApiDesignView extends Component {
   render() {
-    const { chart,selectedChartChangeHandler,
+    const {
+      chart,selectedChartChangeHandler,
       selectedChartIndex,
       googleDefined,
       onHandleTestButton,
       updateViewMode,
       currentChartMode,
       databases,
+      filter,
+      selectedFilterIndex,
+      selectedFilterChangeHandler
     } = this.props
     return (
       <div className="full-height">
         <div className="col-md-12 tabs-container">
           <TabsComponent
+            chartMode={selectedChartIndex !== null ? true : false}
             chart={chart}
+            filter={filter}
             updateViewMode={updateViewMode}
             onHandleTestButton={onHandleTestButton}
             selectedChartChangeHandler={selectedChartChangeHandler}
             currentChartMode={currentChartMode}
             databases={databases}
+            selectedFilterChangeHandler={selectedFilterChangeHandler}
             />
         </div>
         {
@@ -31,9 +38,11 @@ export default class ApiDesignView extends Component {
           <div>
             <div className="col-md-12">
               <QueryEditor
-                query={chart.query}
-                parameters={chart.parameters}
-                selectedChartChangeHandler={selectedChartChangeHandler}/>
+                query={selectedChartIndex !== null ? chart.query : filter.query}
+                parameters={selectedChartIndex !== null ? chart.parameters : []}
+                selectedChartChangeHandler={selectedChartChangeHandler}
+                selectedFilterChangeHandler={selectedFilterChangeHandler}
+              />
             </div>
             <div className="col-md-12">
               <ResultSection
@@ -42,13 +51,15 @@ export default class ApiDesignView extends Component {
                 options={chart.options}
                 chartType={chart.type}
                 selectedChartIndex={selectedChartIndex}
+                selectedFilterIndex={selectedFilterIndex}
                 googleDefined={googleDefined}
-                selectedChartChangeHandler={selectedChartChangeHandler} />
+                selectedChartChangeHandler={selectedChartChangeHandler}
+                selectedFilterChangeHandler={selectedFilterChangeHandler} />
             </div>
           </div>
         }
         {
-          currentChartMode === false && 
+          currentChartMode === false && selectedChartIndex &&
           <div className="col-md-12">
             <ViewOnlyResults
               chart={chart}

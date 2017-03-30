@@ -76,6 +76,7 @@ export default class TabsComponent extends Component {
       updateViewMode,
       currentChartMode,
       databases,
+      chartMode
     } = this.props
 
     const {
@@ -120,28 +121,33 @@ export default class TabsComponent extends Component {
                   Parameter Definitions
               </MenuItem>
             </SplitButton>
-            <Button
-              bsStyle='primary'
-              className='tab-component'
-              onClick={() => this.modalVisibilityHandler('showValidationsModal')}>
-              <img src={validationIcon} alt="squealyValidation"/>
-                Validations
-                <NotificationBadge
-                  count={chart.validations.length}
+            { chartMode && 
+              <Button
+                bsStyle='primary'
+                className='tab-component'
+                onClick={() => this.modalVisibilityHandler('showValidationsModal')}>
+                <img src={validationIcon} alt="squealyValidation"/>
+                  Validations
+                  <NotificationBadge
+                    count={chart.validations.length}
+                    effect={[null, null, null, null]}
+                    className='transformations-count-badge'
+                  />
+              </Button>
+            }
+            {
+              chartMode && 
+              <Button
+                bsStyle='primary'
+                className='tab-component'
+                onClick={()=>this.modalVisibilityHandler('showTransformationsModal')}
+              >
+                <img src={transformationIcon} alt="transformationIcon"/>Transformations
+                <NotificationBadge count={chart.transformations.length}
                   effect={[null, null, null, null]}
-                  className='transformations-count-badge'
-                />
-            </Button>
-            <Button
-              bsStyle='primary'
-              className='tab-component'
-              onClick={()=>this.modalVisibilityHandler('showTransformationsModal')}
-            >
-              <img src={transformationIcon} alt="transformationIcon"/>Transformations
-              <NotificationBadge count={chart.transformations.length}
-                effect={[null, null, null, null]}
-                className='transformations-count-badge' />
-            </Button>
+                  className='transformations-count-badge' />
+              </Button>
+            }
             <div className="selected-db-wrapper">
               <Select
                 value={(chart.database)?chart.database:null}

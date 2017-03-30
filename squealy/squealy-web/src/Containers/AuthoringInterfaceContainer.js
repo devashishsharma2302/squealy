@@ -15,7 +15,9 @@ export default class AuthoringInterfaceContainer extends Component {
       savedStatus: true,
       userInfo: getEmptyUserInfo(),
       currentChartMode: null,
-      databases: []
+      databases: [],
+      filters: [],
+      selectedFilterIndex: null
     }
   }
 
@@ -31,22 +33,26 @@ export default class AuthoringInterfaceContainer extends Component {
                     this.setState({databases: data.databases})
                   },
                   (error) => console.error(error), null)
+    getApiRequest(DOMAIN_NAME+'filters/', null,
+                  (data) => {
+                    this.setState({filters: data})
+                  },
+                  (error) => console.error(error), null)
   }
 
-  onChartSaved = (response, charts, callback=null) => {
-    this.setState({'savedStatus': true, 'saveInProgress': false, charts: charts}, 
+  onAPISaved = (response, stateKey, data, callback=null) => {
+    this.setState({'savedStatus': true, 'saveInProgress': false, [stateKey]: data}, 
       () => {
         callback && callback.constructor === Function ? callback() : null
       }
     )
   }
 
-  onChartSaveError = (err, callback=null) => {
+  onAPISaveError = (err, callback=null) => {
     this.setState({'savedStatus': false, 'saveInProgress': false}, 
-  		() => {
-		callback && callback.constructor === Function ? callback(err) : null
-  		}
-	)
+      () => {
+    callback && callback.constructor === Function ? callback(err) : null
+      })
   }
 
   saveChart = (charts, chartIndex, onSuccess=null, onFailure=null) => {
@@ -54,32 +60,46 @@ export default class AuthoringInterfaceContainer extends Component {
     if (chart.id) {
       this.setState({'saveInProgress': true},
             postApiRequest(DOMAIN_NAME+'charts/', {'chart': chart},
-            (response) =>this.onChartSaved(response, charts, onSuccess),
-            (error)=>this.onChartSaveError(error, onFailure), null)
+            (response) =>this.onAPISaved(response, 'charts', charts, onSuccess),
+            (error)=>this.onAPISaveError(error, onFailure), null)
+      )
+    }
+  }
+
+  saveFilter = (filters, index, onSuccess=null, onFailure=null) => {
+    let filter = filters[index]
+    if (filter.id) {
+      this.setState({'saveInProgress': true},
+            postApiRequest(DOMAIN_NAME+'filters/', {'filter': filter},
+            (response) =>this.onAPISaved(response, 'filters', data, onSuccess),
+            (error)=>this.onAPISaveError(error, onFailure), null)
       )
     }
   }
 
   // Updates the selected chart index and updates the selected chart name in the URL
-  onChartDeleted = (index, callback) => {
-    const {selectedChartIndex, charts} = this.state
-    if(charts.length > 1) {
-      let charts = JSON.parse(JSON.stringify(this.state.charts)),
-        newChartIndex = (selectedChartIndex !== 0)?selectedChartIndex - 1:selectedChartIndex
-      charts.splice(index, 1)
+  onWidgetDeleted = (index, selectedWidgetStateKey, widgetStateKeyData, callback) => {
+    // const {selectedChartIndex, charts} = this.state
+    const selectedIndex = this.state[selectedWidgetStateKey],
+      currWidgetData = this.state[widgetStateKeyData]
+
+    if(currWidgetData.length > 1) {
+      let widgetData = JSON.parse(JSON.stringify(currWidgetData)),
+        newChartIndex = (selectedIndex !== 0) ? selectedIndex - 1 : selectedIndex
+      widgetData.splice(index, 1)
       this.setState({
-        charts: charts,
-        selectedChartIndex: newChartIndex,
+        [widgetStateKeyData]: widgetData,
+        [selectedWidgetStateKey]: newChartIndex,
         savedStatus: true,
         saveInProgress: false,
-        currentChartMode: (charts[newChartIndex].can_edit || false)
+        currentChartMode: (widgetData[newChartIndex].can_edit || false)
       }, () => {
         callback && callback.constructor === Function || callback()
       })
     } else {
       this.setState({
-        charts: [],
-        selectedChartIndex: 0,
+        [widgetStateKeyData]: [],
+        [selectedWidgetStateKey]: 0,
         savedStatus: true,
         saveInProgress: false,
         currentChartMode: false
@@ -95,23 +115,43 @@ export default class AuthoringInterfaceContainer extends Component {
     const chartId = this.state.charts[index].id
     this.setState({'saveInProgress': true},
                   apiCall(DOMAIN_NAME+'charts/', JSON.stringify({'id': chartId}), 'DELETE',
-                  () => this.onChartDeleted(index, callback),this.onChartSaveError, null)
+                  () => this.onWidgetDeleted(index, 'selectedChartIndex', 'charts', callback), this.onAPISaveError, null)
     )
   }
 
-  onNewChartSaved = (newChart, id, onSuccess) => {
-    let charts = JSON.parse(JSON.stringify(this.state.charts))
-    let newChartIndex = charts.push(newChart) - 1
-    charts[newChartIndex].id = id
-    this.setState({'charts': charts, selectedChartIndex: newChartIndex,
-     'savedStatus': true, 'saveInProgress': false},
-     onSuccess)
+  // Calls the Delete chart API and triggers onChartDelete function if the API
+  // is successfull
+  filterDeletionHandler = (index, callback) => {
+    const filterId = this.state.filters[index].id
+    this.setState({'saveInProgress': true},
+                  apiCall(DOMAIN_NAME+'filters/', JSON.stringify({'id': filterId}), 'DELETE',
+                  () => this.onWidgetDeleted(index, 'selectedFilterIndex', 'filters', callback), this.onAPISaveError, null)
+    )
+  }
+
+
+  onNewAPISaved = (newData, id, selectedIndexStateKey, widgetDataKey, onSuccess) => {
+    let data = JSON.parse(JSON.stringify(this.state[widgetDataKey]))
+    let newIndex = data.push(newData) - 1
+    data[newIndex].id = id
+    this.setState({
+      [widgetDataKey]: data,
+      [selectedIndexStateKey]: newIndex,
+      'savedStatus': true,
+      'saveInProgress': false}, onSuccess)
   }
 
   saveNewChart = (newChart, onSuccess, onFailure) => {
     this.setState({'saveInProgress': true},
           postApiRequest(DOMAIN_NAME+'charts/', {'chart': newChart},
-          (id) => this.onNewChartSaved(newChart, id, onSuccess),(err)=>this.onChartSaveError(err, onFailure), null)
+          (id) => this.onNewAPISaved(newChart, id, 'selectedChartIndex', 'charts', onSuccess),(err)=>this.onAPISaveError(err, onFailure), null)
+    )
+  }
+
+  saveNewFilter = (newFilter, onSuccess, onFailure) => {
+    this.setState({'saveInProgress': true},
+          postApiRequest(DOMAIN_NAME+'filters/', {'filter': newFilter},
+          (id) => this.onNewAPISaved(newFilter, id, 'selectedFilterIndex', 'filters', onSuccess),(err)=>this.onAPISaveError(err, onFailure), null)
     )
   }
 
@@ -166,19 +206,39 @@ export default class AuthoringInterfaceContainer extends Component {
   }
 
   // A generic function to handle change in any property inside the selected chart
-  selectedChartChangeHandler = (key, value, onSuccess=null, index=null, onFailure=null) => {
+  selectedChartChangeHandler = (updatedObj, onSuccess=null, index=null, onFailure=null) => {
     let charts = JSON.parse(JSON.stringify(this.state.charts)),
       chartIndex = parseInt(index, 10) //To avoid unexpected errors with value 0
     
     chartIndex = chartIndex >= 0 ? chartIndex : this.state.selectedChartIndex
 
-    charts[chartIndex][key] = value
-    if (key === 'name') {
-      charts[chartIndex].url = value.replace(/ /g, '-').toLowerCase()
+    if (updatedObj) {
+      Object.keys(updatedObj).map(key => {
+        charts[chartIndex][key] = updatedObj[key]
+          if (key === 'name') {
+            charts[chartIndex].url = updatedObj[key].replace(/ /g, '-').toLowerCase()
+          }
+      })
     }
-    
     this.saveChart(charts, chartIndex, onSuccess, onFailure)
+  }
+
+  //A generic function to handle change in any property inside the selected filter
+  selectedFilterChangeHandler = (updatedObj, onSuccess=null, index=null, onFailure=null) => {
+    let filters = JSON.parse(JSON.stringify(this.state.filters)),
+      filterIndex = parseInt(index, 10) //To avoid unexpected errors with value 0
     
+    filterIndex = filterIndex >= 0 ? filterIndex : this.state.selectedFilterIndex
+
+    if (updatedObj) {
+      Object.keys(updatedObj).map(key => {
+        filters[chartIndex][key] = updatedObj[key]
+          if (key === 'name') {
+            filters[chartIndex].url = updatedObj[key].replace(/ /g, '-').toLowerCase()
+          }
+      })
+    }
+    this.saveFilter(filters, filterIndex, onSuccess, onFailure)
   }
 
   // Updates the selected chart's chart data with the result set returned by the
@@ -221,10 +281,30 @@ export default class AuthoringInterfaceContainer extends Component {
     this.saveNewChart(newChart, onSuccess, onFailure)
   }
 
+  //Appends an empty filter definition object to current filter Definitions
+  filterAdditionHandler = (name, database, onSuccess, onFailure) => {
+    let newFilter = getEmptyApiDefinition()
+    newFilter.name = name
+    newFilter.database = database
+    newFilter.can_edit = true
+    newFilter.url = name.replace(/ /g, '-').toLowerCase()
+ 
+    this.saveNewChart(newFilter, onSuccess, onFailure)
+  }
+
   //Changes the selected API index to the one which was clicked from the API list
   chartSelectionHandler = (index) => {
     window.history.replaceState('', '', window.location.pathname);
-    this.setState({selectedChartIndex: index, currentChartMode: this.state.charts[index].can_edit || false}, this.setUrlPath)
+    this.setState({
+      selectedChartIndex: index,
+      selectedFilterIndex: null,
+      currentChartMode: this.state.charts[index].can_edit || false}, this.setUrlPath)
+  }
+
+  //Changes the selected API index to the one which was clicked from the Filter list
+  filterSelectionHandler = (index) => {
+    window.history.replaceState('', '', window.location.pathname);
+    this.setState({selectedFilterIndex: index, selectedChartIndex: null})
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -252,7 +332,9 @@ export default class AuthoringInterfaceContainer extends Component {
       saveInProgress,
       userInfo,
       currentChartMode,
-      databases
+      databases,
+      filters,
+      selectedFilterIndex
     } = this.state
     const { googleDefined } = this.props
     return (
@@ -272,6 +354,12 @@ export default class AuthoringInterfaceContainer extends Component {
           currentChartMode={currentChartMode}
           updateViewMode={this.updateViewMode}
           databases={databases}
+          filters={filters}
+          filterAdditionHandler={this.filterAdditionHandler}
+          filterDeletionHandler={this.filterDeletionHandler}
+          selectedFilterChangeHandler={this.selectedFilterChangeHandler}
+          selectedFilterIndex={selectedFilterIndex}
+          filterSelectionHandler={this.filterSelectionHandler}
         />
       </div>
     )

@@ -44,7 +44,7 @@ export default class ResultSection extends Component {
                   name='chartType'
                   options={GOOGLE_CHART_TYPE_OPTIONS}
                   selectedValue={chartType}
-                  onChangeHandler={(value)=>selectedChartChangeHandler('type', value)}
+                  onChangeHandler={(value)=>selectedChartChangeHandler({type: value})}
                 />
                 <img src={configIcon} onClick={this.modalVisibilityHandler} />
               </div>

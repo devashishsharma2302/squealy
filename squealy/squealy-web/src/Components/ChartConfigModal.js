@@ -28,7 +28,7 @@ export default class ChartConfigModal extends Component {
 
     try {
       let newConfig = (config)?JSON.parse(config):{}
-      this.props.selectedChartChangeHandler('options', newConfig)
+      this.props.selectedChartChangeHandler({options: newConfig})
       this.setState({errorMessage: null}, () => {
         this.props.closeModal()
       })

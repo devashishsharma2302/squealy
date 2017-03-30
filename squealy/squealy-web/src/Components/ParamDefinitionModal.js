@@ -208,7 +208,7 @@ export default class ParamDefinitionModal extends Component {
       selectedChartParamDef.push(curParamDef)
     }
     selectedChartParamDef.sort(this.updateOrderOfCharts)
-    this.props.selectedChartChangeHandler('parameters', selectedChartParamDef,
+    this.props.selectedChartChangeHandler({parameters:selectedChartParamDef},
       () => {
         this.setState({ showParamDefForm: false, editMode: false, editArrayIndex: -1 })
         this.props.updateNoteHandler(false)
