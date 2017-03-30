@@ -157,7 +157,6 @@ source venv/bin/activate
 
 **Installing dependencies**
 ```
-cd squealyproj
 pip install -r requirements.txt
 ```
 **Database Setup**
@@ -196,7 +195,7 @@ python manage.py runserver
 
 **Running test cases**
 ```
-python manage.py test tests --settings=test_settings
+python manage.py test
 ```
 
 ## Frontend setup
