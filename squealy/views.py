@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.db import transaction
 from django.conf import settings
 from django.core.mail import send_mail
-from django.template import loader
+from django.template import loader,Template,Context
 from django.http import HttpResponse
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -19,6 +19,7 @@ from rest_framework import status
 
 from squealy.constants import SQL_WRITE_BLACKLIST
 from squealy.jinjasql_loader import configure_jinjasql
+
 from squealy.serializers import ChartSerializer, FilterSerializer
 from .exceptions import RequiredParameterMissingException,\
                         ChartNotFoundException, MalformedChartDataException, \
@@ -32,7 +33,7 @@ from .table import Table
 from .models import Chart, Transformation, Validation, Parameter, \
     ScheduledReport, ReportParameter, ReportRecipient, Filter
 from .validators import run_validation
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 
 jinjasql = configure_jinjasql()
 
@@ -49,19 +50,31 @@ class DatabaseView(APIView):
             for db in database:
                 # if db != 'default':
                 database_response.append({
-                  'value': db,
-                  'label': database[db]['NAME']
+                    'value': db,
+                    'label': database[db]['NAME']
                 })
             return Response({'databases': database_response})
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
 
 
-def send_report(request, chart_url):
-  
-    template = loader.get_template('report_template.html')
-    current_time = datetime.utcnow().replace(second=0,microsecond=0)
-    scheduled_reports = ScheduledReport.objects.filter(next_run_at__range=(current_time+timedelta(minutes=-1),current_time))
+def create_email_data(content=None):
+    if not content: content = "{% include 'report.html' %}"
+    content = '''
+    <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Title</title>
+        </head>
+        <body> ''' + str(content) + '''</body></html>'''
+    return content
+
+
+def send_report(request):
+    current_time = datetime.utcnow()
+    scheduled_reports = ScheduledReport.objects.filter(
+        next_run_at__range=(current_time + timedelta(minutes=-1), current_time))
     user = request.user
 
     for report in scheduled_reports:
@@ -73,16 +86,27 @@ def send_report(request, chart_url):
             param_dict[parameter.parameter_name] = parameter.parameter_value
         chart_data = DataProcessor().fetch_chart_data(chart_url, param_dict, user)
         chart = Chart.objects.get(url=chart_url)
+        # Customize content
         context = {
-            'charts': chart_data,
-            'name': chart.name
+            'charts': [
+                {
+                    'name': chart.name,
+                    'chart_data': chart_data
+                },
+                {
+                    'name': chart.name,
+                    'chart_data': chart_data
+                }
+            ]
         }
-        report_template = template.render(context, request)
+        template = Template(create_email_data(report.template))
+        report_template = template.render(Context(context))
         recipients = list(ReportRecipient.objects.filter(report=report).values_list('email', flat=True))
 
         try:
             send_mail(report.subject, 'Here is the message.', 'hashedinsquealy@gmail.com',
-            recipients, fail_silently=False, html_message=report_template)
+                      recipients, fail_silently=False, html_message=report_template)
+            report.save()
         except Exception as e:
             return HttpResponse('Unable to send email')
 
