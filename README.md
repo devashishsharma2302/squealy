@@ -1,17 +1,68 @@
-# Squealy
+# Fastrack analytics for your business. Use SQueaLy
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)  
+[![Build Status](https://travis-ci.org/hashedin/squealy.svg?branch=phase-2)](https://travis-ci.org/hashedin/squealy)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
 
-Generate charts and reports, just by writing SQL queries.
+SQueaLy is an open-source, self-deployable application that runs on Django. It is a micro service for business intelligence and analytics which provides reporting APIs with fine-grained security and fast tracks your development. It gives you the power to analyze and visualize your organizational data in an environment that is completely owned by you. Hence, making it the most suitable solution for generating charts and reports out of sensitive data.
 
-Welcome to SQueaLy's documentation. SQueaLy is an open-source, self-deployable application that runs on Django. It gives you the power to analyze and visualize your organizational data in an environment that is completely owned by you. Hence, making it the most suitable solution for generating charts and reports out of sensitive data.
+## When to use SQueaLy
+
+**When you want charts and reports in your application at a hot pace**  
+
+Using SQueaLy, creating APIs for your reports/charts and visualizing the output is super quick. Just write the query to fetch the data from your database and use the SQueaLy's authoring interface to visualize the output. Once satisfied, give your users the permission to view/edit the report and share the URL of your report. That's it!
+
+**When you want fine grained security in your reporting APIs**  
+
+You can provide not only chart level view permissions but also user/parameter level permissions. To make that one liner straighforward, consider the following use case.  
+You have a chain of hotels based on multiple locations. You create 5 reports which are to be viewed by the managers of each hotel but you don't want the manager of one location to view the report of the hotels not managed by him.  
+Now if you write this logic in your own code, it is going to take a lot of time but using SQueLy, this can be done in seconds.
+
+**When you want scheduled emails embedded with reports**  
+
+SQueaLy also provides you the interface to schedule emails with reports embedded in it. All you have to do is
+- Group the reports you want to send in the email
+- Write a [cron expression](http://docwiki.embarcadero.com/Connect/en/Writing_a_CRON_Expression) to schedule the email
+
+Not just that. For white labling, you can even customize the look and feel of the email message by providing the HTML for it 
+
 
 ## Key Features
-- **One-Click Deploy to Heroku:** Just click on the 'deploy-to-Heroku' button, login to your Heroku account, enter environment variables and the application will be deployed under your account and domain. Otherwise, SQueaLy can easily be deployed manually in any cloud or on-premise server.
-- **Secure:** All the database credentials and secret keys are stored as environment variables in your own server architecture (Heroku, AWS etc.).
-- **More than just SQL:** SQueaLy supports Jinja2 templates within SQL queries. It provides the ability to parameterize the queries and a wide variety of pre-processing logic that is applied to the SQL queries. ( if conditions, for loops, macros, filters etc. ). It also makes sure that the queries are SQL injection safe. For more details, check out [JinjaSQL](https://github.com/hashedin/jinjasql/).
-- **Permission based model:** SQueaLy provides you the ability to assign view/edit permission to any user for each chart/report. 
-- **Multiple Databases:** You can set up multiple database connections and specify the database to use while generating the chart/report.
+**One-Click Deploy to Heroku**  
+
+Just click on the 'deploy-to-Heroku' button, login to your Heroku account, enter environment variables and the application will be deployed under your account and domain.
+
+**JSFiddle like interface to test and visualize the output**  
+SQueaLy provides you a user-friendly editor like interface to test and debug your queries/APIs.
+
+**Your data is always secure**  
+
+All the database credentials and secret keys are stored as environment variables in your own server architecture (Heroku).
+
+**More than just SQL**  
+
+SQueaLy uses JinjaSQL behind the scenes which gives you power to **use JINJA inside the SQL query**. For more details, check out [JinjaSQL](https://github.com/hashedin/jinjasql/).
+
+**Permission based model**  
+
+SQueaLy provides you the ability to assign view/edit permission to any user for each chart/report. 
+
+**Multiple Databases**  
+
+You can set up multiple database connections and specify the database to use while generating the chart/report.
+
+**Scheduled emails embedded with reports**  
+
+SQueaLy comes with email solutions as well. You can schedule emails embedded with the charts/reports you had created by just writing a [cron expression](http://docwiki.embarcadero.com/Connect/en/Writing_a_CRON_Expression)  
+
+## Requirements
+
+1. An account on [Heroku](https://www.heroku.com/)
+2. A database accessible from the internet
+
+## Database Support
+
+Redshift, Mysql, Postgres, Sqlite,  
 
 ## Getting started
 - Click on the 'Deploy-to-Heroku' button on the [top](#squealy) of this documentation.
@@ -20,7 +71,7 @@ Welcome to SQueaLy's documentation. SQueaLy is an open-source, self-deployable a
 
 The app is deployed and the first chart has already been created for you. Hit the **Run** button and you can see the data/visualization in the results section.
 
-## Advanced Features
+## Usage
 
 ### Managing Permissions (Chart-level Authorization)
 SQueaLy uses Django's default permission model for managing chart level authorization.
@@ -30,7 +81,7 @@ For example, if the chart is named as **'foo'** then, permissions **'can-view-fo
 
 The administrator just needs to add the required permissions to users or groups from the Django admin panel. ( located at https://<your_domain>/admin )
 
-Also, there are two other high-level permissions - **can-add-chart** and **can-delete-chart** that are required to creation and deletion of charts, respectively.
+Also, there are two other high-level permissions - **can-add-chart** and **can-delete-chart** that are required for creation and deletion of charts, respectively.
 
 For non-Django folks: By default, the admin user has all permissions.
 
@@ -39,22 +90,23 @@ For non-Django folks: By default, the admin user has all permissions.
 SQueaLy generates APIs in real-time corresponding to each chart. Just hit the API corresponding to your chart_url,
 **NOTE:** The chart_url is the chart name in lower case, replacing spaced by hyphen ('-')
 
-``` html
-<your_domain>/squealy/<chart_url>
+``` 
+<your_domain>/squealy/<chart_url>?<param_name>=<value>&<param_name>=<value>
 ```
 This API will return the data in the format that is compatible with **GoogleCharts**.
 
 ### Query Parameterization
-Squealy supports SQL templates based on [Jinjasql](https://github.com/hashedin/jinjasql/), hence, complex parameterized SQL queries can be written.
-
-These parameter values would be extracted from the filters that you will see in the view mode of the chart, or, from the URL if you are making an API call manually.
-
 To add a parameter, you need to use the keyword object "**params**" inside your jinja template.
 For example, to include a parameter named **foo**, 
 
 ``` sql
 SELECT * from some_table
 WHERE some_value = {{params.foo}};
+```
+
+In the view mode, these parameter values would be extracted from the filters, but if you are using the API, then you need to pass these parameters in the url like this:
+```
+<your_domain>/squealy/<chart_url>?<param_name>=<value>&<param_name>=<value>
 ```
 
 ### User-level Authorization
@@ -87,9 +139,9 @@ SQueaLy provides a mechanism to log in a user via an access token that would hel
 - **Token encoding**: Use the above key to create a jwt token in your application with the following payload:
     ``` js
     {
-    "username": "foo", //Squealy assumes the authenticity of this user is handeled by the directing application.
+    "username": "foo", //Squealy assumes the authenticity of this user is handled by the directing application.
     
-    "groups": ["g1", "g2", "g3"] //List of django permission groups that this user belongs to.
+    "groups": ["g1", "g2", "g3"] //List of Django permission groups that this user belongs to.
     }
     ```
 - **Sending the token**: You can send this token as a url parameter in a GET request or as a body parameter in a POST request to any of the squealy APIs. SQueaLy would ensure to login the user before handling the request.
@@ -105,7 +157,6 @@ source venv/bin/activate
 
 **Installing dependencies**
 ```
-cd example
 pip install -r requirements.txt
 ```
 **Database Setup**
@@ -126,10 +177,10 @@ Before running the server, make sure to set the following environment variables 
 ```
 export KEY=VALUE
 ```
-- DATABASE_URL - **(Required)** This is the database that will be used by squealy internally for user management.
-- QUERY_DB - **(Required)** This is the DB used to run the queries on. Enter comma separated URLs for multiple DBs.
-- ADMIN_USERNAME - **(Required)** This is the default admin's username that would be created with the first migration command.
-- ADMIN_PASS - **(Required)** This is the password for the default admin user.
+- DATABASE_URL - This is the database that will be used by squealy internally for user management.
+- QUERY_DB - This is the DB used to run the queries on. Enter comma separated URLs for multiple DBs.
+- ADMIN_USERNAME - This is the default admin's username that would be created with the first migration command.
+- ADMIN_PASS - This is the password for the default admin user.
 - JWT_KEY - This is the shared private key that will be used to decode the JWT token. This is required for optionally enabling JWT Authentication mechanism that would enable the user to login via an access token parameter in the url or request body. For more information refer [above](#jwt-authentication). 
 
 **Running the migrations**
@@ -142,30 +193,30 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-Running test cases
+**Running test cases**
 ```
-python manage.py test tests --settings=test_settings
+python manage.py test
 ```
 
 ## Frontend setup
 
-Installing dependencies
+**Installing dependencies**
 ```
 cd squealy/squealy-web
 npm install
 ```
-
-Running the development server
+**Running the development server**
 ```
 npm start
 ```
-
-Running test suites
+**Running test suites**
 ```
 npm test
 ```
-
-Getting production build
+**Getting production build**
 ```
 npm run build
 ```
+
+## Copyright
+(c) 2017 HashedIn Technologies Pvt. Ltd.
