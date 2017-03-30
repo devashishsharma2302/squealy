@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.db import transaction
 from django.conf import settings
 from django.core.mail import send_mail
-from django.template import loader
+from django.template import loader,Template,Context
 from django.http import HttpResponse
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -16,13 +16,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-
 from squealy.constants import SQL_WRITE_BLACKLIST
 from squealy.jinjasql_loader import configure_jinjasql
 from squealy.serializers import ChartSerializer
-from .exceptions import RequiredParameterMissingException,\
-                        ChartNotFoundException, MalformedChartDataException, \
-                        TransformationException, DatabaseWriteException, DuplicateUrlException
+
+from .exceptions import RequiredParameterMissingException, \
+    ChartNotFoundException, MalformedChartDataException, \
+    TransformationException, DatabaseWriteException, DuplicateUrlException
 from .transformers import *
 from .formatters import *
 from .parameters import *
@@ -56,8 +56,8 @@ class DatabaseView(APIView):
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
 
 
-def add_report_content(content=None):
-    file = open('templates/report_template.html', 'w')
+def create_email_data(content=None):
+    if not content: content = "{% include 'report.html' %}"
     content = '''
     <!DOCTYPE html>
         <html lang="en">
@@ -65,15 +65,8 @@ def add_report_content(content=None):
             <meta charset="UTF-8">
             <title>Title</title>
         </head>
-        <body> ''' + str(content) + '''</body></html>
-    '''
-    file.write(content)
-    file.close()
-
-
-def delete_report_content():
-    with open('templates/report_template.html', 'w'):
-        pass
+        <body> ''' + str(content) + '''</body></html>'''
+    return content
 
 
 def send_report(request):
@@ -91,7 +84,7 @@ def send_report(request):
             param_dict[parameter.parameter_name] = parameter.parameter_value
         chart_data = ChartProcessor().fetch_chart_data(chart_url, param_dict, user)
         chart = Chart.objects.get(url=chart_url)
-        #Customize content
+        # Customize content
         context = {
             'charts': [
                 {
@@ -104,19 +97,17 @@ def send_report(request):
                 }
             ]
         }
-        add_report_content(report.template)
-        template = loader.get_template('report_template.html')
-        report_template = template.render(context, request)
+        template = Template(create_email_data(report.template))
+        report_template = template.render(Context(context))
         recipients = list(ReportRecipient.objects.filter(report=report).values_list('email', flat=True))
 
         try:
             send_mail(report.subject, 'Here is the message.', 'hashedinsquealy@gmail.com',
                       recipients, fail_silently=False, html_message=report_template)
-
             report.save()
         except Exception as e:
             return HttpResponse('Unable to send email')
-        delete_report_content()
+
     return HttpResponse('Mail sent successfully')
 
 
@@ -169,8 +160,8 @@ class ChartProcessor(object):
         for index, param in enumerate(parameter_definitions):
             # Default values
             if param.default_value and \
-                    param.default_value!= '' and \
-                    params.get(param.name) in [None, '']:
+                            param.default_value != '' and \
+                            params.get(param.name) in [None, '']:
                 params[param.name] = param.default_value
 
             # Check for missing required parameters
@@ -201,8 +192,8 @@ class ChartProcessor(object):
 
         query, bind_params = jinjasql.prepare_query(chart_query,
                                                     {
-                                                     "params": params,
-                                                     "user": user
+                                                        "params": params,
+                                                        "user": user
                                                     })
         conn = connections[db]
         with conn.cursor() as cursor:
@@ -250,7 +241,8 @@ class ChartViewPermission(BasePermission):
     def has_permission(self, request, view):
         chart_url = request.resolver_match.kwargs.get('chart_url')
         chart = Chart.objects.get(url=chart_url)
-        return request.user.has_perm('squealy.can_view_' + str(chart.id)) or request.user.has_perm('squealy.can_edit_' + str(chart.id))
+        return request.user.has_perm('squealy.can_view_' + str(chart.id)) or request.user.has_perm(
+            'squealy.can_edit_' + str(chart.id))
 
 
 class ChartView(APIView):
