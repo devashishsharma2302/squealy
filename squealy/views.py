@@ -5,9 +5,6 @@ from django.db.utils import IntegrityError
 from django.shortcuts import render
 from django.db import transaction
 from django.conf import settings
-from django.core.mail import send_mail
-from django.template import loader
-from django.http import HttpResponse
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import permission_classes, api_view
@@ -22,7 +19,8 @@ from squealy.jinjasql_loader import configure_jinjasql
 from squealy.serializers import ChartSerializer
 from .exceptions import RequiredParameterMissingException,\
                         ChartNotFoundException, MalformedChartDataException, \
-                        TransformationException, DatabaseWriteException, DuplicateUrlException
+                        TransformationException, DatabaseWriteException,\
+                        DuplicateUrlException
 from .transformers import *
 from .formatters import *
 from .parameters import *
@@ -32,7 +30,7 @@ from .models import Chart, Transformation, Validation, Parameter, \
     ScheduledReport, ReportParameter, ReportRecipient
 from .validators import run_validation
 from datetime import datetime,timedelta
-from squealy.models import ScheduledReportChart
+
 
 jinjasql = configure_jinjasql()
 
@@ -55,46 +53,6 @@ class DatabaseView(APIView):
             return Response({'databases': database_response})
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
-
-
-def send_emails():
-    template = loader.get_template('report_template.html')
-    current_time = datetime.utcnow().replace(second=0, microsecond=0)
-    scheduled_reports = ScheduledReport.objects.filter(
-                            next_run_at__range=(
-                                current_time+timedelta(minutes=-1), current_time
-                            )
-                        )
-    # TODO: Try to reduce the db queries here
-    for scheduled_report in scheduled_reports:
-        report_parameters = ReportParameter.objects.filter(report=scheduled_report)
-        param_dict = {}
-
-        for parameter in report_parameters:
-            param_dict[parameter.parameter_name] = parameter.parameter_value
-        recipients = list(ReportRecipient.objects.filter(report=scheduled_report).values_list('email', flat=True))
-
-        template_context = {
-            "charts": []
-        }
-        filtered_scheduled_reports = ScheduledReportChart.objects.filter(report=scheduled_report)
-
-        for report in filtered_scheduled_reports:
-            template_context['charts'].append(
-                {
-                    "data": ChartProcessor().fetch_chart_data(report.chart.url, param_dict, {}),
-                    "name": report.chart.name
-                }
-            )
-        report_template = template.render(template_context)
-
-        try:
-            send_mail(
-                scheduled_report.subject, 'Here is the message.', 'hashedinsquealy@gmail.com',
-                recipients, fail_silently=False, html_message=report_template
-            )
-        except Exception as e:
-            return HttpResponse('Unable to send email')
 
 
 class ChartProcessor(object):
