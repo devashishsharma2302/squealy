@@ -7,7 +7,8 @@ import ViewOnlyResults from './ViewModeResults'
 export default class ApiDesignView extends Component {
   render() {
     const {
-      chart,selectedChartChangeHandler,
+      chart,
+      selectedChartChangeHandler,
       selectedChartIndex,
       googleDefined,
       onHandleTestButton,

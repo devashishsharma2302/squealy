@@ -189,9 +189,11 @@ export default class SideMenu extends Component {
               <li onClick={() => this.showChartDetailsModal('EDIT', 'showAddFilterModal')}>Rename Filter 
                 <i className="fa fa-pencil"/></li>
               {
-                (userInfo.can_delete_chart) && <li className='delete-chart' onClick={() => 
+                (userInfo.can_delete_chart) &&
+                <li className='delete-chart' onClick={() => 
                   this.props.filterDeletionHandler(clickedFilterIndex, this.hideLeftMenu)}>
-                Delete Filter<i className="fa fa-trash-o"/></li>
+                  Delete Filter<i className="fa fa-trash-o"/>
+                </li>
               }
               <li className="close-option" onClick={this.hideLeftMenu}>Close</li>
             </ul>

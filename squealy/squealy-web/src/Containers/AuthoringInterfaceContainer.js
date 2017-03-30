@@ -79,7 +79,6 @@ export default class AuthoringInterfaceContainer extends Component {
 
   // Updates the selected chart index and updates the selected chart name in the URL
   onWidgetDeleted = (index, selectedWidgetStateKey, widgetStateKeyData, callback) => {
-    // const {selectedChartIndex, charts} = this.state
     const selectedIndex = this.state[selectedWidgetStateKey],
       currWidgetData = this.state[widgetStateKeyData]
 
@@ -209,7 +208,6 @@ export default class AuthoringInterfaceContainer extends Component {
   selectedChartChangeHandler = (updatedObj, onSuccess=null, index=null, onFailure=null) => {
     let charts = JSON.parse(JSON.stringify(this.state.charts)),
       chartIndex = parseInt(index, 10) //To avoid unexpected errors with value 0
-    
     chartIndex = chartIndex >= 0 ? chartIndex : this.state.selectedChartIndex
 
     if (updatedObj) {
@@ -227,7 +225,6 @@ export default class AuthoringInterfaceContainer extends Component {
   selectedFilterChangeHandler = (updatedObj, onSuccess=null, index=null, onFailure=null) => {
     let filters = JSON.parse(JSON.stringify(this.state.filters)),
       filterIndex = parseInt(index, 10) //To avoid unexpected errors with value 0
-    
     filterIndex = filterIndex >= 0 ? filterIndex : this.state.selectedFilterIndex
 
     if (updatedObj) {
