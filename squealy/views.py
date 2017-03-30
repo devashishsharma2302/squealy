@@ -19,6 +19,7 @@ from rest_framework import status
 
 from squealy.constants import SQL_WRITE_BLACKLIST
 from squealy.jinjasql_loader import configure_jinjasql
+
 from squealy.serializers import ChartSerializer, FilterSerializer
 from .exceptions import RequiredParameterMissingException,\
                         ChartNotFoundException, MalformedChartDataException, \
@@ -112,7 +113,7 @@ def send_report(request):
     return HttpResponse('Mail sent successfully')
 
 
-class ChartProcessor(object):
+class DataProcessor(object):
 
     def fetch_chart_data(self, chart_url, params, user):
         """
