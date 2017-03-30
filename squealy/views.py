@@ -83,7 +83,6 @@ def send_report(request):
     user = request.user
 
     for report in scheduled_reports:
-        add_report_content()
         report_parameters = ReportParameter.objects.filter(report=report)
         chart_url = report.chart.url
         param_dict = {}
