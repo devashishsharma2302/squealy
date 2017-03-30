@@ -19,17 +19,18 @@ from rest_framework import status
 
 from squealy.constants import SQL_WRITE_BLACKLIST
 from squealy.jinjasql_loader import configure_jinjasql
-from squealy.serializers import ChartSerializer
+from squealy.serializers import ChartSerializer, FilterSerializer
 from .exceptions import RequiredParameterMissingException,\
                         ChartNotFoundException, MalformedChartDataException, \
-                        TransformationException, DatabaseWriteException, DuplicateUrlException
+                        TransformationException, DatabaseWriteException, DuplicateUrlException,\
+                        FilterNotFoundException
 from .transformers import *
 from .formatters import *
 from .parameters import *
 from .utils import SquealySettings
 from .table import Table
 from .models import Chart, Transformation, Validation, Parameter, \
-    ScheduledReport, ReportParameter, ReportRecipient
+    ScheduledReport, ReportParameter, ReportRecipient, Filter
 from .validators import run_validation
 from datetime import datetime,timedelta
 
@@ -70,7 +71,7 @@ def send_report(request, chart_url):
 
         for parameter in report_parameters:
             param_dict[parameter.parameter_name] = parameter.parameter_value
-        chart_data = ChartProcessor().fetch_chart_data(chart_url, param_dict, user)
+        chart_data = DataProcessor().fetch_chart_data(chart_url, param_dict, user)
         chart = Chart.objects.get(url=chart_url)
         context = {
             'charts': chart_data,
@@ -88,7 +89,7 @@ def send_report(request, chart_url):
     return HttpResponse('Mail sent successfully')
 
 
-class ChartProcessor(object):
+class DataProcessor(object):
 
     def fetch_chart_data(self, chart_url, params, user):
         """
@@ -104,6 +105,24 @@ class ChartProcessor(object):
             raise ChartNotFoundException('Database is not selected')
 
         return self._process_chart_query(chart, params, user)
+
+    def fetch_filter_data(self, filter_url, params, user):
+        """
+        Method to process the query and fetch the data for filter
+        """
+        filter_obj = Filter.objects.filter(url=filter_url).first()
+
+        if not filter_obj:
+            raise ChartNotFoundException('Filter not found')
+
+        if not filter_obj.database:
+            raise ChartNotFoundException('Database is not selected')
+
+        # Execute the Query, and return a Table
+        table = self._execute_query(params, user, filter_obj.query, filter_obj.database)
+        data = self._format(table, 'json')
+
+        return data
 
     def _process_chart_query(self, chart, params, user):
         """
@@ -233,7 +252,7 @@ class ChartView(APIView):
         """
         params = request.GET.copy()
         user = request.user
-        data = ChartProcessor().fetch_chart_data(chart_url, params, user)
+        data = DataProcessor().fetch_chart_data(chart_url, params, user)
         return Response(data)
 
     def post(self, request, chart_url=None, *args, **kwargs):
@@ -243,7 +262,7 @@ class ChartView(APIView):
         try:
             params = request.data.get('params', {})
             user = request.data.get('user', None)
-            data = ChartProcessor().fetch_chart_data(chart_url, params, user)
+            data = DataProcessor().fetch_chart_data(chart_url, params, user)
             return Response(data)
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
@@ -382,6 +401,7 @@ class ChartsLoaderView(APIView):
                                                  default_value=parameter['default_value'],
                                                  test_value=parameter['test_value'], chart=chart_object,
                                                  type=parameter['type'],
+                                                 order=parameter['order'],
                                                  kwargs=parameter['kwargs'])
                     parameter_object.save()
                     parameter_ids.append(parameter_object.id)
@@ -424,6 +444,123 @@ class UserInformation(APIView):
         response['can_delete_chart'] = user.has_perm('squealy.delete_chart')
         response['isAdmin'] = user.is_superuser
         return Response(response)
+
+
+class FilterEditPermission(BasePermission):
+    """
+    To check if user has permission to edit the current filter
+    """
+    def has_permission(self, request, view):
+        filter_url = request.resolver_match.kwargs.get('filter_url')
+        return request.user.has_perm('squealy.can_edit_' + filter_url)
+
+
+class FilterUpdatePermission(BasePermission):
+    """
+    Class to check if user can add/edit/delete the filter
+    """
+    def has_permission(self, request, view):
+        if request.method == 'POST' and request.data.get('filter'):
+            filter_date = request.data['filter']
+            if filter_date.get('id'):
+                # Update the filter
+                return request.user.has_perm('squealy.can_edit_' + str(filter_date['id']))
+            else:
+                # Adding a new filter
+                return request.user.has_perm('squealy.add_filter')
+        elif request.method == 'DELETE' and request.data.get('id'):
+            # Delete current filter
+            return request.user.has_perm('squealy.delete_filter')
+        return True
+
+
+class FilterView(APIView):
+    permission_classes = SquealySettings.get_default_permission_classes()
+    permission_classes.append(FilterEditPermission)
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
+
+    def get(self, request, filter_url=None, *args, **kwargs):
+        """
+        This is the API endpoint for executing the query and returning the data for a particular Filter
+        """
+        user = request.user
+        params = []
+        data = DataProcessor().fetch_filter_data(filter_url, params, user)
+        return Response(data)
+
+
+class FilterLoaderView(APIView):
+    permission_classes = SquealySettings.get_default_permission_classes()
+    permission_classes.append(FilterUpdatePermission)
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
+
+    def get(self, request, *args, **kwargs):
+        """
+        This a API point to return list of filters. If user has edit permissions, updating in the data.
+        """
+        permitted_filters = []
+        filters = Filter.objects.order_by('id').all()
+        for filter in filters:
+            filter_data = FilterSerializer(filter).data
+            if request.user.has_perm('squealy.can_edit_' + str(filter.id)):
+                filter_data['can_edit'] = True
+            permitted_filters.append(filter_data)
+
+        return Response(permitted_filters)
+
+    def delete(self, request):
+        """
+        To delete a filter
+        """
+        data = request.data
+        try:
+            chart = Filter.objects.filter(id=data['id']).first()
+            Permission.objects.filter(codename__in=['can_edit_' + str(chart.id)]).delete()
+            Filter.objects.filter(id=data['id']).first().delete()
+        except Exception:
+            FilterNotFoundException('A filter with id' + data['id'] + 'was not found')
+        return Response({})
+
+    def post(self, request):
+        """
+        To save or update chart objects
+        """
+        try:
+            data = request.data['filter']
+            filter_object = Filter(
+                            id=data['id'],
+                            name=data['name'],
+                            url=data['url'],
+                            query=data['query'],
+                            database=data['database']
+                        )
+            filter_object.save()
+
+            # Create edit permissions
+            content_type = ContentType.objects.get_for_model(Filter)
+
+            # Edit permission
+            perm_id = None
+            perm = Permission.objects.filter(codename='can_edit_' + str(filter_object.id)).first()
+            if perm:
+                perm_id = perm.id
+            Permission(
+                id=perm_id,
+                codename='can_edit_' + str(filter_object.id),
+                name='Can edit ' + filter_object.url,
+                content_type=content_type,
+            ).save()
+
+            filter_id = filter_object.id
+            Filter.objects.all()
+        except KeyError as e:
+            raise MalformedChartDataException("Key Error - " + str(e.args))
+        except IntegrityError as e:
+            raise DuplicateUrlException('A filter with this url already exists')
+
+        return Response(filter_id, status.HTTP_200_OK)
 
 
 @api_view(['GET'])

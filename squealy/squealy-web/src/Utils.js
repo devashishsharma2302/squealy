@@ -1,8 +1,7 @@
 import {
-  RESPONSE_FORMATS,
   GOOGLE_CHART_TYPE_OPTIONS
 } from './Constant'
-import FileSaver from 'filesaver.js-npm'
+
 /*!*************************************************************************
 [Utils.js]
 *****************************************************************************/
@@ -162,6 +161,7 @@ export function getEmptyUserInfo() {
 export function getEmptyParamDefinition(apiIndex) {
   return {
     name: '',
+    order: 0,
     type: 1,
     data_type: 'string',
     mandatory: false,
@@ -284,13 +284,12 @@ export function formatTestParameters (paramDefintion, key, valueKey) {
 
 export function getUrlParams() {
   let pageURL = decodeURIComponent(window.location.search.substring(1)),
-        urlVariables = pageURL.split('&'),
-        parameterName,
-        i
-    if(pageURL === ''){
-      return new Object
-    }
-    return JSON.parse('{"' + decodeURI(pageURL).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
+    parameterName,
+    i
+  if(pageURL === '') {
+    return null
+  }
+  return JSON.parse('{"' + decodeURI(pageURL).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
 }
 
 export function setUrlParams(newParams) {

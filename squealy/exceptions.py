@@ -32,6 +32,11 @@ class ChartNotFoundException(APIException):
     pass
 
 
+class FilterNotFoundException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    pass
+
+
 class MalformedChartDataException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     pass
