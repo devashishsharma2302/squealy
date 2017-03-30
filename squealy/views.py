@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.db import transaction
 from django.conf import settings
 from django.core.mail import send_mail
-from django.template import loader
+from django.template import loader,Template,Context
 from django.http import HttpResponse
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -19,6 +19,7 @@ from rest_framework import status
 
 from squealy.constants import SQL_WRITE_BLACKLIST
 from squealy.jinjasql_loader import configure_jinjasql
+
 from squealy.serializers import ChartSerializer, FilterSerializer
 from .exceptions import RequiredParameterMissingException,\
                         ChartNotFoundException, MalformedChartDataException, \
@@ -32,7 +33,7 @@ from .table import Table
 from .models import Chart, Transformation, Validation, Parameter, \
     ScheduledReport, ReportParameter, ReportRecipient, Filter
 from .validators import run_validation
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 import json
 
 jinjasql = configure_jinjasql()
