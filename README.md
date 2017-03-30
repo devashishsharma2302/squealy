@@ -1,4 +1,4 @@
-# Fastrack charts and reports for your business. Use SQueaLy
+# Fastrack analytics for your business. Use SQueaLy
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)  
 [![Build Status](https://travis-ci.org/hashedin/squealy.svg?branch=phase-2)](https://travis-ci.org/hashedin/squealy)
