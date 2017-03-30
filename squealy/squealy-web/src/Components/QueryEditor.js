@@ -20,7 +20,8 @@ export default class QueryEditor extends Component {
   }
 
   onBlurHandler = () => {
-    const {selectedChartChangeHandler} = this.props
+    const {selectedChartChangeHandler,
+      selectedFilterChangeHandler} = this.props
     let {editorContent} = this.state,
       currentParams = JSON.parse(JSON.stringify(this.props.parameters)),
       paramArray = fetchQueryParamsFromQuery(editorContent),
@@ -49,10 +50,18 @@ export default class QueryEditor extends Component {
     })
 
     //Update sql query in selected chart definition
-    selectedChartChangeHandler({
-      query: editorContent,
-      parameters: currentParams
-    })
+    if (this.props.chartMode) {
+      selectedChartChangeHandler({
+        query: editorContent,
+        parameters: currentParams
+      })
+    } else {
+      selectedFilterChangeHandler({
+        query: editorContent,
+        parameters: []
+      })
+    }
+    
   }
 
   componentWillReceiveProps(nextProps) {
@@ -63,7 +72,8 @@ export default class QueryEditor extends Component {
 
   render() {
     const {
-      selectedApiIndex
+      selectedApiIndex,
+      chartMode
     } = this.props
 
     return (

@@ -22,35 +22,39 @@ export default class ResultSection extends Component {
 
   render() {
     const {
-      chartData,
+      resultData,
       selectedChartIndex,
       googleDefined,
       options,
-      chartType,
+      viewType,
       selectedChartChangeHandler,
-      errorMessage
+      errorMessage,
+      chartMode
     } = this.props
     const resultSectionOnSuccess =
-      (googleDefined && chartData && chartData.hasOwnProperty('rows')) ?
+      (googleDefined && resultData && resultData.hasOwnProperty('rows')) ?
           <Tabs defaultActiveKey={1} id="uncontrolled_tab_example">
             <Tab eventKey={1} title="Data">
-              <GoogleChartsComponent chartData={chartData}
+              <GoogleChartsComponent chartData={resultData}
                 options={{}} chartType='Table'
                 id={'response_table_' + selectedChartIndex} />
             </Tab>
-            <Tab eventKey={2} title="Visualisation">
-              <div className="chart-type-select">
-                <SquealyDropdown
-                  name='chartType'
-                  options={GOOGLE_CHART_TYPE_OPTIONS}
-                  selectedValue={chartType}
-                  onChangeHandler={(value)=>selectedChartChangeHandler({type: value})}
-                />
-                <img src={configIcon} onClick={this.modalVisibilityHandler} />
-              </div>
-              <GoogleChartsComponent chartData={chartData} options={options} chartType={chartType}
-                id={'visualisation_' + selectedChartIndex} />
-            </Tab>
+            {
+              chartMode &&
+                <Tab eventKey={2} title="Visualisation">
+                  <div className="chart-type-select">
+                    <SquealyDropdown
+                      name='chartType'
+                      options={GOOGLE_CHART_TYPE_OPTIONS}
+                      selectedValue={viewType}
+                      onChangeHandler={(value)=>selectedChartChangeHandler({type: value})}
+                    />
+                    <img src={configIcon} onClick={this.modalVisibilityHandler} />
+                  </div>
+                  <GoogleChartsComponent chartData={resultData} options={options} chartType={viewType}
+                    id={'visualisation_' + selectedChartIndex} />
+                </Tab>
+            }
           </Tabs> : null
     return (
       <AccordionTab heading='Results'>

@@ -33,6 +33,7 @@ from .models import Chart, Transformation, Validation, Parameter, \
     ScheduledReport, ReportParameter, ReportRecipient, Filter
 from .validators import run_validation
 from datetime import datetime,timedelta
+import json
 
 jinjasql = configure_jinjasql()
 
@@ -106,7 +107,7 @@ class DataProcessor(object):
 
         return self._process_chart_query(chart, params, user)
 
-    def fetch_filter_data(self, filter_url, params, user):
+    def fetch_filter_data(self, filter_url, params, format_type, user):
         """
         Method to process the query and fetch the data for filter
         """
@@ -120,7 +121,10 @@ class DataProcessor(object):
 
         # Execute the Query, and return a Table
         table = self._execute_query(params, user, filter_obj.query, filter_obj.database)
-        data = self._format(table, 'json')
+        if format_type:
+            data = self._format(table, format_type)
+        else:
+            data = self._format(table, 'GoogleChartsFormatter')
 
         return data
 
@@ -485,8 +489,11 @@ class FilterView(APIView):
         This is the API endpoint for executing the query and returning the data for a particular Filter
         """
         user = request.user
+        payload = request.GET.get("payload", None)
         params = []
-        data = DataProcessor().fetch_filter_data(filter_url, params, user)
+        format_type = json.loads(payload)
+        format_type = format_type.get('format')
+        data = DataProcessor().fetch_filter_data(filter_url, params, format_type, user)
         return Response(data)
 
 

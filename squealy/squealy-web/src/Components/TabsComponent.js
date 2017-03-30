@@ -41,29 +41,40 @@ export default class TabsComponent extends Component {
    *  open modal to add values.
    */
   checkParametersHandler = (runTest) => {
-    const params = this.props.chart.parameters
-    let i = 0
+    if (this.props.chartMode) {
+      const params = this.props.chart.parameters
+      let i = 0
 
-    for (i = 0; i < params.length; i++) {
-      if (!params[i].test_value && !params[i].default_value) {
-        this.setState({
-          showParamDefModal: true,
-          note: 'Please update the Test Data OR Default Value for parameters'
-        })
-        return
+      for (i = 0; i < params.length; i++) {
+        if (!params[i].test_value && !params[i].default_value) {
+          this.setState({
+            showParamDefModal: true,
+            note: 'Please update the Test Data OR Default Value for parameters'
+          })
+          return
+        }
       }
     }
+    
     this.setState({
       note: null
     }, () => {
-      runTest ? this.props.onHandleTestButton() : null
+      if (runTest && this.props.chartMode) {
+        this.props.onHandleTestButton()
+      } else if (runTest) {
+        this.props.onHandleTestFilterButton()
+      }
     })
   }
 
   //Generic close Function which unset modal visibility and run the query.
   closeModal = (modalName) => {
     this.setState({[modalName]: false}, () => {
-      this.props.onHandleTestButton()
+      if (this.props.chartMode) {
+        this.props.onHandleTestButton()
+      } else {
+        this.props.onHandleTestFilterButton()
+      }
     })
   }
 
@@ -76,7 +87,8 @@ export default class TabsComponent extends Component {
       updateViewMode,
       currentChartMode,
       databases,
-      chartMode
+      chartMode,
+      onHandleTestFilterButton
     } = this.props
 
     const {
@@ -114,13 +126,21 @@ export default class TabsComponent extends Component {
       <div>
         { currentChartMode &&
           <span>
-            <SplitButton className="run-btn-group" bsStyle='success' title='Run' id='run-button' onClick={() => this.checkParametersHandler(true)}>
-              <MenuItem
-                eventKey='1'
-                onClick={()=>this.modalVisibilityHandler('showParamDefModal')}>
-                  Parameter Definitions
-              </MenuItem>
-            </SplitButton>
+            {
+              chartMode ?
+                <SplitButton className="run-btn-group" bsStyle='success' title='Run' id='run-button' onClick={() => this.checkParametersHandler(true)}>
+                  <MenuItem
+                    eventKey='1'
+                    onClick={()=>this.modalVisibilityHandler('showParamDefModal')}>
+                      Parameter Definitions
+                  </MenuItem>
+                </SplitButton> :
+                <Button
+                  bsStyle='success'
+                  className='run-btn-filter'
+                  onClick={() => this.checkParametersHandler(true)}>Run
+                </Button>
+            }
             { chartMode && 
               <Button
                 bsStyle='primary'

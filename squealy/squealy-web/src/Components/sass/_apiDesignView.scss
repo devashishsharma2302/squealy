@@ -108,6 +108,13 @@ tr.editable-table-row {
   border-top-right-radius: 28px;
 }
 
+.run-btn-filter {
+  border-radius: 28px;
+  min-width: 79px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
 .note-text {
   color: $note-text-color;
   &:hover, &:active, &:focus {

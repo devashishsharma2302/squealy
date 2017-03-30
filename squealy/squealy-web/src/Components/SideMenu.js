@@ -35,8 +35,10 @@ export default class SideMenu extends Component {
 
   hideLeftMenu = (e) => {
     this.setState({
+      clickedFilterIndex: null,
       clickedChartIndex: null,
-      showLeftNavContextMenu: false
+      showLeftNavContextMenu: false,
+      showLeftNavFilterContextMenu: false
     })
   }
 
@@ -61,6 +63,7 @@ export default class SideMenu extends Component {
     this.setState({ 
       [showModalState]: true,
       showLeftNavContextMenu: false,
+      showLeftNavFilterContextMenu: false,
       chartEditMode: action === 'EDIT' ? true : false
     })
   }

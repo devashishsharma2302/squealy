@@ -27,7 +27,8 @@ export default class MainComponent extends Component {
       filterDeletionHandler,
       selectedFilterChangeHandler,
       selectedFilterIndex,
-      filterSelectionHandler
+      filterSelectionHandler,
+      onHandleTestFilterButton
     } = this.props
     return (
       <div className="full-height">
@@ -67,6 +68,7 @@ export default class MainComponent extends Component {
                 databases={databases}
                 selectedFilterChangeHandler={selectedFilterChangeHandler}
                 filter={selectedFilterIndex !== null ? filters[selectedFilterIndex] : []}
+                onHandleTestFilterButton={onHandleTestFilterButton}
               />
             : <div className='full-height no-charts'>
                 <div className='col-md-6 col-md-offset-3 instructions'>

@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import MainComponent from './../Components/MainComponent'
 import {
   getEmptyApiDefinition, postApiRequest, getApiRequest, apiCall, formatTestParameters, 
-  getEmptyUserInfo } from './../Utils'
+  getEmptyUserInfo, getEmptyFilterDefinition} from './../Utils'
 import { DOMAIN_NAME } from './../Constant'
 
 export default class AuthoringInterfaceContainer extends Component {
@@ -71,7 +71,7 @@ export default class AuthoringInterfaceContainer extends Component {
     if (filter.id) {
       this.setState({'saveInProgress': true},
             postApiRequest(DOMAIN_NAME+'filters/', {'filter': filter},
-            (response) =>this.onAPISaved(response, 'filters', data, onSuccess),
+            (response) =>this.onAPISaved(response, 'filters', filters, onSuccess),
             (error)=>this.onAPISaveError(error, onFailure), null)
       )
     }
@@ -93,7 +93,7 @@ export default class AuthoringInterfaceContainer extends Component {
         saveInProgress: false,
         currentChartMode: (widgetData[newChartIndex].can_edit || false)
       }, () => {
-        callback && callback.constructor === Function || callback()
+        callback && callback.constructor === Function && callback()
       })
     } else {
       this.setState({
@@ -103,7 +103,7 @@ export default class AuthoringInterfaceContainer extends Component {
         saveInProgress: false,
         currentChartMode: false
       }, () => {
-        callback && callback.constructor === Function || callback()
+        callback && callback.constructor === Function && callback()
       })
     }
   }
@@ -229,9 +229,9 @@ export default class AuthoringInterfaceContainer extends Component {
 
     if (updatedObj) {
       Object.keys(updatedObj).map(key => {
-        filters[chartIndex][key] = updatedObj[key]
+        filters[filterIndex][key] = updatedObj[key]
           if (key === 'name') {
-            filters[chartIndex].url = updatedObj[key].replace(/ /g, '-').toLowerCase()
+            filters[filterIndex].url = updatedObj[key].replace(/ /g, '-').toLowerCase()
           }
       })
     }
@@ -241,10 +241,19 @@ export default class AuthoringInterfaceContainer extends Component {
   // Updates the selected chart's chart data with the result set returned by the
   // query written by the user
   onSuccessTest = (data, callback) => {
-    let currentChartData = [...this.state.charts]
+    let currentChartData = JSON.parse(JSON.stringify(this.state.charts))
     currentChartData[this.state.selectedChartIndex]['chartData'] = data
     currentChartData[this.state.selectedChartIndex].apiErrorMsg = null
     this.setState({charts: currentChartData}, () => {
+      callback ? callback() : null
+    })
+  }
+
+  onSuccessFilterTest = (data, callback) => {
+    let curFilterData = JSON.parse(JSON.stringify(this.state.filters))
+    curFilterData[this.state.selectedFilterIndex]['filterData'] = data
+    curFilterData[this.state.selectedFilterIndex].apiErrorMsg = null
+    this.setState({filters: curFilterData}, () => {
       callback ? callback() : null
     })
   }
@@ -256,6 +265,12 @@ export default class AuthoringInterfaceContainer extends Component {
     this.setState({charts: charts})
   }
 
+  onErrorFilterTest = (e) => {
+    let curFilterData = JSON.parse(JSON.stringify(this.state.filters))
+    curFilterData[this.state.selectedFilterIndex].apiErrorMsg = e.responseJSON.error
+    this.setState({filters: curFilterData})
+  }
+
   // Handles click event on run button. This function makes a POST call to get
   // result set of the query written by the user and triggers onSuccessTest if
   // the API is successfull
@@ -264,6 +279,12 @@ export default class AuthoringInterfaceContainer extends Component {
     let payloadObj = formatTestParameters(selectedChart.parameters, 'name', 'test_value')
     postApiRequest(DOMAIN_NAME+'squealy/'+selectedChart.url+'/', payloadObj,
                     this.onSuccessTest, this.onErrorTest, callback)
+  }
+
+  onHandleTestFilterButton = (callback=null) => {
+    const selectedChart = this.state.filters[this.state.selectedFilterIndex]
+    getApiRequest(DOMAIN_NAME+'filter/'+selectedChart.url+'/', {format: 'GoogleChartsFormatter'},
+                    this.onSuccessFilterTest, this.onErrorFilterTest, callback)
   }
 
 
@@ -280,13 +301,13 @@ export default class AuthoringInterfaceContainer extends Component {
 
   //Appends an empty filter definition object to current filter Definitions
   filterAdditionHandler = (name, database, onSuccess, onFailure) => {
-    let newFilter = getEmptyApiDefinition()
+    let newFilter = getEmptyFilterDefinition()
     newFilter.name = name
     newFilter.database = database
     newFilter.can_edit = true
     newFilter.url = name.replace(/ /g, '-').toLowerCase()
  
-    this.saveNewChart(newFilter, onSuccess, onFailure)
+    this.saveNewFilter(newFilter, onSuccess, onFailure)
   }
 
   //Changes the selected API index to the one which was clicked from the API list
@@ -357,6 +378,7 @@ export default class AuthoringInterfaceContainer extends Component {
           selectedFilterChangeHandler={this.selectedFilterChangeHandler}
           selectedFilterIndex={selectedFilterIndex}
           filterSelectionHandler={this.filterSelectionHandler}
+          onHandleTestFilterButton={this.onHandleTestFilterButton}
         />
       </div>
     )

@@ -17,13 +17,15 @@ export default class ApiDesignView extends Component {
       databases,
       filter,
       selectedFilterIndex,
-      selectedFilterChangeHandler
+      selectedFilterChangeHandler,
+      onHandleTestFilterButton
     } = this.props
+    let chartMode = selectedChartIndex !== null ? true : false
     return (
       <div className="full-height">
         <div className="col-md-12 tabs-container">
           <TabsComponent
-            chartMode={selectedChartIndex !== null ? true : false}
+            chartMode={chartMode}
             chart={chart}
             filter={filter}
             updateViewMode={updateViewMode}
@@ -32,6 +34,7 @@ export default class ApiDesignView extends Component {
             currentChartMode={currentChartMode}
             databases={databases}
             selectedFilterChangeHandler={selectedFilterChangeHandler}
+            onHandleTestFilterButton={onHandleTestFilterButton}
             />
         </div>
         {
@@ -43,14 +46,16 @@ export default class ApiDesignView extends Component {
                 parameters={selectedChartIndex !== null ? chart.parameters : []}
                 selectedChartChangeHandler={selectedChartChangeHandler}
                 selectedFilterChangeHandler={selectedFilterChangeHandler}
+                chartMode={chartMode}
               />
             </div>
             <div className="col-md-12">
               <ResultSection
-                errorMessage={chart.apiErrorMsg}
-                chartData={chart.chartData}
-                options={chart.options}
-                chartType={chart.type}
+                chartMode={chartMode}
+                errorMessage={chartMode ? chart.apiErrorMsg : filter.apiErrorMsg}
+                resultData={chartMode ? chart.chartData : filter.filterData}
+                options={chartMode ? chart.options : null}
+                viewType={chartMode ? chart.type : 'table'}
                 selectedChartIndex={selectedChartIndex}
                 selectedFilterIndex={selectedFilterIndex}
                 googleDefined={googleDefined}
