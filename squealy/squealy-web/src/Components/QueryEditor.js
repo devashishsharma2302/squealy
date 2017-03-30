@@ -47,10 +47,10 @@ export default class QueryEditor extends Component {
         currentParams.push(newParamObj)
       }
     })
-    selectedChartChangeHandler('parameters', currentParams)
 
     //Update sql query in selected chart definition
     selectedChartChangeHandler('query', editorContent)
+    selectedChartChangeHandler('parameters', currentParams)    
   }
 
   componentWillReceiveProps(nextProps) {

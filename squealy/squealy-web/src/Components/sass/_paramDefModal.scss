@@ -71,9 +71,11 @@
   }
 }
 
-.param-row:hover {
-  @include on-hover-style
+.param-row:hover, .selected.param-row {
+  @include on-hover-style;
+  background-color: #f5f5f5; 
 }
+
 
 .param-heading {
   display: inline-block;

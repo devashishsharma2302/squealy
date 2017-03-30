@@ -11,7 +11,6 @@ export default class ParamDefinitionModal extends Component {
     this.state = {
       showParamDefForm: false,
       selectedFormatValue: 'string',
-      query: '',
       selectedType: 'query',
       paramDefinition: getEmptyParamDefinition(),
       editMode: false,
@@ -21,11 +20,9 @@ export default class ParamDefinitionModal extends Component {
       errorTestValue: false,
       errorDefaultValue: false,
       validateFormat: false,
+      editArrayIndex: -1
     }
   }
-
-  editArrayIndex = -1
-
 
   //Function to validate string
   validateString = (checkField, errorField) => {
@@ -42,15 +39,14 @@ export default class ParamDefinitionModal extends Component {
   //Function to validate Date and DateTime
   validateParamValueFormat = (checkField, errorField) => {
     let typeFormat = 'string'
-    if (this.state.selectedFormatValue === 'date') {
-      typeFormat = 'selectedDateFormat'
-    }
-    else if (this.state.selectedFormatValue === 'datetime') {
-      typeFormat = 'selectedDateTimeFormat'
-    }
+    typeFormat = (this.state.selectedFormatValue === 'date') ?
+      'selectedDateFormat' : 
+      (this.state.selectedFormatValue === 'datetime') ?
+      'selectedDateTimeFormat' : 'string'
+
     let change = false
     if (this.state.selectedFormatValue !== 'date' && this.state.selectedFormatValue !== 'datetime') {
-      change = this.validateString(checkField, errorField) || change
+        change = this.validateString(checkField, errorField) || change
     } else {
       if (moment(this.state.paramDefinition[checkField], this.state[typeFormat], true).isValid() == false) {
         change = true
@@ -77,28 +73,56 @@ export default class ParamDefinitionModal extends Component {
       showParamDefForm: true,
       editMode: false,
       paramDefinition: getEmptyParamDefinition(),
-      selectedDataType: 'string',
-      selectedType: 'query'
+      selectedType: 'query',
+      order: this.props.parameters.length+1,
+      errorName: false,
+      errorTestValue: false,
+      errorDefaultValue: false,
+      selectedFormatValue: 'string',
+      selectedDateFormat: 'DD-MM-YYYY',
+      selectedDateTimeFormat: 'DD-MM-YYYY LT'
     })
   }
 
   //Function to open close param form
   closeParamForm = () => {
-    this.setState({ showParamDefForm: false })
+    this.setState({
+      showParamDefForm: false,
+      errorName: false,
+      errorTestValue: false,
+      errorDefaultValue: false})
   }
 
 
   //Function to select Type for Predefined params
   paramFormatSelectionHandler = (value) => {
-    let currentParamDefinition = JSON.parse(JSON.stringify(this.state.paramDefinition))
+    let currentParamDefinition = JSON.parse(JSON.stringify(this.state.paramDefinition)),
+      dateFormat = 'DD-MM-YYYY',
+      dateTimeFormat = 'DD-MM-YYYY LT'
     currentParamDefinition['data_type'] = value
-    this.setState({ selectedFormatValue: value, paramDefinition: currentParamDefinition })
+    dateFormat = this.state.selectedDateFormat || dateFormat
+    dateTimeFormat = this.state.selectedDateTimeFormat || dateTimeFormat
+    this.setState({
+      selectedFormatValue: value,
+      paramDefinition: currentParamDefinition,
+      selectedDateFormat: dateFormat,
+      selectedDateTimeFormat: dateTimeFormat
+    })
   }
 
   paramTypeSelectionHandler = (value) => {
-    let currentParamDefinition = JSON.parse(JSON.stringify(this.state.paramDefinition))
+    let currentParamDefinition = JSON.parse(JSON.stringify(this.state.paramDefinition)),
+    formatType = value === 'user' ? 'string' : this.state.selectedFormatValue
     currentParamDefinition['type'] = (value === 'query') ? 1 : 2
-    this.setState({ selectedType: value, paramDefinition: currentParamDefinition })
+
+    this.setState({ 
+      selectedType: value,
+      paramDefinition: currentParamDefinition,
+      selectedFormatValue: formatType,
+      errorName: false,
+      errorTestValue: false,
+      errorDefaultValue: false
+    })
   }
 
   onChangeParamHandler = (key, value, errorField) => {
@@ -116,8 +140,8 @@ export default class ParamDefinitionModal extends Component {
     let dateFormatType = parameters[index].data_type === 'date' || null,
       dateTimeFormatType = parameters[index].data_type === 'datetime' || null
     this.setState({ showParamDefForm: true }, () => {
-      let currentParamDefinition = this.props.parameters[index]
-      this.editArrayIndex = index
+      let currentParamDefinition = JSON.parse(JSON.stringify(this.props.parameters[index]))
+      currentParamDefinition.order = currentParamDefinition.order === null ? '' : currentParamDefinition.order
 
       this.setState({
         editMode: true,
@@ -125,7 +149,11 @@ export default class ParamDefinitionModal extends Component {
         selectedDateTimeFormat: dateTimeFormatType ? currentParamDefinition.kwargs.format : '',
         selectedFormatValue: currentParamDefinition.data_type,
         paramDefinition: currentParamDefinition,
-        selectedType: PARAM_TYPE_MAP[currentParamDefinition.type]
+        selectedType: PARAM_TYPE_MAP[currentParamDefinition.type],
+        errorName: false,
+        errorTestValue: false,
+        errorDefaultValue: false,
+        editArrayIndex: index
       })
     })
   }
@@ -135,34 +163,54 @@ export default class ParamDefinitionModal extends Component {
     let currentParameters = [...this.props.parameters]
     currentParameters.splice(index, 1)
     this.props.selectedChartChangeHandler('parameters', currentParameters)
-    if (index === this.editArrayIndex) {
+    if (index === this.state.editArrayIndex) {
       this.setState({
         paramDefinition: getEmptyParamDefinition(),
         selectedFormatValue: 'string',
         selectedType: 'query',
-        showParamDefForm: (index === this.editArrayIndex) ? false : this.state.showParamDefForm
+        showParamDefForm: (index === this.state.editArrayIndex) ? false : this.state.showParamDefForm
       })
     }
   }
 
+
+  updateOrderOfCharts = (obj1, obj2) => {
+    let firstObjOrder = obj1.order === '' ? Number.MAX_VALUE : parseInt(obj1.order, 10),
+      secondObjOrder = obj2.order === '' ? Number.MAX_VALUE : parseInt(obj2.order, 10)
+    if (firstObjOrder < secondObjOrder) {
+      return -1
+    }
+    if (firstObjOrder > secondObjOrder) {
+      return 1
+    }
+    return 0
+  }
+
+
   saveParamHandler = () => {
     let checkVar = this.validateString('name', 'errorName')
     checkVar = this.validateParamValueFormat('test_value', 'errorTestValue') || checkVar
-    checkVar = this.validateParamValueFormat('default_value', 'errorDefaultValue') || checkVar
-    if (checkVar) {
-      return;
+
+    if (this.state.selectedType === 'query') {
+      checkVar = this.validateParamValueFormat('default_value', 'errorDefaultValue') || checkVar
     }
-    let selectedChartParamDef = [...this.props.parameters]
-    if (this.state.editMode) {
-      selectedChartParamDef[this.editArrayIndex] = this.state.paramDefinition
-    } else {
-      selectedChartParamDef.push(this.state.paramDefinition)
+    let curParamDef = JSON.parse(JSON.stringify(this.state.paramDefinition))
+
+    if (checkVar) {
+      return
     }
 
+    let selectedChartParamDef = [...this.props.parameters]
+    curParamDef.order = curParamDef.order === '' ? null : curParamDef.order
+    if (this.state.editMode) {
+      selectedChartParamDef[this.state.editArrayIndex] = curParamDef
+    } else {
+      selectedChartParamDef.push(curParamDef)
+    }
+    selectedChartParamDef.sort(this.updateOrderOfCharts)
     this.props.selectedChartChangeHandler('parameters', selectedChartParamDef,
       () => {
-        this.setState({ showParamDefForm: false, editMode: false })
-        this.editArrayIndex = -1
+        this.setState({ showParamDefForm: false, editMode: false, editArrayIndex: -1 })
         this.props.updateNoteHandler(false)
       })
   }
@@ -198,6 +246,14 @@ export default class ParamDefinitionModal extends Component {
               <ErrorMessage classValue={'col-md-8 pull-right validation-error'}
                 message={'Error in name'} />
             }
+          </div>
+          <div className='row'>
+            <label className='col-md-4' htmlFor='orderVal'>Order:</label>
+            <div className='col-md-8'>
+              <input type='number' name='orderVal'
+                value={this.state.paramDefinition.order}
+                onChange={(e) => this.onChangeParamHandler('order', e.target.value)} />
+            </div>
           </div>
           <div className='row'>
             <label htmlFor='testValue' className='col-md-4'>Test Data: </label>
@@ -311,7 +367,8 @@ export default class ParamDefinitionModal extends Component {
                 parameters.map((param, i) => {
                   return (
                     <tr key={'param_row_' + i} onClick={(e) => this.handleEditParam(e, i)}
-                      className='param-row'>
+                      className={this.state.editArrayIndex === i ? 'selected param-row' : 'param-row'}
+                      >
                       <td>{param.type}</td>
                       <td className='param-name'>{param.name}</td>
                       <td>{param.test_value}</td>
@@ -319,7 +376,7 @@ export default class ParamDefinitionModal extends Component {
                       <td>{param.default_value ? param.default_value : '--'}</td>
                       <td className="align-center clickable-element" name='deleteParam'
                         onClick={(e) => this.deleteEntry(e, i, 'paramDefinition')}>
-                        <i className="fa fa-trash-o" aria-hidden="true" />
+                        <i className="fa fa-trash-o" aria-hidden="true"/>
                       </td>
                     </tr>
                   )

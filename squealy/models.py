@@ -60,6 +60,19 @@ class Chart(models.Model):
     def __unicode__(self):
         return self.name + "( /" + self.url + ")"
 
+class Filter(models.Model):
+    """
+    This represents an API for generating a dropdown filter.
+    """
+    url = models.CharField(max_length=255, unique=True)
+    query = models.TextField()
+    # To be updated to be in sync with the authoring interface UI.
+    name = models.CharField(max_length=255)
+    database = models.CharField(max_length=100, null=True, blank=True)
+
+    def __unicode__(self):
+        return self.name + "( /" + self.url + ")"
+
 
 class Parameter(models.Model):
     """
@@ -73,6 +86,7 @@ class Parameter(models.Model):
     default_value = models.CharField(max_length=200, null=True, blank=True)
     test_value = models.CharField(max_length=200, null=True, blank=True)
     type = models.IntegerField(default=1, choices=PARAMETER_TYPES)
+    order = models.IntegerField(null=True, blank=True)
     kwargs = CustomJSONField(null=True, blank=True, default={})
 
     def __unicode__(self):

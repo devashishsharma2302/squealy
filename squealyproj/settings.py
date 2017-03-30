@@ -11,7 +11,11 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+<<<<<<< HEAD
 import djcelery
+=======
+import sys
+>>>>>>> upstream/phase-2
 
 from .utils import extract_dj_database_urls
 
@@ -160,6 +164,7 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = os.environ.get('EMAIL_PORT')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+
 # Celery settings
 BROKER_URL = 'django://'
 CELERY_ACCEPT_CONTENT = ['json']
@@ -168,3 +173,18 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
 djcelery.setup_loader()
+
+# Test Settings
+if 'test' in sys.argv:
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
+
+    INSTALLED_APPS = INSTALLED_APPS + ['django_nose',]
+    TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+    NOSE_ARGS = ['--with-coverage',
+                 '--cover-package=squealy']
