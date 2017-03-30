@@ -36,7 +36,6 @@ export default class ChartConfigModal extends Component {
     catch(error) {
       this.setState({errorMessage: error.message})
     }
-    
   }
 
   componentWillReceiveProps (nextProps) {

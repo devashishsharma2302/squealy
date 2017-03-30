@@ -38,7 +38,7 @@ export default class AddWidgetModal extends Component {
     }
     if (this.props.editMode) {
       this.props.selectedWidgetHandler(
-        'name', widgetName, onSuccess, this.props.selectedWidgetIndex, onFailure)
+        {name: widgetName}, onSuccess, this.props.selectedWidgetIndex, onFailure)
     } else {
       this.props.widgetAdditionHandler(widgetName, database, onSuccess, onFailure)
     }
@@ -48,7 +48,7 @@ export default class AddWidgetModal extends Component {
     let dbVal = db ? db.value : null
     this.setState({database: dbVal}, () => {
       this.props.editMode ? 
-        this.props.selectedWidgetHandler('database', dbVal, null, this.state.selectedWidgetIndex) : null
+        this.props.selectedWidgetHandler({database: dbVal}, null, this.state.selectedWidgetIndex) : null
     })
   }
 
