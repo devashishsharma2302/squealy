@@ -17,7 +17,11 @@ describe('Unit tests for SideMenu using shallow rendering', () => {
     testChartAdditionHandler = jest.fn(),
     testChartDeletionHandler = jest.fn(),
     testChartSelectionHandler = jest.fn(),
-    testSelectedChartChangeHandler = jest.fn()
+    testSelectedChartChangeHandler = jest.fn(),
+    tempFilterSelectionHandler = jest.fn(),
+    tempFilterDeletionHandler = jest.fn(),
+    tempSelectedFilterChangeHandler = jest.fn(),
+    tempFilterAdditionHandler = jest.fn()
 
   const charts = [getEmptyApiDefinition()]
   let userInfo = getEmptyUserInfo()
@@ -39,6 +43,13 @@ describe('Unit tests for SideMenu using shallow rendering', () => {
         chartSelectionHandler={testChartSelectionHandler}
         chartDeletionHandler={testChartDeletionHandler}
         selectedChartChangeHandler={testSelectedChartChangeHandler}
+        databases={[]}
+        filters={[]}
+        filterAdditionHandler={tempFilterAdditionHandler}
+        filterDeletionHandler={tempFilterDeletionHandler}
+        selectedFilterChangeHandler={tempSelectedFilterChangeHandler}
+        selectedFilterIndex={null}
+        filterSelectionHandler={tempFilterSelectionHandler}
         />
     )
 
@@ -63,6 +74,13 @@ describe('Unit tests for SideMenu using shallow rendering', () => {
         chartSelectionHandler={testChartSelectionHandler}
         chartDeletionHandler={testChartDeletionHandler}
         selectedChartChangeHandler={testSelectedChartChangeHandler}
+        databases={[]}
+        filters={[]}
+        filterAdditionHandler={tempFilterAdditionHandler}
+        filterDeletionHandler={tempFilterDeletionHandler}
+        selectedFilterChangeHandler={tempSelectedFilterChangeHandler}
+        selectedFilterIndex={null}
+        filterSelectionHandler={tempFilterSelectionHandler}
         />
     )
 
@@ -83,6 +101,13 @@ describe('Unit tests for SideMenu using shallow rendering', () => {
         chartSelectionHandler={testChartSelectionHandler}
         chartDeletionHandler={testChartDeletionHandler}
         selectedChartChangeHandler={testSelectedChartChangeHandler}
+        databases={[]}
+        filters={[]}
+        filterAdditionHandler={tempFilterAdditionHandler}
+        filterDeletionHandler={tempFilterDeletionHandler}
+        selectedFilterChangeHandler={tempSelectedFilterChangeHandler}
+        selectedFilterIndex={null}
+        filterSelectionHandler={tempFilterSelectionHandler}
         />
     )
     expect(component.find('.selected-chart').exists()).toBe(true)

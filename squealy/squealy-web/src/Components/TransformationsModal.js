@@ -80,7 +80,7 @@ export default class TransformationsModal extends Component {
     })
 
     this.props.selectedChartChangeHandler(
-      'transformations', actualTransformations, this.props.closeModal)
+      {transformations: actualTransformations}, this.props.closeModal)
   }
 
   render () {

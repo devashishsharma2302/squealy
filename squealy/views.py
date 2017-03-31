@@ -34,6 +34,7 @@ from .models import Chart, Transformation, Validation, Parameter, \
     ScheduledReport, ReportParameter, ReportRecipient, Filter
 from .validators import run_validation
 from datetime import datetime, timedelta
+import json
 
 jinjasql = configure_jinjasql()
 
@@ -50,31 +51,19 @@ class DatabaseView(APIView):
             for db in database:
                 # if db != 'default':
                 database_response.append({
-                    'value': db,
-                    'label': database[db]['NAME']
+                  'value': db,
+                  'label': database[db]['NAME']
                 })
             return Response({'databases': database_response})
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
 
 
-def create_email_data(content=None):
-    if not content: content = "{% include 'report.html' %}"
-    content = '''
-    <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <title>Title</title>
-        </head>
-        <body> ''' + str(content) + '''</body></html>'''
-    return content
-
-
-def send_report(request):
-    current_time = datetime.utcnow()
-    scheduled_reports = ScheduledReport.objects.filter(
-        next_run_at__range=(current_time + timedelta(minutes=-1), current_time))
+def send_report(request, chart_url):
+  
+    template = loader.get_template('report_template.html')
+    current_time = datetime.utcnow().replace(second=0,microsecond=0)
+    scheduled_reports = ScheduledReport.objects.filter(next_run_at__range=(current_time+timedelta(minutes=-1),current_time))
     user = request.user
 
     for report in scheduled_reports:
@@ -86,27 +75,16 @@ def send_report(request):
             param_dict[parameter.parameter_name] = parameter.parameter_value
         chart_data = DataProcessor().fetch_chart_data(chart_url, param_dict, user)
         chart = Chart.objects.get(url=chart_url)
-        # Customize content
         context = {
-            'charts': [
-                {
-                    'name': chart.name,
-                    'chart_data': chart_data
-                },
-                {
-                    'name': chart.name,
-                    'chart_data': chart_data
-                }
-            ]
+            'charts': chart_data,
+            'name': chart.name
         }
-        template = Template(create_email_data(report.template))
-        report_template = template.render(Context(context))
+        report_template = template.render(context, request)
         recipients = list(ReportRecipient.objects.filter(report=report).values_list('email', flat=True))
 
         try:
             send_mail(report.subject, 'Here is the message.', 'hashedinsquealy@gmail.com',
-                      recipients, fail_silently=False, html_message=report_template)
-            report.save()
+            recipients, fail_silently=False, html_message=report_template)
         except Exception as e:
             return HttpResponse('Unable to send email')
 
@@ -130,7 +108,7 @@ class DataProcessor(object):
 
         return self._process_chart_query(chart, params, user)
 
-    def fetch_filter_data(self, filter_url, params, user):
+    def fetch_filter_data(self, filter_url, params, format_type, user):
         """
         Method to process the query and fetch the data for filter
         """
@@ -144,7 +122,10 @@ class DataProcessor(object):
 
         # Execute the Query, and return a Table
         table = self._execute_query(params, user, filter_obj.query, filter_obj.database)
-        data = self._format(table, 'json')
+        if format_type:
+            data = self._format(table, format_type)
+        else:
+            data = self._format(table, 'GoogleChartsFormatter')
 
         return data
 
@@ -509,8 +490,11 @@ class FilterView(APIView):
         This is the API endpoint for executing the query and returning the data for a particular Filter
         """
         user = request.user
+        payload = request.GET.get("payload", None)
         params = []
-        data = DataProcessor().fetch_filter_data(filter_url, params, user)
+        format_type = json.loads(payload)
+        format_type = format_type.get('format')
+        data = DataProcessor().fetch_filter_data(filter_url, params, format_type, user)
         return Response(data)
 
 

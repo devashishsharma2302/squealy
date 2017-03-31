@@ -33,8 +33,9 @@ export function baseUrl() {
  * request being sent
  */
 export function getApiRequest(uri, data, onSuccessCallback, onFailureCallback,
-                              interval) {
-  apiCall(uri, data, 'GET', onSuccessCallback, onFailureCallback, interval)
+  callbackParmas, interval) {
+  let payload = data ? {payload: jsonStringfy(data)} : data
+  apiCall(uri, payload, 'GET', onSuccessCallback, onFailureCallback, callbackParmas,  interval)
 }
 
 /**
@@ -129,6 +130,18 @@ export function getEmptyApiDefinition() {
     newColumnName: '',
     apiErrorMsg: null,
     database: null
+  }
+}
+
+export function getEmptyFilterDefinition() {
+  return {
+    id: null,
+    name: '',
+    url: '',
+    database: '',
+    query: '',
+    apiErrorMsg: '',
+    filterData: []
   }
 }
 
