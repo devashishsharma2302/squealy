@@ -8,7 +8,7 @@ from django.conf import settings
 
 from .models import ScheduledReport, ScheduledReportChart,\
                            ReportParameter, ReportRecipient
-from .exceptions import EmailException
+from .exceptions import SMTPException, EmailRecipientException, EmailSubjectException
 from .views import DataProcessor
 
 
@@ -110,16 +110,15 @@ def send_emails():
                 get_report_config()
             template = Template(create_email_data(scheduled_report.template))
             report_template = template.render(Context(report_config['template_context']))
-            # print len(connection.queries)
             scheduled_report.save()
             if not scheduled_report.subject:
-                raise EmailException('Subject not provided for scheduled report %s' % scheduled_report.id)
+                raise EmailSubjectException('Subject not provided for scheduled report %s' % scheduled_report.id)
             if not report_config['recipients']:
-                raise EmailException('Recipients not provided for scheduled report %s' % (scheduled_report.id))
+                raise EmailRecipientException('Recipients not provided for scheduled report %s' % (scheduled_report.id))
             send_mail(
                 scheduled_report.subject, 'Here is the message.',
                 settings.EMAIL_HOST_USER, report_config['recipients'],
                 fail_silently=False, html_message=report_template
             )
     else:
-        raise EmailException('Please specify the smtp credentials to use the scheduled reports service')
+        raise SMTPException('Please specify the smtp credentials to use the scheduled reports service')

@@ -62,6 +62,16 @@ class DuplicateUrlException(APIException):
     pass
 
 
-class EmailException(APIException):
+class SMTPException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    pass
+
+
+class EmailRecipientException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    pass
+
+
+class EmailSubjectException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     pass
