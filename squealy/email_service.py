@@ -44,8 +44,6 @@ class ScheduledReportConfig(object):
         """
             Returns the recipient list for a scheduled report
         """
-        print list(ReportRecipient.objects.filter(report=self.scheduled_report)\
-                    .values_list('email', flat=True))
         return list(ReportRecipient.objects.filter(report=self.scheduled_report)\
                     .values_list('email', flat=True))
 
