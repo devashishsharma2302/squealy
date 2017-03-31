@@ -10,6 +10,7 @@ class HtmlEditor(forms.Textarea):
         css = {
             'all': (
                 '/static/css/codemirror.css',
+                '/static/css/customize-codemirror.css'
             )
         }
         js = (
