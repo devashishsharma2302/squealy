@@ -21,7 +21,14 @@ export default class MainComponent extends Component {
       userInfo,
       updateViewMode,
       currentChartMode,
-      databases
+      databases,
+      filters,
+      filterAdditionHandler,
+      filterDeletionHandler,
+      selectedFilterChangeHandler,
+      selectedFilterIndex,
+      filterSelectionHandler,
+      onHandleTestFilterButton
     } = this.props
     return (
       <div className="full-height">
@@ -37,13 +44,21 @@ export default class MainComponent extends Component {
               chartDeletionHandler={chartDeletionHandler}
               selectedChartChangeHandler={selectedChartChangeHandler}
               databases={databases}
+              filters={filters}
+              filterAdditionHandler={filterAdditionHandler}
+              filterDeletionHandler={filterDeletionHandler}
+              selectedFilterChangeHandler={selectedFilterChangeHandler}
+              selectedFilterIndex={selectedFilterIndex}
+              filterSelectionHandler={filterSelectionHandler}
               />
           </div>
           <div className="col-md-9 api-design-container">
             {(charts.length)?
               <ApiDesignView
                 userInfo={userInfo}
-                chart={charts[selectedChartIndex]}
+                selectedChartIndex={selectedChartIndex}
+                selectedFilterIndex={selectedFilterIndex}
+                chart={selectedChartIndex !== null ? charts[selectedChartIndex] : []}
                 selectedChartChangeHandler={selectedChartChangeHandler}
                 selectedChartIndex={selectedChartIndex}
                 googleDefined={googleDefined}
@@ -51,6 +66,9 @@ export default class MainComponent extends Component {
                 updateViewMode={updateViewMode}
                 currentChartMode={currentChartMode}
                 databases={databases}
+                selectedFilterChangeHandler={selectedFilterChangeHandler}
+                filter={selectedFilterIndex !== null ? filters[selectedFilterIndex] : []}
+                onHandleTestFilterButton={onHandleTestFilterButton}
               />
             : <div className='full-height no-charts'>
                 <div className='col-md-6 col-md-offset-3 instructions'>

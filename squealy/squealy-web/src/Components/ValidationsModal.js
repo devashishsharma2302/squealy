@@ -65,7 +65,7 @@ export default class ValidationsModal extends Component {
     } else {
       newValidations.push(newValidation)
     }
-    this.props.selectedChartChangeHandler('validations', newValidations, () => {
+    this.props.selectedChartChangeHandler({validations: newValidations}, () => {
       this.clearFormFields()
       this.formVisibilityHandler()
     })
@@ -75,7 +75,7 @@ export default class ValidationsModal extends Component {
   validationDeletionHandler = (e, validationIndex) => {
     e.stopPropagation()
     let newValidations = this.props.validations.filter((validation, index) => index != validationIndex)
-    this.props.selectedChartChangeHandler('validations', newValidations,
+    this.props.selectedChartChangeHandler({validations: newValidations},
       () => {this.setState({showForm: false})})
   }
 

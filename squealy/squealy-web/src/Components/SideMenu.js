@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import Select from 'react-select'
 import chartIcon from './../images/charts_icon.png'
 import dashboardIcon from './../images/dashboard_icon.png'
-import { SquealyModal } from './SquealyUtilsComponents'
+import AddWidgetModal from './AddWidgetModal'
 
 export default class SideMenu extends Component {
   constructor() {
@@ -10,11 +10,11 @@ export default class SideMenu extends Component {
     this.state = {
       showLeftNavContextMenu: false,
       clickedChartIndex: null,
+      clickedFilterIndex: null,
       showAddChartModal: false,
-      chartName: '',
-      database: null,
+      showAddFilterModal: false,
       chartEditMode: false,
-      chartNameError: '',
+      addChartModalHeading:'Add new chart',
       leftMenuPosition: {
         top: 0,
         left: 0
@@ -32,18 +32,17 @@ export default class SideMenu extends Component {
     document.body.removeEventListener('click', this.hideLeftMenu);
   }
 */
-  newChartNameChanged = (e) => {
-    this.setState({chartName: e.target.value})
-  }
 
   hideLeftMenu = (e) => {
     this.setState({
+      clickedFilterIndex: null,
       clickedChartIndex: null,
-      showLeftNavContextMenu: false
+      showLeftNavContextMenu: false,
+      showLeftNavFilterContextMenu: false
     })
   }
 
-  toggleLeftMenu = (e, index) => {
+  toggleLeftMenu = (e, index, contextMenuStateKey, clickedIndexStateKey) => {
     e.preventDefault()
     //e.pageY calculating height from ul.
     //FIXME: Hardcoded 10px to show menu at accurate position. Need to check why do we need to add it?
@@ -51,26 +50,20 @@ export default class SideMenu extends Component {
       top: e.pageY - (this.refs.chartListUl ? this.refs.chartListUl.offsetTop : 0) - 10,
       left: e.pageX
     },
-    flag = (index !== this.state.clickedChartIndex) || !this.state.showLeftNavContextMenu
+    flag = (index !== this.state[clickedIndexStateKey]) || !this.state[contextMenuStateKey]
 
     this.setState({
-      clickedChartIndex: flag ? index : null,
-      showLeftNavContextMenu: flag,
+      [clickedIndexStateKey]: flag ? index : null,
+      [contextMenuStateKey]: flag,
       leftMenuPosition: leftMenuPosition
     })
   }
 
-  showChartDetailsModal = (action) => {
-    let charts = JSON.parse(JSON.stringify(this.props.charts)),
-      selectedChartName = (action === 'EDIT') ? charts[this.state.clickedChartIndex].name : '',
-      database = (action === 'EDIT') ? charts[this.state.clickedChartIndex].database : null
-
+  showChartDetailsModal = (action, showModalState) => {
     this.setState({ 
-      showAddChartModal: true,
-      chartNameError: '',
-      chartName: selectedChartName,
-      database: database,
+      [showModalState]: true,
       showLeftNavContextMenu: false,
+      showLeftNavFilterContextMenu: false,
       chartEditMode: action === 'EDIT' ? true : false
     })
   }
@@ -80,73 +73,47 @@ export default class SideMenu extends Component {
     this.props.chartSelectionHandler(index)
   }
 
-  chartAdditionModalSave = (e) => {
-    const {clickedChartIndex, chartName, database, chartEditMode} = this.state
-    let onSuccess = ()=>{this.setState({ showAddChartModal: false, clickedChartIndex: null, chartNameError: '' })},
-        onFailure = (error) => {this.setState({chartNameError: JSON.parse(error.responseText).detail})}
-    if (chartEditMode) {
-      this.props.selectedChartChangeHandler(
-        'name', chartName, onSuccess, clickedChartIndex, onFailure)
-    } else {
-      this.props.chartAdditionHandler(chartName, database,
-        //Success
-        onSuccess,
-        //Failue
-        onFailure)
-    }
+  selectFilterHandler = (index, action) => {
+    this.setState({showLeftNavContextMenu: false, clickedChartIndex: null})
+    this.props.filterSelectionHandler(index)
   }
 
-  onChangeDatabase = (db) => {
-    let dbVal = db ? db.value : null
-    this.setState({database: dbVal}, () => {
-      this.state.chartEditMode ? 
-        this.props.selectedChartChangeHandler('database', dbVal, null, this.state.clickedChartIndex) : null
+  closeModal = () => {
+    this.setState({
+      showAddChartModal: false,
+      clickedChartIndex: null,
+      showAddFilterModal: false
     })
   }
 
   render() {
     const {
       clickedChartIndex,
-      chartName,
       showLeftNavContextMenu,
       leftMenuPosition,
       showAddChartModal,
+      showAddFilterModal,
       chartEditMode,
-      database,
-      chartNameError
+      clickedFilterIndex,
+      showLeftNavFilterContextMenu
     } = this.state
 
     const {
       charts,
       chartAdditionHandler,
+      filterAdditionHandler,
       selectedChartIndex,
+      selectedFilterIndex,
       chartSelectionHandler,
       chartDeletionHandler,
       selectedChartChangeHandler,
+      filterDeletionHandler,
+      selectedFilterChangeHandler,
+      filterSelectionHandler,
       userInfo,
-      databases
+      databases,
+      filters
     } = this.props
-
-    const addNewChartModalContent = (
-      <div className='app-modal-content'>
-        <span className='chart-name-error'> {chartNameError} </span>
-        <div className="row">
-          <label className='col-md-4'>Name: </label>
-          <input className='chart-name-input' type='text' value={chartName} onChange={this.newChartNameChanged} />
-        </div>
-        <div className='row'>
-          <label className='col-md-4'>Databse: </label>
-          <div className='col-md-8 chart-modal-db'>
-            <Select
-              value={(database) ? database : null}
-              options={databases}
-              onChange={this.onChangeDatabase}
-              placeholder={'Select Database'}
-            />
-          </div>
-        </div>
-      </div>
-    )
 
     let listClassName = ''
     
@@ -158,7 +125,7 @@ export default class SideMenu extends Component {
             <span>Charts</span>
             {
               (userInfo.can_add_chart) ?
-                <i onClick={() => this.showChartDetailsModal('ADD')} className="fa fa-plus-circle add-new" aria-hidden="true"></i>
+                <i onClick={() => this.showChartDetailsModal('ADD', 'showAddChartModal')} className="fa fa-plus-circle add-new" aria-hidden="true"></i>
                 : null
             }
           </div>
@@ -170,16 +137,16 @@ export default class SideMenu extends Component {
                 return (
                   <li onClick={() => this.selectChartHandler(index)} key={index}
                     className={listClassName}
-                    onContextMenu={(e) => this.toggleLeftMenu(e, index)}>
+                    onContextMenu={(e) => this.toggleLeftMenu(e, index, 'showLeftNavContextMenu', 'clickedChartIndex')}>
                     <span title={chart.name}>{chart.name}</span>
                   </li>)
               })
             }
             {
-              showLeftNavContextMenu && this.props.charts[clickedChartIndex].can_edit && 
+              showLeftNavContextMenu && this.props.charts.length > clickedChartIndex && this.props.charts[clickedChartIndex].can_edit && 
                 <ul className="left-nav-menu" style={leftMenuPosition} 
                   onContextMenu={(e)=> {e.preventDefault()}}>
-                  <li onClick={() => this.showChartDetailsModal('EDIT')}>Rename Chart 
+                  <li onClick={() => this.showChartDetailsModal('EDIT', 'showAddChartModal')}>Rename Chart 
                     <i className="fa fa-pencil"/></li>
                   {
                     (userInfo.can_delete_chart) && <li className='delete-chart' onClick={() => 
@@ -191,14 +158,75 @@ export default class SideMenu extends Component {
             }
           </ul>
         </div>
-        <SquealyModal
-          modalId='addChartModal'
-          closeModal={() => this.setState({ showAddChartModal: false })}
-          showModal={showAddChartModal}
-          modalHeader= {chartEditMode ? 'Rename Chart' : 'Create New Chart'}
-          modalContent={addNewChartModalContent}
+        <div className="chart-list">
+          <div className="side-menu-heading">
+            <img src={chartIcon} alt="filter-icon"/>
+            <span>Dropdown Filters</span>
+            {
+              (userInfo.can_add_chart) ?
+                <i onClick={() => this.showChartDetailsModal('ADD', 'showAddFilterModal')} className="fa fa-plus-circle add-new" aria-hidden="true"></i>
+                : null
+            }
+          </div>
+          <ul ref="filterListUl">
+            {
+              filters.map((filter, index) => {
+                listClassName = (index === selectedFilterIndex) ? 'selected-chart' : ''
+                listClassName += (clickedFilterIndex === index) ? ' right-button-clicked' : ''
+                return (
+                  <li onClick={() => this.selectFilterHandler(index)} key={index}
+                    className={listClassName}
+                    onContextMenu={(e) => this.toggleLeftMenu(e, index, 
+                      'showLeftNavFilterContextMenu',
+                      'clickedFilterIndex')}>
+                    <span title={filter.name}>{filter.name}</span>
+                  </li>)
+              })
+            }
+          </ul>
+        </div>
+        {
+          showLeftNavFilterContextMenu && this.props.filters[clickedFilterIndex].can_edit && 
+            <ul className="left-nav-menu" style={leftMenuPosition} 
+              onContextMenu={(e)=> {e.preventDefault()}}>
+              <li onClick={() => this.showChartDetailsModal('EDIT', 'showAddFilterModal')}>Rename Filter 
+                <i className="fa fa-pencil"/></li>
+              {
+                (userInfo.can_delete_chart) &&
+                <li className='delete-chart' onClick={() => 
+                  this.props.filterDeletionHandler(clickedFilterIndex, this.hideLeftMenu)}>
+                  Delete Filter<i className="fa fa-trash-o"/>
+                </li>
+              }
+              <li className="close-option" onClick={this.hideLeftMenu}>Close</li>
+            </ul>
+        }
+        <AddWidgetModal
           helpText=''
-          saveChanges={this.chartAdditionModalSave} />
+          widgetData={charts}
+          modalId={'add-new-chart'}
+          modalHeading={chartEditMode ? 'Edit Chart' : 'Add Chart'}
+          showModal={showAddChartModal}
+          closeModal={this.closeModal}
+          selectedWidgetHandler={selectedChartChangeHandler}
+          widgetAdditionHandler={chartAdditionHandler}
+          editMode={chartEditMode}
+          selectedWidgetIndex={clickedChartIndex}
+          databases={databases}
+        />
+        <AddWidgetModal
+          helpText=''
+          widgetData={filters}
+          modalId={'add-new-filter'}
+          modalHeading={chartEditMode ? 'Edit Filter' : 'Add Filter'}
+          showModal={showAddFilterModal}
+          closeModal={this.closeModal}
+          selectedWidgetHandler={selectedFilterChangeHandler}
+          widgetAdditionHandler={filterAdditionHandler}
+          editMode={chartEditMode}
+          selectedWidgetIndex={clickedFilterIndex}
+          databases={databases}
+        />
       </div>
     )
   }

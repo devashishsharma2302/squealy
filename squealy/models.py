@@ -60,6 +60,7 @@ class Chart(models.Model):
     def __unicode__(self):
         return self.name + "( /" + self.url + ")"
 
+
 class Filter(models.Model):
     """
     This represents an API for generating a dropdown filter.
@@ -129,23 +130,38 @@ class ScheduledReport(models.Model):
     last_run_at = models.DateTimeField(null=True, blank=True)
     next_run_at = models.DateTimeField(null=True, blank=True)
     cron_expression = models.CharField(max_length=200)
-    chart = models.ForeignKey(Chart, related_name='scheduled_report')
-    template = models.TextField(null=True,blank=True,help_text="Add '{% include 'report.html' %}' to include your reports in mail")
+    template = models.TextField(
+                null=True, blank=True,
+                help_text="Add '{% include 'report.html' %}' to include your reports in mail")
 
-    def save(self,*args,**kwargs):
+    def save(self, *args, **kwargs):
         """
         function to evaluate "next_run_at" using the cron expression
         """
         self.last_run_at = datetime.now()
-        iter = croniter(self.cron_expression,self.last_run_at)
+        iter = croniter(self.cron_expression, self.last_run_at)
         self.next_run_at = iter.get_next(datetime)
-        super(ScheduledReport,self).save(*args,**kwargs)
+        super(ScheduledReport, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        return self.subject
+
+
+class ScheduledReportChart(models.Model):
+    """
+        Many to many mapping between charts and cheduled reports
+    """
+
+    chart = models.ForeignKey(Chart, related_name='scheduledreportchart')
+    report = models.ForeignKey(ScheduledReport,
+                               related_name='relatedscheduledreport')
 
 
 class ReportRecipient(models.Model):
     """
         Stores all the recepeints of the given reports
     """
+
     email = models.EmailField()
     report = models.ForeignKey(ScheduledReport, related_name='reportrecep')
 
@@ -154,6 +170,7 @@ class ReportParameter(models.Model):
     """
         Stores the parameter and its values for every scheduled report
     """
+
     parameter_name = models.CharField(max_length=300)
     parameter_value = models.CharField(max_length=300)
     report = models.ForeignKey(ScheduledReport, related_name='reportparam')
