@@ -451,25 +451,16 @@ class UserInformation(APIView):
         return Response(response)
 
 
-class FilterEditPermission(BasePermission):
-    """
-    To check if user has permission to edit the current filter
-    """
-    def has_permission(self, request, view):
-        filter_url = request.resolver_match.kwargs.get('filter_url')
-        return request.user.has_perm('squealy.can_edit_' + filter_url)
-
-
 class FilterUpdatePermission(BasePermission):
     """
-    Class to check if user can add/edit/delete the filter
+    To check if user can add/edit/delete the filter
     """
     def has_permission(self, request, view):
         if request.method == 'POST' and request.data.get('filter'):
-            filter_date = request.data['filter']
-            if filter_date.get('id'):
+            filter_data = request.data['filter']
+            if filter_data.get('id'):
                 # Update the filter
-                return request.user.has_perm('squealy.can_edit_' + str(filter_date['id']))
+                return request.user.has_perm('squealy.can_edit_filter' + str(filter_data['id']))
             else:
                 # Adding a new filter
                 return request.user.has_perm('squealy.add_filter')
@@ -481,7 +472,6 @@ class FilterUpdatePermission(BasePermission):
 
 class FilterView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
-    permission_classes.append(FilterEditPermission)
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
@@ -512,7 +502,7 @@ class FilterLoaderView(APIView):
         filters = Filter.objects.order_by('id').all()
         for filter in filters:
             filter_data = FilterSerializer(filter).data
-            if request.user.has_perm('squealy.can_edit_' + str(filter.id)):
+            if request.user.has_perm('squealy.can_edit_filter' + str(filter.id)):
                 filter_data['can_edit'] = True
             permitted_filters.append(filter_data)
 
@@ -525,7 +515,7 @@ class FilterLoaderView(APIView):
         data = request.data
         try:
             chart = Filter.objects.filter(id=data['id']).first()
-            Permission.objects.filter(codename__in=['can_edit_' + str(chart.id)]).delete()
+            Permission.objects.filter(codename__in=['can_edit_filter' + str(chart.id)]).delete()
             Filter.objects.filter(id=data['id']).first().delete()
         except Exception:
             FilterNotFoundException('A filter with id' + data['id'] + 'was not found')
@@ -551,12 +541,12 @@ class FilterLoaderView(APIView):
 
             # Edit permission
             perm_id = None
-            perm = Permission.objects.filter(codename='can_edit_' + str(filter_object.id)).first()
+            perm = Permission.objects.filter(codename='can_edit_filter' + str(filter_object.id)).first()
             if perm:
                 perm_id = perm.id
             Permission(
                 id=perm_id,
-                codename='can_edit_' + str(filter_object.id),
+                codename='can_edit_filter' + str(filter_object.id),
                 name='Can edit ' + filter_object.url,
                 content_type=content_type,
             ).save()
@@ -566,7 +556,7 @@ class FilterLoaderView(APIView):
         except KeyError as e:
             raise MalformedChartDataException("Key Error - " + str(e.args))
         except IntegrityError as e:
-            raise DuplicateUrlException('A filter with this url already exists')
+            raise DuplicateUrlException('A filter with this name already exists')
 
         return Response(filter_id, status.HTTP_200_OK)
 
