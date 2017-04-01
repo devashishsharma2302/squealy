@@ -22,20 +22,24 @@ export default class AuthoringInterfaceContainer extends Component {
   }
 
   componentDidMount() {
-    getApiRequest(DOMAIN_NAME+'charts/', null,
+    if (this.state.selectedChartIndex === null && this.state.selectedFilterIndex === null) {
+      this.setState({selectedChartIndex: 0, selectedFilterIndex: null}, () => {
+        getApiRequest(DOMAIN_NAME+'charts/', null,
                     (response)=>this.loadInitialCharts(response, 'chart'),
                     (error) => this.loadInitialCharts(error, 'chart'), null)
-    getApiRequest(DOMAIN_NAME+'user/', null,
-       (data) => {this.setState({userInfo: data})},
-        (error) => console.error(e), null)
-    getApiRequest(DOMAIN_NAME+'databases/', null,
-                  (data) => {
-                    this.setState({databases: data.databases})
-                  },
-                  (error) => console.error(error), null)
-    getApiRequest(DOMAIN_NAME+'filters/', null,
-                  (response)=>this.loadInitialCharts(response, 'filter'),
-                  (error) => this.loadInitialCharts(error, 'filter'), null)
+        getApiRequest(DOMAIN_NAME+'user/', null,
+          (data) => {this.setState({userInfo: data})},
+            (error) => console.error(e), null)
+        getApiRequest(DOMAIN_NAME+'databases/', null,
+                      (data) => {
+                        this.setState({databases: data.databases})
+                      },
+                      (error) => console.error(error), null)
+        getApiRequest(DOMAIN_NAME+'filters/', null,
+                      (response)=>this.loadInitialCharts(response, 'filter'),
+                      (error) => this.loadInitialCharts(error, 'filter'), null)
+      })
+    }
   }
 
   onAPISaved = (response, stateKey, data, callback=null) => {
@@ -157,7 +161,8 @@ export default class AuthoringInterfaceContainer extends Component {
     let data = [],
         tempData = {},
         selectedStateIndex = type === 'chart' ? 'selectedChartIndex' : 'selectedFilterIndex',
-        selectedDataStateKey = type === 'chart' ? 'charts' : 'filters'
+        selectedDataStateKey = type === 'chart' ? 'charts' : 'filters',
+        nonSelectedStatIndex = type === 'chart' ? 'selectedFilterIndex' : 'selectedChartIndex'
     if (response && response.length !== 0) {
       response.map(obj => {
         tempData = obj
@@ -182,10 +187,14 @@ export default class AuthoringInterfaceContainer extends Component {
                 }
               })
               if(parseInt(tempIndex, 10) >= 0) {
-                this.setState({[selectedStateIndex]: tempIndex}, () => this.setUrlPath(type))
+                this.setState({
+                  [selectedStateIndex]: tempIndex,
+                  [nonSelectedStatIndex]: null}, () => this.setUrlPath(type))
               } else {
                 alert(type + ' not found')
-                this.setState({[selectedStateIndex]: 0}, () => this.setUrlPath(type))
+                this.setState({
+                  [selectedStateIndex]: 0,
+                  [nonSelectedStatIndex]: null}, () => this.setUrlPath(type))
               }
             } else {
               this.setUrlPath(type)
@@ -193,6 +202,8 @@ export default class AuthoringInterfaceContainer extends Component {
           } else {
             this.setUrlPath(type)
           }
+        } else if ((currentPath.length < 2 || currentPath[1] === '') && type === 'chart') {
+            this.setUrlPath('chart')
         }
       })
     }
@@ -206,10 +217,10 @@ export default class AuthoringInterfaceContainer extends Component {
       prefix, accessMode
 
     if (type === 'filter') {
-      selectedData = filters[selectedFilterIndex]
+      selectedData = filters[selectedFilterIndex] || {}
       prefix = 'filter'
     } else {
-      selectedData = charts[selectedChartIndex]
+      selectedData = charts[selectedChartIndex] || {}
       prefix = 'chart'
     }
     accessMode = selectedData.can_edit || false
