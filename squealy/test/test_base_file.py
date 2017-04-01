@@ -1,13 +1,9 @@
 from __future__ import unicode_literals
 
-import datetime
-
-from os.path import dirname, abspath, join
-
 from django.contrib.auth.models import User
-from django.test import TestCase, RequestFactory, Client
+from django.test import TestCase, Client
 from django.db import connection
-from squealy.models import Chart,Transformation
+from squealy.models import Chart, Filter
 
 
 class BaseTestCase(TestCase):
@@ -29,7 +25,7 @@ class BaseTestCase(TestCase):
         After creating the table, we populate it with
         """
         with connection.cursor() as c:
-            query = 'CREATE TABLE employee_db (name VARCHAR(5), experience INT,date_of_joining DATE, salary INT)'
+            query = 'CREATE TABLE employee_db (name VARCHAR(5), experience INT, date_of_joining DATE, salary INT)'
             values_list = [
                          ["test1", 2, "2016-01-01", 4],
                          ["test2", 4, "2016-02-01", 3],
@@ -48,8 +44,18 @@ class BaseTestCase(TestCase):
                 c.execute(query1)
 
     def create_chart(self):
-        chart = Chart.objects.create(url='dgchart',query='select name,sum(experience) as experience,sum(salary) as salary from employee_db group by name;',name='dgchart',format='SimpleFormatter',type='ColumnChart',database='default')
+        chart = Chart.objects.create(
+            url='dgchart',
+            query='select name,sum(experience) as experience,sum(salary) as salary from employee_db group by name;',
+            name='dgchart', format='SimpleFormatter', type='ColumnChart',
+            database='default')
         return chart
+
+    def create_filter(self):
+        filter = Filter.objects.create(
+            url='emp-name', query='select name from employee_db',
+            name='Employee Dropdown', database='default')
+        return filter
 
     def delete_schema(self):
         with connection.cursor() as c:
