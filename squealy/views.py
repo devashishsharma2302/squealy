@@ -5,9 +5,6 @@ from django.db.utils import IntegrityError
 from django.shortcuts import render
 from django.db import transaction
 from django.conf import settings
-from django.core.mail import send_mail
-from django.template import loader,Template,Context
-from django.http import HttpResponse
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import permission_classes, api_view
@@ -36,7 +33,9 @@ from .validators import run_validation
 from datetime import datetime, timedelta
 import json
 
+
 jinjasql = configure_jinjasql()
+
 
 class DatabaseView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
@@ -57,38 +56,6 @@ class DatabaseView(APIView):
             return Response({'databases': database_response})
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
-
-
-def send_report(request, chart_url):
-  
-    template = loader.get_template('report_template.html')
-    current_time = datetime.utcnow().replace(second=0,microsecond=0)
-    scheduled_reports = ScheduledReport.objects.filter(next_run_at__range=(current_time+timedelta(minutes=-1),current_time))
-    user = request.user
-
-    for report in scheduled_reports:
-        report_parameters = ReportParameter.objects.filter(report=report)
-        chart_url = report.chart.url
-        param_dict = {}
-
-        for parameter in report_parameters:
-            param_dict[parameter.parameter_name] = parameter.parameter_value
-        chart_data = DataProcessor().fetch_chart_data(chart_url, param_dict, user)
-        chart = Chart.objects.get(url=chart_url)
-        context = {
-            'charts': chart_data,
-            'name': chart.name
-        }
-        report_template = template.render(context, request)
-        recipients = list(ReportRecipient.objects.filter(report=report).values_list('email', flat=True))
-
-        try:
-            send_mail(report.subject, 'Here is the message.', 'hashedinsquealy@gmail.com',
-            recipients, fail_silently=False, html_message=report_template)
-        except Exception as e:
-            return HttpResponse('Unable to send email')
-
-    return HttpResponse('Mail sent successfully')
 
 
 class DataProcessor(object):
@@ -451,25 +418,16 @@ class UserInformation(APIView):
         return Response(response)
 
 
-class FilterEditPermission(BasePermission):
-    """
-    To check if user has permission to edit the current filter
-    """
-    def has_permission(self, request, view):
-        filter_url = request.resolver_match.kwargs.get('filter_url')
-        return request.user.has_perm('squealy.can_edit_' + filter_url)
-
-
 class FilterUpdatePermission(BasePermission):
     """
-    Class to check if user can add/edit/delete the filter
+    To check if user can add/edit/delete the filter
     """
     def has_permission(self, request, view):
         if request.method == 'POST' and request.data.get('filter'):
-            filter_date = request.data['filter']
-            if filter_date.get('id'):
+            filter_data = request.data['filter']
+            if filter_data.get('id'):
                 # Update the filter
-                return request.user.has_perm('squealy.can_edit_' + str(filter_date['id']))
+                return request.user.has_perm('squealy.can_edit_filter' + str(filter_data['id']))
             else:
                 # Adding a new filter
                 return request.user.has_perm('squealy.add_filter')
@@ -481,7 +439,6 @@ class FilterUpdatePermission(BasePermission):
 
 class FilterView(APIView):
     permission_classes = SquealySettings.get_default_permission_classes()
-    permission_classes.append(FilterEditPermission)
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
@@ -512,7 +469,7 @@ class FilterLoaderView(APIView):
         filters = Filter.objects.order_by('id').all()
         for filter in filters:
             filter_data = FilterSerializer(filter).data
-            if request.user.has_perm('squealy.can_edit_' + str(filter.id)):
+            if request.user.has_perm('squealy.can_edit_filter' + str(filter.id)):
                 filter_data['can_edit'] = True
             permitted_filters.append(filter_data)
 
@@ -525,7 +482,7 @@ class FilterLoaderView(APIView):
         data = request.data
         try:
             chart = Filter.objects.filter(id=data['id']).first()
-            Permission.objects.filter(codename__in=['can_edit_' + str(chart.id)]).delete()
+            Permission.objects.filter(codename__in=['can_edit_filter' + str(chart.id)]).delete()
             Filter.objects.filter(id=data['id']).first().delete()
         except Exception:
             FilterNotFoundException('A filter with id' + data['id'] + 'was not found')
@@ -551,12 +508,12 @@ class FilterLoaderView(APIView):
 
             # Edit permission
             perm_id = None
-            perm = Permission.objects.filter(codename='can_edit_' + str(filter_object.id)).first()
+            perm = Permission.objects.filter(codename='can_edit_filter' + str(filter_object.id)).first()
             if perm:
                 perm_id = perm.id
             Permission(
                 id=perm_id,
-                codename='can_edit_' + str(filter_object.id),
+                codename='can_edit_filter' + str(filter_object.id),
                 name='Can edit ' + filter_object.url,
                 content_type=content_type,
             ).save()
@@ -566,7 +523,7 @@ class FilterLoaderView(APIView):
         except KeyError as e:
             raise MalformedChartDataException("Key Error - " + str(e.args))
         except IntegrityError as e:
-            raise DuplicateUrlException('A filter with this url already exists')
+            raise DuplicateUrlException('A filter with this name already exists')
 
         return Response(filter_id, status.HTTP_200_OK)
 
