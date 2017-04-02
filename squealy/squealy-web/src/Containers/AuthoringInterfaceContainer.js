@@ -80,30 +80,44 @@ export default class AuthoringInterfaceContainer extends Component {
   }
 
   // Updates the selected chart index and updates the selected chart name in the URL
-  onWidgetDeleted = (index, selectedWidgetStateKey, widgetStateKeyData, callback) => {
-    const selectedIndex = this.state[selectedWidgetStateKey],
+  onWidgetDeleted = (index, selectedIndexStateKey, widgetStateKeyData, callback) => {
+    const selectedIndex = this.state[selectedIndexStateKey] || index,
       currWidgetData = this.state[widgetStateKeyData]
+    let chartMode = false, nonSelectedStatIndex = ''
+
+    if (selectedIndexStateKey === 'selectedChartIndex') {
+      nonSelectedStatIndex = 'selectedFilterIndex'
+    } else {
+      nonSelectedStatIndex = 'selectedChartIndex'
+    }
 
     if(currWidgetData.length > 1) {
       let widgetData = JSON.parse(JSON.stringify(currWidgetData)),
         newChartIndex = (selectedIndex !== 0) ? selectedIndex - 1 : selectedIndex
       widgetData.splice(index, 1)
+      if (newChartIndex && newChartIndex < widgetData.length) {
+        chartMode = widgetData[newChartIndex].can_edit || false
+      } else {
+        chartMode = false
+      }
       this.setState({
         [widgetStateKeyData]: widgetData,
-        [selectedWidgetStateKey]: newChartIndex,
+        [nonSelectedStatIndex]: null,
+        [selectedIndexStateKeys]: newChartIndex,
         savedStatus: true,
         saveInProgress: false,
-        currentChartMode: (widgetData[newChartIndex].can_edit || false)
+        currentChartMode: chartMode
       }, () => {
         callback && callback.constructor === Function && callback()
       })
     } else {
       this.setState({
         [widgetStateKeyData]: [],
-        [selectedWidgetStateKey]: 0,
+        [selectedIndexStateKey]: 0,
         savedStatus: true,
         saveInProgress: false,
-        currentChartMode: false
+        currentChartMode: false,
+        [nonSelectedStatIndex]: null
       }, () => {
         callback && callback.constructor === Function && callback()
       })
@@ -134,12 +148,24 @@ export default class AuthoringInterfaceContainer extends Component {
   onNewAPISaved = (newData, id, selectedIndexStateKey, widgetDataKey, onSuccess) => {
     let data = JSON.parse(JSON.stringify(this.state[widgetDataKey]))
     let newIndex = data.push(newData) - 1
+    let nonSelectedStatIndex, type
+    if (selectedIndexStateKey === 'selectedChartIndex') {
+      nonSelectedStatIndex = 'selectedFilterIndex'
+      type = 'chart'
+    } else {
+      nonSelectedStatIndex = 'selectedChartIndex'
+      type = 'filter'
+    }
     data[newIndex].id = id
     this.setState({
       [widgetDataKey]: data,
       [selectedIndexStateKey]: newIndex,
+      [nonSelectedStatIndex]: null,
       'savedStatus': true,
-      'saveInProgress': false}, onSuccess)
+      'saveInProgress': false}, () => {
+        onSuccess && onSuccess.constructor === Function ? onSuccess() : null
+        this.setUrlPath(type)
+      })
   }
 
   saveNewChart = (newChart, onSuccess, onFailure) => {
@@ -361,10 +387,18 @@ export default class AuthoringInterfaceContainer extends Component {
     }
   }
 
-  updateViewMode = (val, editPermission) => {
+  updateViewMode = (val, editPermission, chartMode) => {
     if (editPermission) {
-      const { selectedChartIndex, charts } = this.state
-      const newUrl = '/' + charts[selectedChartIndex].name + '/' + (val ? 'view' : 'edit/') 
+      let selectedIndex, data
+
+      if (chartMode) {
+        selectedIndex = this.state.selectedChartIndex
+        data = this.state.charts
+      } else {
+        selectedIndex = this.state.selectedFilterIndex
+        data = this.state.filters
+      }
+      const newUrl = '/' + data[selectedIndex].name + '/' + (val ? 'view' : 'edit/') 
       window.history.replaceState('', '', newUrl);
       this.setState({currentChartMode: !val})
     }

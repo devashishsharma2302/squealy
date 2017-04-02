@@ -186,7 +186,7 @@ export default class SideMenu extends Component {
           </ul>
         </div>
         {
-          showLeftNavFilterContextMenu && this.props.filters[clickedFilterIndex].can_edit && 
+          showLeftNavFilterContextMenu && this.props.filters.length > clickedFilterIndex && this.props.filters[clickedFilterIndex].can_edit && 
             <ul className="left-nav-menu" style={leftMenuPosition} 
               onContextMenu={(e)=> {e.preventDefault()}}>
               <li onClick={() => this.showChartDetailsModal('EDIT', 'showAddFilterModal')}>Rename Filter 

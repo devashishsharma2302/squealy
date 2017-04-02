@@ -78,6 +78,14 @@ export default class TabsComponent extends Component {
     })
   }
 
+  onChangeDatabase = (dbVal) => {
+    if (this.props.chartMode) {
+      this.props.selectedChartChangeHandler({database: (dbVal) ? dbVal.value : null})
+    } else {
+      this.props.selectedFilterChangeHandler({database: (dbVal) ? dbVal.value : null})
+    }
+  }
+
 
   render() {
     const {
@@ -88,7 +96,9 @@ export default class TabsComponent extends Component {
       currentChartMode,
       databases,
       chartMode,
-      onHandleTestFilterButton
+      filter,
+      onHandleTestFilterButton,
+      selectedFilterChangeHandler
     } = this.props
 
     const {
@@ -104,8 +114,8 @@ export default class TabsComponent extends Component {
       viewText: 'View',
       icon: <i className="fa fa-pencil"/>
     }
-
-    if (chart.can_edit) {
+    const widget = chartMode ? chart : filter
+    if (widget.can_edit) {
       viewButton.className = ''
       viewButton.title = null
       if (currentChartMode) {
@@ -170,9 +180,9 @@ export default class TabsComponent extends Component {
             }
             <div className="selected-db-wrapper">
               <Select
-                value={(chart.database)?chart.database:null}
+                value={(widget.database) ? widget.database : null}
                 options={databases}
-                onChange={(db) => {selectedChartChangeHandler('database', (db)?db.value:null)}}
+                onChange={(db) => {this.onChangeDatabase(db)}}
                 placeholder={'Select Database'}
               />
             </div>
@@ -220,7 +230,7 @@ export default class TabsComponent extends Component {
         <Button bsStyle='primary'
           className={'tab-component view-btn '+viewButton.className} 
           title={viewButton.title}
-          onClick={()=>updateViewMode(currentChartMode, chart.can_edit)}>
+          onClick={()=>updateViewMode(currentChartMode, widget.can_edit, chartMode)}>
           {viewButton.icon}
           {viewButton.viewText}
         </Button>
