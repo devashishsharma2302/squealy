@@ -373,6 +373,7 @@ class ChartsLoaderView(APIView):
                                                  default_value=parameter['default_value'],
                                                  test_value=parameter['test_value'], chart=chart_object,
                                                  type=parameter['type'],
+                                                 dropdown_api=parameter['dropdown_api'],
                                                  order=parameter['order'],
                                                  kwargs=parameter['kwargs'])
                     parameter_object.save()
