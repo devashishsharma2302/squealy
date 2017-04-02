@@ -96,9 +96,10 @@ export default class TabsComponent extends Component {
       currentChartMode,
       databases,
       chartMode,
-      filter,
+      filters,
       onHandleTestFilterButton,
-      selectedFilterChangeHandler
+      selectedFilterChangeHandler,
+      selectedFilterIndex
     } = this.props
 
     const {
@@ -108,6 +109,7 @@ export default class TabsComponent extends Component {
       showShareModal
     } = this.state
 
+    const filter = filters[selectedFilterIndex]
     let viewButton = {
       className: '',
       title: null,
@@ -198,6 +200,7 @@ export default class TabsComponent extends Component {
                 showModal={this.state.showParamDefModal}
                 parameters={chart.parameters}
                 note={this.state.note}
+                filters={filters}
                 updateNoteHandler={this.checkParametersHandler}/>
             }
             {

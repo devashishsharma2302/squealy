@@ -15,19 +15,21 @@ export default class ApiDesignView extends Component {
       updateViewMode,
       currentChartMode,
       databases,
-      filter,
+      filters,
       selectedFilterIndex,
       selectedFilterChangeHandler,
       onHandleTestFilterButton
     } = this.props
     let chartMode = selectedChartIndex !== null ? true : false
+    const filter = chartMode ? [] : filters[selectedFilterIndex]
     return (
       <div className="full-height">
         <div className="col-md-12 tabs-container">
           <TabsComponent
             chartMode={chartMode}
             chart={chart}
-            filter={filter}
+            filters={filters}
+            selectedFilterIndex={selectedFilterIndex}
             updateViewMode={updateViewMode}
             onHandleTestButton={onHandleTestButton}
             selectedChartChangeHandler={selectedChartChangeHandler}

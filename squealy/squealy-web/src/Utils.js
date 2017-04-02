@@ -180,7 +180,8 @@ export function getEmptyParamDefinition(apiIndex) {
     mandatory: false,
     default_value: '',
     kwargs: {},
-    test_value: ''
+    test_value: '',
+    dropdown_api: ''
   }
 }
 

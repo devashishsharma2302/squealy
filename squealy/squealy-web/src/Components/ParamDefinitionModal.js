@@ -20,8 +20,26 @@ export default class ParamDefinitionModal extends Component {
       errorTestValue: false,
       errorDefaultValue: false,
       validateFormat: false,
-      editArrayIndex: -1
+      editArrayIndex: -1,
+      dropdownApiOptions: [],
+      selectedDropdownAPI: ''
     }
+  }
+
+  componentDidMount() {
+    const {filters} = this.props
+    let dropwdownApiOptions = [], selectedDropdownAPI
+
+    filters.map((filter) => {
+      dropwdownApiOptions.push({
+        value: filter.url,
+        label: filter.name
+      })
+    })
+
+    selectedDropdownAPI = dropwdownApiOptions.length ? dropwdownApiOptions[0].value : ''
+
+    this.setState({dropdownApiOptions: dropwdownApiOptions, selectedDropdownAPI: selectedDropdownAPI})
   }
 
   //Function to validate string
@@ -138,7 +156,9 @@ export default class ParamDefinitionModal extends Component {
   handleEditParam = (e, index) => {
     const {parameters} = this.props
     let dateFormatType = parameters[index].data_type === 'date' || null,
-      dateTimeFormatType = parameters[index].data_type === 'datetime' || null
+      dateTimeFormatType = parameters[index].data_type === 'datetime' || null,
+      selectedDropdownAPI = parameters[index].dropdown_api || ''
+
     this.setState({ showParamDefForm: true }, () => {
       let currentParamDefinition = JSON.parse(JSON.stringify(this.props.parameters[index]))
       currentParamDefinition.order = currentParamDefinition.order === null ? '' : currentParamDefinition.order
@@ -153,7 +173,8 @@ export default class ParamDefinitionModal extends Component {
         errorName: false,
         errorTestValue: false,
         errorDefaultValue: false,
-        editArrayIndex: index
+        editArrayIndex: index,
+        selectedDropdownAPI: selectedDropdownAPI
       })
     })
   }
@@ -168,6 +189,7 @@ export default class ParamDefinitionModal extends Component {
         paramDefinition: getEmptyParamDefinition(),
         selectedFormatValue: 'string',
         selectedType: 'query',
+        selectedDropdownAPI: '',
         showParamDefForm: (index === this.state.editArrayIndex) ? false : this.state.showParamDefForm
       })
     }
@@ -213,6 +235,15 @@ export default class ParamDefinitionModal extends Component {
         this.setState({ showParamDefForm: false, editMode: false, editArrayIndex: -1 })
         this.props.updateNoteHandler(false)
       })
+  }
+
+  onChangeDropdownApi = (value) => {
+    let currentParamDefinition = JSON.parse(JSON.stringify(this.state.paramDefinition))
+    currentParamDefinition['dropdown_api'] = value
+    this.setState({ 
+      paramDefinition: currentParamDefinition,
+      selectedDropdownAPI: value
+    })
   }
 
   render() {
@@ -306,6 +337,18 @@ export default class ParamDefinitionModal extends Component {
                 (this.state.selectedFormatValue === 'datetime') && this.state.validateFormat &&
                 <ErrorMessage classValue={''} message={'Enter valid datetime format'} />
               }
+            </div>
+          }
+          {(this.state.selectedType === 'query' && this.state.selectedFormatValue === 'dropdown') &&
+            <div className='row'>
+              <label htmlFor='dropwdownApi' className='col-md-4'>Dropdown API: </label>
+              <div className='col-md-8'>
+                <SquealyDropdown
+                  options={this.state.dropdownApiOptions}
+                  name='dropwdownApi'
+                  onChangeHandler={this.onChangeDropdownApi}
+                  selectedValue={this.state.selectedDropdownAPI} />
+              </div>
             </div>
           }
           {
