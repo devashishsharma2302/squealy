@@ -6,16 +6,9 @@ from django.core.mail.message import EmailMultiAlternatives
 
 from datetime import datetime
 from croniter import croniter
-from types import MethodType
 
 from .constants import TRANSFORMATION_TYPES, PARAMETER_TYPES, COLUMN_TYPES
 import json
-
-def get_content(self):
-    return self.alternatives
-
-from types import MethodType
-EmailMultiAlternatives.get_content = MethodType(get_content,None,EmailMultiAlternatives)
 
 class CustomJSONField(models.TextField):
 
