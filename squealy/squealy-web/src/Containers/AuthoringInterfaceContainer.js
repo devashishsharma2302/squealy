@@ -389,16 +389,18 @@ export default class AuthoringInterfaceContainer extends Component {
 
   updateViewMode = (val, editPermission, chartMode) => {
     if (editPermission) {
-      let selectedIndex, data
+      let selectedIndex, data, type
 
       if (chartMode) {
         selectedIndex = this.state.selectedChartIndex
         data = this.state.charts
+        type = 'chart'
       } else {
         selectedIndex = this.state.selectedFilterIndex
         data = this.state.filters
+        type = 'filter'
       }
-      const newUrl = '/' + data[selectedIndex].name + '/' + (val ? 'view' : 'edit/') 
+      const newUrl = '/' + type + '/' + data[selectedIndex].name + '/' + (val ? 'view' : 'edit/') 
       window.history.replaceState('', '', newUrl);
       this.setState({currentChartMode: !val})
     }

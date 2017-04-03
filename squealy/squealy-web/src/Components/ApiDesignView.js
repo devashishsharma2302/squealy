@@ -67,7 +67,7 @@ export default class ApiDesignView extends Component {
           </div>
         }
         {
-          currentChartMode === false && selectedChartIndex &&
+          currentChartMode === false && (selectedChartIndex >= 0 || selectedFilterIndex >= 0) &&
           <div className="col-md-12">
             <ViewOnlyResults
               chart={chart}
