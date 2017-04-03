@@ -141,7 +141,8 @@ export function getEmptyFilterDefinition() {
     database: '',
     query: '',
     apiErrorMsg: '',
-    filterData: []
+    filterData: [],
+    parameters: []
   }
 }
 

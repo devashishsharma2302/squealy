@@ -188,7 +188,9 @@ export default class ParamDefinitionModal extends Component {
     e.stopPropagation()
     let currentParameters = [...this.props.parameters]
     currentParameters.splice(index, 1)
-    this.props.selectedChartChangeHandler({parameters: currentParameters})
+    this.props.chartMode ?
+      this.props.selectedChartChangeHandler({parameters: currentParameters}) :
+      this.props.selectedFilterChangeHandler({parameters: currentParameters})
     if (index === this.state.editArrayIndex) {
       this.setState({
         paramDefinition: getEmptyParamDefinition(),
@@ -237,7 +239,13 @@ export default class ParamDefinitionModal extends Component {
       selectedChartParamDef.push(curParamDef)
     }
     selectedChartParamDef.sort(this.updateOrderOfCharts)
-    this.props.selectedChartChangeHandler({'parameters':selectedChartParamDef},
+    this.props.chartMode ?
+      this.props.selectedChartChangeHandler({'parameters':selectedChartParamDef},
+      () => {
+        this.setState({ showParamDefForm: false, editMode: false, editArrayIndex: -1 })
+        this.props.updateNoteHandler(false)
+      }):
+      this.props.selectedFilterChangeHandler({'parameters':selectedChartParamDef},
       () => {
         this.setState({ showParamDefForm: false, editMode: false, editArrayIndex: -1 })
         this.props.updateNoteHandler(false)
@@ -254,7 +262,7 @@ export default class ParamDefinitionModal extends Component {
   }
 
   render() {
-    const {parameters, selectedChartChangeHandler, note} = this.props
+    const {parameters, selectedChartChangeHandler, note, selectedFilterChangeHandler} = this.props
     const addParamDefFormContent =
       <div className="modal-container">
         <div className='add-modal-content'>

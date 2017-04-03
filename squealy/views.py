@@ -455,9 +455,9 @@ class FilterView(APIView):
         """
         user = request.user
         payload = request.GET.get("payload", None)
-        params = []
         payload = json.loads(payload)
         format_type = payload.get('format')
+        params = payload.get('params')
         data = DataProcessor().fetch_filter_data(filter_url, params, format_type, user)
         return Response(data)
 

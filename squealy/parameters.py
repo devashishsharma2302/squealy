@@ -124,22 +124,5 @@ class Number(Parameter):
             raise NumberParseException("Cannot parse to int or float"+ value)
 
 
-class Dropdown(Parameter):
-    def __init__(self, name, description=None, default_value=None, valid_values=None):
-        self.default_value = default_value
-        self.valid_values = valid_values
-        self.name = name
-        self.description = description if description else ""
-
-    def to_internal(self, value):
-        if isinstance(value, str):
-            return value
-        else:
-            return str(value)
-
-    def is_valid(self, value):
-        if not self.valid_values:
-            return True
-        if value in self.valid_values:
-            return True
-        return False
+class Dropdown(String):
+    pass
