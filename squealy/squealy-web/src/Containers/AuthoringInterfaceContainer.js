@@ -80,15 +80,15 @@ export default class AuthoringInterfaceContainer extends Component {
   }
 
   // Updates the selected chart index and updates the selected chart name in the URL
-  onWidgetDeleted = (index, selectedIndexStateKey, widgetStateKeyData, callback) => {
-    const selectedIndex = this.state[selectedIndexStateKey] || index,
+  onWidgetDeleted = (index, selectedWidgetIndex, widgetStateKeyData, callback) => {
+    const selectedIndex = this.state[selectedWidgetIndex] || index,
       currWidgetData = this.state[widgetStateKeyData]
-    let chartMode = false, nonSelectedStatIndex = ''
+    let chartMode = false, nonSelectedWidgetIndex = ''
 
-    if (selectedIndexStateKey === 'selectedChartIndex') {
-      nonSelectedStatIndex = 'selectedFilterIndex'
+    if (selectedWidgetIndex === 'selectedChartIndex') {
+      nonSelectedWidgetIndex = 'selectedFilterIndex'
     } else {
-      nonSelectedStatIndex = 'selectedChartIndex'
+      nonSelectedWidgetIndex = 'selectedChartIndex'
     }
 
     if(currWidgetData.length > 1) {
@@ -102,8 +102,8 @@ export default class AuthoringInterfaceContainer extends Component {
       }
       this.setState({
         [widgetStateKeyData]: widgetData,
-        [nonSelectedStatIndex]: null,
-        [selectedIndexStateKey]: newChartIndex,
+        [nonSelectedWidgetIndex]: null,
+        [selectedWidgetIndex]: newChartIndex,
         savedStatus: true,
         saveInProgress: false,
         currentChartMode: chartMode
@@ -113,11 +113,11 @@ export default class AuthoringInterfaceContainer extends Component {
     } else {
       this.setState({
         [widgetStateKeyData]: [],
-        [selectedIndexStateKey]: 0,
+        [selectedWidgetIndex]: 0,
         savedStatus: true,
         saveInProgress: false,
         currentChartMode: false,
-        [nonSelectedStatIndex]: null
+        [nonSelectedWidgetIndex]: null
       }, () => {
         callback && callback.constructor === Function && callback()
       })
@@ -145,22 +145,22 @@ export default class AuthoringInterfaceContainer extends Component {
   }
 
 
-  onNewAPISaved = (newData, id, selectedIndexStateKey, widgetDataKey, onSuccess) => {
+  onNewAPISaved = (newData, id, selectedWidgetIndex, widgetDataKey, onSuccess) => {
     let data = JSON.parse(JSON.stringify(this.state[widgetDataKey]))
     let newIndex = data.push(newData) - 1
-    let nonSelectedStatIndex, type
-    if (selectedIndexStateKey === 'selectedChartIndex') {
-      nonSelectedStatIndex = 'selectedFilterIndex'
+    let nonSelectedWidgetIndex, type
+    if (selectedWidgetIndex === 'selectedChartIndex') {
+      nonSelectedWidgetIndex = 'selectedFilterIndex'
       type = 'chart'
     } else {
-      nonSelectedStatIndex = 'selectedChartIndex'
+      nonSelectedWidgetIndex = 'selectedChartIndex'
       type = 'filter'
     }
     data[newIndex].id = id
     this.setState({
       [widgetDataKey]: data,
-      [selectedIndexStateKey]: newIndex,
-      [nonSelectedStatIndex]: null,
+      [selectedWidgetIndex]: newIndex,
+      [nonSelectedWidgetIndex]: null,
       'savedStatus': true,
       'saveInProgress': false}, () => {
         onSuccess && onSuccess.constructor === Function ? onSuccess() : null
@@ -188,7 +188,7 @@ export default class AuthoringInterfaceContainer extends Component {
         tempData = {},
         selectedStateIndex = type === 'chart' ? 'selectedChartIndex' : 'selectedFilterIndex',
         selectedDataStateKey = type === 'chart' ? 'charts' : 'filters',
-        nonSelectedStatIndex = type === 'chart' ? 'selectedFilterIndex' : 'selectedChartIndex'
+        nonSelectedWidgetIndex = type === 'chart' ? 'selectedFilterIndex' : 'selectedChartIndex'
     if (response && response.length !== 0) {
       response.map(obj => {
         tempData = obj
@@ -215,12 +215,12 @@ export default class AuthoringInterfaceContainer extends Component {
               if(parseInt(tempIndex, 10) >= 0) {
                 this.setState({
                   [selectedStateIndex]: tempIndex,
-                  [nonSelectedStatIndex]: null}, () => this.setUrlPath(type))
+                  [nonSelectedWidgetIndex]: null}, () => this.setUrlPath(type))
               } else {
                 alert(type + ' not found')
                 this.setState({
                   [selectedStateIndex]: 0,
-                  [nonSelectedStatIndex]: null}, () => this.setUrlPath(type))
+                  [nonSelectedWidgetIndex]: null}, () => this.setUrlPath(type))
               }
             } else {
               this.setUrlPath(type)

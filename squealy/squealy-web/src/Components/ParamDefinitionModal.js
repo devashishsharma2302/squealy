@@ -224,6 +224,8 @@ export default class ParamDefinitionModal extends Component {
 
     let selectedChartParamDef = [...this.props.parameters]
     curParamDef.order = curParamDef.order === '' ? null : curParamDef.order
+    curParamDef.dropdown_api = curParamDef.data_type === 'dropdown' ? this.state.selectedDropdownAPI : ''
+    
     if (this.state.editMode) {
       selectedChartParamDef[this.state.editArrayIndex] = curParamDef
     } else {

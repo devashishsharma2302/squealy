@@ -314,3 +314,14 @@ export function setUrlParams(newParams) {
   window.history.replaceState({path: newurl},'',newurl);
 }
 
+export function formatForDropdown(data) {
+  let result = []
+
+  data.map((val) => {
+    result.push({
+      label: val[0],
+      value: val[0]
+    })
+  })
+  return result
+}
