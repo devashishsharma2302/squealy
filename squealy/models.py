@@ -2,7 +2,6 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.postgres import fields
-from django.core.mail.message import EmailMultiAlternatives
 
 from datetime import datetime
 from croniter import croniter
