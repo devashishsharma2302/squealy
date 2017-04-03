@@ -240,7 +240,7 @@ export default class AuthoringInterfaceContainer extends Component {
     const { selectedChartIndex, charts, currentChartMode, selectedFilterIndex,
         filters} = this.state
     let selectedData = '', 
-      prefix, accessMode
+      prefix, accessMode, canEditUrl, newUrl
 
     if (type === 'filter') {
       selectedData = filters[selectedFilterIndex] || {}
@@ -249,10 +249,16 @@ export default class AuthoringInterfaceContainer extends Component {
       selectedData = charts[selectedChartIndex] || {}
       prefix = 'chart'
     }
-    accessMode = selectedData.can_edit || false
-    const canEditUrl = (accessMode && !window.location.pathname.includes('view')) ? 'edit' : 'view'
-    const newUrl = '/' + prefix + '/' + selectedData.name + '/' + canEditUrl + window.location.search
-    this.setState({currentChartMode: accessMode && !window.location.pathname.includes('view') || false})
+    //If type is filter and can_edit is false, currentChartMode will be null as View mode is not valid for dropdown filters api.
+    accessMode = selectedData.can_edit ? true : (type === 'filter' ? null : false)
+    canEditUrl = (accessMode && !window.location.pathname.includes('view')) ? 'edit' : 'view'
+    //Only edit mode is valid for dropdown filters api
+    canEditUrl = type === 'filter' ? 'edit' : 'canEditUrl'
+    newUrl = '/' + prefix + '/' + selectedData.name + '/' + canEditUrl +window.location.search
+    //currentChartMode will be null for filters to avoid manipulating view by changing url.
+    accessMode = (type === 'chart') ? 
+      (accessMode && !window.location.pathname.includes('view') || false) : accessMode
+    this.setState({currentChartMode: accessMode})
     window.history.replaceState('', '', newUrl);
   }
 
@@ -377,7 +383,7 @@ export default class AuthoringInterfaceContainer extends Component {
     this.setState({
       selectedFilterIndex: index,
       selectedChartIndex: null,
-      currentChartMode: this.state.filters[index].can_edit || false
+      currentChartMode: this.state.filters[index].can_edit || null
     }, () => this.setUrlPath('filter'))
   }
 
@@ -389,17 +395,12 @@ export default class AuthoringInterfaceContainer extends Component {
 
   updateViewMode = (val, editPermission, chartMode) => {
     if (editPermission) {
-      let selectedIndex, data, type
+      let selectedIndex, data, type, canEditUrl = ''
 
-      if (chartMode) {
-        selectedIndex = this.state.selectedChartIndex
-        data = this.state.charts
-        type = 'chart'
-      } else {
-        selectedIndex = this.state.selectedFilterIndex
-        data = this.state.filters
-        type = 'filter'
-      }
+      selectedIndex = this.state.selectedChartIndex
+      data = this.state.charts
+      type = 'chart'
+      
       const newUrl = '/' + type + '/' + data[selectedIndex].name + '/' + (val ? 'view' : 'edit/') 
       window.history.replaceState('', '', newUrl);
       this.setState({currentChartMode: !val})

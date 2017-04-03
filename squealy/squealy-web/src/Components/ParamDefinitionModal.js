@@ -116,15 +116,20 @@ export default class ParamDefinitionModal extends Component {
   paramFormatSelectionHandler = (value) => {
     let currentParamDefinition = JSON.parse(JSON.stringify(this.state.paramDefinition)),
       dateFormat = 'DD-MM-YYYY',
-      dateTimeFormat = 'DD-MM-YYYY LT'
+      dateTimeFormat = 'DD-MM-YYYY LT',
+      selectedDropdownAPI = ''
     currentParamDefinition['data_type'] = value
     dateFormat = this.state.selectedDateFormat || dateFormat
     dateTimeFormat = this.state.selectedDateTimeFormat || dateTimeFormat
+    selectedDropdownAPI = (value === 'dropdown' && this.state.dropdownApiOptions.length) ? 
+      this.state.dropdownApiOptions[0].value :
+      (this.state.selectedDropdownAPI || '')
     this.setState({
       selectedFormatValue: value,
       paramDefinition: currentParamDefinition,
       selectedDateFormat: dateFormat,
-      selectedDateTimeFormat: dateTimeFormat
+      selectedDateTimeFormat: dateTimeFormat,
+      selectedDropdownAPI: selectedDropdownAPI
     })
   }
 

@@ -230,13 +230,16 @@ export default class TabsComponent extends Component {
             }
           </span>
         }
-        <Button bsStyle='primary'
-          className={'tab-component view-btn '+viewButton.className} 
-          title={viewButton.title}
-          onClick={()=>updateViewMode(currentChartMode, widget.can_edit, chartMode)}>
-          {viewButton.icon}
-          {viewButton.viewText}
-        </Button>
+        {
+          chartMode &&
+          <Button bsStyle='primary'
+            className={'tab-component view-btn '+viewButton.className} 
+            title={viewButton.title}
+            onClick={()=>updateViewMode(currentChartMode, widget.can_edit, chartMode)}>
+            {viewButton.icon}
+            {viewButton.viewText}
+          </Button>
+        }
       </div>
     )
   }
