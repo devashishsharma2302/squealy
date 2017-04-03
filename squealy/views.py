@@ -31,7 +31,7 @@ from .models import Chart, Transformation, Validation, Parameter, \
     ScheduledReport, ReportParameter, ReportRecipient, Filter
 from .validators import run_validation
 from datetime import datetime, timedelta
-import json
+import json, ast
 
 
 jinjasql = configure_jinjasql()
@@ -140,7 +140,13 @@ class DataProcessor(object):
 
             # Formatting parameters
             parameter_type_str = param.data_type
-            kwargs = param.kwargs
+
+            #FIXME: kwargs should not come as unicode. Need to debug the root cause and fix it.
+            if isinstance(param.kwargs, unicode):
+                kwargs = ast.literal_eval(param.kwargs)
+            else:
+                kwargs = param.kwargs
+
             parameter_type = eval(parameter_type_str.title())
             if params.get(param.name):
                 params[param.name] = parameter_type(param.name, **kwargs).to_internal(params[param.name])
@@ -450,8 +456,8 @@ class FilterView(APIView):
         user = request.user
         payload = request.GET.get("payload", None)
         params = []
-        format_type = json.loads(payload)
-        format_type = format_type.get('format')
+        payload = json.loads(payload)
+        format_type = payload.get('payload').get('format')
         data = DataProcessor().fetch_filter_data(filter_url, params, format_type, user)
         return Response(data)
 

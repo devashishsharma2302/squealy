@@ -28,18 +28,18 @@ export default class ParamDefinitionModal extends Component {
 
   componentDidMount() {
     const {filters} = this.props
-    let dropwdownApiOptions = [], selectedDropdownAPI
+    let dropdownApiOptions = [], selectedDropdownAPI
 
     filters.map((filter) => {
-      dropwdownApiOptions.push({
+      dropdownApiOptions.push({
         value: filter.url,
         label: filter.name
       })
     })
 
-    selectedDropdownAPI = dropwdownApiOptions.length ? dropwdownApiOptions[0].value : ''
+    selectedDropdownAPI = dropdownApiOptions.length ? dropdownApiOptions[0].value : ''
 
-    this.setState({dropdownApiOptions: dropwdownApiOptions, selectedDropdownAPI: selectedDropdownAPI})
+    this.setState({dropdownApiOptions: dropdownApiOptions, selectedDropdownAPI: selectedDropdownAPI})
   }
 
   //Function to validate string
