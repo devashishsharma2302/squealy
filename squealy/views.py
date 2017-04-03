@@ -26,7 +26,6 @@ from .exceptions import RequiredParameterMissingException,\
 from .transformers import *
 from .formatters import *
 from .parameters import *
-from .utils import SquealySettings
 from .table import Table
 from .models import Chart, Transformation, Validation, Parameter, \
     ScheduledReport, ReportParameter, ReportRecipient, Filter
@@ -39,9 +38,7 @@ jinjasql = configure_jinjasql()
 
 
 class DatabaseView(APIView):
-    permission_classes = SquealySettings.get_default_permission_classes()
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request, *args, **kwargs):
         try:
@@ -215,10 +212,8 @@ class ChartViewPermission(BasePermission):
 
 
 class ChartView(APIView):
-    permission_classes = SquealySettings.get_default_permission_classes()
-    permission_classes.append(ChartViewPermission)
+    permission_classes = [ChartViewPermission]
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request, chart_url=None, *args, **kwargs):
         """
@@ -260,10 +255,8 @@ class ChartUpdatePermission(BasePermission):
 
 
 class ChartsLoaderView(APIView):
-    permission_classes = SquealySettings.get_default_permission_classes()
-    permission_classes.append(ChartUpdatePermission)
+    permission_classes = [ChartUpdatePermission]
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request, *args, **kwargs):
         permitted_charts = []
@@ -284,12 +277,11 @@ class ChartsLoaderView(APIView):
         To delete a chart
         """
         data = request.data
-        try:
-            chart = Chart.objects.filter(id=data['id']).first()
-            Permission.objects.filter(codename__in=['can_view_' + str(chart.id), 'can_edit_' + str(chart.id)]).delete()
-            Chart.objects.filter(id=data['id']).first().delete()
-        except Exception:
-            ChartNotFoundException('A chart with id' + data['id'] + 'was not found')
+        chart = Chart.objects.filter(id=data['id']).first()
+        if not chart:
+            raise ChartNotFoundException('A chart with id ' + data['id'] + ' was not found')
+        Permission.objects.filter(codename__in=['can_view_' + str(chart.id), 'can_edit_' + str(chart.id)]).delete()
+        Chart.objects.filter(id=data['id']).first().delete()
         return Response({})
 
     def post(self, request):
@@ -403,9 +395,7 @@ class ChartsLoaderView(APIView):
 
 
 class UserInformation(APIView):
-    permission_classes = SquealySettings.get_default_permission_classes()
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request):
         response = {}
@@ -449,10 +439,8 @@ class FilterUpdatePermission(BasePermission):
 
 
 class FilterView(APIView):
-    permission_classes = SquealySettings.get_default_permission_classes()
-    permission_classes.append(FilterEditPermission)
+    permission_classes = [FilterEditPermission]
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request, filter_url=None, *args, **kwargs):
         """
@@ -468,10 +456,8 @@ class FilterView(APIView):
 
 
 class FilterLoaderView(APIView):
-    permission_classes = SquealySettings.get_default_permission_classes()
-    permission_classes.append(FilterUpdatePermission)
+    permission_classes = [FilterUpdatePermission]
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request, *args, **kwargs):
         """
