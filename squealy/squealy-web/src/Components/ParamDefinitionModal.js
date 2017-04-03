@@ -20,8 +20,26 @@ export default class ParamDefinitionModal extends Component {
       errorTestValue: false,
       errorDefaultValue: false,
       validateFormat: false,
-      editArrayIndex: -1
+      editArrayIndex: -1,
+      dropdownApiOptions: [],
+      selectedDropdownAPI: ''
     }
+  }
+
+  componentDidMount() {
+    const {filters} = this.props
+    let dropdownApiOptions = [], selectedDropdownAPI
+
+    filters.map((filter) => {
+      dropdownApiOptions.push({
+        value: filter.url,
+        label: filter.name
+      })
+    })
+
+    selectedDropdownAPI = dropdownApiOptions.length ? dropdownApiOptions[0].value : ''
+
+    this.setState({dropdownApiOptions: dropdownApiOptions, selectedDropdownAPI: selectedDropdownAPI})
   }
 
   //Function to validate string
@@ -98,15 +116,20 @@ export default class ParamDefinitionModal extends Component {
   paramFormatSelectionHandler = (value) => {
     let currentParamDefinition = JSON.parse(JSON.stringify(this.state.paramDefinition)),
       dateFormat = 'DD-MM-YYYY',
-      dateTimeFormat = 'DD-MM-YYYY LT'
+      dateTimeFormat = 'DD-MM-YYYY LT',
+      selectedDropdownAPI = ''
     currentParamDefinition['data_type'] = value
     dateFormat = this.state.selectedDateFormat || dateFormat
     dateTimeFormat = this.state.selectedDateTimeFormat || dateTimeFormat
+    selectedDropdownAPI = (value === 'dropdown' && this.state.dropdownApiOptions.length) ? 
+      this.state.dropdownApiOptions[0].value :
+      (this.state.selectedDropdownAPI || '')
     this.setState({
       selectedFormatValue: value,
       paramDefinition: currentParamDefinition,
       selectedDateFormat: dateFormat,
-      selectedDateTimeFormat: dateTimeFormat
+      selectedDateTimeFormat: dateTimeFormat,
+      selectedDropdownAPI: selectedDropdownAPI
     })
   }
 
@@ -138,7 +161,9 @@ export default class ParamDefinitionModal extends Component {
   handleEditParam = (e, index) => {
     const {parameters} = this.props
     let dateFormatType = parameters[index].data_type === 'date' || null,
-      dateTimeFormatType = parameters[index].data_type === 'datetime' || null
+      dateTimeFormatType = parameters[index].data_type === 'datetime' || null,
+      selectedDropdownAPI = parameters[index].dropdown_api || ''
+
     this.setState({ showParamDefForm: true }, () => {
       let currentParamDefinition = JSON.parse(JSON.stringify(this.props.parameters[index]))
       currentParamDefinition.order = currentParamDefinition.order === null ? '' : currentParamDefinition.order
@@ -153,7 +178,8 @@ export default class ParamDefinitionModal extends Component {
         errorName: false,
         errorTestValue: false,
         errorDefaultValue: false,
-        editArrayIndex: index
+        editArrayIndex: index,
+        selectedDropdownAPI: selectedDropdownAPI
       })
     })
   }
@@ -162,12 +188,15 @@ export default class ParamDefinitionModal extends Component {
     e.stopPropagation()
     let currentParameters = [...this.props.parameters]
     currentParameters.splice(index, 1)
-    this.props.selectedChartChangeHandler({parameters: currentParameters})
+    this.props.chartMode ?
+      this.props.selectedChartChangeHandler({parameters: currentParameters}) :
+      this.props.selectedFilterChangeHandler({parameters: currentParameters})
     if (index === this.state.editArrayIndex) {
       this.setState({
         paramDefinition: getEmptyParamDefinition(),
         selectedFormatValue: 'string',
         selectedType: 'query',
+        selectedDropdownAPI: '',
         showParamDefForm: (index === this.state.editArrayIndex) ? false : this.state.showParamDefForm
       })
     }
@@ -202,21 +231,38 @@ export default class ParamDefinitionModal extends Component {
 
     let selectedChartParamDef = [...this.props.parameters]
     curParamDef.order = curParamDef.order === '' ? null : curParamDef.order
+    curParamDef.dropdown_api = curParamDef.data_type === 'dropdown' ? this.state.selectedDropdownAPI : ''
+    
     if (this.state.editMode) {
       selectedChartParamDef[this.state.editArrayIndex] = curParamDef
     } else {
       selectedChartParamDef.push(curParamDef)
     }
     selectedChartParamDef.sort(this.updateOrderOfCharts)
-    this.props.selectedChartChangeHandler({'parameters':selectedChartParamDef},
+    this.props.chartMode ?
+      this.props.selectedChartChangeHandler({'parameters':selectedChartParamDef},
+      () => {
+        this.setState({ showParamDefForm: false, editMode: false, editArrayIndex: -1 })
+        this.props.updateNoteHandler(false)
+      }):
+      this.props.selectedFilterChangeHandler({'parameters':selectedChartParamDef},
       () => {
         this.setState({ showParamDefForm: false, editMode: false, editArrayIndex: -1 })
         this.props.updateNoteHandler(false)
       })
   }
 
+  onChangeDropdownApi = (value) => {
+    let currentParamDefinition = JSON.parse(JSON.stringify(this.state.paramDefinition))
+    currentParamDefinition['dropdown_api'] = value
+    this.setState({ 
+      paramDefinition: currentParamDefinition,
+      selectedDropdownAPI: value
+    })
+  }
+
   render() {
-    const {parameters, selectedChartChangeHandler, note} = this.props
+    const {parameters, selectedChartChangeHandler, note, selectedFilterChangeHandler} = this.props
     const addParamDefFormContent =
       <div className="modal-container">
         <div className='add-modal-content'>
@@ -306,6 +352,18 @@ export default class ParamDefinitionModal extends Component {
                 (this.state.selectedFormatValue === 'datetime') && this.state.validateFormat &&
                 <ErrorMessage classValue={''} message={'Enter valid datetime format'} />
               }
+            </div>
+          }
+          {(this.state.selectedType === 'query' && this.state.selectedFormatValue === 'dropdown') &&
+            <div className='row'>
+              <label htmlFor='dropwdownApi' className='col-md-4'>Dropdown API: </label>
+              <div className='col-md-8'>
+                <SquealyDropdown
+                  options={this.state.dropdownApiOptions}
+                  name='dropwdownApi'
+                  onChangeHandler={this.onChangeDropdownApi}
+                  selectedValue={this.state.selectedDropdownAPI} />
+              </div>
             </div>
           }
           {

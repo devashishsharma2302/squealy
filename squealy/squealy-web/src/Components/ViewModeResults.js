@@ -7,10 +7,12 @@ import {
   postApiRequest,
   formatTestParameters,
   getUrlParams,
-  setUrlParams
+  setUrlParams,
+  getApiRequest,
+  formatForDropdown
 } from './../Utils'
 import { DOMAIN_NAME, GOOGLE_CHART_TYPE_OPTIONS } from './../Constant'
-import { SquealyDatePicker, SquealyInput, SquealyDatetimePicker } from './Filters'
+import { SquealyDatePicker, SquealyInput, SquealyDatetimePicker, SquealyDropdownFilter } from './Filters'
 
 export default class ViewOnlyResults extends Component {
 
@@ -19,7 +21,8 @@ export default class ViewOnlyResults extends Component {
     this.state = {
       payloadObj: {},
       chartData: {},
-      errorMessage: null
+      errorMessage: null,
+      filterData: {}
     }
   }
 
@@ -27,8 +30,9 @@ export default class ViewOnlyResults extends Component {
   getInitialChart = (propsData) => {
     let payloadObj = JSON.parse(JSON.stringify(this.state.payloadObj)),
       urlParams = getUrlParams(), finalPayloadObj = {}
+    const parameters = propsData.chart.parameters
 
-    payloadObj = formatTestParameters(propsData.chart.parameters, 'name', 'default_value')
+    payloadObj = formatTestParameters(parameters, 'name', 'default_value')
     
     if (payloadObj.hasOwnProperty('params') && payloadObj.params) {
       payloadObj.params.chartType = propsData.chart.type
@@ -39,9 +43,19 @@ export default class ViewOnlyResults extends Component {
         payloadObj.params[key] = urlParams[key]
       })
     }
+
+    parameters.map((param) => {
+      if (param.data_type === 'dropdown')  {
+        getApiRequest(DOMAIN_NAME + 'filter/' + param.dropdown_api + '/', {format: 'json'},
+            (response) => this.onSuccessFilterGet(response, {'name': param.name, 'url': param.dropdown_api}),
+            this.onErrorTest, null)
+      }
+    })
+
     postApiRequest(DOMAIN_NAME + 'squealy/' + propsData.chart.url + '/', payloadObj,
       this.onSuccessTest, this.onErrorTest, null)
-    this.setState({ payloadObj: payloadObj }, this.updateUrl)
+
+    this.setState({ payloadObj: payloadObj}, this.updateUrl)
   }
 
 
@@ -51,6 +65,15 @@ export default class ViewOnlyResults extends Component {
 
   onSuccessTest = (response) => {
     this.setState({ chartData: response, errorMessage: null })
+  }
+
+  onSuccessFilterGet = (response, obj) => {
+    let filterData = JSON.parse(JSON.stringify(this.state.filterData))
+    filterData[obj.name] = {
+      dropdown_api: obj.url,
+      data: formatForDropdown(response.data)
+    }
+    this.setState({filterData: filterData})
   }
 
   onErrorTest = (e) => {
@@ -89,7 +112,8 @@ export default class ViewOnlyResults extends Component {
       string: SquealyInput,
       number: SquealyInput,
       date: SquealyDatePicker,
-      datetime: SquealyDatetimePicker
+      datetime: SquealyDatetimePicker,
+      dropdown: SquealyDropdownFilter
     }
     if (this.state.payloadObj.hasOwnProperty('params')) {
       return (
@@ -106,6 +130,7 @@ export default class ViewOnlyResults extends Component {
                         className='view-mode-filter'
                         name={params.name}
                         format={params.kwargs.hasOwnProperty('format') ? params.kwargs.format : false}
+                        filterData={this.state.filterData.hasOwnProperty(params.name) ? this.state.filterData[params.name]: {data: []}}
                         value={this.state.payloadObj.params[params.name] ||params.default_value}
                         onChangeHandler={this.onChangeFilter}
                         />

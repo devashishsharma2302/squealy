@@ -67,7 +67,7 @@ export default class MainComponent extends Component {
                 currentChartMode={currentChartMode}
                 databases={databases}
                 selectedFilterChangeHandler={selectedFilterChangeHandler}
-                filter={selectedFilterIndex !== null ? filters[selectedFilterIndex] : []}
+                filters={filters}
                 onHandleTestFilterButton={onHandleTestFilterButton}
               />
             : <div className='full-height no-charts'>
