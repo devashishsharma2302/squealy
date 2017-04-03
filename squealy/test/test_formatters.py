@@ -10,6 +10,8 @@ class FormattersTestCase(BaseTestCase):
         self.chart = BaseTestCase.create_chart(self)
 
     def test_simple_formatter(self):
+        self.chart.format = "SimpleFormatter"
+        self.chart.save()
         response = self.client.get('/squealy/' + self.chart.name + '/')
         json_response = response.json()
         self.assertEqual(json_response,{u'data': [[u'test1', 5, 11], [u'test2', 10, 4], [u'test3', 6, 9], [u'test4', 15, 7], [u'test5', 15, 10]], u'columns': [u'name', u'experience', u'salary']})
