@@ -33,7 +33,6 @@ class ChartsTestCase(BaseTestCase):
 
     def test_chart_post_api(self):
         response = self._chart_post_api({'start_date': '2016-03-06'})
-        print response.json()
         self.assertEqual(200, response.status_code)
         self.assertEqual(response.json(), {
                                             u'data': [

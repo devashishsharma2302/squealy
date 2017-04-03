@@ -1,6 +1,5 @@
 from .test_base_file import BaseTestCase
 from squealy.models import Parameter
-from squealy.exceptions import RequiredParameterMissingException
 
 
 class ParametersTestCase(BaseTestCase):
@@ -55,3 +54,4 @@ class ParametersTestCase(BaseTestCase):
 
     def tearDown(self):
         BaseTestCase.delete_schema(self)
+        self.parameter.delete()

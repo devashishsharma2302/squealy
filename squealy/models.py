@@ -2,11 +2,12 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.postgres import fields
+
 from datetime import datetime
 from croniter import croniter
+
 from .constants import TRANSFORMATION_TYPES, PARAMETER_TYPES, COLUMN_TYPES
 import json
-
 
 class CustomJSONField(models.TextField):
 

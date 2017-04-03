@@ -13,6 +13,7 @@ class BaseTestCase(TestCase):
         user.set_password('baz')
         user.is_superuser = True
         user.save()
+        self.user = user
 
     def create_mock_client(self):
         self.client = Client()
