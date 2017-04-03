@@ -103,7 +103,7 @@ export default class AuthoringInterfaceContainer extends Component {
       this.setState({
         [widgetStateKeyData]: widgetData,
         [nonSelectedStatIndex]: null,
-        [selectedIndexStateKeys]: newChartIndex,
+        [selectedIndexStateKey]: newChartIndex,
         savedStatus: true,
         saveInProgress: false,
         currentChartMode: chartMode
