@@ -176,11 +176,7 @@ class DataProcessor(object):
                                                     })
         conn = connections[db]
         if conn.settings_dict['NAME'] == 'Athena':
-            print os.path.join(os.path.dirname(os.path.abspath(__file__)), 'athena-jdbc/AthenaJDBC41-1.0.0.jar')
-            print settings.PROJECT_ROOT
-            print jpype.get_default_jvm_path()
             conn = connect(driver_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'athena-jdbc/AthenaJDBC41-1.0.0.jar'))
-            print jpype.isJVMStarted(), 'started JVM'
         with conn.cursor() as cursor:
             cursor.execute(query, bind_params)
             rows = []
