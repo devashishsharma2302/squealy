@@ -37,8 +37,6 @@ from datetime import datetime, timedelta
 import json, ast
 
 
-import jpype
-
 jinjasql = configure_jinjasql()
 
 
