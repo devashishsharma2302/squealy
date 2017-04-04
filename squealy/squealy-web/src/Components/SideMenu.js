@@ -175,6 +175,7 @@ export default class SideMenu extends Component {
                 listClassName = (index === selectedFilterIndex) ? 'selected-chart' : ''
                 listClassName += (clickedFilterIndex === index) ? ' right-button-clicked' : ''
                 return (
+                  filter.can_edit &&
                   <li onClick={() => this.selectFilterHandler(index)} key={index}
                     className={listClassName}
                     onContextMenu={(e) => this.toggleLeftMenu(e, index, 
@@ -187,7 +188,7 @@ export default class SideMenu extends Component {
           </ul>
         </div>
         {
-          showLeftNavFilterContextMenu && this.props.filters[clickedFilterIndex].can_edit && 
+          showLeftNavFilterContextMenu && this.props.filters.length > clickedFilterIndex && this.props.filters[clickedFilterIndex].can_edit && 
             <ul className="left-nav-menu" style={leftMenuPosition} 
               onContextMenu={(e)=> {e.preventDefault()}}>
               <li onClick={() => this.showChartDetailsModal('EDIT', 'showAddFilterModal')}>Rename Filter 

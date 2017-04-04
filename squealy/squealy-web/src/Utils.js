@@ -141,7 +141,8 @@ export function getEmptyFilterDefinition() {
     database: '',
     query: '',
     apiErrorMsg: '',
-    filterData: []
+    filterData: [],
+    parameters: []
   }
 }
 
@@ -180,7 +181,8 @@ export function getEmptyParamDefinition(apiIndex) {
     mandatory: false,
     default_value: '',
     kwargs: {},
-    test_value: ''
+    test_value: '',
+    dropdown_api: ''
   }
 }
 
@@ -313,3 +315,14 @@ export function setUrlParams(newParams) {
   window.history.replaceState({path: newurl},'',newurl);
 }
 
+export function formatForDropdown(data) {
+  let result = []
+
+  data.map((val) => {
+    result.push({
+      label: val[0],
+      value: val[0]
+    })
+  })
+  return result
+}

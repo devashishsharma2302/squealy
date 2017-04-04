@@ -49,27 +49,25 @@ export class SquealyDatetimePicker extends Component {
   }
 }
 
-export class SquealyDropdown extends Component {
+export class SquealyDropdownFilter extends Component {
   render() {
     const {
       value,
       onChangeHandler,
-      dragEnableHandler,
-      dragDisableHandler,
       filterData,
       name
     } = this.props
     return(
       <select
+        className='filter-select'
         value={value}
-        onFocus={dragDisableHandler}
-        onBlur={dragEnableHandler }
         onChange={(e) => onChangeHandler(name, e.target.value)}
       >
-        {filterData?
+        {
+          filterData.data.length ?
           filterData.data.map((option, i) => {
             return (
-              <option key={'dropdown_'+i} value={option[0]}>{option[0]}</option>
+              <option key={'dropdown_'+i} value={option.value}>{option.label}</option>
             )
           })
           :
