@@ -1,14 +1,14 @@
-# Fastrack analytics for your business. Use SQueaLy
+# Fastrack analytics for your business. Use SQueaLy #
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)  
 [![Build Status](https://travis-ci.org/hashedin/squealy.svg?branch=phase-2)](https://travis-ci.org/hashedin/squealy)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
 
-SQueaLy is an open-source, self-deployable application that runs on Django. It is a micro service for business intelligence and analytics which provides reporting APIs with fine-grained security and fast tracks your development. It gives you the power to analyze and visualize your organizational data in an environment that is completely owned by you. Hence, making it the most suitable solution for generating charts and reports out of sensitive data.
+SQueaLy is an open-source, self-deployable application for developers. It is a micro service for business intelligence and analytics which uses SQL queries to generate reporting APIs with fine-grained security. It gives you the power to analyze your organizational data in an environment that is completely owned by you. Hence, making it the most suitable solution for generating charts and reports out of sensitive data.
 
 ## When to use SQueaLy
 
-**When you want charts and reports in your application at a hot pace**  
+**When you want charts and reports but don't want to build the APIs**  
 
 Using SQueaLy, creating APIs for your reports/charts and visualizing the output is super quick. Just write the query to fetch the data from your database and use the SQueaLy's authoring interface to visualize the output. Once satisfied, give your users the permission to view/edit the report and share the URL of your report. That's it!
 
