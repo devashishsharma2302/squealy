@@ -6,11 +6,19 @@
 
 SQueaLy is an open-source, self-deployable application for developers. It is a micro service for business intelligence and analytics which uses SQL queries to generate reporting APIs with fine-grained security. It gives you the power to analyze your organizational data in an environment that is completely owned by you. Hence, making it the most suitable solution for generating charts and reports out of sensitive data.
 
+<p align="center">
+  <img src="./Readme-mediafiles/architecture.png" />
+</p>
+
 ## When to use SQueaLy
 
 **When you want charts and reports but don't want to build the APIs**  
 
 Using SQueaLy, creating APIs for your reports/charts and visualizing the output is super quick. Just write the query to fetch the data from your database and use the SQueaLy's authoring interface to visualize the output. Once satisfied, give your users the permission to view/edit the report and share the URL of your report. That's it!
+
+<p align="center">
+  <img src="./Readme-mediafiles/when_to_use_squealy.png" />
+</p>
 
 **When you want fine grained security in your reporting APIs**  
 
