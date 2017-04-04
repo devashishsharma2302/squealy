@@ -20,23 +20,23 @@
       "value": "admin@123"
     },
     "JWT_KEY": {
-      "description": " This is the shared private key that will be used to decode the JWT token. This is required for optionally enabling JWT Authentication mechanism that would enable the user to login via an access token parameter in the url or request body. Refer the squealy documentation for more information on setting up JWT Authentication.",
+      "description": "(Optional) This is the shared private key that will be used to decode the JWT token. This is required for optionally enabling JWT Authentication mechanism that would enable the user to login via an access token parameter in the url or request body. Refer the squealy documentation for more information on setting up JWT Authentication.",
       "required": false
     },
     "AWS_ATHENA_S3_STAGING_DIR":{
-      "description": "For AWS Athena users only. Enter the staging directory path on S3. This is where the results of the queries get saved. For example, s3://query-results-bucket/folder/ ",
+      "description": "(Optional) For AWS Athena users only. Enter the staging directory path on S3. This is where the results of the queries get saved. For example, s3://query-results-bucket/folder/ ",
       "required": false
     },
     "AWS_ACCESS_KEY_ID": {
-      "description": " Required for authorizing requests to AWS Athena. Make sure you have the required IAM permissions to execute queries on AWS Athena. ",
+      "description": " (Optional) Required for authorizing requests to AWS Athena. Make sure you have the required IAM permissions to execute queries on AWS Athena. ",
       "required": false
     },
     "AWS_SECRET_ACCESS_KEY": {
-      "description": "Required for authorizing requests to AWS Athena",
+      "description": "(Optional) Required for authorizing requests to AWS Athena",
       "required": false
     },
     "AWS_DEFAULT_REGION": {
-      "description": "AWS region for AWS Athena. By default, us-east-1 will be used.",
+      "description": "(Optional) AWS region for AWS Athena. By default, us-east-1 will be used.",
       "required": false
     }
   }
