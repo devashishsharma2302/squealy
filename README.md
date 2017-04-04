@@ -70,7 +70,7 @@ SQueaLy comes with email solutions as well. You can schedule emails embedded wit
 
 ## Database Support
 
-Redshift, Mysql, Postgres, Sqlite,  
+Athena, Redshift, Mysql, Postgres, Sqlite,  
 
 ## Getting started
 - Click on the 'Deploy-to-Heroku' button on the [top](#squealy) of this documentation.
