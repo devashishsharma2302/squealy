@@ -7,6 +7,14 @@
   "scripts": {
     "postdeploy": "python manage.py migrate"
   },
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    },
+    {
+      "url": "heroku/java"
+    }
+  ],
   "env": {
     "QUERY_DB": {
       "description": "Enter your database URI in the following format <mysql/postgres>://<username>:<password>@<host>:<port>/<database>"
