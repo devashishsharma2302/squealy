@@ -91,6 +91,20 @@ class Parameter(models.Model):
     order = models.IntegerField(null=True, blank=True)
     kwargs = CustomJSONField(null=True, blank=True, default={})
     dropdown_api = models.CharField(max_length=255, null=True, blank=True)
+    is_parameterized = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return self.name
+
+
+class FilterParameter(models.Model):
+    """
+    This represents a parameter injected in the filter query
+    """
+    filter = models.ForeignKey(Filter, related_name='parameters')
+    name = models.CharField(max_length=100)
+    default_value = models.CharField(max_length=200, null=True, blank=True)
+    test_value = models.CharField(max_length=200, null=True, blank=True)
 
     def __unicode__(self):
         return self.name

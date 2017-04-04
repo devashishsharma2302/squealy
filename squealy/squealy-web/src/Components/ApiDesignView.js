@@ -22,6 +22,7 @@ export default class ApiDesignView extends Component {
     } = this.props
     let chartMode = selectedChartIndex !== null ? true : false
     const filter = chartMode ? [] : filters[selectedFilterIndex]
+
     return (
       <div className="full-height">
         <div className="col-md-12 tabs-container">
@@ -72,6 +73,7 @@ export default class ApiDesignView extends Component {
             <ViewOnlyResults
               chart={chart}
               googleDefined={googleDefined}
+              filters={filters}
             />
           </div>
         }

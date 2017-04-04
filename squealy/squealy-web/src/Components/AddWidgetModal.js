@@ -20,6 +20,11 @@ export default class AddWidgetModal extends Component {
           database: widgetData[selectedWidgetIndex].database,
           widgetName: widgetData[selectedWidgetIndex].name
         })
+      } else {
+        this.setState({
+          database: null,
+          widgetName: ''
+        })
       }
     }
   }

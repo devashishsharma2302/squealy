@@ -26,14 +26,23 @@ export default class ViewOnlyResults extends Component {
     }
   }
 
+  componentDidMount() {
+    this.getInitialChart(this.props)
+  }
 
+  componentWillReceiveProps(nextProps) {
+    if (JSON.stringify(nextProps) !== JSON.stringify(this.props)) {
+      this.getInitialChart(this.props)
+    }
+  }
+
+  //To get initial data
   getInitialChart = (propsData) => {
     let payloadObj = JSON.parse(JSON.stringify(this.state.payloadObj)),
       urlParams = getUrlParams(), finalPayloadObj = {}
     const parameters = propsData.chart.parameters
 
     payloadObj = formatTestParameters(parameters, 'name', 'default_value')
-    
     if (payloadObj.hasOwnProperty('params') && payloadObj.params) {
       payloadObj.params.chartType = propsData.chart.type
     }
@@ -44,50 +53,82 @@ export default class ViewOnlyResults extends Component {
       })
     }
 
+    postApiRequest(DOMAIN_NAME + 'squealy/' + propsData.chart.url + '/', payloadObj,
+      this.onSuccessTest, this.onErrorTest, null)
+    
+    this.setState({ payloadObj: payloadObj}, () => {
+      this.updateUrl()
+      //Get dropdown option data 
+      parameters.map((param) => {
+        if (param.data_type === 'dropdown' && !param.is_parameterized)  {
+          getApiRequest(DOMAIN_NAME + 'filter/' + param.dropdown_api + '/', {format: 'json'},
+              (response) => this.onSuccessFilterGet(response, {'name': param.name, 'url': param.dropdown_api}),
+              this.onErrorTest, null)
+        } else if (param.data_type === 'dropdown' && param.is_parameterized) {
+          //Passing parameter values 
+          finalPayloadObj = this.getPayloadObject(param.dropdown_api, payloadObj)
+          finalPayloadObj['format'] = 'json'
+          getApiRequest(DOMAIN_NAME + 'filter/' + param.dropdown_api + '/', finalPayloadObj,
+              (response) => this.onSuccessFilterGet(response, {'name': param.name, 'url': param.dropdown_api}),
+              this.onErrorTest, null)
+        }
+      })
+    })
+  }
+
+  //Process the param data and create payload object for parameterized filter api
+  getPayloadObject = (dropdownApi, filterDefaultValue) => {
+    let i, selectedIndex,
+      payloadObj = {params: {}},
+      paramName
+    const {filters} = this.props
+    let filterParameter = []
+
+    for (i = 0; i < filters.length; i++) {
+      if (dropdownApi === filters[i].url) {
+        selectedIndex = i
+        break
+      }
+    }
+    if (filters.length) {
+      filterParameter = JSON.parse(JSON.stringify(filters[selectedIndex].parameters))
+      filterParameter.map((obj) => {
+        payloadObj.params[obj.name] = filterDefaultValue.params[obj.name]
+      })
+    }
+    return payloadObj
+  }
+
+  //Function to refresh all the parameterized dropdown data if any filter is updated
+  updateParamterizedFilterOpts = (updatedPayloadObj, updatedKey) => {
+    const parameters = this.props.chart.parameters
+    let finalPayloadObj = {}, flag = false
     parameters.map((param) => {
-      if (param.data_type === 'dropdown')  {
-        getApiRequest(DOMAIN_NAME + 'filter/' + param.dropdown_api + '/', {format: 'json'},
-            (response) => this.onSuccessFilterGet(response, {'name': param.name, 'url': param.dropdown_api}),
+      //Do not make api request if it;s the same key or not parameterized 
+      if (updatedKey !== param.name && param.data_type === 'dropdown' && param.is_parameterized) {
+        flag = true
+        finalPayloadObj = this.getPayloadObject(param.dropdown_api, updatedPayloadObj)
+        finalPayloadObj['format'] = 'json'
+        getApiRequest(DOMAIN_NAME + 'filter/' + param.dropdown_api + '/', finalPayloadObj,
+            (response) => this.onSuccessFilterGet(response, {'name': param.name, 'url': param.dropdown_api, payloadObj: updatedPayloadObj}),
             this.onErrorTest, null)
       }
     })
-
-    postApiRequest(DOMAIN_NAME + 'squealy/' + propsData.chart.url + '/', payloadObj,
-      this.onSuccessTest, this.onErrorTest, null)
-
-    this.setState({ payloadObj: payloadObj}, this.updateUrl)
-  }
-
-
-  componentDidMount() {
-    this.getInitialChart(this.props)
-  }
-
-  onSuccessTest = (response) => {
-    this.setState({ chartData: response, errorMessage: null })
-  }
-
-  onSuccessFilterGet = (response, obj) => {
-    let filterData = JSON.parse(JSON.stringify(this.state.filterData))
-    filterData[obj.name] = {
-      dropdown_api: obj.url,
-      data: formatForDropdown(response.data)
+    //If none param is parameterized, update the payload and chart data
+    if (!flag) {
+      this.setState({ payloadObj: updatedPayloadObj }, () => {
+        this.updateUrl()
+        postApiRequest(DOMAIN_NAME + 'squealy/' + this.props.chart.url + '/', this.state.payloadObj,
+          this.onSuccessTest, this.onErrorTest, 'table')
+      })
     }
-    this.setState({filterData: filterData})
   }
 
-  onErrorTest = (e) => {
-    this.setState({ errorMessage: e.responseJSON.error })
-  }
-
+  //Capture filter changes
   onChangeFilter = (key, val) => {
     let payloadObj = JSON.parse(JSON.stringify(this.state.payloadObj))
     payloadObj.params[key] = val
-    this.setState({ payloadObj: payloadObj }, () => {
-      this.updateUrl()
-      postApiRequest(DOMAIN_NAME + 'squealy/' + this.props.chart.url + '/', payloadObj,
-        this.onSuccessTest, this.onErrorTest, 'table')
-    })
+    this.updateParamterizedFilterOpts(payloadObj, key)
   }
 
   updateUrl = () => {
@@ -101,6 +142,34 @@ export default class ViewOnlyResults extends Component {
     payloadObj.params['chartType'] = value
     this.setState({
       payloadObj: payloadObj }, this.updateUrl)
+  }
+
+  onSuccessTest = (response) => {
+    this.setState({ chartData: response, errorMessage: null })
+  }
+
+  //Function to update the dropdown option data
+  onSuccessFilterGet = (response, obj) => {
+    let filterData = JSON.parse(JSON.stringify(this.state.filterData)), payloadObj = {}
+    filterData[obj.name] = {
+      dropdown_api: obj.url,
+      data: formatForDropdown(response.data)
+    }
+    //Update the parameterized filter option data and chart data if any other filter value has changed
+    if (obj.hasOwnProperty('payloadObj')) {
+      payloadObj = JSON.parse(JSON.stringify(obj.payloadObj))
+      payloadObj.params[obj.name] = response.data[0][0]
+      this.setState({ payloadObj: payloadObj }, () => {
+        this.updateUrl()
+        postApiRequest(DOMAIN_NAME + 'squealy/' + this.props.chart.url + '/', payloadObj,
+          this.onSuccessTest, this.onErrorTest, 'table')
+      })
+    }
+    this.setState({filterData: filterData})
+  }
+
+  onErrorTest = (e) => {
+    this.setState({ errorMessage: e.responseJSON.error })
   }
 
   render() {

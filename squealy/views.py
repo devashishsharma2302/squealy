@@ -28,7 +28,7 @@ from .parameters import *
 from .utils import SquealySettings
 from .table import Table
 from .models import Chart, Transformation, Validation, Parameter, \
-    ScheduledReport, ReportParameter, ReportRecipient, Filter
+    ScheduledReport, ReportParameter, ReportRecipient, Filter, FilterParameter
 from .validators import run_validation
 from datetime import datetime, timedelta
 import json, ast
@@ -381,6 +381,7 @@ class ChartsLoaderView(APIView):
                                                  type=parameter['type'],
                                                  dropdown_api=parameter['dropdown_api'],
                                                  order=parameter['order'],
+                                                 is_parameterized=parameter['is_parameterized'],
                                                  kwargs=parameter['kwargs'])
                     parameter_object.save()
                     parameter_ids.append(parameter_object.id)
@@ -526,7 +527,23 @@ class FilterLoaderView(APIView):
             ).save()
 
             filter_id = filter_object.id
-            Filter.objects.all()
+            Filter.objects.all().prefetch_related('parameters')
+
+            parameter_ids = []
+            existing_parameters = {param.name: param.id
+                                   for param in filter_object.parameters.all()}
+            with transaction.atomic():
+                for parameter in data['parameters']:
+                    id = existing_parameters.get(parameter['name'], None)
+                    parameter_object = FilterParameter(id=id,
+                                                 name=parameter['name'],
+                                                 default_value=parameter['default_value'],
+                                                 test_value=parameter['test_value'],
+                                                 filter=filter_object)
+                    parameter_object.save()
+                    parameter_ids.append(parameter_object.id)
+                FilterParameter.objects.filter(filter=filter_object).exclude(id__in=parameter_ids).all().delete()
+
         except KeyError as e:
             raise MalformedChartDataException("Key Error - " + str(e.args))
         except IntegrityError as e:

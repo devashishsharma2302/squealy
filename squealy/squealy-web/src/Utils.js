@@ -182,7 +182,8 @@ export function getEmptyParamDefinition(apiIndex) {
     default_value: '',
     kwargs: {},
     test_value: '',
-    dropdown_api: ''
+    dropdown_api: '',
+    is_parameterized: false
   }
 }
 
@@ -288,10 +289,10 @@ export function formatTestParameters (paramDefintion, key, valueKey) {
   }
 
   paramDefintion.map((param) => {
-    if (param.type === 1) {
-      testParams.params[param[key]] = param[valueKey]
-    } else {
+    if (param.type === 2) {
       testParams.user[param[key]] = param[valueKey]
+    } else {
+      testParams.params[param[key]] = param[valueKey]
     }
   })
   return testParams
