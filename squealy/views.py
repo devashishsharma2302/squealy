@@ -1,3 +1,5 @@
+import os
+
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db import connections
@@ -172,7 +174,7 @@ class DataProcessor(object):
                                                     })
         conn = connections[db]
         if conn.settings_dict['NAME'] == 'Athena':
-            conn = connect()
+            conn = connect(driver_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'athena-jdbc/AthenaJDBC41-1.0.0.jar'))
         with conn.cursor() as cursor:
             cursor.execute(query, bind_params)
             rows = []
