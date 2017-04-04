@@ -10,7 +10,8 @@ from squealy.widgets import HtmlEditor
 class ScheduledReportForm(ModelForm):
     class Meta:
         model = ScheduledReport
-        fields = ['chart', 'subject', 'template', 'cron_expression']
+        fields = ['subject', 'cron_expression']
+        fields = ['subject', 'template', 'cron_expression']
         help_texts = {'cron_expression': 'Scheduled time is considered in UTC'}
         widgets = {
             'template': HtmlEditor()

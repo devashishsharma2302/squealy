@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import Select from 'react-select'
 import chartIcon from './../images/charts_icon.png'
+import filterIcon from './../images/filter_icon.png'
 import dashboardIcon from './../images/dashboard_icon.png'
 import AddWidgetModal from './AddWidgetModal'
 
@@ -160,7 +161,7 @@ export default class SideMenu extends Component {
         </div>
         <div className="chart-list">
           <div className="side-menu-heading">
-            <img src={chartIcon} alt="filter-icon"/>
+            <img src={filterIcon} alt="filter-icon"/>
             <span>Dropdown Filters</span>
             {
               (userInfo.can_add_chart) ?
@@ -174,6 +175,7 @@ export default class SideMenu extends Component {
                 listClassName = (index === selectedFilterIndex) ? 'selected-chart' : ''
                 listClassName += (clickedFilterIndex === index) ? ' right-button-clicked' : ''
                 return (
+                  filter.can_edit &&
                   <li onClick={() => this.selectFilterHandler(index)} key={index}
                     className={listClassName}
                     onContextMenu={(e) => this.toggleLeftMenu(e, index, 
@@ -186,7 +188,7 @@ export default class SideMenu extends Component {
           </ul>
         </div>
         {
-          showLeftNavFilterContextMenu && this.props.filters[clickedFilterIndex].can_edit && 
+          showLeftNavFilterContextMenu && this.props.filters.length > clickedFilterIndex && this.props.filters[clickedFilterIndex].can_edit && 
             <ul className="left-nav-menu" style={leftMenuPosition} 
               onContextMenu={(e)=> {e.preventDefault()}}>
               <li onClick={() => this.showChartDetailsModal('EDIT', 'showAddFilterModal')}>Rename Filter 

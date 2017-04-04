@@ -41,18 +41,17 @@ export default class TabsComponent extends Component {
    *  open modal to add values.
    */
   checkParametersHandler = (runTest) => {
-    if (this.props.chartMode) {
-      const params = this.props.chart.parameters
-      let i = 0
+    const {chart, filters, selectedFilterIndex, chartMode} = this.props
+    const params = chartMode ? chart.parameters : filters[selectedFilterIndex].parameters
+    let i = 0
 
-      for (i = 0; i < params.length; i++) {
-        if (!params[i].test_value && !params[i].default_value) {
-          this.setState({
-            showParamDefModal: true,
-            note: 'Please update the Test Data OR Default Value for parameters'
-          })
-          return
-        }
+    for (i = 0; i < params.length; i++) {
+      if (!params[i].test_value && !params[i].default_value) {
+        this.setState({
+          showParamDefModal: true,
+          note: 'Please update the Test Data OR Default Value for parameters'
+        })
+        return
       }
     }
     
@@ -78,6 +77,14 @@ export default class TabsComponent extends Component {
     })
   }
 
+  onChangeDatabase = (dbVal) => {
+    if (this.props.chartMode) {
+      this.props.selectedChartChangeHandler({database: (dbVal) ? dbVal.value : null})
+    } else {
+      this.props.selectedFilterChangeHandler({database: (dbVal) ? dbVal.value : null})
+    }
+  }
+
 
   render() {
     const {
@@ -88,7 +95,10 @@ export default class TabsComponent extends Component {
       currentChartMode,
       databases,
       chartMode,
-      onHandleTestFilterButton
+      filters,
+      onHandleTestFilterButton,
+      selectedFilterChangeHandler,
+      selectedFilterIndex
     } = this.props
 
     const {
@@ -98,14 +108,15 @@ export default class TabsComponent extends Component {
       showShareModal
     } = this.state
 
+    const filter = filters[selectedFilterIndex]
     let viewButton = {
       className: '',
       title: null,
       viewText: 'View',
       icon: <i className="fa fa-pencil"/>
     }
-
-    if (chart.can_edit) {
+    const widget = chartMode ? chart : filter
+    if (widget.can_edit) {
       viewButton.className = ''
       viewButton.title = null
       if (currentChartMode) {
@@ -127,19 +138,14 @@ export default class TabsComponent extends Component {
         { currentChartMode &&
           <span>
             {
-              chartMode ?
-                <SplitButton className="run-btn-group" bsStyle='success' title='Run' id='run-button' onClick={() => this.checkParametersHandler(true)}>
-                  <MenuItem
-                    eventKey='1'
-                    onClick={()=>this.modalVisibilityHandler('showParamDefModal')}>
-                      Parameter Definitions
-                  </MenuItem>
-                </SplitButton> :
-                <Button
-                  bsStyle='success'
-                  className='run-btn-filter'
-                  onClick={() => this.checkParametersHandler(true)}>Run
-                </Button>
+              <SplitButton className="run-btn-group" bsStyle='success' title='Run' id='run-button' 
+                onClick={() => this.checkParametersHandler(true)}>
+                <MenuItem
+                  eventKey='1'
+                  onClick={()=>this.modalVisibilityHandler('showParamDefModal')}>
+                    Parameter Definitions
+                </MenuItem>
+              </SplitButton>
             }
             { chartMode && 
               <Button
@@ -170,9 +176,9 @@ export default class TabsComponent extends Component {
             }
             <div className="selected-db-wrapper">
               <Select
-                value={(chart.database)?chart.database:null}
+                value={(widget.database) ? widget.database : null}
                 options={databases}
-                onChange={(db) => {selectedChartChangeHandler('database', (db)?db.value:null)}}
+                onChange={(db) => {this.onChangeDatabase(db)}}
                 placeholder={'Select Database'}
               />
             </div>
@@ -184,10 +190,13 @@ export default class TabsComponent extends Component {
               showParamDefModal &&
               <ParamDefinitionModal
                 selectedChartChangeHandler={selectedChartChangeHandler}
+                selectedFilterChangeHandler={selectedFilterChangeHandler}
                 closeModal={() => this.closeModal('showParamDefModal')}
                 showModal={this.state.showParamDefModal}
-                parameters={chart.parameters}
+                parameters={chartMode ? chart.parameters : (filter.parameters || [])}
                 note={this.state.note}
+                chartMode={chartMode}
+                filters={filters}
                 updateNoteHandler={this.checkParametersHandler}/>
             }
             {
@@ -217,13 +226,16 @@ export default class TabsComponent extends Component {
             }
           </span>
         }
-        <Button bsStyle='primary'
-          className={'tab-component view-btn '+viewButton.className} 
-          title={viewButton.title}
-          onClick={()=>updateViewMode(currentChartMode, chart.can_edit)}>
-          {viewButton.icon}
-          {viewButton.viewText}
-        </Button>
+        {
+          chartMode &&
+          <Button bsStyle='primary'
+            className={'tab-component view-btn '+viewButton.className} 
+            title={viewButton.title}
+            onClick={()=>updateViewMode(currentChartMode, widget.can_edit, chartMode)}>
+            {viewButton.icon}
+            {viewButton.viewText}
+          </Button>
+        }
       </div>
     )
   }

@@ -5,7 +5,7 @@
   "logo": "https://github.com/hashedin/squealy/blob/master/squealy/static/media/logo.71a19eb7.png",
   "keywords": ["javascript", "googlecharts", "django", "python", "dashboard", "API"],
   "scripts": {
-    "postdeploy": "python example/manage.py migrate"
+    "postdeploy": "python manage.py migrate"
   },
   "env": {
     "QUERY_DB": {
@@ -37,6 +37,22 @@
     },
     "AWS_DEFAULT_REGION": {
       "description": "(Optional) AWS region for AWS Athena. By default, us-east-1 will be used.",
+      "required": false
+    },
+    "EMAIL_HOST": {
+      "description": "Email host for sending emails. Example - smtp.gmail.com",
+      "required": false
+    },
+    "EMAIL_HOST_USER": {
+      "description": "Sender's email address",
+      "required": false
+    },
+    "EMAIL_HOST_PASSWORD": {
+      "description": "Password for sender's email address",
+      "required": false
+    },
+    "EMAIL_PORT": {
+      "description": "Port for the email host",
       "required": false
     }
   }
