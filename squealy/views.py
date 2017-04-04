@@ -16,6 +16,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
+from pyathenajdbc import connect
 
 from squealy.constants import SQL_WRITE_BLACKLIST
 from squealy.jinjasql_loader import configure_jinjasql
@@ -197,6 +198,8 @@ class DataProcessor(object):
                                                      "user": user
                                                     })
         conn = connections[db]
+        if conn.settings_dict['NAME'] == 'Athena':
+            conn = connect()
         with conn.cursor() as cursor:
             cursor.execute(query, bind_params)
             rows = []
