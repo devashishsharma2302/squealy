@@ -135,8 +135,25 @@ tr.editable-table-row {
 .view-filter {
   display: flex;
   padding: 15px 0;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  .filter-component {
+    margin-right: 15px;
+    min-width: 200px;
+  }
+  .filter-component:last-child {
+    margin-right: 0;
+  }
 }
 
 .view-mode-filter {
   display: block;
+  width: 100%;
+}
+
+.view-mode-visualchart {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  align-content: space-between;
 }

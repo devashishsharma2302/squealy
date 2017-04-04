@@ -193,7 +193,7 @@ export default class ViewOnlyResults extends Component {
                 if (params.type === 1) {
                   const FilterReference = filterType[params.data_type] || SquealyInput
                   return (
-                    <div className='col-md-6' key={'filter_' + params.name}>
+                    <div className='filter-component' key={'filter_' + params.name}>
                       <label>{params.name}</label>
                       <FilterReference
                         className='view-mode-filter'
@@ -210,27 +210,29 @@ export default class ViewOnlyResults extends Component {
             }
 
           </div>
-          <div className="chart-type-select">
-            {this.state.payloadObj.params &&
-              <SquealyDropdown
-                name='chartType'
-                options={GOOGLE_CHART_TYPE_OPTIONS}
-                selectedValue={this.state.payloadObj.params['chartType']}
-                onChangeHandler={(value) => this.updateChartType(value)} />
-            }
-          </div>
-          <div className="visualchart">
-            {
-              this.state.errorMessage ?
-                <div className='error-box'><span>{this.state.errorMessage}</span></div>
-                : (googleDefined && this.state.chartData.hasOwnProperty('rows') ?
-                  <GoogleChartsComponent
-                    chartData={this.state.chartData}
-                    options={chart.options}
-                    chartType={this.state.payloadObj.params['chartType']}
-                    id={'visualisation_' + chart.id} />
-                  : null)
-            }
+          <div className='view-mode-visualchart'>
+            <div className="chart-type-select">
+              {this.state.payloadObj.params &&
+                <SquealyDropdown
+                  name='chartType'
+                  options={GOOGLE_CHART_TYPE_OPTIONS}
+                  selectedValue={this.state.payloadObj.params['chartType']}
+                  onChangeHandler={(value) => this.updateChartType(value)} />
+              }
+            </div>
+            <div className="visualchart">
+              {
+                this.state.errorMessage ?
+                  <div className='error-box'><span>{this.state.errorMessage}</span></div>
+                  : (googleDefined && this.state.chartData.hasOwnProperty('rows') ?
+                    <GoogleChartsComponent
+                      chartData={this.state.chartData}
+                      options={chart.options}
+                      chartType={this.state.payloadObj.params['chartType']}
+                      id={'visualisation_' + chart.id} />
+                    : null)
+              }
+            </div>
           </div>
         </div>
       )
