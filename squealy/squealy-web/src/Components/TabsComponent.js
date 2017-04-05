@@ -21,7 +21,8 @@ export default class TabsComponent extends Component {
       showValidationsModal: false,
       showTransformationsModal: false,
       showShareModal: false,
-      note: null
+      note: null,
+      transposeEnabled: false
     }
   }
 
@@ -83,6 +84,14 @@ export default class TabsComponent extends Component {
     } else {
       this.props.selectedFilterChangeHandler({database: (dbVal) ? dbVal.value : null})
     }
+  }
+
+  onChangeTranspose = () => {
+    this.props.selectedChartChangeHandler({transpose: !this.state.transposeEnabled},
+    () => {
+      this.setState({transposeEnabled: !this.state.transposeEnabled})
+      this.props.onHandleTestButton()
+    })
   }
 
 
@@ -147,6 +156,15 @@ export default class TabsComponent extends Component {
                 </MenuItem>
               </SplitButton>
             }
+            {
+              chartMode && 
+              <Button
+                bsStyle='primary'
+                onClick={this.onChangeTranspose}
+                className='tab-component'>
+                {this.state.transposeEnabled && <i className='fa fa-check'/>}Transpose
+              </Button>
+            }
             { chartMode && 
               <Button
                 bsStyle='primary'
@@ -159,19 +177,6 @@ export default class TabsComponent extends Component {
                     effect={[null, null, null, null]}
                     className='transformations-count-badge'
                   />
-              </Button>
-            }
-            {
-              chartMode && 
-              <Button
-                bsStyle='primary'
-                className='tab-component'
-                onClick={()=>this.modalVisibilityHandler('showTransformationsModal')}
-              >
-                <img src={transformationIcon} alt="transformationIcon"/>Transformations
-                <NotificationBadge count={chart.transformations.length}
-                  effect={[null, null, null, null]}
-                  className='transformations-count-badge' />
               </Button>
             }
             <div className="selected-db-wrapper">
