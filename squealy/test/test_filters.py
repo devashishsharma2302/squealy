@@ -34,7 +34,7 @@ class FiltersTestCase(BaseTestCase):
 
     def test_filternotfound_exception(self):
         """
-            Check if an exception is raised if a chart does not
+            Check if an exception is raised if a filter does not
             exists with a given URL
         """
         response_details = self._filter_get_api('random_url')
@@ -45,7 +45,7 @@ class FiltersTestCase(BaseTestCase):
 
     def test_databasenotselected_exception(self):
         """
-            Check if no database is selected then an exception is ra
+            Check if no database is selected then an exception is raised
         """
         self.filter.database = None
         self.filter.save()
