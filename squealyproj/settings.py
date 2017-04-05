@@ -95,6 +95,16 @@ DATABASES = {
 # Database for reports generation. Pass the DATABASE_URL variable from environment.
 extract_dj_database_urls(os.environ.get('QUERY_DB'), DATABASES)
 
+# Support for AWS Athena
+if os.environ.get('AWS_ATHENA_S3_STAGING_DIR'):
+    DATABASES['athena'] = {
+        'NAME': 'Athena',
+        'AWS_ATHENA_S3_STAGING_DIR': os.environ.get('AWS_ATHENA_S3_STAGING_DIR'),
+        'AWS_ACCESS_KEY_ID': os.environ.get('AWS_ACCESS_KEY_ID'),
+        'AWS_SECRET_ACCESS_KEY': os.environ.get('AWS_SECRET_ACCESS_KEY'),
+        'AWS_DEFAULT_REGION': os.environ.get('AWS_DEFAULT_REGION', 'us-east-1')
+    }
+
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 
