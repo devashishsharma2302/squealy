@@ -8,7 +8,6 @@ class DatabaseApiTestCase(BaseTestCase):
     def setUp(self):
         BaseTestCase.create_mock_user(self)
         BaseTestCase.create_mock_client(self)
-        self.assertEqual(json_response, {u'databases': [{u'value': u'default', u'label': u':memory:'}]})
 
     def test_exception_in_database_api(self):
         """
