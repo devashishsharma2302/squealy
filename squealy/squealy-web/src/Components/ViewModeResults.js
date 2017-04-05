@@ -105,7 +105,7 @@ export default class ViewOnlyResults extends Component {
     const parameters = this.props.chart.parameters
     let finalPayloadObj = {}, flag = false
     parameters.map((param) => {
-      //Do not make api request if it;s the same key or not parameterized 
+      //Do not make api request if it's the same key or not parameterized 
       if (updatedKey !== param.name && param.data_type === 'dropdown' && param.is_parameterized) {
         flag = true
         finalPayloadObj = this.getPayloadObject(param.dropdown_api, updatedPayloadObj)

@@ -5,7 +5,7 @@ import {SquealyModal} from './SquealyUtilsComponents'
  * Component to show error in a panel
  * @className: CSS class name to customize the modal
  * @errorMessage: Message to be shown
- * @imageSrc: Image source which will rebder just before error message
+ * @imageSrc: Image source which will render just before error message
  */
 export class ErrorMessagePanel extends Component {
 
@@ -27,7 +27,7 @@ export class ErrorMessagePanel extends Component {
  * @errorMessage: Message to be shown
  * @typeOfError: Type of error for better description
  * @closeModal: Function to close modal
- * @showModal: Flag value which determine if modal is need to show or not.
+ * @showModal: Flag value which determines if modal is need to show or not.
  */
 export class ErrorMessageModal extends Component {
   render() {
