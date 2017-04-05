@@ -123,3 +123,7 @@ class Number(Parameter):
                 return float(value)
         except ValueError:
             raise NumberParseException("Cannot parse to int or float"+ value)
+
+
+class Dropdown(String):
+    pass

@@ -35,6 +35,9 @@ export const PARAM_FORMAT_OPTIONS = [
   }, {
     label: 'Number',
     value: 'number'
+  }, {
+    label: 'Dropdown',
+    value: 'dropdown'
   }
 ]
 
@@ -42,7 +45,8 @@ export const PARAM_FORMAT_MAP = {
   datetime: 'DateTime',
   string: 'String',
   date: 'Date',
-  number: 'Number'
+  number: 'Number',
+  dropdown: 'Dropdown'
 }
 
 export const PARAM_TYPE_OPTIONS = [

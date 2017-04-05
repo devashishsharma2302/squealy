@@ -90,6 +90,7 @@ class Parameter(models.Model):
     type = models.IntegerField(default=1, choices=PARAMETER_TYPES)
     order = models.IntegerField(null=True, blank=True)
     kwargs = CustomJSONField(null=True, blank=True, default={})
+    dropdown_api = models.CharField(max_length=255, null=True, blank=True)
 
     def __unicode__(self):
         return self.name

@@ -1,3 +1,5 @@
+import os
+
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db import connections
@@ -13,6 +15,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
+from pyathenajdbc import connect
 
 from squealy.constants import SQL_WRITE_BLACKLIST
 from squealy.jinjasql_loader import configure_jinjasql
@@ -31,7 +34,7 @@ from .models import Chart, Transformation, Validation, Parameter, \
     ScheduledReport, ReportParameter, ReportRecipient, Filter
 from .validators import run_validation
 from datetime import datetime, timedelta
-import json
+import json, ast
 
 
 jinjasql = configure_jinjasql()
@@ -140,7 +143,13 @@ class DataProcessor(object):
 
             # Formatting parameters
             parameter_type_str = param.data_type
-            kwargs = param.kwargs
+
+            #FIXME: kwargs should not come as unicode. Need to debug the root cause and fix it.
+            if isinstance(param.kwargs, unicode):
+                kwargs = ast.literal_eval(param.kwargs)
+            else:
+                kwargs = param.kwargs
+
             parameter_type = eval(parameter_type_str.title())
             if params.get(param.name):
                 params[param.name] = parameter_type(param.name, **kwargs).to_internal(params[param.name])
@@ -163,6 +172,8 @@ class DataProcessor(object):
                                                      "user": user
                                                     })
         conn = connections[db]
+        if conn.settings_dict['NAME'] == 'Athena':
+            conn = connect(driver_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'athena-jdbc/AthenaJDBC41-1.0.0.jar'))
         with conn.cursor() as cursor:
             cursor.execute(query, bind_params)
             rows = []
@@ -367,6 +378,7 @@ class ChartsLoaderView(APIView):
                                                  default_value=parameter['default_value'],
                                                  test_value=parameter['test_value'], chart=chart_object,
                                                  type=parameter['type'],
+                                                 dropdown_api=parameter['dropdown_api'],
                                                  order=parameter['order'],
                                                  kwargs=parameter['kwargs'])
                     parameter_object.save()
@@ -439,9 +451,9 @@ class FilterView(APIView):
         """
         user = request.user
         payload = request.GET.get("payload", None)
-        params = []
-        format_type = json.loads(payload)
-        format_type = format_type.get('format')
+        payload = json.loads(payload)
+        format_type = payload.get('format')
+        params = payload.get('params')
         data = DataProcessor().fetch_filter_data(filter_url, params, format_type, user)
         return Response(data)
 
