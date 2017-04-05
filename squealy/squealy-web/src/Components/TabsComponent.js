@@ -1,14 +1,12 @@
 import React, { Component } from 'react'
 import Select from 'react-select'
+import 'react-select/dist/react-select.css'
 import { SplitButton, MenuItem, Button } from 'react-bootstrap'
 import NotificationBadge from 'react-notification-badge'
 import { Effect } from 'react-notification-badge'
-
 import ParamDefinitionModal from './ParamDefinitionModal'
 import ValidationsModal from './ValidationsModal'
-import TransformationsModal from './TransformationsModal'
 import ShareModal from './ShareModal'
-import transformationIcon from './../images/transformations_icon_white.png'
 import validationIcon from './../images/validation_icon_white.png'
 import exportIcon from './../images/export_icon_white.png'
 
@@ -19,7 +17,6 @@ export default class TabsComponent extends Component {
     this.state = {
       showParamDefModal: false,
       showValidationsModal: false,
-      showTransformationsModal: false,
       showShareModal: false,
       note: null,
       transposeEnabled: false
@@ -28,12 +25,7 @@ export default class TabsComponent extends Component {
 
   // A generic method which handles just the visibility of modals
   modalVisibilityHandler = (modalName) => {
-    const {chart, onHandleTestButton} = this.props
-    if (modalName === 'showTransformationsModal' && !chart.hasOwnProperty('chartData')) {
-      onHandleTestButton(()=>this.setState({[modalName]: !this.state[modalName]}))
-    } else {
-      this.setState({[modalName]: !this.state[modalName]})
-    }
+    this.setState({[modalName]: !this.state[modalName]})
   }
 
   /**
@@ -113,7 +105,6 @@ export default class TabsComponent extends Component {
     const {
       showValidationsModal,
       showParamDefModal,
-      showTransformationsModal,
       showShareModal
     } = this.state
 
@@ -219,15 +210,6 @@ export default class TabsComponent extends Component {
                 closeModal={()=>this.modalVisibilityHandler('showShareModal')}
                 showModal={showShareModal}
                 chartUrl={chart.name}/>
-            }
-            {
-              showTransformationsModal &&
-              <TransformationsModal
-                selectedChartChangeHandler={selectedChartChangeHandler}
-                closeModal={() => this.closeModal('showTransformationsModal')}
-                showModal={showTransformationsModal}
-                chart={chart}
-              />
             }
           </span>
         }
