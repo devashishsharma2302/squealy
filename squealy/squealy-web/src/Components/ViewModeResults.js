@@ -13,6 +13,7 @@ import {
 } from './../Utils'
 import { DOMAIN_NAME, GOOGLE_CHART_TYPE_OPTIONS } from './../Constant'
 import { SquealyDatePicker, SquealyInput, SquealyDatetimePicker, SquealyDropdownFilter } from './Filters'
+import {ErrorMessagePanel} from './ErrorMessageComponent'
 
 export default class ViewOnlyResults extends Component {
 
@@ -223,14 +224,15 @@ export default class ViewOnlyResults extends Component {
             <div className="visualchart">
               {
                 this.state.errorMessage ?
-                  <div className='error-box'><span>{this.state.errorMessage}</span></div>
-                  : (googleDefined && this.state.chartData.hasOwnProperty('rows') ?
-                    <GoogleChartsComponent
-                      chartData={this.state.chartData}
-                      options={chart.options}
-                      chartType={this.state.payloadObj.params['chartType']}
-                      id={'visualisation_' + chart.id} />
-                    : null)
+                  <ErrorMessagePanel
+                    className='error-box'
+                    errorMessage={this.state.errorMessage} /> : 
+                  (googleDefined && this.state.chartData.hasOwnProperty('rows') ?
+                  <GoogleChartsComponent
+                    chartData={this.state.chartData}
+                    options={chart.options}
+                    chartType={this.state.payloadObj.params['chartType']}
+                    id={'visualisation_' + chart.id} /> : null)
               }
             </div>
           </div>

@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import { SquealyModal, SquealyDropdown, ErrorMessage } from './SquealyUtilsComponents'
+import { SquealyModal, SquealyDropdown} from './SquealyUtilsComponents'
 import { PARAM_TYPE_OPTIONS, PARAM_FORMAT_OPTIONS, PARAM_TYPE_MAP, PARAM_FORMAT_MAP } from './../Constant'
 import { getEmptyParamDefinition } from './../Utils'
 import moment from 'moment'
+import { FormErrorMessage } from './ErrorMessageComponent'
 
 
 export default class ParamDefinitionModal extends Component {
@@ -289,7 +290,7 @@ export default class ParamDefinitionModal extends Component {
             </div>
             {
               this.state.errorName &&
-              <ErrorMessage classValue={'col-md-8 pull-right validation-error'}
+              <FormErrorMessage classValue={'col-md-8 pull-right validation-error'}
                 message={'Error in name'} />
             }
           </div>
@@ -313,7 +314,7 @@ export default class ParamDefinitionModal extends Component {
             </div>
             {
               this.state.errorTestValue &&
-              <ErrorMessage classValue={'col-md-8 pull-right validation-error'}
+              <FormErrorMessage classValue={'col-md-8 pull-right validation-error'}
                 message={'Error in Test Value'} />
             }
           </div>
@@ -339,7 +340,7 @@ export default class ParamDefinitionModal extends Component {
               </div>
               {
                 (this.state.selectedFormatValue === 'date') && this.state.validateFormat &&
-                <ErrorMessage classValue={''} message={'Enter valid date format'} />
+                <FormErrorMessage classValue={''} message={'Enter valid date format'} />
               }
             </div>
           }
@@ -354,7 +355,7 @@ export default class ParamDefinitionModal extends Component {
               </div>
               {
                 (this.state.selectedFormatValue === 'datetime') && this.state.validateFormat &&
-                <ErrorMessage classValue={''} message={'Enter valid datetime format'} />
+                <FormErrorMessage classValue={''} message={'Enter valid datetime format'} />
               }
             </div>
           }
@@ -406,7 +407,7 @@ export default class ParamDefinitionModal extends Component {
               </div>
               {
                 this.state.errorDefaultValue &&
-                <ErrorMessage classValue={'col-md-8 pull-right validation-error'} message={'Error in Default Value'} />
+                <FormErrorMessage classValue={'col-md-8 pull-right validation-error'} message={'Error in Default Value'} />
               }
             </div>
           }

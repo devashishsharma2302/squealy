@@ -6,6 +6,7 @@ import { SquealyDropdown } from './SquealyUtilsComponents'
 import { GOOGLE_CHART_TYPE_OPTIONS } from './../Constant'
 import configIcon from './../images/settings_icon.png'
 import ChartConfigModal from './ChartConfigModal'
+import {ErrorMessagePanel} from './ErrorMessageComponent'
 
 export default class ResultSection extends Component {
 
@@ -60,8 +61,10 @@ export default class ResultSection extends Component {
       <AccordionTab heading='Results'>
         {
           errorMessage ?
-            <div className='error-box'><span>{errorMessage}</span></div>
-            : resultSectionOnSuccess
+            <ErrorMessagePanel
+              className='error-box'
+              errorMessage={errorMessage} /> :
+            resultSectionOnSuccess
         }
         <ChartConfigModal
           chartConfiguration={options}
