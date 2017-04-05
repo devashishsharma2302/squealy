@@ -8,31 +8,42 @@
 
 {% block content %}
 
-{% if form.errors %}
-<div class="login-error">
-	<span>Your username and password didn't match. Please try again.</span>
-</div>
-{% endif %}
-
-{% if next %}
-    {% if user.is_authenticated %}
-    <div class="login-error">
-	    <span>
-	    	Your account doesn't have access to this page. To proceed,
-	    	please login with an account that has access.
-	    </span>
-    </div>
-    {% endif %}
-{% endif %}
-
 <div class="login-form-wrapper">
+  {% if form.errors %}
+    <div class="login-error">
+      <span>Your username and password didn't match. Please try again.</span>
+    </div>
+  {% endif %}
+
+  {% if next %}
+      {% if user.is_authenticated %}
+      <div class="login-error">
+        <span>
+          Your account doesn't have access to this page. To proceed,
+          please login with an account that has access.
+        </span>
+      </div>
+      {% endif %}
+  {% endif %}
   <form class="form-signin" method="post" action="{% url 'login' %}">
       {% csrf_token %}
       <h2 class="form-signin-heading">Login to SQueaLy</h2>
-      
+      {% if GOOGLE_OAUTH_CONFIGURED %}
+        <button
+          class="google-login-btn"
+          onclick='location.href = "{% url "social:begin" "google-oauth2" %}"'
+        >
+          <img  class="google-logo" src="{% static "images/google.svg" %}" />
+          <label class="google-label">Login with Google</label>
+        </button>
+        <div class="hr-row">
+          <div class="hr-line"></div>
+          <div class="or">OR</div>
+          <div class="hr-line"></div>
+        </div>
+      {% endif %}
       <label for="id_username" class="sr-only">Username:</label>
       <input
-        autofocus required
         type="text"
         id="id_username"
         maxlength="254"
@@ -42,15 +53,13 @@
       >
       <label for="id_password" class="sr-only">Password:</label>
       <input 
-        required type="password"
+        type="password"
         id="id_password"
         maxlength="254"
         name="password"
         class="form-control form-field"
         placeholder="Password"
       >
-
-
       <input type="submit" value="login" class="submit-btn" />
       <input type="hidden" name="next" value="{{ next }}" />
   </form>
