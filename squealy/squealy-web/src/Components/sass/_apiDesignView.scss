@@ -1,5 +1,5 @@
 .tabs-container {
-  border-bottom: 3px solid $border-color;
+  border-bottom: 1px solid $border-color;
   height: 47px;
   padding-bottom: 2px;
 
@@ -140,6 +140,12 @@ tr.editable-table-row {
   .filter-component {
     margin-right: 15px;
     min-width: 200px;
+
+    > label {
+      line-height: 1;
+      vertical-align: top;
+      text-transform: capitalize;
+    }
   }
   .filter-component:last-child {
     margin-right: 0;
@@ -156,4 +162,12 @@ tr.editable-table-row {
   flex-direction: column;
   align-items: stretch;
   align-content: space-between;
+  border-top: 1px solid $border-color;
+  padding: 15px;
+  margin-left: -15px;
+  margin-right: -15px;
+
+  .chart-type-select {
+    padding-bottom: 15px; 
+  }
 }
