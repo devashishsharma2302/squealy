@@ -24,11 +24,11 @@ from squealy.serializers import ChartSerializer, FilterSerializer
 from .exceptions import RequiredParameterMissingException,\
                         ChartNotFoundException, MalformedChartDataException, \
                         TransformationException, DatabaseWriteException, DuplicateUrlException,\
-                        FilterNotFoundException
+                        FilterNotFoundException, DatabaseConfigurationException,\
+                        SelectedDatabaseException
 from .transformers import *
 from .formatters import *
 from .parameters import *
-from .utils import SquealySettings
 from .table import Table
 from .models import Chart, Transformation, Validation, Parameter, \
     ScheduledReport, ReportParameter, ReportRecipient, Filter
@@ -41,9 +41,7 @@ jinjasql = configure_jinjasql()
 
 
 class DatabaseView(APIView):
-    permission_classes = SquealySettings.get_default_permission_classes()
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request, *args, **kwargs):
         try:
@@ -51,11 +49,13 @@ class DatabaseView(APIView):
             database = settings.DATABASES
 
             for db in database:
-                # if db != 'default':
-                database_response.append({
-                  'value': db,
-                  'label': database[db]['NAME']
-                })
+                if db != 'default':
+                    database_response.append({
+                      'value': db,
+                      'label': database[db]['NAME']
+                    })
+            if not database_response:
+                raise DatabaseConfigurationException('No databases found. Make sure that you have defined database url in the environment')
             return Response({'databases': database_response})
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
@@ -71,10 +71,10 @@ class DataProcessor(object):
         chart = Chart.objects.filter(url=chart_url).prefetch_related(*chart_attributes).first()
 
         if not chart:
-            raise ChartNotFoundException('Chart not found')
+            raise ChartNotFoundException('Chart with url - %s not found' % chart_url)
 
         if not chart.database:
-            raise ChartNotFoundException('Database is not selected')
+            raise SelectedDatabaseException('Database is not selected')
 
         return self._process_chart_query(chart, params, user)
 
@@ -85,10 +85,10 @@ class DataProcessor(object):
         filter_obj = Filter.objects.filter(url=filter_url).first()
 
         if not filter_obj:
-            raise ChartNotFoundException('Filter not found')
+            raise FilterNotFoundException('Filter with url - %s not found' % filter_url)
 
         if not filter_obj.database:
-            raise ChartNotFoundException('Database is not selected')
+            raise SelectedDatabaseException('Database is not selected')
 
         # Execute the Query, and return a Table
         table = self._execute_query(params, user, filter_obj.query, filter_obj.database)
@@ -166,7 +166,6 @@ class DataProcessor(object):
 
     def _execute_query(self, params, user, chart_query, db):
         self._check_read_only_query(chart_query)
-
         query, bind_params = jinjasql.prepare_query(chart_query,
                                                     {
                                                      "params": params,
@@ -224,10 +223,8 @@ class ChartViewPermission(BasePermission):
 
 
 class ChartView(APIView):
-    permission_classes = SquealySettings.get_default_permission_classes()
-    permission_classes.append(ChartViewPermission)
+    permission_classes = [ChartViewPermission]
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request, chart_url=None, *args, **kwargs):
         """
@@ -269,10 +266,8 @@ class ChartUpdatePermission(BasePermission):
 
 
 class ChartsLoaderView(APIView):
-    permission_classes = SquealySettings.get_default_permission_classes()
-    permission_classes.append(ChartUpdatePermission)
+    permission_classes = [ChartUpdatePermission]
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request, *args, **kwargs):
         permitted_charts = []
@@ -293,12 +288,11 @@ class ChartsLoaderView(APIView):
         To delete a chart
         """
         data = request.data
-        try:
-            chart = Chart.objects.filter(id=data['id']).first()
-            Permission.objects.filter(codename__in=['can_view_' + str(chart.id), 'can_edit_' + str(chart.id)]).delete()
-            Chart.objects.filter(id=data['id']).first().delete()
-        except Exception:
-            ChartNotFoundException('A chart with id' + data['id'] + 'was not found')
+        chart = Chart.objects.filter(id=data['id']).first()
+        if not chart:
+            raise ChartNotFoundException('A chart with id ' + data['id'] + ' was not found')
+        Permission.objects.filter(codename__in=['can_view_' + str(chart.id), 'can_edit_' + str(chart.id)]).delete()
+        Chart.objects.filter(id=data['id']).first().delete()
         return Response({})
 
     def post(self, request):
@@ -413,9 +407,7 @@ class ChartsLoaderView(APIView):
 
 
 class UserInformation(APIView):
-    permission_classes = SquealySettings.get_default_permission_classes()
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request):
         response = {}
@@ -450,9 +442,8 @@ class FilterUpdatePermission(BasePermission):
 
 
 class FilterView(APIView):
-    permission_classes = SquealySettings.get_default_permission_classes()
+    permission_classes = [FilterUpdatePermission]
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request, filter_url=None, *args, **kwargs):
         """
@@ -468,10 +459,8 @@ class FilterView(APIView):
 
 
 class FilterLoaderView(APIView):
-    permission_classes = SquealySettings.get_default_permission_classes()
-    permission_classes.append(FilterUpdatePermission)
+    permission_classes = [FilterUpdatePermission]
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request, *args, **kwargs):
         """
