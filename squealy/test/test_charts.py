@@ -31,6 +31,13 @@ class ChartsTestCase(BaseTestCase):
                                     )
         return response
 
+    def _chart_get_api(self, params):
+        return self.client.get('/squealy/' + params)
+
+    def test_chart_get_api(self):
+        response = self._chart_get_api('?start_date=2016-03-06')
+        self.assertEqual(response.status_code, 200)
+
     def test_chart_post_api(self):
         response = self._chart_post_api({'start_date': '2016-03-06'})
         self.assertEqual(200, response.status_code)

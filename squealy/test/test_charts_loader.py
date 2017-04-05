@@ -36,14 +36,6 @@ class ChartLoaderTestCase(BaseTestCase):
         edit_permission = [d['can_edit'] for d in response.json() if d['url'] == self.chart.url][0]
         self.assertEqual(edit_permission, True)
 
-#     def test_view_permission(self):
-#         self.edit_perm.delete()
-#         response = self._charts_get_api()
-#         self.assertEqual(response.status_code, 200)
-#         edit_permission = [d['can_edit'] for d in response.json() if d['url'] == self.chart.url][0]
-#         print self.user.user_permissions.remove(self.edit_perm)
-#         self.assertEqual(edit_permission, False)
-
     def test_chart_deletion(self):
         response = self._chart_delete_api(1)
         self.assertEqual(response.status_code, 200)
