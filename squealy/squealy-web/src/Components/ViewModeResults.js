@@ -37,6 +37,21 @@ export default class ViewOnlyResults extends Component {
     }
   }
 
+
+  componentDidUpdate(prevProps, prevState) {
+    if (JSON.stringify(prevState.payloadObj) !== JSON.stringify(this.state.payloadObj)) {
+      let key
+      if (prevState.payloadObj.hasOwnProperty('params')) {
+        for (key in this.state.payloadObj.params) {
+          if (this.state.payloadObj.params[key] && this.state.payloadObj.params[key] !== prevState.payloadObj.params[key]) {
+            this.updateParamterizedFilterOpts(key)
+            break
+          }
+        }
+      }
+    }
+  }
+
   //To get initial data
   getInitialChart = (propsData) => {
     let payloadObj = JSON.parse(JSON.stringify(this.state.payloadObj)),
@@ -101,27 +116,31 @@ export default class ViewOnlyResults extends Component {
   }
 
   //Function to refresh all the parameterized dropdown data if any filter is updated
-  updateParamterizedFilterOpts = (updatedPayloadObj, updatedKey) => {
+  /**
+   * FIXME: Does not work for more than 2 filter long chain
+   * Issue: If more than 2 filters are chained, need response of first api to send it as api payload
+   * */
+  updateParamterizedFilterOpts = (updatedKey) => {
     const parameters = this.props.chart.parameters
-    let finalPayloadObj = {}, flag = false
-    parameters.map((param) => {
-      //Do not make api request if it's the same key or not parameterized 
-      if (updatedKey !== param.name && param.data_type === 'dropdown' && param.is_parameterized) {
+    let finalPayloadObj = {}, flag = false, updatedKeyIndex = -1,
+    updatedPayloadObj = JSON.parse(JSON.stringify(this.state.payloadObj))
+    parameters.map((param, i) => {
+      //Do not make api request if it's the same key or not parameterized
+      updatedKeyIndex = updatedKey === param.name ? i : updatedKeyIndex
+      if (updatedKeyIndex !== -1 && updatedKeyIndex < i && param.data_type === 'dropdown' && param.is_parameterized) {
         flag = true
         finalPayloadObj = this.getPayloadObject(param.dropdown_api, updatedPayloadObj)
         finalPayloadObj['format'] = 'json'
         getApiRequest(DOMAIN_NAME + 'filter/' + param.dropdown_api + '/', finalPayloadObj,
-            (response) => this.onSuccessFilterGet(response, {'name': param.name, 'url': param.dropdown_api, payloadObj: updatedPayloadObj}),
+            (response) => this.onSuccessFilterGet(response, {'name': param.name, 'url': param.dropdown_api}, true),
             this.onErrorTest, null)
       }
     })
     //If none param is parameterized, update the payload and chart data
     if (!flag) {
-      this.setState({ payloadObj: updatedPayloadObj }, () => {
-        this.updateUrl()
-        postApiRequest(DOMAIN_NAME + 'squealy/' + this.props.chart.url + '/', this.state.payloadObj,
-          this.onSuccessTest, this.onErrorTest, 'table')
-      })
+      this.updateUrl()
+      postApiRequest(DOMAIN_NAME + 'squealy/' + this.props.chart.url + '/', this.state.payloadObj,
+        this.onSuccessTest, this.onErrorTest, 'table')
     }
   }
 
@@ -129,7 +148,11 @@ export default class ViewOnlyResults extends Component {
   onChangeFilter = (key, val) => {
     let payloadObj = JSON.parse(JSON.stringify(this.state.payloadObj))
     payloadObj.params[key] = val
-    this.updateParamterizedFilterOpts(payloadObj, key)
+    this.setState({
+      payloadObj: payloadObj
+    }, () => {
+      this.updateParamterizedFilterOpts(key)
+    })
   }
 
   updateUrl = () => {
@@ -150,16 +173,16 @@ export default class ViewOnlyResults extends Component {
   }
 
   //Function to update the dropdown option data
-  onSuccessFilterGet = (response, obj) => {
+  onSuccessFilterGet = (response, obj, shouldUpdateChart) => {
     let filterData = JSON.parse(JSON.stringify(this.state.filterData)), payloadObj = {}
     filterData[obj.name] = {
       dropdown_api: obj.url,
       data: formatForDropdown(response.data)
     }
     //Update the parameterized filter option data and chart data if any other filter value has changed
-    if (obj.hasOwnProperty('payloadObj')) {
-      payloadObj = JSON.parse(JSON.stringify(obj.payloadObj))
-      payloadObj.params[obj.name] = response.data[0][0]
+    if (shouldUpdateChart) {
+      payloadObj = JSON.parse(JSON.stringify(this.state.payloadObj))
+      payloadObj.params[obj.name] = response.data[0][0]  
       this.setState({ payloadObj: payloadObj }, () => {
         this.updateUrl()
         postApiRequest(DOMAIN_NAME + 'squealy/' + this.props.chart.url + '/', payloadObj,
@@ -201,7 +224,7 @@ export default class ViewOnlyResults extends Component {
                         name={params.name}
                         format={params.kwargs.hasOwnProperty('format') ? params.kwargs.format : false}
                         filterData={this.state.filterData.hasOwnProperty(params.name) ? this.state.filterData[params.name]: {data: []}}
-                        value={this.state.payloadObj.params[params.name] ||params.default_value}
+                        value={this.state.payloadObj.params[params.name] || params.default_value}
                         onChangeHandler={this.onChangeFilter}
                         />
                     </div>
