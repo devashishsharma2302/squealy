@@ -3,7 +3,10 @@ from django.contrib.auth.decorators import login_required
 
 import views
 
+
 urlpatterns = [
+   url(r'^swagger-api/$',views.swagger_json_api),
+   url(r'^swagger/$', login_required(views.swagger)),
    url(r'charts/$', login_required(views.ChartsLoaderView.as_view())),
    url(r'user/$', login_required(views.UserInformation.as_view())),
    url(r'filters/$', login_required(views.FilterLoaderView.as_view())),

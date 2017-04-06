@@ -5,16 +5,18 @@ from django.db.utils import IntegrityError
 from django.shortcuts import render
 from django.db import transaction
 from django.conf import settings
+from django.http import HttpResponse,JsonResponse
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import permission_classes, api_view
+from rest_framework.fields import CharField
 from rest_framework.permissions import IsAdminUser, BasePermission
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
 
-from squealy.constants import SQL_WRITE_BLACKLIST
+from squealy.constants import SQL_WRITE_BLACKLIST, SWAGGER_JSON_TEMPLATE, SWAGGER_DICT
 from squealy.jinjasql_loader import configure_jinjasql
 
 from squealy.serializers import ChartSerializer, FilterSerializer
@@ -76,6 +78,8 @@ class DataProcessor(object):
         return self._process_chart_query(chart, params, user)
 
     def fetch_filter_data(self, filter_url, params, format_type, user):
+
+
         """
         Method to process the query and fetch the data for filter
         """
@@ -157,7 +161,7 @@ class DataProcessor(object):
             run_validation(params, user, validation.query, db)
 
     def _check_read_only_query(self, query):
-        if any(keyword in query.upper() for keyword in SQL_WRITE_BLACKLIST):
+        if any(keyword in query.upper().split(' ', ) for keyword in SQL_WRITE_BLACKLIST):
             raise DatabaseWriteException('Database write commands not permitted in the query.')
         pass
 
@@ -191,6 +195,8 @@ class DataProcessor(object):
         if format:
             if format in ['table', 'json']:
                 formatter = SimpleFormatter()
+            elif format == 'swagger':
+                formatter = SwaggerFormatter()
             else:
                 formatter = eval(format)()
             return formatter.format(table)
@@ -269,6 +275,17 @@ class ChartsLoaderView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
+    @staticmethod
+    def get_charts_swagger(request):
+        permitted_charts = []
+        charts = Chart.objects.all().prefetch_related('parameters')
+        for chart in charts:
+            if request.user.has_perm('squealy.can_edit_' + str(chart.id)):
+                permitted_charts.append(chart)
+            elif request.user.has_perm('squealy.can_view_' + str(chart.id)):
+                permitted_charts.append(chart)
+        return permitted_charts
+
     def get(self, request, *args, **kwargs):
         permitted_charts = []
         charts = Chart.objects.order_by('id').all()
@@ -346,7 +363,7 @@ class ChartsLoaderView(APIView):
 
             request.user.user_permissions.add(view_perm)
             request.user.user_permissions.add(edit_perm)
-            
+
             chart_id = chart_object.id
             Chart.objects.all().prefetch_related('transformations', 'parameters', 'validations')
 
@@ -541,3 +558,70 @@ def squealy_interface(request, *args, **kwargs):
     Renders the squealy authoring interface template
     """
     return render(request, 'index.html')
+
+
+def swagger_param_template(name, description, required, typeName, formatName):
+    template = {
+        "name": name,
+        "in": "query",
+        "description": description,
+        "required": required,
+        "type": typeName,
+        "format": formatName,
+    }
+    return template
+
+def make_parameters(param_list):
+    path_content_template = {
+        "get":
+            {
+                "tags": [
+                    "charts"
+                ],
+                "summary": "Charts API",
+                "description": "Add parameters according to the Query",
+                "operationId": "findPetsByStatus",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": param_list,
+                "responses": {
+                    "200": {
+                            "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid status value"
+                    }
+                }
+            }
+    }
+    return path_content_template
+
+
+@api_view(['GET'])
+def swagger_json_api(request, *args, **kwargs):
+    host = "localhost:8000"
+    swagger_json_template = SWAGGER_JSON_TEMPLATE
+    swagger_json_template["host"] = host
+    swagger_dict = SWAGGER_DICT
+    charts_related = ChartsLoaderView.get_charts_swagger(request)
+    for chart in charts_related:
+        new_key = "/squealy/" + chart.url
+        param_list = []
+        for parameter in chart.parameters.all():
+            name = ''
+            description = ''
+            required = ''
+            typeName = ''
+            formatName = ''
+                                                                                                                                                                            
+            typeName, formatName = swagger_dict[parameter.data_type]
+            swagger_parameter_obj = swagger_param_template(parameter.name, " Please enter " + parameter.name, True, typeName, formatName)
+            param_list.append(swagger_parameter_obj)
+        swagger_json_template["paths"][new_key] = make_parameters(param_list)
+
+    return JsonResponse(swagger_json_template)
+
+
+def swagger(request):
+    return render(request, 'swagger.html')
