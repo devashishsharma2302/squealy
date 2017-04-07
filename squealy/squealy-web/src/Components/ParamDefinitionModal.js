@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import { SquealyModal, SquealyDropdown, ErrorMessage } from './SquealyUtilsComponents'
+import { SquealyModal, SquealyDropdown} from './SquealyUtilsComponents'
 import { PARAM_TYPE_OPTIONS, PARAM_FORMAT_OPTIONS, PARAM_TYPE_MAP, PARAM_FORMAT_MAP } from './../Constant'
 import { getEmptyParamDefinition } from './../Utils'
 import moment from 'moment'
+import { FormErrorMessage } from './ErrorMessageComponent'
 
 
 export default class ParamDefinitionModal extends Component {
@@ -229,7 +230,7 @@ export default class ParamDefinitionModal extends Component {
       return
     }
 
-    let selectedChartParamDef = [...this.props.parameters]
+    let selectedChartParamDef = JSON.parse(JSON.stringify(this.props.parameters))
     curParamDef.order = curParamDef.order === '' ? null : curParamDef.order
     curParamDef.dropdown_api = curParamDef.data_type === 'dropdown' ? this.state.selectedDropdownAPI : ''
     
@@ -245,7 +246,7 @@ export default class ParamDefinitionModal extends Component {
         this.setState({ showParamDefForm: false, editMode: false, editArrayIndex: -1 })
         this.props.updateNoteHandler(false)
       }):
-      this.props.selectedFilterChangeHandler({'parameters':selectedChartParamDef},
+      this.props.selectedFilterChangeHandler({parameters: selectedChartParamDef},
       () => {
         this.setState({ showParamDefForm: false, editMode: false, editArrayIndex: -1 })
         this.props.updateNoteHandler(false)
@@ -262,12 +263,12 @@ export default class ParamDefinitionModal extends Component {
   }
 
   render() {
-    const {parameters, selectedChartChangeHandler, note, selectedFilterChangeHandler} = this.props
+    const {parameters, selectedChartChangeHandler, note, selectedFilterChangeHandler, chartMode} = this.props
     const addParamDefFormContent =
       <div className="modal-container">
         <div className='add-modal-content'>
           {
-            !this.state.editMode &&
+            !this.state.editMode && chartMode &&
             <div className='row'>
               <label htmlFor='paramType' className='col-md-4'>Type: </label>
               <div className='col-md-8'>
@@ -289,18 +290,20 @@ export default class ParamDefinitionModal extends Component {
             </div>
             {
               this.state.errorName &&
-              <ErrorMessage classValue={'col-md-8 pull-right validation-error'}
+              <FormErrorMessage classValue={'col-md-8 pull-right validation-error'}
                 message={'Error in name'} />
             }
           </div>
-          <div className='row'>
-            <label className='col-md-4' htmlFor='orderVal'>Order:</label>
-            <div className='col-md-8'>
-              <input type='number' name='orderVal'
-                value={this.state.paramDefinition.order}
-                onChange={(e) => this.onChangeParamHandler('order', e.target.value)} />
+          { chartMode &&
+            <div className='row'>
+              <label className='col-md-4' htmlFor='orderVal'>Order:</label>
+              <div className='col-md-8'>
+                <input type='number' name='orderVal'
+                  value={this.state.paramDefinition.order}
+                  onChange={(e) => this.onChangeParamHandler('order', e.target.value)} />
+              </div>
             </div>
-          </div>
+          }
           <div className='row'>
             <label htmlFor='testValue' className='col-md-4'>Test Data: </label>
             <div className='col-md-8'>
@@ -311,11 +314,11 @@ export default class ParamDefinitionModal extends Component {
             </div>
             {
               this.state.errorTestValue &&
-              <ErrorMessage classValue={'col-md-8 pull-right validation-error'}
+              <FormErrorMessage classValue={'col-md-8 pull-right validation-error'}
                 message={'Error in Test Value'} />
             }
           </div>
-          {this.state.selectedType === 'query' &&
+          {this.state.selectedType === 'query' && chartMode &&
             <div className='row'>
               <label htmlFor='paramFormat' className='col-md-4'>Format: </label>
               <div className='col-md-8'>
@@ -328,6 +331,7 @@ export default class ParamDefinitionModal extends Component {
             </div>
           }
           {(this.state.selectedType === 'query' && this.state.selectedFormatValue === 'date') &&
+            chartMode &&
             <div className='row'>
               <label htmlFor='dateFormat' className='col-md-4'>Date Format: </label>
               <div className='col-md-8'>
@@ -336,11 +340,12 @@ export default class ParamDefinitionModal extends Component {
               </div>
               {
                 (this.state.selectedFormatValue === 'date') && this.state.validateFormat &&
-                <ErrorMessage classValue={''} message={'Enter valid date format'} />
+                <FormErrorMessage classValue={''} message={'Enter valid date format'} />
               }
             </div>
           }
           {(this.state.selectedType === 'query' && this.state.selectedFormatValue === 'datetime') &&
+            chartMode &&
             <div className='row'>
               <label htmlFor='dateTimeFormatDropdown' className='col-md-4'>DateTime Format: </label>
               <div className='col-md-8'>
@@ -350,11 +355,12 @@ export default class ParamDefinitionModal extends Component {
               </div>
               {
                 (this.state.selectedFormatValue === 'datetime') && this.state.validateFormat &&
-                <ErrorMessage classValue={''} message={'Enter valid datetime format'} />
+                <FormErrorMessage classValue={''} message={'Enter valid datetime format'} />
               }
             </div>
           }
           {(this.state.selectedType === 'query' && this.state.selectedFormatValue === 'dropdown') &&
+            chartMode &&
             <div className='row'>
               <label htmlFor='dropwdownApi' className='col-md-4'>Dropdown API: </label>
               <div className='col-md-8'>
@@ -367,7 +373,7 @@ export default class ParamDefinitionModal extends Component {
             </div>
           }
           {
-            this.state.selectedType === 'query' &&
+            this.state.selectedType === 'query' && chartMode &&
             <div className='row'>
               <label htmlFor='mandatoryField' className='col-md-4'>Mandatory: </label>
               <div className='col-md-8'>
@@ -379,7 +385,19 @@ export default class ParamDefinitionModal extends Component {
             </div>
           }
           {
-            this.state.selectedType === 'query' &&
+            this.state.selectedType === 'query' && this.state.selectedFormatValue === 'dropdown' &&
+            <div className='row'>
+              <label htmlFor='isParameterized' className='col-md-4'>Parameterized: </label>
+              <div className='col-md-8'>
+                <input type='checkbox' name='isParameterized'
+                  value={this.state.paramDefinition.is_parameterized}
+                  checked={this.state.paramDefinition.is_parameterized}
+                  onChange={(e) => this.onChangeParamHandler('is_parameterized', e.target.checked)} />
+              </div>
+            </div>
+          }
+          {
+            (this.state.selectedType === 'query' || !chartMode) &&
             <div className='row'>
               <label htmlFor='defaultValues' className='col-md-4'>Default Value: </label>
               <div className='col-md-8'>
@@ -389,7 +407,7 @@ export default class ParamDefinitionModal extends Component {
               </div>
               {
                 this.state.errorDefaultValue &&
-                <ErrorMessage classValue={'col-md-8 pull-right validation-error'} message={'Error in Default Value'} />
+                <FormErrorMessage classValue={'col-md-8 pull-right validation-error'} message={'Error in Default Value'} />
               }
             </div>
           }
@@ -406,10 +424,10 @@ export default class ParamDefinitionModal extends Component {
         <table className="table table-hover api-param-def-table">
           <thead>
             <tr>
-              <th>Type</th>
+              {chartMode && <th>Type</th>}
               <th>Name</th>
               <th>Test Data</th>
-              <th>Format</th>
+              {chartMode && <th>Format</th>}
               <th>Default</th>
               <th className="align-center clickable-element">
                 <i className="fa fa-plus"
@@ -427,10 +445,10 @@ export default class ParamDefinitionModal extends Component {
                     <tr key={'param_row_' + i} onClick={(e) => this.handleEditParam(e, i)}
                       className={this.state.editArrayIndex === i ? 'selected param-row' : 'param-row'}
                       >
-                      <td>{param.type}</td>
+                      {chartMode && <td>{param.type}</td>}
                       <td className='param-name'>{param.name}</td>
                       <td>{param.test_value}</td>
-                      <td>{param.data_type ? PARAM_FORMAT_MAP[param.data_type] : '--'}</td>
+                      {chartMode && <td>{param.data_type ? PARAM_FORMAT_MAP[param.data_type] : '--'}</td>}
                       <td>{param.default_value ? param.default_value : '--'}</td>
                       <td className="align-center clickable-element" name='deleteParam'
                         onClick={(e) => this.deleteEntry(e, i, 'paramDefinition')}>
