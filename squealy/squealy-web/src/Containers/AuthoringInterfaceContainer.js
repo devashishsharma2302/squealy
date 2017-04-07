@@ -343,6 +343,15 @@ export default class AuthoringInterfaceContainer extends Component {
                     this.onSuccessTest, this.onErrorTest, callback)
   }
 
+  //Need to update the url to get suggested Visualization. Using squealy/chart-name/ API
+  //as of now.  
+  onHandleVisualizationTab = (callback=null) => {
+    const selectedChart = this.state.charts[this.state.selectedChartIndex]
+    let payloadObj = formatTestParameters(selectedChart.parameters, 'name', 'test_value')
+    postApiRequest(DOMAIN_NAME+'squealy/'+selectedChart.url+'/', payloadObj,
+                    this.onSuccessTest, this.onErrorTest, callback)
+  }
+
   onHandleTestFilterButton = (callback=null) => {
     const selectedFilter = this.state.filters[this.state.selectedFilterIndex]
     let payloadObj = formatTestParameters(selectedFilter.parameters, 'name', 'test_value')
@@ -452,6 +461,7 @@ export default class AuthoringInterfaceContainer extends Component {
           selectedFilterIndex={selectedFilterIndex}
           filterSelectionHandler={this.filterSelectionHandler}
           onHandleTestFilterButton={this.onHandleTestFilterButton}
+          onHandleVisualizationTab={this.onHandleVisualizationTab}
         />
       </div>
     )
