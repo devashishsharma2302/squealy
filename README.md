@@ -131,6 +131,27 @@ WHERE some_value = {{params.foo}}
 AND name = {{user.username}}
 ```
 
+### Dropdown Filter APIs
+SQueaLy provides Filter APIs to add Dropdown options. You just need to write the query to get the data from the database.
+SQueaLy provides **can_edit** permission for filters. If user does not have **can_edit** permission, API will be available
+as a dropdown option only while adding parameters in the chart.
+
+SQueaLy supports Parameterized filters also.
+For Example: you have two filters Country and City and you want to show all cities for selected Country.
+
+Query for Country
+``` sql
+SELECT Country FROM some_table;
+```
+
+Query for City
+``` sql
+SELECT City FROM some_table WHERE Country={{params.country}};
+```
+
+**Note** Order plays an important role for Parameterized filter. Parameterized filter should render after it's parameters
+
+
 ### Validations
 With every chart, you can attach another SQL query that would validate the API. The API would return a 403 Forbidden response, if the validation query returns no rows.
 
