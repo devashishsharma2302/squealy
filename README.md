@@ -149,7 +149,8 @@ Query for City
 SELECT City FROM some_table WHERE Country={{params.country}};
 ```
 
-**Note** Order plays an important role for Parameterized filter. Parameterized filter should render after it's parameters
+**Note:** Order plays an important role for Parameterized filter. Parameterized filter should render after it's parameters.
+For above example, City filter should render after Country filter.
 
 
 ### Validations
