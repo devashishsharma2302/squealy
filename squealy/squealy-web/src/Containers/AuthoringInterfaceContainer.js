@@ -83,11 +83,13 @@ export default class AuthoringInterfaceContainer extends Component {
   onWidgetDeleted = (index, selectedWidgetIndex, widgetStateKeyData, callback) => {
     const selectedIndex = this.state[selectedWidgetIndex] || index,
       currWidgetData = this.state[widgetStateKeyData]
-    let chartMode = false, nonSelectedWidgetIndex = ''
+    let chartMode = false, nonSelectedWidgetIndex = '', type
 
     if (selectedWidgetIndex === 'selectedChartIndex') {
+      type = 'chart'
       nonSelectedWidgetIndex = 'selectedFilterIndex'
     } else {
+      type = 'filter'
       nonSelectedWidgetIndex = 'selectedChartIndex'
     }
 
@@ -109,6 +111,7 @@ export default class AuthoringInterfaceContainer extends Component {
         currentChartMode: chartMode
       }, () => {
         callback && callback.constructor === Function && callback()
+        this.setUrlPath(type)
       })
     } else {
       this.setState({
@@ -120,6 +123,7 @@ export default class AuthoringInterfaceContainer extends Component {
         [nonSelectedWidgetIndex]: null
       }, () => {
         callback && callback.constructor === Function && callback()
+        this.setUrlPath(type)
       })
     }
   }
