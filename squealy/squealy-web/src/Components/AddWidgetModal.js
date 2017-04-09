@@ -1,6 +1,7 @@
 import React, { Component} from 'react'
 import Select from 'react-select'
-import { SquealyModal } from './SquealyUtilsComponents'
+import { SquealyModal, SquealyDropdown } from './SquealyUtilsComponents'
+import { FormErrorMessage } from './ErrorMessageComponent'
 
 export default class AddWidgetModal extends Component {
   constructor() {
@@ -8,7 +9,8 @@ export default class AddWidgetModal extends Component {
     this.state = {
       widgetName: '',
       widgetNameError: '',
-      database: null
+      database: '',
+      errorInName: false
     }
   }
 
@@ -41,16 +43,22 @@ export default class AddWidgetModal extends Component {
     onFailure = (error) => {
       this.setState({widgetNameError: JSON.parse(error.responseText).detail})
     }
-    if (this.props.editMode) {
-      this.props.selectedWidgetHandler(
-        {name: widgetName}, onSuccess, this.props.selectedWidgetIndex, onFailure)
+    if (!widgetName) {
+      this.setState({errorInName: true}, () => {
+        return
+      })
     } else {
-      this.props.widgetAdditionHandler(widgetName, database, onSuccess, onFailure)
+      if (this.props.editMode) {
+        this.props.selectedWidgetHandler(
+          {name: widgetName}, onSuccess, this.props.selectedWidgetIndex, onFailure)
+      } else {
+        this.props.widgetAdditionHandler(widgetName, database, onSuccess, onFailure)
+      }
     }
   }
 
   onChangeDatabase = (db) => {
-    let dbVal = db ? db.value : null
+    let dbVal = db || ''
     this.setState({database: dbVal}, () => {
       this.props.editMode ? 
         this.props.selectedWidgetHandler({database: dbVal}, null, this.state.selectedWidgetIndex) : null
@@ -71,24 +79,29 @@ export default class AddWidgetModal extends Component {
       helpText,
       widgetData
     } = this.props
-
+    let databasesWithBlank = JSON.parse(JSON.stringify(databases))
+    databasesWithBlank.unshift({value: '', label: 'Select Database'})
     const {database, widgetNameError, widgetName} = this.state
     const modalContent =
       <div className='app-modal-content'>
         <span className='chart-name-error'> {widgetNameError} </span>
         <div className="row">
           <label className='col-md-4'>Name: </label>
-          <input className='chart-name-input' type='text' defaultValue={widgetName} onChange={this.onChangeWidgetName} />
+          <input className='chart-name-input' type='text' defaultValue={widgetName} onChange={this.onChangeWidgetName} required={true}/>
+          {
+            this.state.errorInName &&
+            <FormErrorMessage classValue={'col-md-8 pull-right validation-error'}
+              message='This field is Mandatory'/>
+          }
         </div>
         <div className='row'>
           <label className='col-md-4'>Databse: </label>
           <div className='col-md-8 chart-modal-db'>
-            <Select
-              value={(database) ? database : null}
-              options={databases}
-              onChange={this.onChangeDatabase}
-              placeholder={'Select Database'}
-            />
+            <SquealyDropdown
+              options={databasesWithBlank}
+              name='paramType'
+              onChangeHandler={this.onChangeDatabase}
+              selectedValue={(database) ? database : ''} />
           </div>
         </div>
       </div>

@@ -18,6 +18,9 @@
         font-weight: bold;
       }
     }
+    select {
+      min-width: 200px;
+    }
   }
 }
 
@@ -70,6 +73,10 @@
 .app-modal-content {
   > .row {
     padding-bottom: 10px;
+  }
+
+  select {
+    min-width: 200px;
   }
 }
 

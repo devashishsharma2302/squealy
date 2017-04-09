@@ -373,18 +373,6 @@ export default class ParamDefinitionModal extends Component {
             </div>
           }
           {
-            this.state.selectedType === 'query' && chartMode &&
-            <div className='row'>
-              <label htmlFor='mandatoryField' className='col-md-4'>Mandatory: </label>
-              <div className='col-md-8'>
-                <input type='checkbox' name='mandatoryField'
-                  value={this.state.paramDefinition.mandatory}
-                  checked={this.state.paramDefinition.mandatory}
-                  onChange={(e) => this.onChangeParamHandler('mandatory', e.target.checked)} />
-              </div>
-            </div>
-          }
-          {
             this.state.selectedType === 'query' && this.state.selectedFormatValue === 'dropdown' &&
             <div className='row'>
               <label htmlFor='isParameterized' className='col-md-4'>Parameterized: </label>
@@ -393,6 +381,18 @@ export default class ParamDefinitionModal extends Component {
                   value={this.state.paramDefinition.is_parameterized}
                   checked={this.state.paramDefinition.is_parameterized}
                   onChange={(e) => this.onChangeParamHandler('is_parameterized', e.target.checked)} />
+              </div>
+            </div>
+          }
+          {
+            this.state.selectedType === 'query' && chartMode &&
+            <div className='row'>
+              <label htmlFor='mandatoryField' className='col-md-4'>Mandatory: </label>
+              <div className='col-md-8'>
+                <input type='checkbox' name='mandatoryField'
+                  value={this.state.paramDefinition.mandatory}
+                  checked={this.state.paramDefinition.mandatory}
+                  onChange={(e) => this.onChangeParamHandler('mandatory', e.target.checked)} />
               </div>
             </div>
           }
