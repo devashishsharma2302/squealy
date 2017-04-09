@@ -63,11 +63,11 @@ class DatabaseView(APIView):
 
 class DataProcessor(object):
 
-    def fetch_chart_data(self, chart_url, params, user):
+    def fetch_chart_data(self, chart_url, params, user, chartType):
         """
         This method gets the chart data
         """
-        chart_attributes = ['parameters', 'validations', 'transformations']
+        chart_attributes = ['parameters', 'validations']
         chart = Chart.objects.filter(url=chart_url).prefetch_related(*chart_attributes).first()
 
         if not chart:
@@ -76,7 +76,9 @@ class DataProcessor(object):
         if not chart.database:
             raise ChartNotFoundException('Database is not selected')
 
-        return self._process_chart_query(chart, params, user)
+        if not chartType:
+            chartType = chart.type
+        return self._process_chart_query(chart, params, user, chartType)
 
     def fetch_filter_data(self, filter_url, params, format_type, user):
         """
@@ -95,11 +97,11 @@ class DataProcessor(object):
         if format_type:
             data = self._format(table, format_type)
         else:
-            data = self._format(table, 'GoogleChartsFormatter')
+            data = self._format(table, 'GoogleChartsFormatter', chartType)
 
         return data
 
-    def _process_chart_query(self, chart, params, user):
+    def _process_chart_query(self, chart, params, user, chartType):
         """
         Process and return the result after executing the chart query
         """
@@ -118,12 +120,12 @@ class DataProcessor(object):
         table = self._execute_query(params, user, chart.query, chart.database)
 
         # Run Transformations
-        transformations = chart.transformations.all()
-        if transformations:
-            table = self._run_transformations(table, transformations)
+        # TODO: Add transpose check
+        # transformations = chart.transformations.all()
+        # table = self._run_transformations(table, transformations)
 
         # Format the table according to google charts / highcharts etc
-        data = self._format(table, chart.format)
+        data = self._format(table, chart.format, chartType)
 
         return data
 
@@ -192,14 +194,15 @@ class DataProcessor(object):
                 rows.append(row_list)
         return Table(columns=cols, data=rows)
 
-    def _format(self, table, format):
+    def _format(self, table, format, chartType):
         if format:
             if format in ['table', 'json']:
                 formatter = SimpleFormatter()
             else:
                 formatter = eval(format)()
-            return formatter.format(table)
-        return GoogleChartsFormatter().format(table)
+            return formatter.format(table, chartType)
+        return GoogleChartsFormatter().format(table, chartType)
+
 
     def _run_transformations(self, table, transformations):
         try:
@@ -245,7 +248,7 @@ class ChartView(APIView):
         try:
             params = request.data.get('params', {})
             user = request.data.get('user', None)
-            data = DataProcessor().fetch_chart_data(chart_url, params, user)
+            data = DataProcessor().fetch_chart_data(chart_url, params, user, request.data.get('chartType'))
             return Response(data)
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)

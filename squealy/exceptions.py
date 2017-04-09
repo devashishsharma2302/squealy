@@ -75,3 +75,8 @@ class EmailRecipientException(APIException):
 class EmailSubjectException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     pass
+
+
+class InvalidChartDataException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    pass
