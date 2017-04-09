@@ -27,9 +27,9 @@ class Transpose(TableTransformer):
 
         new_table = Table()
         if transposed:
-            new_table.columns = transposed[0]
+            new_table.columns = list(transposed[0])
             del transposed[0]
-        new_table.data = transposed
+        new_table.data = [list(row) for row in transposed]
         return new_table
 
 

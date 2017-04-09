@@ -120,9 +120,8 @@ class DataProcessor(object):
         table = self._execute_query(params, user, chart.query, chart.database)
 
         # Run Transformations
-        # TODO: Add transpose check
-        # transformations = chart.transformations.all()
-        # table = self._run_transformations(table, transformations)
+        if chart.transpose:
+            table = Transpose().transform(table)
 
         # Format the table according to google charts / highcharts etc
         data = self._format(table, chart.format, chartType)
@@ -201,18 +200,6 @@ class DataProcessor(object):
                 formatter = eval(format)()
             return formatter.format(table, chartType)
         return GoogleChartsFormatter().format(table, chartType)
-
-
-    def _run_transformations(self, table, transformations):
-        try:
-            if transformations:
-                for transformation in transformations:
-                    transformer_instance = eval(transformation.get_name_display())()
-                    kwargs = transformation.kwargs
-                    table = transformer_instance.transform(table, **kwargs)
-                return table
-        except ValueError as e:
-            raise TransformationException("Error in transformation - " + e.message)
 
         return table
 
@@ -311,7 +298,8 @@ class ChartsLoaderView(APIView):
                             query=data['query'],
                             type=data['type'],
                             options=data['options'],
-                            database=data['database']
+                            database=data['database'],
+                            transpose=data['transpose']
                         )
             chart_object.save()
 
