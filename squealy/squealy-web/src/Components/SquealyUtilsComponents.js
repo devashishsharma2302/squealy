@@ -72,11 +72,3 @@ export class SquealyDropdown extends Component {
     )
   }
 }
-
-export const ErrorMessage = ({classValue, message}) => {
-  return (
-    <div className={classValue}>
-      <p>{ message }</p>
-    </div>
-  )
-}

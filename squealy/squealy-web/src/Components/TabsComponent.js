@@ -1,14 +1,12 @@
 import React, { Component } from 'react'
 import Select from 'react-select'
+import 'react-select/dist/react-select.css'
 import { SplitButton, MenuItem, Button } from 'react-bootstrap'
 import NotificationBadge from 'react-notification-badge'
 import { Effect } from 'react-notification-badge'
-
 import ParamDefinitionModal from './ParamDefinitionModal'
 import ValidationsModal from './ValidationsModal'
-import TransformationsModal from './TransformationsModal'
 import ShareModal from './ShareModal'
-import transformationIcon from './../images/transformations_icon_white.png'
 import validationIcon from './../images/validation_icon_white.png'
 import exportIcon from './../images/export_icon_white.png'
 
@@ -19,20 +17,15 @@ export default class TabsComponent extends Component {
     this.state = {
       showParamDefModal: false,
       showValidationsModal: false,
-      showTransformationsModal: false,
       showShareModal: false,
-      note: null
+      note: null,
+      transposeEnabled: false
     }
   }
 
   // A generic method which handles just the visibility of modals
   modalVisibilityHandler = (modalName) => {
-    const {chart, onHandleTestButton} = this.props
-    if (modalName === 'showTransformationsModal' && !chart.hasOwnProperty('chartData')) {
-      onHandleTestButton(()=>this.setState({[modalName]: !this.state[modalName]}))
-    } else {
-      this.setState({[modalName]: !this.state[modalName]})
-    }
+    this.setState({[modalName]: !this.state[modalName]})
   }
 
   /**
@@ -85,6 +78,14 @@ export default class TabsComponent extends Component {
     }
   }
 
+  onChangeTranspose = () => {
+    this.props.selectedChartChangeHandler({transpose: !this.state.transposeEnabled},
+    () => {
+      this.setState({transposeEnabled: !this.state.transposeEnabled})
+      this.props.onHandleTestButton()
+    })
+  }
+
 
   render() {
     const {
@@ -104,7 +105,6 @@ export default class TabsComponent extends Component {
     const {
       showValidationsModal,
       showParamDefModal,
-      showTransformationsModal,
       showShareModal
     } = this.state
 
@@ -147,6 +147,15 @@ export default class TabsComponent extends Component {
                 </MenuItem>
               </SplitButton>
             }
+            {
+              chartMode && 
+              <Button
+                bsStyle='primary'
+                onClick={this.onChangeTranspose}
+                className='tab-component'>
+                {this.state.transposeEnabled && <i className='fa fa-check'/>}Transpose
+              </Button>
+            }
             { chartMode && 
               <Button
                 bsStyle='primary'
@@ -159,19 +168,6 @@ export default class TabsComponent extends Component {
                     effect={[null, null, null, null]}
                     className='transformations-count-badge'
                   />
-              </Button>
-            }
-            {
-              chartMode && 
-              <Button
-                bsStyle='primary'
-                className='tab-component'
-                onClick={()=>this.modalVisibilityHandler('showTransformationsModal')}
-              >
-                <img src={transformationIcon} alt="transformationIcon"/>Transformations
-                <NotificationBadge count={chart.transformations.length}
-                  effect={[null, null, null, null]}
-                  className='transformations-count-badge' />
               </Button>
             }
             <div className="selected-db-wrapper">
@@ -214,15 +210,6 @@ export default class TabsComponent extends Component {
                 closeModal={()=>this.modalVisibilityHandler('showShareModal')}
                 showModal={showShareModal}
                 chartUrl={chart.name}/>
-            }
-            {
-              showTransformationsModal &&
-              <TransformationsModal
-                selectedChartChangeHandler={selectedChartChangeHandler}
-                closeModal={() => this.closeModal('showTransformationsModal')}
-                showModal={showTransformationsModal}
-                chart={chart}
-              />
             }
           </span>
         }

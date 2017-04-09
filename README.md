@@ -1,16 +1,24 @@
-# Fastrack analytics for your business. Use SQueaLy
+# Fastrack analytics for your business. Use SQueaLy #
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)  
 [![Build Status](https://travis-ci.org/hashedin/squealy.svg?branch=phase-2)](https://travis-ci.org/hashedin/squealy)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
 
-SQueaLy is an open-source, self-deployable application that runs on Django. It is a micro service for business intelligence and analytics which provides reporting APIs with fine-grained security and fast tracks your development. It gives you the power to analyze and visualize your organizational data in an environment that is completely owned by you. Hence, making it the most suitable solution for generating charts and reports out of sensitive data.
+SQueaLy is an open-source, self-deployable application for developers. It is a micro service for business intelligence and analytics which uses SQL queries to generate reporting APIs with fine-grained security. It gives you the power to analyze your organizational data in an environment that is completely owned by you. Hence, making it the most suitable solution for generating charts and reports out of sensitive data.
+
+<p align="center">
+  <img src="./Readme-mediafiles/architecture.png" />
+</p>
 
 ## When to use SQueaLy
 
-**When you want charts and reports in your application at a hot pace**  
+**When you want charts and reports but don't want to build the APIs**  
 
 Using SQueaLy, creating APIs for your reports/charts and visualizing the output is super quick. Just write the query to fetch the data from your database and use the SQueaLy's authoring interface to visualize the output. Once satisfied, give your users the permission to view/edit the report and share the URL of your report. That's it!
+
+<p align="center">
+  <img src="./Readme-mediafiles/when_to_use_squealy.png" />
+</p>
 
 **When you want fine grained security in your reporting APIs**  
 
@@ -62,7 +70,7 @@ SQueaLy comes with email solutions as well. You can schedule emails embedded wit
 
 ## Database Support
 
-Redshift, Mysql, Postgres, Sqlite,  
+Athena, Redshift, Mysql, Postgres, Sqlite,  
 
 ## Getting started
 - Click on the 'Deploy-to-Heroku' button on the [top](#squealy) of this documentation.
@@ -122,6 +130,28 @@ SELECT bookings from bookings_table
 WHERE some_value = {{params.foo}}
 AND name = {{user.username}}
 ```
+
+### Dropdown Filter APIs
+SQueaLy provides Filter APIs to add Dropdown options. You just need to write the query to get the data from the database.
+SQueaLy provides **can_edit** permission for filters. If user does not have **can_edit** permission, API will be available
+as a dropdown option only while adding parameters in the chart.
+
+SQueaLy supports Parameterized filters also.
+For Example: you have two filters Country and City and you want to show all cities for selected Country.
+
+Query for Country
+``` sql
+SELECT Country FROM some_table;
+```
+
+Query for City
+``` sql
+SELECT City FROM some_table WHERE Country={{params.country}};
+```
+
+**Note:** Order plays an important role for Parameterized filter. Parameterized filter should render after it's parameters.
+For above example, City filter should render after Country filter.
+
 
 ### Validations
 With every chart, you can attach another SQL query that would validate the API. The API would return a 403 Forbidden response, if the validation query returns no rows.

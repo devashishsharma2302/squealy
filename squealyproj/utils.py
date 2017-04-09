@@ -11,6 +11,7 @@ def extract_dj_database_urls(databases_as_string, DATABASES):
     if db_from_env:
         DATABASES['default'] = db_from_env
     if databases_as_string:
+        del DATABASES['query_db']
         databases_as_array = [db.strip() for db in databases_as_string.split(',')]
         for db in databases_as_array:
             db_config = dj_database_url.parse(db, conn_max_age=500)
