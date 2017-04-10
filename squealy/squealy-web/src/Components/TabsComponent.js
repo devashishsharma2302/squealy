@@ -19,7 +19,6 @@ export default class TabsComponent extends Component {
       showValidationsModal: false,
       showShareModal: false,
       note: null,
-      transposeEnabled: false
     }
   }
 
@@ -79,9 +78,8 @@ export default class TabsComponent extends Component {
   }
 
   onChangeTranspose = () => {
-    this.props.selectedChartChangeHandler({transpose: !this.state.transposeEnabled},
+    this.props.selectedChartChangeHandler({transpose: !this.props.chart.transpose},
     () => {
-      this.setState({transposeEnabled: !this.state.transposeEnabled})
       this.props.onHandleTestButton()
     })
   }
@@ -153,7 +151,7 @@ export default class TabsComponent extends Component {
                 bsStyle='primary'
                 onClick={this.onChangeTranspose}
                 className='tab-component'>
-                {this.state.transposeEnabled && <i className='fa fa-check'/>}Transpose
+                {chart.transpose && <i className='fa fa-check'/>}Transpose
               </Button>
             }
             { chartMode && 

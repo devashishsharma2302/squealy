@@ -61,7 +61,7 @@ class ChartAdmin(admin.ModelAdmin):
         List display for Charts in Django Admin
     """
     model = Chart
-    list_display = ['name', 'account', 'url', 'format', 'type', 'options']
+    list_display = ['name', 'account', 'url', 'format', 'type', 'transpose', 'options']
 
 
 class FilterAdmin(admin.ModelAdmin):

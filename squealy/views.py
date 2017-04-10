@@ -63,7 +63,7 @@ class DatabaseView(APIView):
 
 class DataProcessor(object):
 
-    def fetch_chart_data(self, chart_url, params, user, chartType):
+    def fetch_chart_data(self, chart_url, params, user, chart_type):
         """
         This method gets the chart data
         """
@@ -76,9 +76,9 @@ class DataProcessor(object):
         if not chart.database:
             raise SelectedDatabaseException('Database is not selected')
 
-        if not chartType:
-            chartType = chart.type
-        return self._process_chart_query(chart, params, user, chartType)
+        if not chart_type:
+            chart_type = chart.type
+        return self._process_chart_query(chart, params, user, chart_type)
 
     def fetch_filter_data(self, filter_url, params, format_type, user):
         """
@@ -97,11 +97,11 @@ class DataProcessor(object):
         if format_type:
             data = self._format(table, format_type)
         else:
-            data = self._format(table, 'GoogleChartsFormatter', chartType)
+            data = self._format(table, 'GoogleChartsFormatter', 'Table')
 
         return data
 
-    def _process_chart_query(self, chart, params, user, chartType):
+    def _process_chart_query(self, chart, params, user, chart_type):
         """
         Process and return the result after executing the chart query
         """
@@ -124,7 +124,7 @@ class DataProcessor(object):
             table = Transpose().transform(table)
 
         # Format the table according to google charts / highcharts etc
-        data = self._format(table, chart.format, chartType)
+        data = self._format(table, chart.format, chart_type)
 
         return data
 
@@ -192,14 +192,14 @@ class DataProcessor(object):
                 rows.append(row_list)
         return Table(columns=cols, data=rows)
 
-    def _format(self, table, format, chartType):
+    def _format(self, table, format, chart_type):
         if format:
             if format in ['table', 'json']:
                 formatter = SimpleFormatter()
             else:
                 formatter = eval(format)()
-            return formatter.format(table, chartType)
-        return GoogleChartsFormatter().format(table, chartType)
+            return formatter.format(table, chart_type)
+        return GoogleChartsFormatter().format(table, chart_type)
 
         return table
 
