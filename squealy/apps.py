@@ -26,5 +26,6 @@ def extract_dj_database_urls(DATABASES):
                                                 database.dj_url,
                                                 conn_max_age=500
                                             )
-            DATABASES[str(database.id)].update({'display_name': database.display_name})
+            DATABASES[str(database.id)].update({'DISPLAY_NAME': database.display_name})
+    print DATABASES
     return DATABASES
