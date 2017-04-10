@@ -30,8 +30,7 @@ from .transformers import *
 from .formatters import *
 from .parameters import *
 from .table import Table
-from .models import Chart, Transformation, Validation, Parameter, \
-    ScheduledReport, ReportParameter, ReportRecipient, Filter, FilterParameter
+from .models import Chart, Transformation, Validation, Filter, Parameter, FilterParameter, Database
 from .validators import run_validation
 from datetime import datetime, timedelta
 import json, ast
@@ -47,18 +46,28 @@ class DatabaseView(APIView):
         try:
             database_response = []
             database = settings.DATABASES
-
             for db in database:
                 if db != 'default':
                     database_response.append({
                       'value': db,
-                      'label': database[db]['NAME']
+                      'label': database[db]['display_name']
                     })
             if not database_response:
                 raise DatabaseConfigurationException('No databases found. Make sure that you have defined database url in the environment')
             return Response({'databases': database_response})
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request, *args, **kwargs):
+        database = request.data
+        try:
+            Database.objects.create(
+                display_name=database['display_name'],
+                dj_url=database['dj_url']
+            )
+            return Response({}, status.HTTP_200_OK)
+        except Exception as e:
+            return Response(str(e), status.HTTP_400_BAD_REQUEST)
 
 
 class DataProcessor(object):
@@ -97,7 +106,7 @@ class DataProcessor(object):
         if format_type:
             data = self._format(table, format_type)
         else:
-            data = self._format(table, 'GoogleChartsFormatter', chartType)
+            data = self._format(table, 'GoogleChartsFormatter', 'Table')
 
         return data
 
@@ -376,7 +385,6 @@ class ChartsLoaderView(APIView):
                     parameter_object.save()
                     parameter_ids.append(parameter_object.id)
             Parameter.objects.filter(chart=chart_object).exclude(id__in=parameter_ids).all().delete()
-
             # Parsing validations
             validation_ids = []
             existing_validations = {validation.name: validation.id
