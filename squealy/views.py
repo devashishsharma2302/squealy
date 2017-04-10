@@ -31,7 +31,7 @@ from .transformers import *
 from .formatters import *
 from .parameters import *
 from .table import Table
-from .models import Chart, Transformation, Validation, Filter, FilterParameter, Database
+from .models import Chart, Transformation, Validation, Filter, Parameter, FilterParameter, Database
 from .validators import run_validation
 from datetime import datetime, timedelta
 import json, ast
@@ -386,7 +386,6 @@ class ChartsLoaderView(APIView):
                     parameter_object.save()
                     parameter_ids.append(parameter_object.id)
             Parameter.objects.filter(chart=chart_object).exclude(id__in=parameter_ids).all().delete()
-
             # Parsing validations
             validation_ids = []
             existing_validations = {validation.name: validation.id

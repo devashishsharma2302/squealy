@@ -7,11 +7,7 @@ import { Effect } from 'react-notification-badge'
 import ParamDefinitionModal from './ParamDefinitionModal'
 import ValidationsModal from './ValidationsModal'
 import ShareModal from './ShareModal'
-<<<<<<< HEAD
 import AddDatabaseModal from './AddDatabaseModal'
-import transformationIcon from './../images/transformations_icon_white.png'
-=======
->>>>>>> upstream/phase-2
 import validationIcon from './../images/validation_icon_white.png'
 import exportIcon from './../images/export_icon_white.png'
 
@@ -23,13 +19,9 @@ export default class TabsComponent extends Component {
       showParamDefModal: false,
       showValidationsModal: false,
       showShareModal: false,
-<<<<<<< HEAD
       showDatabaseAdditionModal: false,
-      note: null
-=======
       note: null,
       transposeEnabled: false
->>>>>>> upstream/phase-2
     }
   }
 
@@ -115,13 +107,8 @@ export default class TabsComponent extends Component {
     const {
       showValidationsModal,
       showParamDefModal,
-<<<<<<< HEAD
-      showTransformationsModal,
       showShareModal,
       showDatabaseAdditionModal
-=======
-      showShareModal
->>>>>>> upstream/phase-2
     } = this.state
 
     const filter = filters[selectedFilterIndex]
@@ -231,15 +218,6 @@ export default class TabsComponent extends Component {
                 closeModal={()=>this.modalVisibilityHandler('showShareModal')}
                 showModal={showShareModal}
                 chartUrl={chart.name}/>
-            }
-            {
-              showTransformationsModal &&
-              <TransformationsModal
-                selectedChartChangeHandler={selectedChartChangeHandler}
-                closeModal={() => this.closeModal('showTransformationsModal')}
-                showModal={showTransformationsModal}
-                chart={chart}
-              />
             }
             {
               showDatabaseAdditionModal &&
