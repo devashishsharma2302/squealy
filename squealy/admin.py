@@ -1,4 +1,12 @@
 from django.contrib import admin
+from django.template.defaultfilters import escape
+from django.core.urlresolvers import reverse
+
+from djcelery.models import (TaskState, WorkerState,
+                 PeriodicTask, IntervalSchedule, CrontabSchedule)
+
+from social_django.models import UserSocialAuth, Nonce, Association
+from social_django.admin import UserSocialAuthOption, NonceOption, AssociationOption
 
 from squealy.models import Account, Chart, Parameter,\
     Transformation, Validation, ScheduledReport, ReportParameter,\
@@ -105,12 +113,47 @@ class ValidationAdmin(admin.ModelAdmin):
     list_display = ['chart', 'name', 'query']
 
 
+
+class ScheduledReportChartAdmin(admin.ModelAdmin):
+    """
+        List display for ScheduledReportChart Admin
+    """
+    model = ScheduledReportChart
+    list_display = ('get_report_name','get_chart_name')
+
+    def get_report_name(self, model):
+        return model.report.subject
+
+    def get_chart_name(self, model):
+        return '<a href="/admin/squealy/chart/' + str(model.chart.id) + '/change/">' + str(model.chart.name) + '</a>'
+
+
+    get_report_name.short_description = "Report Name"
+    get_chart_name.short_description = "Chart Name"
+    show_change_link = True
+    get_chart_name.allow_tags = True
+
+
 admin.site.register(Account, AccountAdmin)
 admin.site.register(Chart, ChartAdmin)
 admin.site.register(Parameter, ParameterAdmin)
 admin.site.register(Transformation, TransformationAdmin)
 admin.site.register(Validation, ValidationAdmin)
 admin.site.register(ScheduledReport, ScheduledReportAdmin)
-admin.site.register(ScheduledReportChart)
+admin.site.register(ScheduledReportChart, ScheduledReportChartAdmin)
 admin.site.register(Filter, FilterAdmin)
 admin.site.register(FilterParameter, FilterParameterAdmin)
+
+admin.site.unregister(TaskState)
+admin.site.unregister(WorkerState)
+admin.site.unregister(IntervalSchedule)
+admin.site.unregister(CrontabSchedule)
+admin.site.unregister(PeriodicTask)
+
+
+admin.site.unregister(UserSocialAuth)
+admin.site.unregister(Nonce)
+admin.site.unregister(Association)
+
+
+
