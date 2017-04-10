@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import AceEditor from 'react-ace'
 import 'brace/mode/sql'
 import 'brace/theme/tomorrow'
-import { SquealyModal,ErrorMessage } from './SquealyUtilsComponents'
+import { SquealyModal } from './SquealyUtilsComponents'
+import { FormErrorMessage } from './ErrorMessageComponent'
 
 export default class ValidationsModal extends Component {
   constructor() {
@@ -133,7 +134,7 @@ export default class ValidationsModal extends Component {
               />
             {
               this.state.checkNameFilledError &&
-              <ErrorMessage classValue={"col-md-10 pull-right validation-error"} message={"Please Enter the name of validation Modal"}/>
+              <FormErrorMessage classValue={"col-md-10 pull-right validation-error"} message={"Please Enter the name of validation Modal"}/>
             }
           </div>
           <div className='col-md-12'>
@@ -159,7 +160,7 @@ export default class ValidationsModal extends Component {
             </div>
             {
               this.state.checkQueryFilledError &&
-              <ErrorMessage classValue={"col-md-10 pull-right validation-error"} message={"Please Enter Query"} />
+              <FormErrorMessage classValue={"col-md-10 pull-right validation-error"} message={"Please Enter Query"} />
             }
           </div>
           <div className='col-md-12 param-form-footer'>

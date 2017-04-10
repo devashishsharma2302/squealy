@@ -27,15 +27,15 @@ class Transpose(TableTransformer):
 
         new_table = Table()
         if transposed:
-            new_table.columns = transposed[0]
+            new_table.columns = list(transposed[0])
             del transposed[0]
-        new_table.data = transposed
+        new_table.data = [list(row) for row in transposed]
         return new_table
 
 
 class Split(TableTransformer):
 
-    def transform(self, table, pivot_column, metric_column):
+    def transform(self, table, pivot_column, metric_column, x_axis_column):
         """Returns pivot table based on the pivot column"""
         # NOTE:: Split transformation is for single metric. Future implementation for multiple metric
         # Get index of the pivot column
@@ -49,7 +49,7 @@ class Split(TableTransformer):
         new_split_columns = list(new_split_columns)
 
         # Set the metric for the new columns
-        grouping_column_index = 0
+        grouping_column_index = x_axis_column
         new_split_data = OrderedDict()
         new_data = []
         for index,data in enumerate(table.data):
@@ -62,7 +62,7 @@ class Split(TableTransformer):
 
         for key in new_split_data:
             new_data.append([key] + new_split_data[key])
-        table.columns = table.columns[:pivot_column_index] + [column for column in new_split_columns]
+        table.columns = [table.columns[x_axis_column]] + [column for column in new_split_columns]
         table.data = new_data
         return table
 

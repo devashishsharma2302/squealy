@@ -6,6 +6,7 @@ import { SquealyDropdown } from './SquealyUtilsComponents'
 import { GOOGLE_CHART_TYPE_OPTIONS } from './../Constant'
 import configIcon from './../images/settings_icon.png'
 import ChartConfigModal from './ChartConfigModal'
+import {ErrorMessagePanel} from './ErrorMessageComponent'
 
 export default class ResultSection extends Component {
 
@@ -29,11 +30,13 @@ export default class ResultSection extends Component {
       viewType,
       selectedChartChangeHandler,
       errorMessage,
-      chartMode
+      chartMode,
+      onResultTabChanged
     } = this.props
+
     const resultSectionOnSuccess =
       (googleDefined && resultData && resultData.hasOwnProperty('rows')) ?
-          <Tabs defaultActiveKey={1} id="uncontrolled_tab_example">
+          <Tabs defaultActiveKey={1} id="uncontrolled_tab_example" onSelect={(key) => onResultTabChanged(key)}>
             <Tab eventKey={1} title="Data">
               <GoogleChartsComponent chartData={resultData}
                 options={{}} chartType='Table'
@@ -47,7 +50,7 @@ export default class ResultSection extends Component {
                       name='chartType'
                       options={GOOGLE_CHART_TYPE_OPTIONS}
                       selectedValue={viewType}
-                      onChangeHandler={(value)=>selectedChartChangeHandler({type: value})}
+                      onChangeHandler={(value)=>selectedChartChangeHandler({type: value}, () => this.props.onResultTabChanged(2))}
                     />
                     <img src={configIcon} onClick={this.modalVisibilityHandler} />
                   </div>
@@ -60,8 +63,10 @@ export default class ResultSection extends Component {
       <AccordionTab heading='Results'>
         {
           errorMessage ?
-            <div className='error-box'><span>{errorMessage}</span></div>
-            : resultSectionOnSuccess
+            <ErrorMessagePanel
+              className='error-box'
+              errorMessage={errorMessage} /> :
+            resultSectionOnSuccess
         }
         <ChartConfigModal
           chartConfiguration={options}

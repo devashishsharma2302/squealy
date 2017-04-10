@@ -55,11 +55,12 @@ export class SquealyDropdownFilter extends Component {
       value,
       onChangeHandler,
       filterData,
-      name
+      name,
+      className
     } = this.props
     return(
       <select
-        className='filter-select'
+        className={className}
         value={value}
         onChange={(e) => onChangeHandler(name, e.target.value)}
       >

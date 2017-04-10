@@ -31,7 +31,7 @@ from .transformers import *
 from .formatters import *
 from .parameters import *
 from .table import Table
-from .models import Chart, Transformation, Validation, Filter, Database
+from .models import Chart, Transformation, Validation, Filter, FilterParameter, Database
 from .validators import run_validation
 from datetime import datetime, timedelta
 import json, ast
@@ -73,11 +73,11 @@ class DatabaseView(APIView):
 
 class DataProcessor(object):
 
-    def fetch_chart_data(self, chart_url, params, user):
+    def fetch_chart_data(self, chart_url, params, user, chartType):
         """
         This method gets the chart data
         """
-        chart_attributes = ['parameters', 'validations', 'transformations']
+        chart_attributes = ['parameters', 'validations']
         chart = Chart.objects.filter(url=chart_url).prefetch_related(*chart_attributes).first()
 
         if not chart:
@@ -86,7 +86,9 @@ class DataProcessor(object):
         if not chart.database:
             raise SelectedDatabaseException('Database is not selected')
 
-        return self._process_chart_query(chart, params, user)
+        if not chartType:
+            chartType = chart.type
+        return self._process_chart_query(chart, params, user, chartType)
 
     def fetch_filter_data(self, filter_url, params, format_type, user):
         """
@@ -105,11 +107,11 @@ class DataProcessor(object):
         if format_type:
             data = self._format(table, format_type)
         else:
-            data = self._format(table, 'GoogleChartsFormatter')
+            data = self._format(table, 'GoogleChartsFormatter', chartType)
 
         return data
 
-    def _process_chart_query(self, chart, params, user):
+    def _process_chart_query(self, chart, params, user, chartType):
         """
         Process and return the result after executing the chart query
         """
@@ -128,12 +130,11 @@ class DataProcessor(object):
         table = self._execute_query(params, user, chart.query, chart.database)
 
         # Run Transformations
-        transformations = chart.transformations.all()
-        if transformations:
-            table = self._run_transformations(table, transformations)
+        if chart.transpose:
+            table = Transpose().transform(table)
 
         # Format the table according to google charts / highcharts etc
-        data = self._format(table, chart.format)
+        data = self._format(table, chart.format, chartType)
 
         return data
 
@@ -201,25 +202,14 @@ class DataProcessor(object):
                 rows.append(row_list)
         return Table(columns=cols, data=rows)
 
-    def _format(self, table, format):
+    def _format(self, table, format, chartType):
         if format:
             if format in ['table', 'json']:
                 formatter = SimpleFormatter()
             else:
                 formatter = eval(format)()
-            return formatter.format(table)
-        return GoogleChartsFormatter().format(table)
-
-    def _run_transformations(self, table, transformations):
-        try:
-            if transformations:
-                for transformation in transformations:
-                    transformer_instance = eval(transformation.get_name_display())()
-                    kwargs = transformation.kwargs
-                    table = transformer_instance.transform(table, **kwargs)
-                return table
-        except ValueError as e:
-            raise TransformationException("Error in transformation - " + e.message)
+            return formatter.format(table, chartType)
+        return GoogleChartsFormatter().format(table, chartType)
 
         return table
 
@@ -252,7 +242,7 @@ class ChartView(APIView):
         try:
             params = request.data.get('params', {})
             user = request.data.get('user', None)
-            data = DataProcessor().fetch_chart_data(chart_url, params, user)
+            data = DataProcessor().fetch_chart_data(chart_url, params, user, request.data.get('chartType'))
             return Response(data)
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
@@ -318,7 +308,8 @@ class ChartsLoaderView(APIView):
                             query=data['query'],
                             type=data['type'],
                             options=data['options'],
-                            database=data['database']
+                            database=data['database'],
+                            transpose=data['transpose']
                         )
             chart_object.save()
 
@@ -390,6 +381,7 @@ class ChartsLoaderView(APIView):
                                                  type=parameter['type'],
                                                  dropdown_api=parameter['dropdown_api'],
                                                  order=parameter['order'],
+                                                 is_parameterized=parameter['is_parameterized'],
                                                  kwargs=parameter['kwargs'])
                     parameter_object.save()
                     parameter_ids.append(parameter_object.id)
@@ -530,7 +522,23 @@ class FilterLoaderView(APIView):
             ).save()
 
             filter_id = filter_object.id
-            Filter.objects.all()
+            Filter.objects.all().prefetch_related('parameters')
+
+            parameter_ids = []
+            existing_parameters = {param.name: param.id
+                                   for param in filter_object.parameters.all()}
+            with transaction.atomic():
+                for parameter in data['parameters']:
+                    id = existing_parameters.get(parameter['name'], None)
+                    parameter_object = FilterParameter(id=id,
+                                                 name=parameter['name'],
+                                                 default_value=parameter['default_value'],
+                                                 test_value=parameter['test_value'],
+                                                 filter=filter_object)
+                    parameter_object.save()
+                    parameter_ids.append(parameter_object.id)
+                FilterParameter.objects.filter(filter=filter_object).exclude(id__in=parameter_ids).all().delete()
+
         except KeyError as e:
             raise MalformedChartDataException("Key Error - " + str(e.args))
         except IntegrityError as e:

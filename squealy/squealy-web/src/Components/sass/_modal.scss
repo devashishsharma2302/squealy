@@ -18,6 +18,9 @@
         font-weight: bold;
       }
     }
+    select {
+      min-width: 200px;
+    }
   }
 }
 
@@ -70,6 +73,34 @@
 .app-modal-content {
   > .row {
     padding-bottom: 10px;
+  }
+
+  select {
+    min-width: 200px;
+  }
+}
+
+.error-modal {
+  .modal-header {
+    background: $error-bg-color;
+  }
+
+  .modal-title > span > .fa-exclamation-triangle {
+    padding-right: 10px;
+  }
+
+  .modal-body{
+    .error-type {
+      font-weight: bold;
+      text-transform: capitalize;
+      color: $note-text-color;
+      font-size: 16px; 
+    }
+
+    > div > p {
+      display: inline;
+      line-height: 3;
+    }
   }
 }
 
