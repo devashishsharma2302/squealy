@@ -57,6 +57,7 @@ class Chart(models.Model):
     type = models.CharField(max_length=20, default="ColumnChart")
     options = CustomJSONField(null=True, blank=True, default={})
     database = models.CharField(max_length=100, null=True, blank=True)
+    transpose = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.name + "( /" + self.url + ")"

@@ -21,13 +21,6 @@ export default class ResultSection extends Component {
     this.setState({showModal: !this.state.showModal})
   }
 
-  onVisualizationMode = (key) => {
-    //Make the API call if Visualisation tab is selected.
-    if (key === 2) {
-      this.props.onHandleVisualizationTab()
-    }
-  }
-
   render() {
     const {
       resultData,
@@ -37,11 +30,13 @@ export default class ResultSection extends Component {
       viewType,
       selectedChartChangeHandler,
       errorMessage,
-      chartMode
+      chartMode,
+      onResultTabChanged
     } = this.props
+
     const resultSectionOnSuccess =
       (googleDefined && resultData && resultData.hasOwnProperty('rows')) ?
-          <Tabs defaultActiveKey={1} id="uncontrolled_tab_example" onSelect={this.onVisualizationMode}>
+          <Tabs defaultActiveKey={1} id="uncontrolled_tab_example" onSelect={(key) => onResultTabChanged(key)}>
             <Tab eventKey={1} title="Data">
               <GoogleChartsComponent chartData={resultData}
                 options={{}} chartType='Table'
@@ -55,7 +50,7 @@ export default class ResultSection extends Component {
                       name='chartType'
                       options={GOOGLE_CHART_TYPE_OPTIONS}
                       selectedValue={viewType}
-                      onChangeHandler={(value)=>selectedChartChangeHandler({type: value})}
+                      onChangeHandler={(value)=>selectedChartChangeHandler({type: value}, () => this.props.onResultTabChanged(2))}
                     />
                     <img src={configIcon} onClick={this.modalVisibilityHandler} />
                   </div>
