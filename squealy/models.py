@@ -235,5 +235,5 @@ def remove_database(sender, instance, using, **kwargs):
         del settings.DATABASES[instance.display_name]
     except KeyError:
         raise DatabaseConfigurationException(
-                'You are trying to delete the database %s which doesnot exist' % instance.display_name
+                'You are trying to delete the database %s which does not exist' % instance.display_name
             )

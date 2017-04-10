@@ -13,8 +13,8 @@ class SquealyAppConfig(AppConfig):
 
 def extract_dj_database_urls(DATABASES):
     '''
-    Expects a disctionary containing database configuration.
-    Updates the database configuration with the ones specified in
+    Expects a dictionary containing database configuration.
+    Updates the database configuration as specified in
     django admin
     '''
     from squealy.models import Database

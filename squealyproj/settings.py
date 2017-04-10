@@ -209,7 +209,3 @@ if 'test' in sys.argv:
                  '--with-coverage',
                  '--cover-package=squealy'
                  ]
-
-
-# Database for reports generation. Pass the DATABASE_URL variable from environment.
-#extract_dj_database_urls(DATABASES)

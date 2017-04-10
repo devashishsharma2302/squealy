@@ -1,5 +1,4 @@
 import os
-import dj_database_url
 
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
@@ -107,7 +106,7 @@ class DataProcessor(object):
         if format_type:
             data = self._format(table, format_type)
         else:
-            data = self._format(table, 'GoogleChartsFormatter', chartType)
+            data = self._format(table, 'GoogleChartsFormatter', 'Table')
 
         return data
 
