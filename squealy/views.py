@@ -5,7 +5,7 @@ from django.db.utils import IntegrityError
 from django.shortcuts import render
 from django.db import transaction
 from django.conf import settings
-from django.http import HttpResponse,JsonResponse
+from django.http import HttpResponse, JsonResponse
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import permission_classes, api_view
@@ -15,15 +15,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-
 from squealy.constants import SQL_WRITE_BLACKLIST, SWAGGER_JSON_TEMPLATE, SWAGGER_DICT
 from squealy.jinjasql_loader import configure_jinjasql
 
 from squealy.serializers import ChartSerializer, FilterSerializer
-from .exceptions import RequiredParameterMissingException,\
-                        ChartNotFoundException, MalformedChartDataException, \
-                        TransformationException, DatabaseWriteException, DuplicateUrlException,\
-                        FilterNotFoundException
+from .exceptions import RequiredParameterMissingException, \
+    ChartNotFoundException, MalformedChartDataException, \
+    TransformationException, DatabaseWriteException, DuplicateUrlException, \
+    FilterNotFoundException
 from .transformers import *
 from .formatters import *
 from .parameters import *
@@ -34,7 +33,6 @@ from .models import Chart, Transformation, Validation, Parameter, \
 from .validators import run_validation
 from datetime import datetime, timedelta
 import json, ast
-
 
 jinjasql = configure_jinjasql()
 
@@ -52,8 +50,8 @@ class DatabaseView(APIView):
             for db in database:
                 # if db != 'default':
                 database_response.append({
-                  'value': db,
-                  'label': database[db]['NAME']
+                    'value': db,
+                    'label': database[db]['NAME']
                 })
             return Response({'databases': database_response})
         except Exception as e:
@@ -61,7 +59,6 @@ class DatabaseView(APIView):
 
 
 class DataProcessor(object):
-
     def fetch_chart_data(self, chart_url, params, user):
         """
         This method gets the chart data
@@ -78,7 +75,6 @@ class DataProcessor(object):
         return self._process_chart_query(chart, params, user)
 
     def fetch_filter_data(self, filter_url, params, format_type, user):
-
 
         """
         Method to process the query and fetch the data for filter
@@ -132,8 +128,8 @@ class DataProcessor(object):
         for index, param in enumerate(parameter_definitions):
             # Default values
             if param.default_value and \
-                    param.default_value!= '' and \
-                    params.get(param.name) in [None, '']:
+                            param.default_value != '' and \
+                            params.get(param.name) in [None, '']:
                 params[param.name] = param.default_value
 
             # Check for missing required parameters
@@ -145,7 +141,7 @@ class DataProcessor(object):
             # Formatting parameters
             parameter_type_str = param.data_type
 
-            #FIXME: kwargs should not come as unicode. Need to debug the root cause and fix it.
+            # FIXME: kwargs should not come as unicode. Need to debug the root cause and fix it.
             if isinstance(param.kwargs, unicode):
                 kwargs = ast.literal_eval(param.kwargs)
             else:
@@ -170,8 +166,8 @@ class DataProcessor(object):
 
         query, bind_params = jinjasql.prepare_query(chart_query,
                                                     {
-                                                     "params": params,
-                                                     "user": user
+                                                        "params": params,
+                                                        "user": user
                                                     })
         conn = connections[db]
         with conn.cursor() as cursor:
@@ -217,11 +213,11 @@ class DataProcessor(object):
 
 
 class ChartViewPermission(BasePermission):
-
     def has_permission(self, request, view):
         chart_url = request.resolver_match.kwargs.get('chart_url')
         chart = Chart.objects.get(url=chart_url)
-        return request.user.has_perm('squealy.can_view_' + str(chart.id)) or request.user.has_perm('squealy.can_edit_' + str(chart.id))
+        return request.user.has_perm('squealy.can_view_' + str(chart.id)) or request.user.has_perm(
+            'squealy.can_edit_' + str(chart.id))
 
 
 class ChartView(APIView):
@@ -253,7 +249,6 @@ class ChartView(APIView):
 
 
 class ChartUpdatePermission(BasePermission):
-
     def has_permission(self, request, view):
         if request.method == 'POST' and request.data.get('chart'):
             chart_data = request.data['chart']
@@ -320,14 +315,14 @@ class ChartsLoaderView(APIView):
         try:
             data = request.data['chart']
             chart_object = Chart(
-                            id=data['id'],
-                            name=data['name'],
-                            url=data['url'],
-                            query=data['query'],
-                            type=data['type'],
-                            options=data['options'],
-                            database=data['database']
-                        )
+                id=data['id'],
+                name=data['name'],
+                url=data['url'],
+                query=data['query'],
+                type=data['type'],
+                options=data['options'],
+                database=data['database']
+            )
             chart_object.save()
 
             # Create view/edit permissions
@@ -446,6 +441,7 @@ class FilterUpdatePermission(BasePermission):
     """
     To check if user can add/edit/delete the filter
     """
+
     def has_permission(self, request, view):
         if request.method == 'POST' and request.data.get('filter'):
             filter_data = request.data['filter']
@@ -519,12 +515,12 @@ class FilterLoaderView(APIView):
         try:
             data = request.data['filter']
             filter_object = Filter(
-                            id=data['id'],
-                            name=data['name'],
-                            url=data['url'],
-                            query=data['query'],
-                            database=data['database']
-                        )
+                id=data['id'],
+                name=data['name'],
+                url=data['url'],
+                query=data['query'],
+                database=data['database']
+            )
             filter_object.save()
 
             # Create edit permissions
@@ -571,6 +567,7 @@ def swagger_param_template(name, description, required, typeName, formatName):
     }
     return template
 
+
 def make_parameters(param_list):
     path_content_template = {
         "get":
@@ -580,14 +577,14 @@ def make_parameters(param_list):
                 ],
                 "summary": "Charts API",
                 "description": "Add parameters according to the Query",
-                "operationId": "findPetsByStatus",
+                "operationId": "charts",
                 "produces": [
                     "application/json"
                 ],
                 "parameters": param_list,
                 "responses": {
                     "200": {
-                            "description": "successful operation"
+                        "description": "successful operation"
                     },
                     "400": {
                         "description": "Invalid status value"
@@ -600,12 +597,12 @@ def make_parameters(param_list):
 
 @api_view(['GET'])
 def swagger_json_api(request, *args, **kwargs):
-    host = "localhost:8000"
+    host = request.META['HTTP_HOST']
     swagger_json_template = SWAGGER_JSON_TEMPLATE
     swagger_json_template["host"] = host
     swagger_dict = SWAGGER_DICT
-    charts_related = ChartsLoaderView.get_charts_swagger(request)
-    for chart in charts_related:
+    permitted_charts = ChartsLoaderView.get_charts_swagger(request)
+    for chart in permitted_charts:
         new_key = "/squealy/" + chart.url
         param_list = []
         for parameter in chart.parameters.all():
@@ -614,9 +611,10 @@ def swagger_json_api(request, *args, **kwargs):
             required = ''
             typeName = ''
             formatName = ''
-                                                                                                                                                                            
+
             typeName, formatName = swagger_dict[parameter.data_type]
-            swagger_parameter_obj = swagger_param_template(parameter.name, " Please enter " + parameter.name, True, typeName, formatName)
+            swagger_parameter_obj = swagger_param_template(parameter.name, " Please enter " + parameter.name, True,
+                                                           typeName, formatName)
             param_list.append(swagger_parameter_obj)
         swagger_json_template["paths"][new_key] = make_parameters(param_list)
 
