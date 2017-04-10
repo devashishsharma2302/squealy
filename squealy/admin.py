@@ -10,8 +10,13 @@ from social_django.admin import UserSocialAuthOption, NonceOption, AssociationOp
 
 from squealy.models import Account, Chart, Parameter,\
     Transformation, Validation, ScheduledReport, ReportParameter,\
-    ReportRecipient, ScheduledReportChart, Filter, FilterParameter
+    ReportRecipient, ScheduledReportChart, Filter, FilterParameter, Database
 from forms import ScheduledReportForm
+
+
+class DatabaseAdmin(admin.ModelAdmin):
+    model = Database
+    list_display = ('display_name', 'dj_url')
 
 
 class ReportRecipientAdmin(admin.TabularInline):
@@ -69,7 +74,7 @@ class ChartAdmin(admin.ModelAdmin):
         List display for Charts in Django Admin
     """
     model = Chart
-    list_display = ['name', 'account', 'url', 'format', 'type', 'options']
+    list_display = ['name', 'account', 'url', 'format', 'type', 'transpose', 'options']
 
 
 class FilterAdmin(admin.ModelAdmin):
@@ -142,6 +147,7 @@ admin.site.register(Validation, ValidationAdmin)
 admin.site.register(ScheduledReport, ScheduledReportAdmin)
 admin.site.register(ScheduledReportChart, ScheduledReportChartAdmin)
 admin.site.register(Filter, FilterAdmin)
+admin.site.register(Database, DatabaseAdmin)
 admin.site.register(FilterParameter, FilterParameterAdmin)
 
 admin.site.unregister(TaskState)

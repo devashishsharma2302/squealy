@@ -51,7 +51,7 @@ export default class MainComponent extends Component {
               selectedFilterChangeHandler={selectedFilterChangeHandler}
               selectedFilterIndex={selectedFilterIndex}
               filterSelectionHandler={filterSelectionHandler}
-              />
+            />
           </div>
           <div className="col-md-9 api-design-container">
             {(charts.length)?

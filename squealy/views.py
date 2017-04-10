@@ -33,8 +33,7 @@ from .formatters import *
 from .parameters import *
 from .utils import SquealySettings
 from .table import Table
-from .models import Chart, Transformation, Validation, Parameter, \
-    ScheduledReport, ReportParameter, ReportRecipient, Filter, FilterParameter
+from .models import Chart, Transformation, Validation, Filter, Parameter, FilterParameter, Database
 from .validators import run_validation
 from datetime import datetime, timedelta
 import json, ast
@@ -50,12 +49,11 @@ class DatabaseView(APIView):
         try:
             database_response = []
             database = settings.DATABASES
-
             for db in database:
                 if db != 'default':
                     database_response.append({
                       'value': db,
-                      'label': database[db]['NAME']
+                      'label': database[db]['display_name']
                     })
             if not database_response:
                 raise DatabaseConfigurationException('No databases found. Make sure that you have defined database url in the environment')
@@ -63,10 +61,21 @@ class DatabaseView(APIView):
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
 
+    def post(self, request, *args, **kwargs):
+        database = request.data
+        try:
+            Database.objects.create(
+                display_name=database['display_name'],
+                dj_url=database['dj_url']
+            )
+            return Response({}, status.HTTP_200_OK)
+        except Exception as e:
+            return Response(str(e), status.HTTP_400_BAD_REQUEST)
+
 
 class DataProcessor(object):
 
-    def fetch_chart_data(self, chart_url, params, user, chartType):
+    def fetch_chart_data(self, chart_url, params, user, chart_type):
         """
         This method gets the chart data
         """
@@ -79,9 +88,9 @@ class DataProcessor(object):
         if not chart.database:
             raise SelectedDatabaseException('Database is not selected')
 
-        if not chartType:
-            chartType = chart.type
-        return self._process_chart_query(chart, params, user, chartType)
+        if not chart_type:
+            chart_type = chart.type
+        return self._process_chart_query(chart, params, user, chart_type)
 
     def fetch_filter_data(self, filter_url, params, format_type, user):
         """
@@ -100,11 +109,11 @@ class DataProcessor(object):
         if format_type:
             data = self._format(table, format_type)
         else:
-            data = self._format(table, 'GoogleChartsFormatter', chartType)
+            data = self._format(table, 'GoogleChartsFormatter', 'Table')
 
         return data
 
-    def _process_chart_query(self, chart, params, user, chartType):
+    def _process_chart_query(self, chart, params, user, chart_type):
         """
         Process and return the result after executing the chart query
         """
@@ -127,7 +136,7 @@ class DataProcessor(object):
             table = Transpose().transform(table)
 
         # Format the table according to google charts / highcharts etc
-        data = self._format(table, chart.format, chartType)
+        data = self._format(table, chart.format, chart_type)
 
         return data
 
@@ -196,14 +205,14 @@ class DataProcessor(object):
                 rows.append(row_list)
         return Table(columns=cols, data=rows)
 
-    def _format(self, table, format, chartType):
+    def _format(self, table, format, chart_type):
         if format:
             if format in ['table', 'json']:
                 formatter = SimpleFormatter()
             else:
                 formatter = eval(format)()
-            return formatter.format(table, chartType)
-        return GoogleChartsFormatter().format(table, chartType)
+            return formatter.format(table, chart_type)
+        return GoogleChartsFormatter().format(table, chart_type)
 
         return table
 
@@ -392,7 +401,6 @@ class ChartsLoaderView(APIView):
                     parameter_object.save()
                     parameter_ids.append(parameter_object.id)
             Parameter.objects.filter(chart=chart_object).exclude(id__in=parameter_ids).all().delete()
-
             # Parsing validations
             validation_ids = []
             existing_validations = {validation.name: validation.id
