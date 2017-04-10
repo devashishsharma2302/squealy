@@ -14,8 +14,6 @@ import os
 import djcelery
 import sys
 
-from .utils import extract_dj_database_urls
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -108,8 +106,6 @@ DATABASES = {
     }
 }
 
-# Database for reports generation. Pass the DATABASE_URL variable from environment.
-extract_dj_database_urls(os.environ.get('QUERY_DB'), DATABASES)
 
 # Support for AWS Athena
 if os.environ.get('AWS_ATHENA_S3_STAGING_DIR'):
@@ -213,3 +209,7 @@ if 'test' in sys.argv:
                  '--with-coverage',
                  '--cover-package=squealy'
                  ]
+
+
+# Database for reports generation. Pass the DATABASE_URL variable from environment.
+#extract_dj_database_urls(DATABASES)

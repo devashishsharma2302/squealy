@@ -21,34 +21,45 @@
 
   .selected-db-wrapper {
     position: relative;
-    display: inline-block;
-    vertical-align: middle;
+    display: inline-flex;
+    align-items: center;
     margin-left: 10px;
-    min-width: 150px;
+    min-width: 180px;
 
-    .Select-control {
-      border-radius: 28px;
-      background: $squealy-theme-blue;
+    .Select {
+      display: inline-block;
+      flex-grow: 6;
 
-      .Select-value-label {
-        color: $white-color !important;
+      .Select-control {
+        border-radius: 28px;
+        background: $squealy-theme-blue;
+
+        .Select-value-label {
+          color: $white-color !important;
+        }
+
+        .Select-clear {
+          color: $white-color;
+        }
+
+        .Select-arrow {
+          border-color: $white-color transparent transparent;
+        }
+
+        .Select-placeholder {
+          color: $white-color;
+        }
       }
 
-      .Select-clear {
-        color: $white-color;
-      }
-
-      .Select-arrow {
-        border-color: $white-color transparent transparent;
-      }
-
-      .Select-placeholder {
-        color: $white-color;
+      .Select-menu-outer {
+        margin-top: 3px;
       }
     }
 
-    .Select-menu-outer {
-      margin-top: 3px;
+    .add-new {
+      cursor: pointer;
+      color: #0c8adc;
+      font-size: 20px;
     }
   }
   .view-btn {

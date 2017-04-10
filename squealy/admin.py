@@ -2,8 +2,13 @@ from django.contrib import admin
 
 from squealy.models import Account, Chart, Parameter,\
     Transformation, Validation, ScheduledReport, ReportParameter,\
-    ReportRecipient, ScheduledReportChart, Filter
+    ReportRecipient, ScheduledReportChart, Filter, Database
 from forms import ScheduledReportForm
+
+
+class DatabaseAdmin(admin.ModelAdmin):
+    model = Database
+    list_display = ('display_name', 'dj_url')
 
 
 class ReportRecipientAdmin(admin.TabularInline):
@@ -104,3 +109,4 @@ admin.site.register(Validation, ValidationAdmin)
 admin.site.register(ScheduledReport, ScheduledReportAdmin)
 admin.site.register(ScheduledReportChart)
 admin.site.register(Filter, FilterAdmin)
+admin.site.register(Database, DatabaseAdmin)
