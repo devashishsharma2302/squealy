@@ -102,7 +102,7 @@ class GoogleChartsFormatter(Formatter):
 
         else:
             raise InvalidChartDataException('Too many dimension columns. Cannot generate chart.' +
-                                            ' Choose maximum 2 columns out of ' +
+                                            ' Choose maximum 1 columns out of ' +
                                             str([column for index, column in enumerate(table.columns)
                                                  if column_types[index] == 'Dimension']))
         return response

@@ -187,8 +187,8 @@ export default class AuthoringInterfaceContainer extends Component {
     )
   }
 
-
   loadInitialCharts = (response, type) => {
+    //TODO: refactor this function
     let data = [],
         tempData = {},
         selectedStateIndex = type === 'chart' ? 'selectedChartIndex' : 'selectedFilterIndex',
