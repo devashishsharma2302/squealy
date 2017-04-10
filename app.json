@@ -7,6 +7,14 @@
   "scripts": {
     "postdeploy": "python manage.py migrate"
   },
+  "buildpacks": [
+    {
+      "url": "heroku/java"
+    },
+    {
+      "url": "heroku/python"
+    }
+  ],
   "env": {
     "QUERY_DB": {
       "description": "Enter your database URI in the following format <mysql/postgres>://<username>:<password>@<host>:<port>/<database>"
@@ -20,11 +28,28 @@
       "value": "admin@123"
     },
     "JWT_KEY": {
-      "description": " This is the shared private key that will be used to decode the JWT token. This is required for optionally enabling JWT Authentication mechanism that would enable the user to login via an access token parameter in the url or request body. Refer the squealy documentation for more information on setting up JWT Authentication.",
+      "description": "(Optional) This is the shared private key that will be used to decode the JWT token. This is required for optionally enabling JWT Authentication mechanism that would enable the user to login via an access token parameter in the url or request body. Refer the squealy documentation for more information on setting up JWT Authentication.",
+      "required": false
+    },
+    "AWS_ATHENA_S3_STAGING_DIR":{
+      "description": "(Optional) For AWS Athena users only. Enter the staging directory path on S3. This is where the results of the queries get saved. For example, s3://query-results-bucket/folder/ ",
+      "required": false
+    },
+    "AWS_ACCESS_KEY_ID": {
+      "description": " (Optional) Required for authorizing requests to AWS Athena. Make sure you have the required IAM permissions to execute queries on AWS Athena. ",
+      "required": false
+    },
+    "AWS_SECRET_ACCESS_KEY": {
+      "description": "(Optional) Required for authorizing requests to AWS Athena",
+      "required": false
+    },
+    "AWS_DEFAULT_REGION": {
+      "description": "(Optional) AWS region for AWS Athena. By default, us-east-1 will be used.",
+      "value": "us-east-1",
       "required": false
     },
     "EMAIL_HOST": {
-      "description": "Email host for sending emails. Example - smtp.gmail.com",
+      "description": "(Optional) The following settings are required for setting up scheduled reports sent over emails. Enter the Email HostName here. Example - smtp.gmail.com",
       "required": false
     },
     "EMAIL_HOST_USER": {

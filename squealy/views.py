@@ -1,3 +1,5 @@
+import os
+
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db import connections
@@ -5,42 +7,42 @@ from django.db.utils import IntegrityError
 from django.shortcuts import render
 from django.db import transaction
 from django.conf import settings
-from django.http import HttpResponse, JsonResponse
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import permission_classes, api_view
-from rest_framework.fields import CharField
 from rest_framework.permissions import IsAdminUser, BasePermission
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from squealy.constants import SQL_WRITE_BLACKLIST, SWAGGER_JSON_TEMPLATE, SWAGGER_DICT
+from pyathenajdbc import connect
+
+from squealy.constants import SQL_WRITE_BLACKLIST
 from squealy.jinjasql_loader import configure_jinjasql
 
 from squealy.serializers import ChartSerializer, FilterSerializer
-from .exceptions import RequiredParameterMissingException, \
-    ChartNotFoundException, MalformedChartDataException, \
-    TransformationException, DatabaseWriteException, DuplicateUrlException, \
-    FilterNotFoundException
+from .exceptions import RequiredParameterMissingException,\
+                        ChartNotFoundException, MalformedChartDataException, \
+                        TransformationException, DatabaseWriteException, DuplicateUrlException,\
+                        FilterNotFoundException, DatabaseConfigurationException,\
+                        SelectedDatabaseException
 from .transformers import *
 from .formatters import *
 from .parameters import *
 from .utils import SquealySettings
 from .table import Table
 from .models import Chart, Transformation, Validation, Parameter, \
-    ScheduledReport, ReportParameter, ReportRecipient, Filter
+    ScheduledReport, ReportParameter, ReportRecipient, Filter, FilterParameter
 from .validators import run_validation
 from datetime import datetime, timedelta
 import json, ast
+
 
 jinjasql = configure_jinjasql()
 
 
 class DatabaseView(APIView):
-    permission_classes = SquealySettings.get_default_permission_classes()
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request, *args, **kwargs):
         try:
@@ -48,55 +50,59 @@ class DatabaseView(APIView):
             database = settings.DATABASES
 
             for db in database:
-                # if db != 'default':
-                database_response.append({
-                    'value': db,
-                    'label': database[db]['NAME']
-                })
+                if db != 'default':
+                    database_response.append({
+                      'value': db,
+                      'label': database[db]['NAME']
+                    })
+            if not database_response:
+                raise DatabaseConfigurationException('No databases found. Make sure that you have defined database url in the environment')
             return Response({'databases': database_response})
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
 
 
 class DataProcessor(object):
-    def fetch_chart_data(self, chart_url, params, user):
+
+    def fetch_chart_data(self, chart_url, params, user, chartType):
         """
         This method gets the chart data
         """
-        chart_attributes = ['parameters', 'validations', 'transformations']
+        chart_attributes = ['parameters', 'validations']
         chart = Chart.objects.filter(url=chart_url).prefetch_related(*chart_attributes).first()
 
         if not chart:
-            raise ChartNotFoundException('Chart not found')
+            raise ChartNotFoundException('Chart with url - %s not found' % chart_url)
 
         if not chart.database:
-            raise ChartNotFoundException('Database is not selected')
+            raise SelectedDatabaseException('Database is not selected')
 
-        return self._process_chart_query(chart, params, user)
+        if not chartType:
+            chartType = chart.type
+        return self._process_chart_query(chart, params, user, chartType)
 
     def fetch_filter_data(self, filter_url, params, format_type, user):
-
         """
         Method to process the query and fetch the data for filter
         """
         filter_obj = Filter.objects.filter(url=filter_url).first()
 
         if not filter_obj:
-            raise ChartNotFoundException('Filter not found')
+            raise FilterNotFoundException('Filter with url - %s not found' % filter_url)
 
         if not filter_obj.database:
-            raise ChartNotFoundException('Database is not selected')
+            raise SelectedDatabaseException('Database is not selected')
 
         # Execute the Query, and return a Table
         table = self._execute_query(params, user, filter_obj.query, filter_obj.database)
         if format_type:
             data = self._format(table, format_type)
         else:
-            data = self._format(table, 'GoogleChartsFormatter')
+            data = self._format(table, 'GoogleChartsFormatter', chartType)
 
         return data
 
-    def _process_chart_query(self, chart, params, user):
+    def _process_chart_query(self, chart, params, user, chartType):
         """
         Process and return the result after executing the chart query
         """
@@ -115,12 +121,11 @@ class DataProcessor(object):
         table = self._execute_query(params, user, chart.query, chart.database)
 
         # Run Transformations
-        transformations = chart.transformations.all()
-        if transformations:
-            table = self._run_transformations(table, transformations)
+        if chart.transpose:
+            table = Transpose().transform(table)
 
         # Format the table according to google charts / highcharts etc
-        data = self._format(table, chart.format)
+        data = self._format(table, chart.format, chartType)
 
         return data
 
@@ -128,8 +133,8 @@ class DataProcessor(object):
         for index, param in enumerate(parameter_definitions):
             # Default values
             if param.default_value and \
-                            param.default_value != '' and \
-                            params.get(param.name) in [None, '']:
+                    param.default_value!= '' and \
+                    params.get(param.name) in [None, '']:
                 params[param.name] = param.default_value
 
             # Check for missing required parameters
@@ -141,7 +146,7 @@ class DataProcessor(object):
             # Formatting parameters
             parameter_type_str = param.data_type
 
-            # FIXME: kwargs should not come as unicode. Need to debug the root cause and fix it.
+            #FIXME: kwargs should not come as unicode. Need to debug the root cause and fix it.
             if isinstance(param.kwargs, unicode):
                 kwargs = ast.literal_eval(param.kwargs)
             else:
@@ -157,7 +162,7 @@ class DataProcessor(object):
             run_validation(params, user, validation.query, db)
 
     def _check_read_only_query(self, query):
-        if any(keyword in query.upper().split(' ', ) for keyword in SQL_WRITE_BLACKLIST):
+        if any(keyword in query.upper() for keyword in SQL_WRITE_BLACKLIST):
             raise DatabaseWriteException('Database write commands not permitted in the query.')
         pass
 
@@ -166,10 +171,12 @@ class DataProcessor(object):
 
         query, bind_params = jinjasql.prepare_query(chart_query,
                                                     {
-                                                        "params": params,
-                                                        "user": user
+                                                     "params": params,
+                                                     "user": user
                                                     })
         conn = connections[db]
+        if conn.settings_dict['NAME'] == 'Athena':
+            conn = connect(driver_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'athena-jdbc/AthenaJDBC41-1.0.0.jar'))
         with conn.cursor() as cursor:
             cursor.execute(query, bind_params)
             rows = []
@@ -187,44 +194,29 @@ class DataProcessor(object):
                 rows.append(row_list)
         return Table(columns=cols, data=rows)
 
-    def _format(self, table, format):
+    def _format(self, table, format, chartType):
         if format:
             if format in ['table', 'json']:
                 formatter = SimpleFormatter()
-            elif format == 'swagger':
-                formatter = SwaggerFormatter()
             else:
                 formatter = eval(format)()
-            return formatter.format(table)
-        return GoogleChartsFormatter().format(table)
-
-    def _run_transformations(self, table, transformations):
-        try:
-            if transformations:
-                for transformation in transformations:
-                    transformer_instance = eval(transformation.get_name_display())()
-                    kwargs = transformation.kwargs
-                    table = transformer_instance.transform(table, **kwargs)
-                return table
-        except ValueError as e:
-            raise TransformationException("Error in transformation - " + e.message)
+            return formatter.format(table, chartType)
+        return GoogleChartsFormatter().format(table, chartType)
 
         return table
 
 
 class ChartViewPermission(BasePermission):
+
     def has_permission(self, request, view):
         chart_url = request.resolver_match.kwargs.get('chart_url')
         chart = Chart.objects.get(url=chart_url)
-        return request.user.has_perm('squealy.can_view_' + str(chart.id)) or request.user.has_perm(
-            'squealy.can_edit_' + str(chart.id))
+        return request.user.has_perm('squealy.can_view_' + str(chart.id)) or request.user.has_perm('squealy.can_edit_' + str(chart.id))
 
 
 class ChartView(APIView):
-    permission_classes = SquealySettings.get_default_permission_classes()
-    permission_classes.append(ChartViewPermission)
+    permission_classes = [ChartViewPermission]
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request, chart_url=None, *args, **kwargs):
         """
@@ -242,13 +234,14 @@ class ChartView(APIView):
         try:
             params = request.data.get('params', {})
             user = request.data.get('user', None)
-            data = DataProcessor().fetch_chart_data(chart_url, params, user)
+            data = DataProcessor().fetch_chart_data(chart_url, params, user, request.data.get('chartType'))
             return Response(data)
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
 
 
 class ChartUpdatePermission(BasePermission):
+
     def has_permission(self, request, view):
         if request.method == 'POST' and request.data.get('chart'):
             chart_data = request.data['chart']
@@ -265,21 +258,8 @@ class ChartUpdatePermission(BasePermission):
 
 
 class ChartsLoaderView(APIView):
-    permission_classes = SquealySettings.get_default_permission_classes()
-    permission_classes.append(ChartUpdatePermission)
+    permission_classes = [ChartUpdatePermission]
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
-
-    @staticmethod
-    def get_charts_swagger(request):
-        permitted_charts = []
-        charts = Chart.objects.all().prefetch_related('parameters')
-        for chart in charts:
-            if request.user.has_perm('squealy.can_edit_' + str(chart.id)):
-                permitted_charts.append(chart)
-            elif request.user.has_perm('squealy.can_view_' + str(chart.id)):
-                permitted_charts.append(chart)
-        return permitted_charts
 
     def get(self, request, *args, **kwargs):
         permitted_charts = []
@@ -300,12 +280,11 @@ class ChartsLoaderView(APIView):
         To delete a chart
         """
         data = request.data
-        try:
-            chart = Chart.objects.filter(id=data['id']).first()
-            Permission.objects.filter(codename__in=['can_view_' + str(chart.id), 'can_edit_' + str(chart.id)]).delete()
-            Chart.objects.filter(id=data['id']).first().delete()
-        except Exception:
-            ChartNotFoundException('A chart with id' + data['id'] + 'was not found')
+        chart = Chart.objects.filter(id=data['id']).first()
+        if not chart:
+            raise ChartNotFoundException('A chart with id ' + data['id'] + ' was not found')
+        Permission.objects.filter(codename__in=['can_view_' + str(chart.id), 'can_edit_' + str(chart.id)]).delete()
+        Chart.objects.filter(id=data['id']).first().delete()
         return Response({})
 
     def post(self, request):
@@ -315,14 +294,15 @@ class ChartsLoaderView(APIView):
         try:
             data = request.data['chart']
             chart_object = Chart(
-                id=data['id'],
-                name=data['name'],
-                url=data['url'],
-                query=data['query'],
-                type=data['type'],
-                options=data['options'],
-                database=data['database']
-            )
+                            id=data['id'],
+                            name=data['name'],
+                            url=data['url'],
+                            query=data['query'],
+                            type=data['type'],
+                            options=data['options'],
+                            database=data['database'],
+                            transpose=data['transpose']
+                        )
             chart_object.save()
 
             # Create view/edit permissions
@@ -358,7 +338,7 @@ class ChartsLoaderView(APIView):
 
             request.user.user_permissions.add(view_perm)
             request.user.user_permissions.add(edit_perm)
-
+            
             chart_id = chart_object.id
             Chart.objects.all().prefetch_related('transformations', 'parameters', 'validations')
 
@@ -393,6 +373,7 @@ class ChartsLoaderView(APIView):
                                                  type=parameter['type'],
                                                  dropdown_api=parameter['dropdown_api'],
                                                  order=parameter['order'],
+                                                 is_parameterized=parameter['is_parameterized'],
                                                  kwargs=parameter['kwargs'])
                     parameter_object.save()
                     parameter_ids.append(parameter_object.id)
@@ -420,9 +401,7 @@ class ChartsLoaderView(APIView):
 
 
 class UserInformation(APIView):
-    permission_classes = SquealySettings.get_default_permission_classes()
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request):
         response = {}
@@ -441,7 +420,6 @@ class FilterUpdatePermission(BasePermission):
     """
     To check if user can add/edit/delete the filter
     """
-
     def has_permission(self, request, view):
         if request.method == 'POST' and request.data.get('filter'):
             filter_data = request.data['filter']
@@ -458,9 +436,8 @@ class FilterUpdatePermission(BasePermission):
 
 
 class FilterView(APIView):
-    permission_classes = SquealySettings.get_default_permission_classes()
+    permission_classes = [FilterUpdatePermission]
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request, filter_url=None, *args, **kwargs):
         """
@@ -476,10 +453,8 @@ class FilterView(APIView):
 
 
 class FilterLoaderView(APIView):
-    permission_classes = SquealySettings.get_default_permission_classes()
-    permission_classes.append(FilterUpdatePermission)
+    permission_classes = [FilterUpdatePermission]
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    authentication_classes.extend(SquealySettings.get_default_authentication_classes())
 
     def get(self, request, *args, **kwargs):
         """
@@ -515,12 +490,12 @@ class FilterLoaderView(APIView):
         try:
             data = request.data['filter']
             filter_object = Filter(
-                id=data['id'],
-                name=data['name'],
-                url=data['url'],
-                query=data['query'],
-                database=data['database']
-            )
+                            id=data['id'],
+                            name=data['name'],
+                            url=data['url'],
+                            query=data['query'],
+                            database=data['database']
+                        )
             filter_object.save()
 
             # Create edit permissions
@@ -539,7 +514,23 @@ class FilterLoaderView(APIView):
             ).save()
 
             filter_id = filter_object.id
-            Filter.objects.all()
+            Filter.objects.all().prefetch_related('parameters')
+
+            parameter_ids = []
+            existing_parameters = {param.name: param.id
+                                   for param in filter_object.parameters.all()}
+            with transaction.atomic():
+                for parameter in data['parameters']:
+                    id = existing_parameters.get(parameter['name'], None)
+                    parameter_object = FilterParameter(id=id,
+                                                 name=parameter['name'],
+                                                 default_value=parameter['default_value'],
+                                                 test_value=parameter['test_value'],
+                                                 filter=filter_object)
+                    parameter_object.save()
+                    parameter_ids.append(parameter_object.id)
+                FilterParameter.objects.filter(filter=filter_object).exclude(id__in=parameter_ids).all().delete()
+
         except KeyError as e:
             raise MalformedChartDataException("Key Error - " + str(e.args))
         except IntegrityError as e:
@@ -554,72 +545,3 @@ def squealy_interface(request, *args, **kwargs):
     Renders the squealy authoring interface template
     """
     return render(request, 'index.html')
-
-
-def swagger_param_template(name, description, required, typeName, formatName):
-    template = {
-        "name": name,
-        "in": "query",
-        "description": description,
-        "required": required,
-        "type": typeName,
-        "format": formatName,
-    }
-    return template
-
-
-def make_parameters(param_list):
-    path_content_template = {
-        "get":
-            {
-                "tags": [
-                    "charts"
-                ],
-                "summary": "Charts API",
-                "description": "Add parameters according to the Query",
-                "operationId": "charts",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": param_list,
-                "responses": {
-                    "200": {
-                        "description": "successful operation"
-                    },
-                    "400": {
-                        "description": "Invalid status value"
-                    }
-                }
-            }
-    }
-    return path_content_template
-
-
-@api_view(['GET'])
-def swagger_json_api(request, *args, **kwargs):
-    host = request.META['HTTP_HOST']
-    swagger_json_template = SWAGGER_JSON_TEMPLATE
-    swagger_json_template["host"] = host
-    swagger_dict = SWAGGER_DICT
-    permitted_charts = ChartsLoaderView.get_charts_swagger(request)
-    for chart in permitted_charts:
-        new_key = "/squealy/" + chart.url
-        param_list = []
-        for parameter in chart.parameters.all():
-            name = ''
-            description = ''
-            required = ''
-            typeName = ''
-            formatName = ''
-
-            typeName, formatName = swagger_dict[parameter.data_type]
-            swagger_parameter_obj = swagger_param_template(parameter.name, " Please enter " + parameter.name, True,
-                                                           typeName, formatName)
-            param_list.append(swagger_parameter_obj)
-        swagger_json_template["paths"][new_key] = make_parameters(param_list)
-
-    return JsonResponse(swagger_json_template)
-
-
-def swagger(request):
-    return render(request, 'swagger.html')

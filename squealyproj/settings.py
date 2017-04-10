@@ -32,6 +32,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 # Application definition
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,6 +45,7 @@ INSTALLED_APPS = [
     'squealy',
     'corsheaders',
     'rest_framework',
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -72,6 +74,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
+                'squealy.context_processors.google_oauth',
             ],
         },
     },
@@ -79,6 +84,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'squealyproj.wsgi.application'
 
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('GOOGLE_OAUTH2_KEY', None)
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('GOOGLE_OAUTH2_SECRET', None)
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
@@ -89,11 +101,25 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    },
+    'query_db': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
 # Database for reports generation. Pass the DATABASE_URL variable from environment.
 extract_dj_database_urls(os.environ.get('QUERY_DB'), DATABASES)
+
+# Support for AWS Athena
+if os.environ.get('AWS_ATHENA_S3_STAGING_DIR'):
+    DATABASES['athena'] = {
+        'NAME': 'Athena',
+        'AWS_ATHENA_S3_STAGING_DIR': os.environ.get('AWS_ATHENA_S3_STAGING_DIR'),
+        'AWS_ACCESS_KEY_ID': os.environ.get('AWS_ACCESS_KEY_ID'),
+        'AWS_SECRET_ACCESS_KEY': os.environ.get('AWS_SECRET_ACCESS_KEY'),
+        'AWS_DEFAULT_REGION': os.environ.get('AWS_DEFAULT_REGION', 'us-east-1')
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
@@ -183,5 +209,7 @@ if 'test' in sys.argv:
 
     INSTALLED_APPS = INSTALLED_APPS + ['django_nose',]
     TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-    NOSE_ARGS = ['--with-coverage',
-                 '--cover-package=squealy']
+    NOSE_ARGS = [
+                 '--with-coverage',
+                 '--cover-package=squealy'
+                 ]

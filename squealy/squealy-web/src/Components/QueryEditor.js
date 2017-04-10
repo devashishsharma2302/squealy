@@ -58,7 +58,7 @@ export default class QueryEditor extends Component {
     } else {
       selectedFilterChangeHandler({
         query: editorContent,
-        parameters: []
+        parameters: currentParams
       })
     }
     

@@ -1,9 +1,10 @@
 .tabs-container {
-  border-bottom: 3px solid $border-color;
+  border-bottom: 1px solid $border-color;
   height: 47px;
   padding-bottom: 2px;
 
   .tab-component {
+    min-width: 120px;
     margin-left: 10px;
     font-size: 14px;
     border-radius: 28px;
@@ -135,8 +136,39 @@ tr.editable-table-row {
 .view-filter {
   display: flex;
   padding: 15px 0;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  .filter-component {
+    margin-right: 15px;
+    min-width: 200px;
+
+    > label {
+      line-height: 1;
+      vertical-align: top;
+      text-transform: capitalize;
+    }
+  }
+  .filter-component:last-child {
+    margin-right: 0;
+  }
 }
 
 .view-mode-filter {
   display: block;
+  width: 100%;
+}
+
+.view-mode-visualchart {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  align-content: space-between;
+  border-top: 1px solid $border-color;
+  padding: 15px;
+  margin-left: -15px;
+  margin-right: -15px;
+
+  .chart-type-select {
+    padding-bottom: 15px; 
+  }
 }

@@ -17,7 +17,8 @@ export default class AuthoringInterfaceContainer extends Component {
       currentChartMode: null,
       databases: [],
       filters: [],
-      selectedFilterIndex: null
+      selectedFilterIndex: null,
+      resultSectionActiveKey: 1
     }
   }
 
@@ -83,11 +84,13 @@ export default class AuthoringInterfaceContainer extends Component {
   onWidgetDeleted = (index, selectedWidgetIndex, widgetStateKeyData, callback) => {
     const selectedIndex = this.state[selectedWidgetIndex] || index,
       currWidgetData = this.state[widgetStateKeyData]
-    let chartMode = false, nonSelectedWidgetIndex = ''
+    let chartMode = false, nonSelectedWidgetIndex = '', type
 
     if (selectedWidgetIndex === 'selectedChartIndex') {
+      type = 'chart'
       nonSelectedWidgetIndex = 'selectedFilterIndex'
     } else {
+      type = 'filter'
       nonSelectedWidgetIndex = 'selectedChartIndex'
     }
 
@@ -109,6 +112,7 @@ export default class AuthoringInterfaceContainer extends Component {
         currentChartMode: chartMode
       }, () => {
         callback && callback.constructor === Function && callback()
+        this.setUrlPath(type)
       })
     } else {
       this.setState({
@@ -120,6 +124,7 @@ export default class AuthoringInterfaceContainer extends Component {
         [nonSelectedWidgetIndex]: null
       }, () => {
         callback && callback.constructor === Function && callback()
+        this.setUrlPath(type)
       })
     }
   }
@@ -335,13 +340,29 @@ export default class AuthoringInterfaceContainer extends Component {
   onHandleTestButton = (callback=null) => {
     const selectedChart = this.state.charts[this.state.selectedChartIndex]
     let payloadObj = formatTestParameters(selectedChart.parameters, 'name', 'test_value')
+    if (this.state.resultSectionActiveKey == 1) {
+      payloadObj['chartType'] = 'Table'
+    }
+    postApiRequest(DOMAIN_NAME+'squealy/'+selectedChart.url+'/', payloadObj,
+                    this.onSuccessTest, this.onErrorTest, callback)
+  }
+
+  onResultTabChanged = (key, callback=null) => {
+    const selectedChart = this.state.charts[this.state.selectedChartIndex]
+    let payloadObj = formatTestParameters(selectedChart.parameters, 'name', 'test_value')
+    if (key === 1) {
+      payloadObj['chartType'] = 'Table'
+    }
+    this.setState({resultSectionActiveKey: key})
     postApiRequest(DOMAIN_NAME+'squealy/'+selectedChart.url+'/', payloadObj,
                     this.onSuccessTest, this.onErrorTest, callback)
   }
 
   onHandleTestFilterButton = (callback=null) => {
-    const selectedChart = this.state.filters[this.state.selectedFilterIndex]
-    getApiRequest(DOMAIN_NAME+'filter/'+selectedChart.url+'/', {format: 'GoogleChartsFormatter'},
+    const selectedFilter = this.state.filters[this.state.selectedFilterIndex]
+    let payloadObj = formatTestParameters(selectedFilter.parameters, 'name', 'test_value')
+    payloadObj.format = 'GoogleChartsFormatter'
+    getApiRequest(DOMAIN_NAME+'filter/'+selectedFilter.url+'/', payloadObj,
                     this.onSuccessFilterTest, this.onErrorFilterTest, callback)
   }
 
@@ -446,6 +467,7 @@ export default class AuthoringInterfaceContainer extends Component {
           selectedFilterIndex={selectedFilterIndex}
           filterSelectionHandler={this.filterSelectionHandler}
           onHandleTestFilterButton={this.onHandleTestFilterButton}
+          onResultTabChanged={this.onResultTabChanged}
         />
       </div>
     )

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from squealy.models import Account, Chart, Parameter,\
     Transformation, Validation, ScheduledReport, ReportParameter,\
-    ReportRecipient, ScheduledReportChart, Filter
+    ReportRecipient, ScheduledReportChart, Filter, FilterParameter
 from forms import ScheduledReportForm
 
 
@@ -72,6 +72,15 @@ class FilterAdmin(admin.ModelAdmin):
     list_display = ['name', 'url', 'query', 'database']
 
 
+class FilterParameterAdmin(admin.ModelAdmin):
+    """
+        List display for Filter Parameter in Django Admin
+    """
+    model = Filter
+    list_display = ['filter', 'name', 'default_value']
+
+
+
 class ParameterAdmin(admin.ModelAdmin):
     """
         List display for ChartParameters in Django Admin
@@ -104,3 +113,4 @@ admin.site.register(Validation, ValidationAdmin)
 admin.site.register(ScheduledReport, ScheduledReportAdmin)
 admin.site.register(ScheduledReportChart)
 admin.site.register(Filter, FilterAdmin)
+admin.site.register(FilterParameter, FilterParameterAdmin)

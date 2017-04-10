@@ -3,7 +3,8 @@ import AceEditor from 'react-ace'
 import 'brace/mode/sql'
 import 'brace/theme/tomorrow'
 import { CHART_CONFIG_EXAMPLE, GOOGLE_CHART_DOC } from './../Constant'
-import { SquealyModal, ErrorMessage } from './SquealyUtilsComponents'
+import { SquealyModal } from './SquealyUtilsComponents'
+import { FormErrorMessage } from './ErrorMessageComponent'
 
 export default class ChartConfigModal extends Component {
 
@@ -85,7 +86,7 @@ export default class ChartConfigModal extends Component {
               />
             </div>
           </div>
-          {this.state.errorMessage && <ErrorMessage classValue={'error validation-error'} message={'Syntax Error: ' + this.state.errorMessage}/>}
+          {this.state.errorMessage && <FormErrorMessage classValue={'error validation-error'} message={'Syntax Error: ' + this.state.errorMessage}/>}
           <div className='param-form-footer'>
             <button className="btn btn-primary" onClick={this.handleSaveClick}>Save</button>
           </div>
