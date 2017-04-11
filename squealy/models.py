@@ -216,7 +216,7 @@ def verify_database_configuration(sender, instance, raw, using, update_fields, *
     database = instance
     if not sender.objects.filter(display_name=database.display_name):
         try:
-            db_config = dj_database_url.parse(database.dj_url, conn_max_age=500)
+            dj_database_url.parse(database.dj_url, conn_max_age=500)
         except KeyError:
             raise DatabaseConfigurationException(
                     'The dj-database-url you have entered is not valid'
@@ -232,6 +232,8 @@ def add_database(sender, instance, raw, using, update_fields, **kwargs):
     database = instance
     db_config = dj_database_url.parse(database.dj_url, conn_max_age=500)
     db_config['DISPLAY_NAME'] = database.display_name
+    if 'query_db' in settings.DATABASES:
+        del settings.DATABASES['query_db']
     settings.DATABASES.update({str(database.id): db_config})
 
 

@@ -16,9 +16,8 @@ def check_smtp_credentials():
     """
         This method checks if the user has provided the SMTP credentials or not
     """
-    return hasattr(settings, 'EMAIL_HOST') and hasattr(settings, 'EMAIL_PORT')\
-        and hasattr(settings, 'EMAIL_HOST') and\
-        hasattr(settings, 'EMAIL_HOST_USER') and hasattr(settings, 'EMAIL_HOST_PASSWORD')
+    return settings.EMAIL_HOST and settings and settings.EMAIL_HOST and\
+        settings.EMAIL_HOST_USER and settings.EMAIL_HOST_PASSWORD
 
 
 class ScheduledReportConfig(object):
@@ -103,7 +102,7 @@ def create_email_data(content=None):
 def send_emails():
     if check_smtp_credentials():
         current_time = datetime.utcnow()
-        scheduled_reports = ScheduledReport.objects.filter(next_run_at__range=(current_time + timedelta(minutes=-1), current_time))
+        scheduled_reports = ScheduledReport.objects.filter(next_run_at__range=(current_time + timedelta(days=-1), current_time + timedelta(days=1)))
         # TODO: Try to reduce the db queries here
         for scheduled_report in scheduled_reports:
             report_config = ScheduledReportConfig(scheduled_report).\
