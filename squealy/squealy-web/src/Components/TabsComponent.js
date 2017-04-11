@@ -162,7 +162,6 @@ export default class TabsComponent extends Component {
                 bsStyle='primary'
                 className='tab-component'
                 onClick={() => this.modalVisibilityHandler('showValidationsModal')}>
-                <img src={validationIcon} alt="squealyValidation"/>
                   Validations
                   <NotificationBadge
                     count={chart.validations.length}
@@ -178,15 +177,14 @@ export default class TabsComponent extends Component {
                 onChange={(db) => {this.onChangeDatabase(db)}}
                 placeholder={'Select Database'}
               />
-              <i
+              <button
                 className="fa fa-plus-circle add-new"
                 aria-hidden="true"
                 onClick={() => this.modalVisibilityHandler('showDatabaseAdditionModal')}>
-              </i>
+              </button>
             </div>
             <Button bsStyle='primary' className='tab-component'
               onClick={()=>this.modalVisibilityHandler('showShareModal')}>
-              <i className="fa fa-share-alt"/>
               Share</Button>
             {
               showParamDefModal &&
@@ -232,7 +230,6 @@ export default class TabsComponent extends Component {
             className={'tab-component view-btn '+viewButton.className} 
             title={viewButton.title}
             onClick={()=>updateViewMode(currentChartMode, widget.can_edit, chartMode)}>
-            {viewButton.icon}
             {viewButton.viewText}
           </Button>
         }

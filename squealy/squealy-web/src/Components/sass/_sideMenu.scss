@@ -68,9 +68,11 @@
       font-size: $side-menu-heading-font-size;
       color: $text-color;
       font-family: Roboto Bold;
+      padding:10px;
     }
     img {
-      width: 25px;
+      width: 23px;
+      padding-bottom: 12px;
     }
     .add-new {
       float: right;
@@ -78,6 +80,8 @@
       cursor: pointer;
       color: $squealy-theme-blue;
       font-size: 20px;
+      padding-top: 4px;
+
     }
   }
 }
