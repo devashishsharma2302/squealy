@@ -77,14 +77,14 @@ export default class ViewOnlyResults extends Component {
       //Get dropdown option data 
       parameters.map((param) => {
         if (param.data_type === 'dropdown' && !param.is_parameterized)  {
-          getApiRequest(DOMAIN_NAME + 'filter/' + param.dropdown_api + '/', {format: 'json'},
+          getApiRequest(DOMAIN_NAME + 'filter-api/' + param.dropdown_api + '/', {format: 'json'},
               (response) => this.onSuccessFilterGet(response, {'name': param.name, 'url': param.dropdown_api}),
               this.onErrorTest, null)
         } else if (param.data_type === 'dropdown' && param.is_parameterized) {
           //Passing parameter values 
           finalPayloadObj = this.getPayloadObject(param.dropdown_api, payloadObj)
           finalPayloadObj['format'] = 'json'
-          getApiRequest(DOMAIN_NAME + 'filter/' + param.dropdown_api + '/', finalPayloadObj,
+          getApiRequest(DOMAIN_NAME + 'filter-api/' + param.dropdown_api + '/', finalPayloadObj,
               (response) => this.onSuccessFilterGet(response, {'name': param.name, 'url': param.dropdown_api}),
               this.onErrorTest, null)
         }
