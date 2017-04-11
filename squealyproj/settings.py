@@ -108,7 +108,10 @@ DATABASES = {
     }
 }
 
-DATABASES['default'] = dj_database_url.parse(os.environ.get('DATABASE_URL'))
+db_from_env = dj_database_url.config(conn_max_age=500)
+
+if db_from_env:
+    DATABASES['default'] = db_from_env
 
 
 # Support for AWS Athena
