@@ -85,10 +85,9 @@ export default class AuthoringInterfaceContainer extends Component {
     const selectedIndex = this.state[selectedWidgetIndex] || index,
       currWidgetData = this.state[widgetStateKeyData]
     let chartMode = false, nonSelectedWidgetIndex = '', type
-
     if (selectedWidgetIndex === 'selectedChartIndex') {
       type = 'chart'
-      nonSelectedWidgetIndex = 'selectedFilterIndex'
+      nonSelectedWidgetIndex = 'selectedFilterIndex'      
     } else {
       type = 'filter'
       nonSelectedWidgetIndex = 'selectedChartIndex'
@@ -259,8 +258,9 @@ export default class AuthoringInterfaceContainer extends Component {
     canEditUrl = (accessMode && !window.location.pathname.includes('view')) ? 'edit' : 'view'
     //Only edit mode is valid for dropdown filters api
     canEditUrl = type === 'filter' ? 'edit' : canEditUrl
-    newUrl = '/' + prefix + '/' + selectedData.name + '/' + canEditUrl +window.location.search
+    newUrl = '/' + prefix + '/' + selectedData.name + '/' + canEditUrl
     //currentChartMode will be null for filters to avoid manipulating view by changing url.
+
     accessMode = (type === 'chart') ? 
       (accessMode && !window.location.pathname.includes('view') || false) : accessMode
     this.setState({currentChartMode: accessMode})

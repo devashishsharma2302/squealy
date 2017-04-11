@@ -7,6 +7,8 @@ from django.db.utils import IntegrityError
 from django.shortcuts import render
 from django.db import transaction
 from django.conf import settings
+from django.http import HttpResponse, JsonResponse
+
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import permission_classes, api_view
@@ -17,7 +19,7 @@ from rest_framework import status
 
 from pyathenajdbc import connect
 
-from squealy.constants import SQL_WRITE_BLACKLIST
+from squealy.constants import SQL_WRITE_BLACKLIST, SWAGGER_JSON_TEMPLATE, SWAGGER_DICT
 from squealy.jinjasql_loader import configure_jinjasql
 
 from squealy.serializers import ChartSerializer, FilterSerializer
@@ -29,6 +31,7 @@ from .exceptions import RequiredParameterMissingException,\
 from .transformers import *
 from .formatters import *
 from .parameters import *
+from .utils import SquealySettings
 from .table import Table
 from .models import Chart, Transformation, Validation, Filter, Parameter, FilterParameter, Database
 from .validators import run_validation
@@ -176,6 +179,7 @@ class DataProcessor(object):
 
     def _execute_query(self, params, user, chart_query, db):
         self._check_read_only_query(chart_query)
+
         query, bind_params = jinjasql.prepare_query(chart_query,
                                                     {
                                                      "params": params,
@@ -229,7 +233,7 @@ class ChartView(APIView):
         """
         params = request.GET.copy()
         user = request.user
-        data = DataProcessor().fetch_chart_data(chart_url, params, user)
+        data = DataProcessor().fetch_chart_data(chart_url, params, user, request.data.get('chartType'))
         return Response(data)
 
     def post(self, request, chart_url=None, *args, **kwargs):
@@ -266,6 +270,17 @@ class ChartsLoaderView(APIView):
     permission_classes = [ChartUpdatePermission]
     authentication_classes = [SessionAuthentication, BasicAuthentication]
 
+    @staticmethod
+    def get_charts_swagger(request):
+        permitted_charts = []
+        charts = Chart.objects.all().prefetch_related('parameters')
+        for chart in charts:
+            if request.user.has_perm('squealy.can_edit_' + str(chart.id)):
+                permitted_charts.append(chart)
+            elif request.user.has_perm('squealy.can_view_' + str(chart.id)):
+                permitted_charts.append(chart)
+        return permitted_charts
+
     def get(self, request, *args, **kwargs):
         permitted_charts = []
         charts = Chart.objects.order_by('id').all()
@@ -278,6 +293,7 @@ class ChartsLoaderView(APIView):
                 chart_data = ChartSerializer(chart).data
                 chart_data['can_edit'] = False
                 permitted_charts.append(chart_data)
+
         return Response(permitted_charts)
 
     def delete(self, request):
@@ -549,3 +565,71 @@ def squealy_interface(request, *args, **kwargs):
     Renders the squealy authoring interface template
     """
     return render(request, 'index.html')
+
+def swagger_param_template(name, description, required, typeName, formatName):
+    template = {
+        "name": name,
+        "in": "query",
+        "description": description,
+        "required": required,
+        "type": typeName,
+        "format": formatName,
+    }
+    return template
+
+
+def make_parameters(param_list):
+    path_content_template = {
+        "get":
+            {
+                "tags": [
+                    "charts"
+                ],
+                "summary": "Charts API",
+                "description": "Add parameters according to the Query",
+                "operationId": "charts",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": param_list,
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid status value"
+                    }
+                }
+            }
+    }
+    return path_content_template
+
+
+@api_view(['GET'])
+def swagger_json_api(request, *args, **kwargs):
+    host = request.META['HTTP_HOST']
+    swagger_json_template = SWAGGER_JSON_TEMPLATE
+    swagger_json_template["host"] = host
+    swagger_dict = SWAGGER_DICT
+    permitted_charts = ChartsLoaderView.get_charts_swagger(request)
+    for chart in permitted_charts:
+        new_key = "/squealy/" + chart.url
+        param_list = []
+        for parameter in chart.parameters.all():
+            name = ''
+            description = ''
+            required = ''
+            typeName = ''
+            formatName = ''
+
+            typeName, formatName = swagger_dict[parameter.data_type]
+            swagger_parameter_obj = swagger_param_template(parameter.name, " Please enter " + parameter.name, True,
+                                                           typeName, formatName)
+            param_list.append(swagger_parameter_obj)
+        swagger_json_template["paths"][new_key] = make_parameters(param_list)
+
+    return JsonResponse(swagger_json_template)
+
+
+def swagger(request):
+    return render(request, 'swagger.html')

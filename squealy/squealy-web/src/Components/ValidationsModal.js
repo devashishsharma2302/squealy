@@ -175,10 +175,10 @@ export default class ValidationsModal extends Component {
         <table className="table table-hover api-param-def-table">
           <thead>
             <tr>
-              <th>Name</th>
+              <th className="validation-table-header-left">Name</th>
               <th className="align-center clickable-element">
                 <i
-                  className="fa fa-plus"
+                  className="fa fa-plus validation-table-header-right"
                   aria-hidden="true" data-toggle="modal"
                   onClick={this.addValidation}>
                 </i>
