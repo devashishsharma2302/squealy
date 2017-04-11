@@ -124,8 +124,6 @@ export default class AuthoringInterfaceContainer extends Component {
       }, () => {
         callback && callback.constructor === Function && callback()
         this.setUrlPath(type)
-        console.log(type,'This is type')
-
       })
     }
   }

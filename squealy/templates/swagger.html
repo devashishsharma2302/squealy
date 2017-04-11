@@ -70,67 +70,64 @@
 <script src="{% static "swagger-ui-bundle.js" %} "> </script>
 <script src="{% static "swagger-ui-standalone-preset.js" %} "> </script>
 <script>
+  window.foo = function(spec) {
+      const ui = SwaggerUIBundle({
+          spec: spec,
+          dom_id: '#swagger-ui',
+          presets: [
+              SwaggerUIBundle.presets.apis,
+              Array.isArray(SwaggerUIStandalonePreset) ? SwaggerUIStandalonePreset : SwaggerUIStandalonePreset.default
+          ],
+          plugins: [
+              SwaggerUIBundle.plugins.DownloadUrl
+          ],
+          layout: "StandaloneLayout"
+      })
 
-window.foo = function(spec){
-  const ui = SwaggerUIBundle({
-    spec: spec,
-    dom_id: '#swagger-ui',
-    presets: [
-      SwaggerUIBundle.presets.apis,
-      Array.isArray(SwaggerUIStandalonePreset) ? SwaggerUIStandalonePreset : SwaggerUIStandalonePreset.default
-    ],
-    plugins: [
-      SwaggerUIBundle.plugins.DownloadUrl
-    ],
-    layout: "StandaloneLayout"
-  })
-
-  window.ui = ui
-}
-window.onload = function() {
-
-   function apiCall(uri, data, methodType) {
-  const csrftoken = getCookie('csrftoken');
-  $.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-      if (!this.crossDomain) {
-          xhr.setRequestHeader('X-CSRFToken', csrftoken);
-      }
-    }
-  });
-  $.ajax({
-    url: uri,
-    method: methodType,
-    contentType: 'application/json',
-    data: data,
-    success: function (response) {
-      var script = document.createElement('script');
-      foo(response)
-    },
-
-    error: function (error) {
-    }
-  });
-}
-
-function getCookie(name) {
-  let cookieValue = null;
-  if (document.cookie && document.cookie !== '') {
-    let cookies = document.cookie.split(';');
-    for (let i = 0; i < cookies.length; i++) {
-      let cookie = jQuery.trim(cookies[i]);
-      // Does this cookie string begin with the name we want?
-      if (cookie.substring(0, name.length + 1) === (name + '=')) {
-        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        break;
-      }
-    }
+      window.ui = ui
   }
-  return cookieValue;
-}
-  apiCall(window.location.origin + '/swagger-api/',{},'GET');
-}
+  window.onload = function() {
 
+      function apiCall(uri, data, methodType) {
+          const csrftoken = getCookie('csrftoken');
+          $.ajaxSetup({
+              beforeSend: function(xhr, settings) {
+                  if (!this.crossDomain) {
+                      xhr.setRequestHeader('X-CSRFToken', csrftoken);
+                  }
+              }
+          });
+          $.ajax({
+              url: uri,
+              method: methodType,
+              contentType: 'application/json',
+              data: data,
+              success: function(response) {
+                  var script = document.createElement('script');
+                  foo(response)
+              },
+
+              error: function(error) {}
+          });
+      }
+
+      function getCookie(name) {
+          let cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+              let cookies = document.cookie.split(';');
+              for (let i = 0; i < cookies.length; i++) {
+                  let cookie = jQuery.trim(cookies[i]);
+                  // Does this cookie string begin with the name we want?
+                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                      break;
+                  }
+              }
+          }
+          return cookieValue;
+      }
+      apiCall(window.location.origin + '/swagger.json/', {}, 'GET');
+  }
 </script>
 </body>
 
