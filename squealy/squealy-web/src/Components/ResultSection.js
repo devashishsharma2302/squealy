@@ -36,36 +36,46 @@ export default class ResultSection extends Component {
 
     const resultSectionOnSuccess =
       (googleDefined && resultData && resultData.hasOwnProperty('rows')) ?
-          <Tabs defaultActiveKey={1} id="uncontrolled_tab_example" onSelect={(key) => onResultTabChanged(key)}>
-            <Tab eventKey={1} title="Data">
-              <GoogleChartsComponent chartData={resultData}
-                options={{}} chartType='Table'
-                id={'response_table_' + selectedChartIndex} />
-            </Tab>
-            {
-              chartMode &&
+            <Tabs defaultActiveKey={1} id="uncontrolled_tab_example" onSelect={(key) => onResultTabChanged(key)}>
+              <Tab eventKey={1} title="Data">
+                {errorMessage ?
+                  <ErrorMessagePanel
+                    className='error-box'
+                    errorMessage={errorMessage} /> 
+                :
+                <GoogleChartsComponent chartData={resultData}
+                    options={{}} chartType='Table'
+                    id={'response_table_' + selectedChartIndex} />
+                }
+                
+                }
+              </Tab>
+              {
+                chartMode &&
                 <Tab eventKey={2} title="Visualisation">
-                  <div className="chart-type-select">
-                    <SquealyDropdown
-                      name='chartType'
-                      options={GOOGLE_CHART_TYPE_OPTIONS}
-                      selectedValue={viewType}
-                      onChangeHandler={(value)=>selectedChartChangeHandler({type: value}, () => this.props.onResultTabChanged(2))}
-                    />
-                    <img src={configIcon} onClick={this.modalVisibilityHandler} />
-                  </div>
-                  <GoogleChartsComponent chartData={resultData} options={options} chartType={viewType}
-                    id={'visualisation_' + selectedChartIndex} />
+                    <div className="chart-type-select">
+                      <SquealyDropdown
+                        name='chartType'
+                        options={GOOGLE_CHART_TYPE_OPTIONS}
+                        selectedValue={viewType}
+                        onChangeHandler={(value)=>selectedChartChangeHandler({type: value}, () => this.props.onResultTabChanged(2))}
+                      />
+                      <img src={configIcon} onClick={this.modalVisibilityHandler} />
+                    </div>
+                    {errorMessage ?
+                    <ErrorMessagePanel
+                      className='error-box'
+                      errorMessage={errorMessage} /> 
+                    :
+                    <GoogleChartsComponent chartData={resultData} options={options} chartType={viewType}
+                      id={'visualisation_' + selectedChartIndex} />
+                    }
                 </Tab>
             }
           </Tabs> : null
     return (
       <AccordionTab heading='Results'>
         {
-          errorMessage ?
-            <ErrorMessagePanel
-              className='error-box'
-              errorMessage={errorMessage} /> :
             resultSectionOnSuccess
         }
         <ChartConfigModal
