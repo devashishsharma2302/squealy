@@ -9,7 +9,7 @@ class Formatter:
 
 class SimpleFormatter(Formatter):
 
-    def format(self, table):
+    def format(self, table, chart_type=None):
         data = {"columns": table.columns, "data": table.data}
         return data
 
@@ -38,7 +38,6 @@ class GoogleChartsFormatter(Formatter):
             ]
         }
         """
-
         response = {}
         response['rows'] = rows = []
         response['cols'] = cols = []
@@ -79,7 +78,6 @@ class GoogleChartsFormatter(Formatter):
                     column_types[index] = 'Dimension'
             if 'Metric' not in column_types:
                 break
-
         if 'Metric' not in column_types:
             raise InvalidChartDataException('No metric column found.')
 

@@ -1,13 +1,20 @@
 from __future__ import unicode_literals
 
-from django.db import models
-from django.contrib.postgres import fields
+import dj_database_url
+import json
 
 from datetime import datetime
 from croniter import croniter
 
+from django.db import models
+from django.contrib.postgres import fields
+from django.conf import settings
+from django.dispatch.dispatcher import receiver
+from django.db.models.signals import pre_save, post_save, post_delete
+
 from .constants import TRANSFORMATION_TYPES, PARAMETER_TYPES, COLUMN_TYPES
-import json
+from .exceptions import DatabaseConfigurationException
+
 
 class CustomJSONField(models.TextField):
 
@@ -40,6 +47,17 @@ class Account(models.Model):
 
     def __unicode__(self):
         return self.name
+
+
+class Database(models.Model):
+    """
+    Contains the database configurations
+    """
+    display_name = models.CharField(max_length=100, unique=True)
+    dj_url = models.CharField(max_length=500)
+
+    def __unicode__(self):
+        return self.display_name
 
 
 class Chart(models.Model):
@@ -192,3 +210,38 @@ class ReportParameter(models.Model):
     parameter_value = models.CharField(max_length=300)
     report = models.ForeignKey(ScheduledReport, related_name='reportparam')
 
+
+@receiver(pre_save, sender=Database)
+def verify_database_configuration(sender, instance, raw, using, update_fields, **kwargs):
+    database = instance
+    if not sender.objects.filter(display_name=database.display_name):
+        try:
+            dj_database_url.parse(database.dj_url, conn_max_age=500)
+        except KeyError:
+            raise DatabaseConfigurationException(
+                    'The dj-database-url you have entered is not valid'
+                )
+    else:
+        raise DatabaseConfigurationException(
+                'A database with name %s already exists. Please enter a different database name' % database.display_name
+            )
+
+
+@receiver(post_save, sender=Database)
+def add_database(sender, instance, raw, using, update_fields, **kwargs):
+    database = instance
+    db_config = dj_database_url.parse(database.dj_url, conn_max_age=500)
+    db_config['DISPLAY_NAME'] = database.display_name
+    if 'query_db' in settings.DATABASES:
+        del settings.DATABASES['query_db']
+    settings.DATABASES.update({str(database.id): db_config})
+
+
+@receiver(post_delete, sender=Database)
+def remove_database(sender, instance, using, **kwargs):
+    try:
+        del settings.DATABASES[str(instance.id)]
+    except KeyError:
+        raise DatabaseConfigurationException(
+                'You are trying to delete the database %s which does not exist' % instance.display_name
+            )

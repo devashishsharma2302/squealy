@@ -13,8 +13,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 import os
 import djcelery
 import sys
-
-from .utils import extract_dj_database_urls
+import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -105,11 +104,15 @@ DATABASES = {
     'query_db': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'DISPLAY_NAME': 'Query Database'
     }
 }
 
-# Database for reports generation. Pass the DATABASE_URL variable from environment.
-extract_dj_database_urls(os.environ.get('QUERY_DB'), DATABASES)
+db_from_env = dj_database_url.config(conn_max_age=500)
+
+if db_from_env:
+    DATABASES['default'] = db_from_env
+
 
 # Support for AWS Athena
 if os.environ.get('AWS_ATHENA_S3_STAGING_DIR'):

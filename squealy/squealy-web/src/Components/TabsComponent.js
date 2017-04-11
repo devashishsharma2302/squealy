@@ -7,6 +7,7 @@ import { Effect } from 'react-notification-badge'
 import ParamDefinitionModal from './ParamDefinitionModal'
 import ValidationsModal from './ValidationsModal'
 import ShareModal from './ShareModal'
+import AddDatabaseModal from './AddDatabaseModal'
 import validationIcon from './../images/validation_icon_white.png'
 import exportIcon from './../images/export_icon_white.png'
 
@@ -18,6 +19,7 @@ export default class TabsComponent extends Component {
       showParamDefModal: false,
       showValidationsModal: false,
       showShareModal: false,
+      showDatabaseAdditionModal: false,
       note: null,
     }
   }
@@ -103,7 +105,8 @@ export default class TabsComponent extends Component {
     const {
       showValidationsModal,
       showParamDefModal,
-      showShareModal
+      showShareModal,
+      showDatabaseAdditionModal
     } = this.state
 
     const filter = filters[selectedFilterIndex]
@@ -159,7 +162,6 @@ export default class TabsComponent extends Component {
                 bsStyle='primary'
                 className='tab-component'
                 onClick={() => this.modalVisibilityHandler('showValidationsModal')}>
-                <img src={validationIcon} alt="squealyValidation"/>
                   Validations
                   <NotificationBadge
                     count={chart.validations.length}
@@ -175,10 +177,14 @@ export default class TabsComponent extends Component {
                 onChange={(db) => {this.onChangeDatabase(db)}}
                 placeholder={'Select Database'}
               />
+              <button
+                className="fa fa-plus-circle add-new"
+                aria-hidden="true"
+                onClick={() => this.modalVisibilityHandler('showDatabaseAdditionModal')}>
+              </button>
             </div>
             <Button bsStyle='primary' className='tab-component'
               onClick={()=>this.modalVisibilityHandler('showShareModal')}>
-              <i className="fa fa-share-alt"/>
               Share</Button>
             {
               showParamDefModal &&
@@ -209,6 +215,13 @@ export default class TabsComponent extends Component {
                 showModal={showShareModal}
                 chartUrl={chart.name}/>
             }
+            {
+              showDatabaseAdditionModal &&
+              <AddDatabaseModal
+                closeModal={() => this.closeModal('showDatabaseAdditionModal')}
+                showModal={showDatabaseAdditionModal}
+              />
+            }
           </span>
         }
         {
@@ -217,7 +230,6 @@ export default class TabsComponent extends Component {
             className={'tab-component view-btn '+viewButton.className} 
             title={viewButton.title}
             onClick={()=>updateViewMode(currentChartMode, widget.can_edit, chartMode)}>
-            {viewButton.icon}
             {viewButton.viewText}
           </Button>
         }
