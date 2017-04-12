@@ -47,8 +47,6 @@ export default class ResultSection extends Component {
                     options={{}} chartType='Table'
                     id={'response_table_' + selectedChartIndex} />
                 }
-                
-                }
               </Tab>
               {
                 chartMode &&
@@ -77,6 +75,12 @@ export default class ResultSection extends Component {
       <AccordionTab heading='Results'>
         {
             resultSectionOnSuccess
+            ||<div>
+              {(errorMessage)?
+               <ErrorMessagePanel 
+                  className='error-box'
+                  errorMessage={errorMessage} />: null}
+                </div>
         }
         <ChartConfigModal
           chartConfiguration={options}
