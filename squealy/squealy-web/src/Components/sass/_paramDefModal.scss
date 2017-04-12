@@ -35,6 +35,9 @@
 .api-param-def-table {
   border: 1px solid $light-gray-color;
 
+  .validation-table-header-left {
+    padding-left: 50px;
+  }
   > tbody > tr {
     cursor: pointer;
     > td > i.fa-trash-o {
