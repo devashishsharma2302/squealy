@@ -7,8 +7,8 @@ from datetime import datetime
 from croniter import croniter
 
 from django.db import models
-from django.db import connections
 from django.contrib.postgres import fields
+from django.conf import settings
 from django.dispatch.dispatcher import receiver
 from django.db.models.signals import pre_save, post_save, post_delete
 
@@ -214,26 +214,34 @@ class ReportParameter(models.Model):
 @receiver(pre_save, sender=Database)
 def verify_database_configuration(sender, instance, raw, using, update_fields, **kwargs):
     database = instance
-    try:
-        dj_database_url.parse(database.dj_url, conn_max_age=500)
-    except KeyError:
+    if not sender.objects.filter(display_name=database.display_name):
+        try:
+            dj_database_url.parse(database.dj_url, conn_max_age=500)
+        except KeyError:
+            raise DatabaseConfigurationException(
+                    'The dj-database-url you have entered is not valid'
+                )
+    else:
         raise DatabaseConfigurationException(
-                'The dj-database-url you have entered is not valid'
+                'A database with name %s already exists. Please enter a different database name' % database.display_name
             )
 
 
 @receiver(post_save, sender=Database)
 def add_database(sender, instance, raw, using, update_fields, **kwargs):
     database = instance
-    if connections.databases.get('query_db'):
-        del connections.databases['query_db']
     db_config = dj_database_url.parse(database.dj_url, conn_max_age=500)
     db_config['DISPLAY_NAME'] = database.display_name
-    db_config['id'] = database.id
-    connections.databases[str(database.id)] = db_config
+    if 'query_db' in settings.DATABASES:
+        del settings.DATABASES['query_db']
+    settings.DATABASES.update({str(database.id): db_config})
 
 
 @receiver(post_delete, sender=Database)
 def remove_database(sender, instance, using, **kwargs):
-    del connections.databases[str(instance.id)]
-
+    try:
+        del settings.DATABASES[str(instance.id)]
+    except KeyError:
+        raise DatabaseConfigurationException(
+                'You are trying to delete the database %s which does not exist' % instance.display_name
+            )
