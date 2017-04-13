@@ -39,7 +39,7 @@ export default class ResultSection extends Component {
       visualisationLoading
     } = this.props
 
-    console.log('result' + resultLoading + ' data' + dataLoading + ' Visualisation ' + visualisationLoading)
+
     const resultSectionOnSuccess =
       (googleDefined && resultData && resultData.hasOwnProperty('rows')) ?
         <Tabs defaultActiveKey={1} id="uncontrolled_tab_example" onSelect={(key) => onResultTabChanged(key)}>
