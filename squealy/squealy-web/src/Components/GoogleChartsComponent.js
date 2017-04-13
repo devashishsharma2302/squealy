@@ -20,9 +20,11 @@ export default class GoogleChartWrapper extends Component {
       dataTable: tableData,
       containerId: id,
       options: {
-        ...options,
         'height': 'auto',
-        'width': '100%'
+        'width': '100%',
+        'page': (chartType === 'Table')? 'enable': 'disable',
+        'pageSize': 50,
+      ...options
       }
     });
     wrapper.draw();
