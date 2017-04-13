@@ -23,8 +23,15 @@ def extract_dj_database_urls(DATABASES):
         del DATABASES['query_db']
         for database in databases:
             DATABASES[str(database.id)] = dj_database_url.parse(
-                                                database.dj_url,
+                                                database.dj_url ,
                                                 conn_max_age=500
                                             )
+            database_type = database.dj_url.split(":")[0].strip()
+            if (database_type == 'postgres'):
+                DATABASES[str(database.id)]['OPTIONS'] = {'options': ''}
+                DATABASES[str(database.id)]['OPTIONS']['options'] = '-c default_transaction_read_only=on'
+            print DATABASES[str(database.id)]
+
+
             DATABASES[str(database.id)].update({'display_name': database.display_name})
     return DATABASES

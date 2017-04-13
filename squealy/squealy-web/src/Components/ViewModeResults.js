@@ -14,6 +14,7 @@ import {
 import { DOMAIN_NAME, GOOGLE_CHART_TYPE_OPTIONS } from './../Constant'
 import { SquealyDatePicker, SquealyInput, SquealyDatetimePicker, SquealyDropdownFilter } from './Filters'
 import {ErrorMessagePanel} from './ErrorMessageComponent'
+import Loading from 'react-loading'
 
 export default class ViewOnlyResults extends Component {
 
@@ -23,7 +24,8 @@ export default class ViewOnlyResults extends Component {
       payloadObj: {},
       chartData: {},
       errorMessage: null,
-      filterData: {}
+      filterData: {},
+      chartLoading: true
     }
   }
 
@@ -72,10 +74,10 @@ export default class ViewOnlyResults extends Component {
     postApiRequest(DOMAIN_NAME + 'squealy/' + propsData.chart.url + '/', payloadObj,
       this.onSuccessTest, this.onErrorTest, null)
     
-    this.setState({ payloadObj: payloadObj}, () => {
+    this.setState({ payloadObj: payloadObj }, () => {
       this.updateUrl()
       //Get dropdown option data 
-      parameters.map((param) => {
+      parameters.forEach((param) => {
         if (param.data_type === 'dropdown' && !param.is_parameterized)  {
           getApiRequest(DOMAIN_NAME + 'filter/' + param.dropdown_api + '/', {format: 'json'},
               (response) => this.onSuccessFilterGet(response, {'name': param.name, 'url': param.dropdown_api}),
@@ -165,11 +167,11 @@ export default class ViewOnlyResults extends Component {
     let payloadObj = JSON.parse(JSON.stringify(this.state.payloadObj))
     payloadObj.params['chartType'] = value
     this.setState({
-      payloadObj: payloadObj }, this.updateUrl)
+      payloadObj: payloadObj, chartLoading: true }, this.updateUrl)
   }
 
   onSuccessTest = (response) => {
-    this.setState({ chartData: response, errorMessage: null })
+    this.setState({ chartData: response, errorMessage: null, chartLoading: false })
   }
 
   //Function to update the dropdown option data
@@ -193,7 +195,7 @@ export default class ViewOnlyResults extends Component {
   }
 
   onErrorTest = (e) => {
-    this.setState({ errorMessage: e.responseJSON.error })
+    this.setState({ errorMessage: e.responseJSON.error, chartLoading: false })
   }
 
   render() {
@@ -244,20 +246,27 @@ export default class ViewOnlyResults extends Component {
                   onChangeHandler={(value) => this.updateChartType(value)} />
               }
             </div>
-            <div className="visualchart">
-              {
-                this.state.errorMessage ?
-                  <ErrorMessagePanel
-                    className='error-box'
-                    errorMessage={this.state.errorMessage} /> : 
-                  (googleDefined && this.state.chartData.hasOwnProperty('rows') ?
-                  <GoogleChartsComponent
-                    chartData={this.state.chartData}
-                    options={chart.options}
-                    chartType={this.state.payloadObj.params['chartType']}
-                    id={'visualisation_' + chart.id} /> : null)
-              }
-            </div>
+            {
+              !this.state.chartLoading ?
+                <div className="visualchart">
+                  {
+                    this.state.errorMessage ?
+                      <ErrorMessagePanel
+                        className='error-box'
+                        errorMessage={this.state.errorMessage} /> :
+                      (googleDefined && this.state.chartData.hasOwnProperty('rows') ?
+                        <GoogleChartsComponent
+                          chartData={this.state.chartData}
+                          options={chart.options}
+                          chartType={this.state.payloadObj.params['chartType']}
+                          id={'visualisation_' + chart.id} /> : null)
+                  }
+                </div>
+                :
+                <div className='loader result-loader'>
+                  <Loading type='spin' color='#0C8ADC' />
+                </div>
+            }
           </div>
         </div>
       )

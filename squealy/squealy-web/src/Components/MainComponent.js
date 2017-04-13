@@ -29,7 +29,10 @@ export default class MainComponent extends Component {
       selectedFilterIndex,
       filterSelectionHandler,
       onHandleTestFilterButton,
-      onResultTabChanged
+      onResultTabChanged,
+      resultLoading,
+      dataLoading,
+      visualisationLoading
     } = this.props
     return (
       <div className="full-height">
@@ -71,6 +74,9 @@ export default class MainComponent extends Component {
                 filters={filters}
                 onHandleTestFilterButton={onHandleTestFilterButton}
                 onResultTabChanged={onResultTabChanged}
+                resultLoading={resultLoading}
+                dataLoading={dataLoading}
+                visualisationLoading={visualisationLoading}
               />
             : <div className='full-height no-charts'>
                 <div className='col-md-6 col-md-offset-3 instructions'>

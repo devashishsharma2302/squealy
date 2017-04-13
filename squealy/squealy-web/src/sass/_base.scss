@@ -242,3 +242,24 @@ hr {
 .filter-select {
   display: block;
 }
+
+.loader {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+.result-loader {
+    position: relative;
+    margin-top: 100px;
+}
+
+.logo {
+  width: 155px;
+  height: auto;
+}

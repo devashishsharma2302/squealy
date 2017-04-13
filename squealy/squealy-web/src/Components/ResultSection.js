@@ -6,7 +6,9 @@ import { SquealyDropdown } from './SquealyUtilsComponents'
 import { GOOGLE_CHART_TYPE_OPTIONS } from './../Constant'
 import configIcon from './../images/settings_icon.png'
 import ChartConfigModal from './ChartConfigModal'
-import {ErrorMessagePanel} from './ErrorMessageComponent'
+import { ErrorMessagePanel } from './ErrorMessageComponent'
+import Loading from 'react-loading'
+
 
 export default class ResultSection extends Component {
 
@@ -18,7 +20,7 @@ export default class ResultSection extends Component {
   }
 
   modalVisibilityHandler = () => {
-    this.setState({showModal: !this.state.showModal})
+    this.setState({ showModal: !this.state.showModal })
   }
 
   render() {
@@ -31,34 +33,62 @@ export default class ResultSection extends Component {
       selectedChartChangeHandler,
       errorMessage,
       chartMode,
-      onResultTabChanged
+      onResultTabChanged,
+      resultLoading,
+      dataLoading,
+      visualisationLoading
     } = this.props
 
+    console.log('result' + resultLoading + ' data' + dataLoading + ' Visualisation ' + visualisationLoading)
     const resultSectionOnSuccess =
       (googleDefined && resultData && resultData.hasOwnProperty('rows')) ?
-          <Tabs defaultActiveKey={1} id="uncontrolled_tab_example" onSelect={(key) => onResultTabChanged(key)}>
-            <Tab eventKey={1} title="Data">
-              <GoogleChartsComponent chartData={resultData}
-                options={{}} chartType='Table'
-                id={'response_table_' + selectedChartIndex} />
-            </Tab>
+        <Tabs defaultActiveKey={1} id="uncontrolled_tab_example" onSelect={(key) => onResultTabChanged(key)}>
+          <Tab eventKey={1} title="Data">
             {
-              chartMode &&
-                <Tab eventKey={2} title="Visualisation">
-                  <div className="chart-type-select">
-                    <SquealyDropdown
-                      name='chartType'
-                      options={GOOGLE_CHART_TYPE_OPTIONS}
-                      selectedValue={viewType}
-                      onChangeHandler={(value)=>selectedChartChangeHandler({type: value}, () => this.props.onResultTabChanged(2))}
-                    />
-                    <img src={configIcon} onClick={this.modalVisibilityHandler} />
-                  </div>
-                  <GoogleChartsComponent chartData={resultData} options={options} chartType={viewType}
-                    id={'visualisation_' + selectedChartIndex} />
-                </Tab>
+              !dataLoading ?
+                <GoogleChartsComponent chartData={resultData}
+                  options={{}} chartType='Table'
+                  id={'response_table_' + selectedChartIndex} />
+                :
+                <div className='loader result-loader'>
+                  <Loading type='spin' color='#0C8ADC' />
+                </div>
             }
-          </Tabs> : null
+          </Tab>
+          {
+            chartMode &&
+            <Tab eventKey={2} title="Visualisation">
+              {
+                !visualisationLoading ?
+                  <div>
+                    <div className="chart-type-select">
+                      <SquealyDropdown
+                        name='chartType'
+                        options={GOOGLE_CHART_TYPE_OPTIONS}
+                        selectedValue={viewType}
+                        onChangeHandler={(value) => selectedChartChangeHandler({ type: value }, () => this.props.onResultTabChanged(2))}
+                        />
+                      <img src={configIcon} onClick={this.modalVisibilityHandler} />
+                    </div>
+                    <GoogleChartsComponent chartData={resultData} options={options} chartType={viewType}
+                      id={'visualisation_' + selectedChartIndex} />
+                  </div>
+                  :
+                  <div className='loader result-loader'>
+                    <Loading type='spin' color='#0C8ADC' />
+                  </div>
+              }
+            </Tab>
+          }
+        </Tabs> : null
+
+    if (resultLoading) {
+      return (
+        <div className='loader result-loader'>
+          <Loading type='spin' color='#0C8ADC' />
+        </div>
+      )
+    }
     return (
       <AccordionTab heading='Results'>
         {
@@ -73,7 +103,7 @@ export default class ResultSection extends Component {
           showModal={this.state.showModal}
           closeModal={this.modalVisibilityHandler}
           selectedChartChangeHandler={selectedChartChangeHandler}
-        />
+          />
       </AccordionTab>
     )
   }

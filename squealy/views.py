@@ -173,12 +173,12 @@ class DataProcessor(object):
             run_validation(params, user, validation.query, db)
 
     def _check_read_only_query(self, query):
-        if any(keyword in query.upper() for keyword in SQL_WRITE_BLACKLIST):
-            raise DatabaseWriteException('Database write commands not permitted in the query.')
+        # if any(keyword in query.upper() for keyword in SQL_WRITE_BLACKLIST):
+        #     raise DatabaseWriteException('Database write commands not permitted in the query.')
         pass
 
     def _execute_query(self, params, user, chart_query, db):
-        self._check_read_only_query(chart_query)
+        #self._check_read_only_query(chart_query)
 
         query, bind_params = jinjasql.prepare_query(chart_query,
                                                     {
@@ -235,7 +235,7 @@ class ChartView(APIView):
         """
         params = request.GET.copy()
         user = request.user
-        data = DataProcessor().fetch_chart_data(chart_url, params, user, request.data.get('chartType'))
+        data = DataProcessor().fetch_chart_data(chart_url, params, user, params.get('chartType'))
         return Response(data)
 
     def post(self, request, chart_url=None, *args, **kwargs):
@@ -245,7 +245,7 @@ class ChartView(APIView):
         try:
             params = request.data.get('params', {})
             user = request.data.get('user', None)
-            data = DataProcessor().fetch_chart_data(chart_url, params, user, request.data.get('chartType'))
+            data = DataProcessor().fetch_chart_data(chart_url, params, user, params.get('chartType'))
             return Response(data)
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)

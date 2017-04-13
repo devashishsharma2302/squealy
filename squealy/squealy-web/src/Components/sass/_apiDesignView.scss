@@ -8,6 +8,7 @@
     margin-left: 10px;
     font-size: 14px;
     border-radius: 28px;
+    height: 35px;
     img {
       height: 20px;
       padding-right: 5px;
@@ -26,12 +27,13 @@
     align-items: center;
     margin-left: 10px;
     min-width: 180px;
+    text-overflow: ellipsis;
 
     .Select {
       display: inline-block;
       flex-grow: 6;
       border-right: 20px;
-
+      
       .Select-control {
         border-top-left-radius: 28px;
         border-bottom-left-radius: 28px;
@@ -63,15 +65,16 @@
       cursor: pointer;
       color: white;
       font-size: 20px;
-      padding-bottom: 2px;
+      padding-bottom: 1px;
       padding-right: 9px;
       background-color: #0C8ADC;
-      border-bottom-right-radius: 1em;
-      border-top-right-radius: 1em;
-      height: 35px;
+      border-bottom-right-radius: 28px;
+      border-top-right-radius: 28px;
+      height: 34.8px;
       border: 1px solid #0C8ADC;
       margin-left: -0.5px;
-      
+      margin-top: 0.8px;
+      border: none !important;
     }
   }
   .view-btn {
