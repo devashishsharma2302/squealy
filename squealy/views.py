@@ -31,11 +31,9 @@ from .exceptions import RequiredParameterMissingException,\
 from .transformers import *
 from .formatters import *
 from .parameters import *
-from .utils import SquealySettings
 from .table import Table
 from .models import Chart, Transformation, Validation, Filter, Parameter, FilterParameter, Database
 from .validators import run_validation
-from datetime import datetime, timedelta
 import json, ast
 
 
