@@ -46,12 +46,12 @@ class DatabaseView(APIView):
     def get(self, request, *args, **kwargs):
         try:
             database_response = []
-            database = connections.databases
+            database = Database.objects.all()
             for db in database:
                 if db != 'default':
                     database_response.append({
-                      'value': db,
-                      'label': database[db]['DISPLAY_NAME']
+                      'value': database[0].id,
+                      'label': database[0].display_name
                     })
             if not database_response:
                 raise DatabaseConfigurationException('No databases found. Make sure that you have defined database configuration in django admin')
