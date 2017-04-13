@@ -21,7 +21,6 @@
     {
         box-sizing: inherit;
     }
-
     body {
       margin:0;
       background: #fafafa;
@@ -83,11 +82,9 @@
           ],
           layout: "StandaloneLayout"
       })
-
       window.ui = ui
   }
   window.onload = function() {
-
       function apiCall(uri, data, methodType) {
           const csrftoken = getCookie('csrftoken');
           $.ajaxSetup({
@@ -106,11 +103,9 @@
                   var script = document.createElement('script');
                   foo(response)
               },
-
               error: function(error) {}
           });
       }
-
       function getCookie(name) {
           let cookieValue = null;
           if (document.cookie && document.cookie !== '') {
@@ -132,3 +127,4 @@
 </body>
 
 </html>
+Contact GitHub 
