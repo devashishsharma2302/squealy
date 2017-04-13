@@ -24,3 +24,32 @@
     padding: 8px 1.35em;
   }
 }
+
+.google-visualization-table-div-page {
+  padding: 3px !important;
+  color: $white-color !important;
+}
+
+.google-visualization-table-page-numbers {
+  a {
+      padding: 4px;
+      min-width: 50px;
+      color: $white-color !important;
+      background-color: $squealy-theme-blue !important;
+      border-radius: 0 !important;
+      border: none !important;
+  }
+  .current {
+    background-color: $white-color !important;
+    color: $squealy-theme-blue !important;
+  }
+}
+
+.goog-custom-button{
+  .goog-custom-button-inner-box {
+    height: 16px !important; 
+    width: 26px !important;
+    text-align: center !important;
+    padding-top: 3px !important;
+  }
+}
