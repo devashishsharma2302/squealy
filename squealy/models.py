@@ -215,7 +215,7 @@ class ReportParameter(models.Model):
 def verify_database_configuration(sender, instance, raw, using, update_fields, **kwargs):
     database = instance
     try:
-        dj_database_url.parse(database.dj_url, conn_max_age=500)
+        dj_database_url.parse(database.dj_url, conn_max_age=0)
     except KeyError:
         raise DatabaseConfigurationException(
                 'The dj-database-url you have entered is not valid'
@@ -227,7 +227,7 @@ def add_database(sender, instance, raw, using, update_fields, **kwargs):
     database = instance
     if connections.databases.get('query_db'):
         del connections.databases['query_db']
-    db_config = dj_database_url.parse(database.dj_url, conn_max_age=500)
+    db_config = dj_database_url.parse(database.dj_url, conn_max_age=0)
     db_config['DISPLAY_NAME'] = database.display_name
     db_config['id'] = database.id
     connections.databases[str(database.id)] = db_config
