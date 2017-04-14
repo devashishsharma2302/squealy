@@ -1,13 +1,11 @@
 from __future__ import unicode_literals
 
-import dj_database_url
 import json
 
 from datetime import datetime
 from croniter import croniter
 
 from django.db import models
-from django.db import connections
 from django.contrib.postgres import fields
 from django.dispatch.dispatcher import receiver
 from django.db.models.signals import pre_save, post_save, post_delete
@@ -47,17 +45,6 @@ class Account(models.Model):
 
     def __unicode__(self):
         return self.name
-
-
-class Database(models.Model):
-    """
-    Contains the database configurations
-    """
-    display_name = models.CharField(max_length=100, unique=True)
-    dj_url = models.CharField(max_length=500)
-
-    def __unicode__(self):
-        return self.display_name
 
 
 class Chart(models.Model):
@@ -209,31 +196,3 @@ class ReportParameter(models.Model):
     parameter_name = models.CharField(max_length=300)
     parameter_value = models.CharField(max_length=300)
     report = models.ForeignKey(ScheduledReport, related_name='reportparam')
-
-
-@receiver(pre_save, sender=Database)
-def verify_database_configuration(sender, instance, raw, using, update_fields, **kwargs):
-    database = instance
-    try:
-        dj_database_url.parse(database.dj_url, conn_max_age=0)
-    except KeyError:
-        raise DatabaseConfigurationException(
-                'The dj-database-url you have entered is not valid'
-            )
-
-
-@receiver(post_save, sender=Database)
-def add_database(sender, instance, raw, using, update_fields, **kwargs):
-    database = instance
-    if connections.databases.get('query_db'):
-        del connections.databases['query_db']
-    db_config = dj_database_url.parse(database.dj_url, conn_max_age=0)
-    db_config['DISPLAY_NAME'] = database.display_name
-    db_config['id'] = database.id
-    connections.databases[str(database.id)] = db_config
-
-
-@receiver(post_delete, sender=Database)
-def remove_database(sender, instance, using, **kwargs):
-    del connections.databases[str(instance.id)]
-
