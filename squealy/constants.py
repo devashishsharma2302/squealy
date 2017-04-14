@@ -32,14 +32,17 @@ SWAGGER_JSON_TEMPLATE = {
             }
         ],
         "schemes": [
-            "http",
-            "https"
+            "https",
+            "http"
         ],
         "paths": {
 
         },
+        "securityDefinitions": {
 
-        "definitions": {
+        },
+        "definitions" : {
+
         },
         "externalDocs": {
             "description": "Find out more about Swagger",
