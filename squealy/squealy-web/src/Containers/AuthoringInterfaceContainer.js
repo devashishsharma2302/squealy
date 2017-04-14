@@ -338,13 +338,15 @@ export default class AuthoringInterfaceContainer extends Component {
   // result set of the query written by the user and triggers onSuccessTest if
   // the API is successfull
   onHandleTestButton = (callback=null) => {
-    const selectedChart = this.state.charts[this.state.selectedChartIndex]
-    let payloadObj = formatTestParameters(selectedChart.parameters, 'name', 'test_value')
-    if (this.state.resultSectionActiveKey == 1) {
-      payloadObj['chartType'] = 'Table'
+    if (this.state.saveInProgress !== true) {
+      const selectedChart = this.state.charts[this.state.selectedChartIndex]
+      let payloadObj = formatTestParameters(selectedChart.parameters, 'name', 'test_value')
+      if (this.state.resultSectionActiveKey == 1) {
+        payloadObj['chartType'] = 'Table'
+      }
+      postApiRequest(DOMAIN_NAME+'squealy/'+selectedChart.url+'/', payloadObj,
+                      this.onSuccessTest, this.onErrorTest, callback)
     }
-    postApiRequest(DOMAIN_NAME+'squealy/'+selectedChart.url+'/', payloadObj,
-                    this.onSuccessTest, this.onErrorTest, callback)
   }
 
   onResultTabChanged = (key, callback=null) => {
