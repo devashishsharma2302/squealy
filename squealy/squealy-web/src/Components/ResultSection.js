@@ -6,7 +6,9 @@ import { SquealyDropdown } from './SquealyUtilsComponents'
 import { GOOGLE_CHART_TYPE_OPTIONS } from './../Constant'
 import configIcon from './../images/settings_icon.png'
 import ChartConfigModal from './ChartConfigModal'
-import {ErrorMessagePanel} from './ErrorMessageComponent'
+import { ErrorMessagePanel } from './ErrorMessageComponent'
+import Loading from 'react-loading'
+
 
 export default class ResultSection extends Component {
 
@@ -18,7 +20,7 @@ export default class ResultSection extends Component {
   }
 
   modalVisibilityHandler = () => {
-    this.setState({showModal: !this.state.showModal})
+    this.setState({ showModal: !this.state.showModal })
   }
 
   render() {
@@ -31,21 +33,33 @@ export default class ResultSection extends Component {
       selectedChartChangeHandler,
       errorMessage,
       chartMode,
-      onResultTabChanged
+      onResultTabChanged,
+      resultLoading,
+      dataLoading,
+      visualisationLoading
     } = this.props
+
 
     const resultSectionOnSuccess =
       (googleDefined && resultData && resultData.hasOwnProperty('rows')) ?
             <Tabs defaultActiveKey={1} id="uncontrolled_tab_example" onSelect={(key) => onResultTabChanged(key)}>
               <Tab eventKey={1} title="Data">
-                {errorMessage ?
+                {
+                  errorMessage ?
                   <ErrorMessagePanel
                     className='error-box'
                     errorMessage={errorMessage} /> 
-                :
-                <GoogleChartsComponent chartData={resultData}
-                    options={{}} chartType='Table'
-                    id={'response_table_' + selectedChartIndex} />
+                : <div>
+                     {(!dataLoading) ?
+                    <GoogleChartsComponent chartData={resultData}
+                      options={{}} chartType='Table'
+                      id={'response_table_' + selectedChartIndex} />
+                    :
+                    <div className='loader result-loader'>
+                      <Loading type='spin' color='#0C8ADC' />
+                    </div>
+                     }
+                  </div>
                 }
               </Tab>
               {
@@ -60,17 +74,35 @@ export default class ResultSection extends Component {
                       />
                       <img src={configIcon} onClick={this.modalVisibilityHandler} />
                     </div>
-                    {errorMessage ?
-                    <ErrorMessagePanel
+                    {
+                      errorMessage ?
+                      <ErrorMessagePanel
                       className='error-box'
                       errorMessage={errorMessage} /> 
-                    :
-                    <GoogleChartsComponent chartData={resultData} options={options} chartType={viewType}
-                      id={'visualisation_' + selectedChartIndex} />
-                    }
+                    : <div>
+                        {
+                        !visualisationLoading ? 
+                        <GoogleChartsComponent chartData={resultData} options={options} chartType={viewType}
+                        id={'visualisation_' + selectedChartIndex} /> 
+                        :
+                        <div className='loader result-loader'>
+                          <Loading type='spin' color='#0C8ADC' />
+                        </div>
+                        }
+                      </div>
+                  }
                 </Tab>
-            }
-          </Tabs> : null
+              }           
+          
+        </Tabs> : null
+
+    if (resultLoading) {
+      return (
+        <div className='loader result-loader'>
+          <Loading type='spin' color='#0C8ADC' />
+        </div>
+      )
+    }
     return (
       <AccordionTab heading='Results'>
         {
@@ -87,7 +119,7 @@ export default class ResultSection extends Component {
           showModal={this.state.showModal}
           closeModal={this.modalVisibilityHandler}
           selectedChartChangeHandler={selectedChartChangeHandler}
-        />
+          />
       </AccordionTab>
     )
   }

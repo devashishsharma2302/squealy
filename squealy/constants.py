@@ -31,11 +31,18 @@ SWAGGER_JSON_TEMPLATE = {
                 "description": "Everything about your Charts"
             }
         ],
+        "schemes": [
+            "https",
+            "http"
+        ],
         "paths": {
 
         },
+        "securityDefinitions": {
 
-        "definitions": {
+        },
+        "definitions" : {
+
         },
         "externalDocs": {
             "description": "Find out more about Swagger",

@@ -170,7 +170,7 @@ export default class TabsComponent extends Component {
                   />
               </Button>
             }
-            <div className="selected-db-wrapper">
+            <div className="selected-db-wrapper tab-component">
               <Select
                 value={(widget.database) ? widget.database : null}
                 options={databases}

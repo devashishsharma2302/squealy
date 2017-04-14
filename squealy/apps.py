@@ -27,7 +27,11 @@ def extract_dj_database_urls(DATABASES):
                                                     database.dj_url,
                                                     conn_max_age=0
                                                 )
+                database_type = database.dj_url.split(":")[0].strip()
                 DATABASES[str(database.id)].update({'DISPLAY_NAME': database.display_name})
+                if (database_type == 'postgres'):
+                    DATABASES[str(database.id)]['OPTIONS'] = {'options': ''}
+                    DATABASES[str(database.id)]['OPTIONS']['options'] = '-c default_transaction_read_only=on'
         return DATABASES
     except Exception:
         return DATABASES
