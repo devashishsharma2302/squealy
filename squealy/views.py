@@ -46,7 +46,8 @@ class DatabaseView(APIView):
     def get(self, request, *args, **kwargs):
         try:
             database_response = []
-            database = Database.objects.all()
+            # database = Database.objects.all()
+            database = settings.DATABASES
             for db in database:
                 # if db != 'default':
                 database_response.append({
