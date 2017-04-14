@@ -42,44 +42,58 @@ export default class ResultSection extends Component {
 
     const resultSectionOnSuccess =
       (googleDefined && resultData && resultData.hasOwnProperty('rows')) ?
-        <Tabs defaultActiveKey={1} id="uncontrolled_tab_example" onSelect={(key) => onResultTabChanged(key)}>
-          <Tab eventKey={1} title="Data">
-            {
-              !dataLoading ?
-                <GoogleChartsComponent chartData={resultData}
-                  options={{}} chartType='Table'
-                  id={'response_table_' + selectedChartIndex} />
-                :
-                <div className='loader result-loader'>
-                  <Loading type='spin' color='#0C8ADC' />
-                </div>
-            }
-          </Tab>
-          {
-            chartMode &&
-            <Tab eventKey={2} title="Visualisation">
+            <Tabs defaultActiveKey={1} id="uncontrolled_tab_example" onSelect={(key) => onResultTabChanged(key)}>
+              <Tab eventKey={1} title="Data">
+                {
+                  errorMessage ?
+                  <ErrorMessagePanel
+                    className='error-box'
+                    errorMessage={errorMessage} /> 
+                : <div>
+                     {(!dataLoading) ?
+                    <GoogleChartsComponent chartData={resultData}
+                      options={{}} chartType='Table'
+                      id={'response_table_' + selectedChartIndex} />
+                    :
+                    <div className='loader result-loader'>
+                      <Loading type='spin' color='#0C8ADC' />
+                    </div>
+                     }
+                  </div>
+                }
+              </Tab>
               {
-                !visualisationLoading ?
-                  <div>
+                chartMode &&
+                <Tab eventKey={2} title="Visualisation">
                     <div className="chart-type-select">
                       <SquealyDropdown
                         name='chartType'
                         options={GOOGLE_CHART_TYPE_OPTIONS}
                         selectedValue={viewType}
-                        onChangeHandler={(value) => selectedChartChangeHandler({ type: value }, () => this.props.onResultTabChanged(2))}
-                        />
+                        onChangeHandler={(value)=>selectedChartChangeHandler({type: value}, () => this.props.onResultTabChanged(2))}
+                      />
                       <img src={configIcon} onClick={this.modalVisibilityHandler} />
                     </div>
-                    <GoogleChartsComponent chartData={resultData} options={options} chartType={viewType}
-                      id={'visualisation_' + selectedChartIndex} />
-                  </div>
-                  :
-                  <div className='loader result-loader'>
-                    <Loading type='spin' color='#0C8ADC' />
-                  </div>
-              }
-            </Tab>
-          }
+                    {
+                      errorMessage ?
+                      <ErrorMessagePanel
+                      className='error-box'
+                      errorMessage={errorMessage} /> 
+                    : <div>
+                        {
+                        !visualisationLoading ? 
+                        <GoogleChartsComponent chartData={resultData} options={options} chartType={viewType}
+                        id={'visualisation_' + selectedChartIndex} /> 
+                        :
+                        <div className='loader result-loader'>
+                          <Loading type='spin' color='#0C8ADC' />
+                        </div>
+                        }
+                      </div>
+                  }
+                </Tab>
+              }           
+          
         </Tabs> : null
 
     if (resultLoading) {
@@ -92,11 +106,13 @@ export default class ResultSection extends Component {
     return (
       <AccordionTab heading='Results'>
         {
-          errorMessage ?
-            <ErrorMessagePanel
-              className='error-box'
-              errorMessage={errorMessage} /> :
             resultSectionOnSuccess
+            ||<div>
+              {(errorMessage)?
+               <ErrorMessagePanel 
+                  className='error-box'
+                  errorMessage={errorMessage} />: null}
+                </div>
         }
         <ChartConfigModal
           chartConfiguration={options}

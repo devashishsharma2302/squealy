@@ -387,8 +387,9 @@ export default class AuthoringInterfaceContainer extends Component {
     const selectedFilter = this.state.filters[this.state.selectedFilterIndex]
     let payloadObj = formatTestParameters(selectedFilter.parameters, 'name', 'test_value')
     payloadObj.format = 'GoogleChartsFormatter'
-    getApiRequest(DOMAIN_NAME + 'filter/' + selectedFilter.url + '/', payloadObj,
-      this.onSuccessFilterTest, this.onErrorFilterTest, callback)
+
+    getApiRequest(DOMAIN_NAME+'filter-api/'+selectedFilter.url+'/', payloadObj,
+                    this.onSuccessFilterTest, this.onErrorFilterTest, callback)
   }
 
 

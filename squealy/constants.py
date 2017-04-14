@@ -31,6 +31,10 @@ SWAGGER_JSON_TEMPLATE = {
                 "description": "Everything about your Charts"
             }
         ],
+        "schemes": [
+            "http",
+            "https"
+        ],
         "paths": {
 
         },

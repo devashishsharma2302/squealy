@@ -22,9 +22,13 @@ Using SQueaLy, creating APIs for your reports/charts and visualizing the output 
 
 **When you want fine grained security in your reporting APIs**  
 
-You can provide not only chart level view permissions but also user/parameter level permissions. To make that one liner straighforward, consider the following use case.  
-You have a chain of hotels based on multiple locations. You create 5 reports which are to be viewed by the managers of each hotel but you don't want the manager of one location to view the report of the hotels not managed by him.  
-Now if you write this logic in your own code, it is going to take a lot of time but using SQueLy, this can be done in seconds.
+You can provide not only chart level view permissions but also user/parameter level permissions. To make that one liner straighforward, consider the following use case.
+```
+You have a chain of hotels based on multiple locations. You create 5 reports which are to be viewed by  
+the managers of each hotel but you don't want the manager of one location to view the report of the  
+hotels not managed by him. Now if you write this logic in your own code, it is going to take a lot of  
+time but using SQueLy, this can be done in seconds.
+```
 
 **When you want scheduled emails embedded with reports**  
 
@@ -176,6 +180,46 @@ SQueaLy provides a mechanism to log in a user via an access token that would hel
     ```
 - **Sending the token**: You can send this token as a url parameter in a GET request or as a body parameter in a POST request to any of the squealy APIs. SQueaLy would ensure to login the user before handling the request.
 
+## Scheduling emails
+
+The scheduled emails can contain as many reports(charts) as you want. You just have to associate the reports(charts) you want in the email with the scheduled email. 
+
+To schedule emails embedded with reports, got to the Django admin and select the **Scheduled reports** model. On doing so you will see a form like this
+
+
+<p align="center">
+  <img src="./Readme-mediafiles/scheduled_report.png" />
+</p>
+
+### Subject
+This will be the subject of the email. This subject does not have to be hard coded. You can use the parameters in the query or any macro provided by squealy here. Just **wrap the placeholders in {{}} to generate the subject dyanamically**
+
+### Template
+You can customize the look and feel of the email body by writting HTML here. Do not forget to put {% include 'report.html' %} somewhere in the template otherwise there won't be any reports in the email.
+
+### Cron expression
+Enter a valid cron expression to tell the schedule of the email. For examle, to schedule an email for 11AM everyday, the cron expression should be ```0 11 *	*	*```
+
+### Report Parameters
+This would contain all the values of the parameters used in the database queries. For example 
+```
+If you have two reports(charts), one of them uses the parameter - facility-id and the other one uses  
+two parameters - start_date and end_date. Then you need to provide the names of these parameters with  
+their corresponding values to be used while generating the reports for an email
+```
+
+### Report Recipients
+This would contain the email address of all the recipients of a particular scheduled email.
+
+### Associatong charts with Scheduled reports. 
+To associate charts with scheduled reports i.e. to determine which report has to be sent inwhich email, go tho Django admin and select the **Scheduled Report Charts** model. On doing so you will see a form like this
+
+
+<p align="center">
+  <img src="./Readme-mediafiles/scheduled_reports_charts.png" />
+</p>
+
+Here, just select a chart and the scheduled report and hit save. Doing so will associate one chart with the selected scheduled report. Repeat this for as many charts you want to associate to a scheduled report
 
 # Development
 ## Backend setup

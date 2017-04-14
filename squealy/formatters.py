@@ -11,7 +11,7 @@ class Formatter:
 
 class SimpleFormatter(Formatter):
 
-    def format(self, table):
+    def format(self, table, chart_type=None):
         data = {"columns": table.columns, "data": table.data}
         return data
 
@@ -40,7 +40,6 @@ class GoogleChartsFormatter(Formatter):
             ]
         }
         """
-
         response = {}
         response['rows'] = rows = []
         response['cols'] = cols = []
@@ -81,7 +80,6 @@ class GoogleChartsFormatter(Formatter):
                     column_types[index] = 'Dimension'
             if 'Metric' not in column_types:
                 break
-
         if 'Metric' not in column_types:
             raise InvalidChartDataException('No metric column found.')
 
@@ -103,8 +101,8 @@ class GoogleChartsFormatter(Formatter):
             response = self._generate_chart_data(table, 0)
 
         else:
-            raise InvalidChartDataException('Too many dimension columns. Cannot generate chart.' +
-                                            ' Choose maximum 1 columns out of ' +
+            raise InvalidChartDataException('Too many non-metric columns. Cannot generate chart type other than "Table".' +
+                                            ' Select any one out of ' +
                                             str([column for index, column in enumerate(table.columns)
-                                                 if column_types[index] == 'Dimension']))
+                                                 if column_types[index] == 'Dimension']) + ' if selecting more than 3 columns')
         return response

@@ -31,11 +31,9 @@ from .exceptions import RequiredParameterMissingException,\
 from .transformers import *
 from .formatters import *
 from .parameters import *
-from .utils import SquealySettings
 from .table import Table
 from .models import Chart, Transformation, Validation, Filter, Parameter, FilterParameter, Database
 from .validators import run_validation
-from datetime import datetime, timedelta
 import json, ast
 
 
@@ -53,10 +51,10 @@ class DatabaseView(APIView):
                 if db != 'default':
                     database_response.append({
                       'value': db,
-                      'label': database[db]['display_name']
+                      'label': database[db]['DISPLAY_NAME']
                     })
             if not database_response:
-                raise DatabaseConfigurationException('No databases found. Make sure that you have defined database url in the environment')
+                raise DatabaseConfigurationException('No databases found. Make sure that you have defined database configuration in django admin')
             return Response({'databases': database_response})
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
@@ -65,7 +63,7 @@ class DatabaseView(APIView):
         database = request.data
         try:
             Database.objects.create(
-                display_name=database['display_name'],
+                display_name=database['DISPLAY_NAME'],
                 dj_url=database['dj_url']
             )
             return Response({}, status.HTTP_200_OK)
@@ -205,7 +203,7 @@ class DataProcessor(object):
                 rows.append(row_list)
         return Table(columns=cols, data=rows)
 
-    def _format(self, table, format, chart_type):
+    def _format(self, table, format, chart_type='Table'):
         if format:
             if format in ['table', 'json']:
                 formatter = SimpleFormatter()
@@ -213,8 +211,6 @@ class DataProcessor(object):
                 formatter = eval(format)()
             return formatter.format(table, chart_type)
         return GoogleChartsFormatter().format(table, chart_type)
-
-        return table
 
 
 class ChartViewPermission(BasePermission):

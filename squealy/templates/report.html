@@ -1,0 +1,30 @@
+if {% if charts %}
+	{% for chart in charts %}
+	<h4 class="table-heading" style="width: 100%;background-color: #008dc1;color: #ffffff;margin: 0;padding: 15px;text-align: left;text-transform: capitalize;">{{ chart.name }}</h4>
+		<div class="table-scroll" style="overflow: auto;max-height: 342px;">
+			<table style="width: 100%;border-spacing: 0;display: table;border-spacing: 2px;border-color: grey;border-collapse: collapse;">
+			{% if chart.data %}
+				<tbody>
+					<tr style="font-weight:bold;">
+					{% for col in chart.data.cols %}
+					   <th style="padding: 8px;line-height: 1.5;vertical-align: middle;text-align: left">{{ col.label }}</th>
+					{% endfor %}
+					</tr>
+					{% for row in chart.data.rows %}
+						<tr>
+							{% for eachcol in row.c %}
+								<td style="padding: 8px;line-height: 1.5;vertical-align: middle;border-top: 1px solid #ddd;"> {{ eachcol.v }} </td>
+							{% endfor %}
+						</tr>
+					{% endfor %}
+				</tbody>
+			{% else %}
+				<p>No charts</p>
+			{% endif %}
+			</table>
+		</div>
+
+		{% endfor %}
+{% else %}
+	<p>Nothing to show</p>
+{% endif %}
