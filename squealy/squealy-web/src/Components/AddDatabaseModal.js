@@ -25,7 +25,7 @@ export default class AddDatabaseModal extends Component {
     const { displayName, djUrl } = this.state
     const { closeModal } = this.props
     const payLoad = {
-      display_name: displayName,
+      DISPLAY_NAME: displayName,
       dj_url: djUrl
     }
 

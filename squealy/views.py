@@ -48,11 +48,11 @@ class DatabaseView(APIView):
             database_response = []
             database = settings.DATABASES
             for db in database:
-                if db != 'default':
-                    database_response.append({
-                      'value': db,
-                      'label': database[db]['DISPLAY_NAME']
-                    })
+                # if db != 'default':
+                database_response.append({
+                  'value': db,
+                  'label': database[db]['DISPLAY_NAME']
+                })
             if not database_response:
                 raise DatabaseConfigurationException('No databases found. Make sure that you have defined database configuration in django admin')
             return Response({'databases': database_response})
@@ -183,7 +183,7 @@ class DataProcessor(object):
                                                      "params": params,
                                                      "user": user
                                                     })
-        conn = connections[db]
+        conn = connections[str(db)]
         if conn.settings_dict['NAME'] == 'Athena':
             conn = connect(driver_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'athena-jdbc/AthenaJDBC41-1.0.0.jar'))
         with conn.cursor() as cursor:

@@ -395,7 +395,11 @@ export default class AuthoringInterfaceContainer extends Component {
     this.setState({
       selectedChartIndex: index,
       selectedFilterIndex: null,
-      currentChartMode: this.state.charts[index].can_edit || false}, () => this.setUrlPath('chart'))
+      currentChartMode: this.state.charts[index].can_edit || false},
+       () => {
+        this.setUrlPath('chart')
+        this.onResultTabChanged(1)
+        })
   }
 
   //Changes the selected API index to the one which was clicked from the Filter list
@@ -440,7 +444,8 @@ export default class AuthoringInterfaceContainer extends Component {
       currentChartMode,
       databases,
       filters,
-      selectedFilterIndex
+      selectedFilterIndex,
+      resultSectionActiveKey
     } = this.state
     const { googleDefined } = this.props
     return (
@@ -468,6 +473,7 @@ export default class AuthoringInterfaceContainer extends Component {
           filterSelectionHandler={this.filterSelectionHandler}
           onHandleTestFilterButton={this.onHandleTestFilterButton}
           onResultTabChanged={this.onResultTabChanged}
+          resultSectionActiveKey={resultSectionActiveKey}
         />
       </div>
     )

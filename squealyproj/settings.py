@@ -100,11 +100,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'DISPLAY_NAME': 'Test DB'
+
     },
     'query_db': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'DISPLAY_NAME': 'Query Database'
+        'DISPLAY_NAME': 'Sample Database'
     }
 }
 
