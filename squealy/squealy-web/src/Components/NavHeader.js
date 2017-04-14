@@ -17,7 +17,7 @@ export default class NavBar extends Component {
         <Navbar.Header>
           <Navbar.Brand>
             <a href="/">
-              <img src={logo} />
+              <img src={logo} className='logo'/>
             </a>
           </Navbar.Brand>
         </Navbar.Header>
