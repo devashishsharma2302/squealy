@@ -33,8 +33,7 @@
       border-right: 20px;
 
       .Select-control {
-        border-top-left-radius: 28px;
-        border-bottom-left-radius: 28px;
+        border-radius: 28px;
         background: $squealy-theme-blue;
 
         .Select-value-label {
@@ -59,20 +58,6 @@
       }
     }
 
-    .add-new {
-      cursor: pointer;
-      color: white;
-      font-size: 20px;
-      padding-bottom: 2px;
-      padding-right: 9px;
-      background-color: #0C8ADC;
-      border-bottom-right-radius: 1em;
-      border-top-right-radius: 1em;
-      height: 35px;
-      border: 1px solid #0C8ADC;
-      margin-left: -0.5px;
-      
-    }
   }
   .view-btn {
     float: right;

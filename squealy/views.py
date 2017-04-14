@@ -6,7 +6,6 @@ from django.db import connections
 from django.db.utils import IntegrityError
 from django.shortcuts import render
 from django.db import transaction
-from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 
 
@@ -32,7 +31,7 @@ from .transformers import *
 from .formatters import *
 from .parameters import *
 from .table import Table
-from .models import Chart, Transformation, Validation, Filter, Parameter, FilterParameter, Database
+from .models import Chart, Transformation, Validation, Filter, Parameter, FilterParameter
 from .validators import run_validation
 import json, ast
 
@@ -46,29 +45,18 @@ class DatabaseView(APIView):
     def get(self, request, *args, **kwargs):
         try:
             database_response = []
-            database = Database.objects.all()
+            database = connections.databases
             for db in database:
                 if db != 'default':
                     database_response.append({
-                      'value': db.id,
-                      'label': db.display_name
+                      'value': db,
+                      'label': db
                     })
             if not database_response:
                 raise DatabaseConfigurationException('No databases found. Make sure that you have defined database configuration in django admin')
             return Response({'databases': database_response})
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
-
-    def post(self, request, *args, **kwargs):
-        database = request.data
-        try:
-            Database.objects.create(
-                display_name=database['DISPLAY_NAME'],
-                dj_url=database['dj_url']
-            )
-            return Response({}, status.HTTP_200_OK)
-        except Exception as e:
-            return Response(str(e), status.HTTP_400_BAD_REQUEST)
 
 
 class DataProcessor(object):
