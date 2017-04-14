@@ -52,13 +52,13 @@ class DatabaseView(APIView):
                 # if db != 'default':
                 database_response.append({
                   'value': db,
-                  'label': database[db]['DISPLAY_NAME']
+                  'label': database[db].get('DISPLAY_NAME', 'Test DB')
                 })
             if not database_response:
                 raise DatabaseConfigurationException('No databases found. Make sure that you have defined database configuration in django admin')
             return Response({'databases': database_response})
         except Exception as e:
-            return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
+            return Response({'error': str(e.message)}, status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, *args, **kwargs):
         database = request.data
