@@ -474,7 +474,6 @@ export default class AuthoringInterfaceContainer extends Component {
     } = this.state
     const { googleDefined } = this.props
 
-    console.log(this.state.isLoading)
     if (this.state.isLoading <= 3) {
       return (
           <div className='loader'>
