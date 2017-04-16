@@ -16,6 +16,9 @@
     }
   ],
   "env": {
+   "QUERY_DB": {
+      "description": "Enter your database URI in the following format <mysql/postgres>://<username>:<password>@<host>:<port>/<database>"
+    },
     "ADMIN_USERNAME": {
       "description": "User name for the default admin user",
       "value": "admin"

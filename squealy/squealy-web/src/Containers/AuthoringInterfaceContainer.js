@@ -32,7 +32,7 @@ export default class AuthoringInterfaceContainer extends Component {
     if (this.state.selectedChartIndex === null && this.state.selectedFilterIndex === null) {
       this.setState({ selectedChartIndex: 0, selectedFilterIndex: null }, () => {
         getApiRequest(DOMAIN_NAME + 'charts/', null,
-          (response) => this.loadInitialCharts(response, 'chart'),
+          (response) => { this.setState({isLoading: this.state.isLoading + 1},() => this.loadInitialCharts(response, 'chart'))},
           (error) => this.loadInitialCharts(error, 'chart'), null)
         getApiRequest(DOMAIN_NAME + 'user/', null,
           (data) => {
@@ -51,7 +51,7 @@ export default class AuthoringInterfaceContainer extends Component {
           },
           (error) => console.error(error), null)
         getApiRequest(DOMAIN_NAME + 'filters/', null,
-          (response) => this.loadInitialCharts(response, 'filter'),
+          (response) => { this.setState({isLoading: this.state.isLoading + 1},() => this.loadInitialCharts(response, 'filter'))},
           (error) => this.loadInitialCharts(error, 'filter'), null)
       })
     }
@@ -214,7 +214,7 @@ export default class AuthoringInterfaceContainer extends Component {
         tempData.testParameters = {}
         data.push(tempData)
       })
-      this.setState({ [selectedDataStateKey]: data, isLoading: this.state.isLoading + 1 }, () => {
+      this.setState({ [selectedDataStateKey]: data }, () => {
         const currentPath = window.location.pathname.split('/')
         let selectedIndex = this.state[selectedStateIndex]
         const widgetData = this.state[selectedDataStateKey]
