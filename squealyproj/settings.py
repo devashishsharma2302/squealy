@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'social_django',
+    'blueocean'
 ]
 
 MIDDLEWARE = [
