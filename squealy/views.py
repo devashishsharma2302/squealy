@@ -6,7 +6,6 @@ from django.db import connections
 from django.db.utils import IntegrityError
 from django.shortcuts import render
 from django.db import transaction
-from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 
 
@@ -32,7 +31,7 @@ from .transformers import *
 from .formatters import *
 from .parameters import *
 from .table import Table
-from .models import Chart, Transformation, Validation, Filter, Parameter, FilterParameter, Database
+from .models import Chart, Transformation, Validation, Filter, Parameter, FilterParameter
 from .validators import run_validation
 import json, ast
 
@@ -46,30 +45,18 @@ class DatabaseView(APIView):
     def get(self, request, *args, **kwargs):
         try:
             database_response = []
-            # database = Database.objects.all()
-            database = settings.DATABASES
+            database = connections.databases
             for db in database:
                 # if db != 'default':
                 database_response.append({
                   'value': db,
-                  'label': database[db].get('DISPLAY_NAME', 'Test DB')
+                  'label': database[db].get('DISPLAY_NAME', 'Blue Ocean')
                 })
             if not database_response:
                 raise DatabaseConfigurationException('No databases found. Make sure that you have defined database configuration in django admin')
             return Response({'databases': database_response})
         except Exception as e:
             return Response({'error': str(e.message)}, status.HTTP_400_BAD_REQUEST)
-
-    def post(self, request, *args, **kwargs):
-        database = request.data
-        try:
-            Database.objects.create(
-                display_name=database['DISPLAY_NAME'],
-                dj_url=database['dj_url']
-            )
-            return Response({}, status.HTTP_200_OK)
-        except Exception as e:
-            return Response(str(e), status.HTTP_400_BAD_REQUEST)
 
 
 class DataProcessor(object):
@@ -172,12 +159,9 @@ class DataProcessor(object):
             run_validation(params, user, validation.query, db)
 
     def _check_read_only_query(self, query):
-        if any(keyword in query.upper() for keyword in SQL_WRITE_BLACKLIST):
-            raise DatabaseWriteException('Database write commands not permitted in the query.')
         pass
 
     def _execute_query(self, params, user, chart_query, db):
-        self._check_read_only_query(chart_query)
 
         query, bind_params = jinjasql.prepare_query(chart_query,
                                                     {
@@ -232,7 +216,7 @@ class ChartView(APIView):
         """
         params = request.GET.copy()
         user = request.user
-        data = DataProcessor().fetch_chart_data(chart_url, params, user, request.data.get('chartType'))
+        data = DataProcessor().fetch_chart_data(chart_url, params, user, params.get('chartType'))
         return Response(data)
 
     def post(self, request, chart_url=None, *args, **kwargs):

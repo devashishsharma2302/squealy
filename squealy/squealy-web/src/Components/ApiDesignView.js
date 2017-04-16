@@ -20,7 +20,10 @@ export default class ApiDesignView extends Component {
       selectedFilterChangeHandler,
       onHandleTestFilterButton,
       onResultTabChanged,
-      resultSectionActiveKey
+      resultSectionActiveKey,
+      resultLoading,
+      dataLoading,
+      visualisationLoading
     } = this.props
     let chartMode = selectedChartIndex !== null ? true : false
     const filter = chartMode ? [] : filters[selectedFilterIndex]
@@ -67,7 +70,11 @@ export default class ApiDesignView extends Component {
                 selectedChartChangeHandler={selectedChartChangeHandler}
                 selectedFilterChangeHandler={selectedFilterChangeHandler}
                 onResultTabChanged={onResultTabChanged}
-                resultSectionActiveKey={resultSectionActiveKey} />
+                resultSectionActiveKey={resultSectionActiveKey}
+                resultLoading={resultLoading}
+                dataLoading={dataLoading}
+                visualisationLoading={visualisationLoading}
+                />
             </div>
           </div>
         }
