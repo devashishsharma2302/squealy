@@ -11,17 +11,9 @@ SQL_WRITE_BLACKLIST = [
 SWAGGER_JSON_TEMPLATE = {
         "swagger": "2.0",
         "info": {
-            "description": "This is Squealy Server. You can find out more about Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).  For this sample, you can use the api key `special-key` to test the authorization filters.",
+            "description": "This is Squealy Server.",
             "version": "1.0.0",
-            "title": "Squealy API",
-            "termsOfService": "http://swagger.io/terms/",
-            "contact": {
-                "email": "apiteam@swagger.io"
-            },
-            "license": {
-                "name": "Apache 2.0",
-                "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-            }
+            "title": "Squealy API"
         },
         "host": "",
         "basePath": "",
