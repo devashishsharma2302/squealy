@@ -57,9 +57,6 @@ class JWTAuthentication(object):
         To extract the access token from the request.
         Assumption - The token is passed in key - 'accessToken'
         """
-        if request.method == 'GET':
-            return request.GET.get('accessToken')
-        elif request.method == 'POST':
-            return request.POST.get('accessToken')
+        if request.META.get('HTTP_AUTHORIZATION'):
+            return request.META['HTTP_AUTHORIZATION'].split(' ')[1]
         return None
-

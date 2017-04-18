@@ -61,7 +61,7 @@ class DatabaseView(APIView):
 
 class DataProcessor(object):
 
-    def fetch_chart_data(self, chart_url, params, user, chart_type):
+    def fetch_chart_data(self, chart_url, params, user, chart_type=None):
         """
         This method gets the chart data
         """
