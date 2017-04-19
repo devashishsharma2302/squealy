@@ -32,8 +32,8 @@ export default class AuthoringInterfaceContainer extends Component {
     if (this.state.selectedChartIndex === null && this.state.selectedFilterIndex === null) {
       this.setState({ selectedChartIndex: 0, selectedFilterIndex: null }, () => {
         getApiRequest(DOMAIN_NAME + 'charts/', null,
-          (response) => { this.setState({isLoading: this.state.isLoading + 1},() => this.loadInitialCharts(response, 'chart'))},
-          (error) => this.loadInitialCharts(error, 'chart'), null)
+          (response) => { this.setState({isLoading: this.state.isLoading + 1}, () => this.loadInitialCharts(response, 'chart'))},
+          (error) => { this.setState({isLoading: this.state.isLoading + 1}), () => this.loadInitialCharts(error, 'chart')}, null)
         getApiRequest(DOMAIN_NAME + 'user/', null,
           (data) => {
             this.setState({
@@ -41,7 +41,7 @@ export default class AuthoringInterfaceContainer extends Component {
               isLoading: this.state.isLoading + 1,
             })
           },
-          (error) => console.error(e), null)
+          (error) => { this.setState({isLoading: this.state.isLoading + 1}), () => console.error(error)}, null)
         getApiRequest(DOMAIN_NAME + 'databases/', null,
           (data) => {
             this.setState({
@@ -49,10 +49,10 @@ export default class AuthoringInterfaceContainer extends Component {
               isLoading: this.state.isLoading + 1
             })
           },
-          (error) => console.error(error), null)
+          (error) => { this.setState({isLoading: this.state.isLoading + 1}), () => console.error(error)}, null)
         getApiRequest(DOMAIN_NAME + 'filters/', null,
-          (response) => { this.setState({isLoading: this.state.isLoading + 1},() => this.loadInitialCharts(response, 'filter'))},
-          (error) => this.loadInitialCharts(error, 'filter'), null)
+          (response) => { this.setState({isLoading: this.state.isLoading + 1}, () => this.loadInitialCharts(response, 'filter'))},
+          (error) => { this.setState({isLoading: this.state.isLoading + 1}), this.loadInitialCharts(error, 'filter')}, null)
       })
     }
   }
