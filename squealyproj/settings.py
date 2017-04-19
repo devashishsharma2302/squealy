@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'squealy',
     'corsheaders',
     'rest_framework',
-    'social_django',
+    'social_django'
 ]
 
 MIDDLEWARE = [
@@ -102,11 +102,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'DISPLAY_NAME': 'Test DB'
+
     },
     'query_db': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'DISPLAY_NAME': 'Query Database'
+        'DISPLAY_NAME': 'Sample Database'
     }
 }
 
@@ -172,12 +174,14 @@ STATICFILES_DIRS = [
 
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
-CORS_ORIGIN_WHITELIST = (
-    'localhost:3000',
-    '127.0.0.1'
-)
+# CORS_ORIGIN_WHITELIST = (
+#     'localhost:3000',
+#     '127.0.0.1'
+# )
+#
+# CORS_ORIGIN_WHITELIST += (tuple(os.environ.get('CORS_ORIGIN_WHITELIST', '').split(',')))
 
-CORS_ORIGIN_WHITELIST += (tuple(os.environ.get('CORS_ORIGIN_WHITELIST', '').split(',')))
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Set to False to allow writes
 SITE_READ_ONLY = True

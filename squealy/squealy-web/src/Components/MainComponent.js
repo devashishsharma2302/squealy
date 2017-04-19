@@ -30,6 +30,7 @@ export default class MainComponent extends Component {
       filterSelectionHandler,
       onHandleTestFilterButton,
       onResultTabChanged,
+      resultSectionActiveKey,
       resultLoading,
       dataLoading,
       visualisationLoading
@@ -74,6 +75,7 @@ export default class MainComponent extends Component {
                 filters={filters}
                 onHandleTestFilterButton={onHandleTestFilterButton}
                 onResultTabChanged={onResultTabChanged}
+                resultSectionActiveKey={resultSectionActiveKey}
                 resultLoading={resultLoading}
                 dataLoading={dataLoading}
                 visualisationLoading={visualisationLoading}

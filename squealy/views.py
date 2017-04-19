@@ -47,21 +47,21 @@ class DatabaseView(APIView):
             database_response = []
             database = connections.databases
             for db in database:
-                if db != 'default':
-                    database_response.append({
-                      'value': db,
-                      'label': db
-                    })
+                # if db != 'default':
+                database_response.append({
+                  'value': db,
+                  'label': database[db].get('DISPLAY_NAME') or database[db].get['NAME']
+                })
             if not database_response:
                 raise DatabaseConfigurationException('No databases found. Make sure that you have defined database configuration in django admin')
             return Response({'databases': database_response})
         except Exception as e:
-            return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
+            return Response({'error': str(e.message)}, status.HTTP_400_BAD_REQUEST)
 
 
 class DataProcessor(object):
 
-    def fetch_chart_data(self, chart_url, params, user, chart_type):
+    def fetch_chart_data(self, chart_url, params, user, chart_type=None):
         """
         This method gets the chart data
         """
@@ -168,7 +168,7 @@ class DataProcessor(object):
                                                      "params": params,
                                                      "user": user
                                                     })
-        conn = connections[db]
+        conn = connections[str(db)]
         if conn.settings_dict['NAME'] == 'Athena':
             conn = connect(driver_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'athena-jdbc/AthenaJDBC41-1.0.0.jar'))
         with conn.cursor() as cursor:
@@ -226,7 +226,7 @@ class ChartView(APIView):
         try:
             params = request.data.get('params', {})
             user = request.data.get('user', None)
-            data = DataProcessor().fetch_chart_data(chart_url, params, user, params.get('chartType'))
+            data = DataProcessor().fetch_chart_data(chart_url, params, user, request.data.get('chartType'))
             return Response(data)
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
@@ -271,10 +271,12 @@ class ChartsLoaderView(APIView):
             if request.user.has_perm('squealy.can_edit_' + str(chart.id)):
                 chart_data = ChartSerializer(chart).data
                 chart_data['can_edit'] = True
+                chart_data['options'] = chart.options
                 permitted_charts.append(chart_data)
             elif request.user.has_perm('squealy.can_view_' + str(chart.id)):
                 chart_data = ChartSerializer(chart).data
                 chart_data['can_edit'] = False
+                chart_data['options'] = chart.options
                 permitted_charts.append(chart_data)
 
         return Response(permitted_charts)

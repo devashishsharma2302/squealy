@@ -20,6 +20,7 @@ export default class ApiDesignView extends Component {
       selectedFilterChangeHandler,
       onHandleTestFilterButton,
       onResultTabChanged,
+      resultSectionActiveKey,
       resultLoading,
       dataLoading,
       visualisationLoading
@@ -68,7 +69,8 @@ export default class ApiDesignView extends Component {
                 googleDefined={googleDefined}
                 selectedChartChangeHandler={selectedChartChangeHandler}
                 selectedFilterChangeHandler={selectedFilterChangeHandler}
-                onResultTabChanged={onResultTabChanged} 
+                onResultTabChanged={onResultTabChanged}
+                resultSectionActiveKey={resultSectionActiveKey}
                 resultLoading={resultLoading}
                 dataLoading={dataLoading}
                 visualisationLoading={visualisationLoading}
