@@ -120,7 +120,7 @@ export default class SideMenu extends Component {
     
     return (
       <div className="full-height">
-        <div className="chart-list">
+        <div className="chart-list side-menu-upper">
           <div className="side-menu-heading">
             <img src={chartIcon} alt="chart-icon"/>
             <span>Charts</span>
@@ -130,7 +130,7 @@ export default class SideMenu extends Component {
                 : null
             }
           </div>
-          <ul ref="chartListUl">
+          <ul ref="chartListUl" id="chart-list-ul">
             {
               charts.map((chart, index) => {
                 listClassName = (index === selectedChartIndex) ? 'selected-chart' : ''
@@ -159,7 +159,7 @@ export default class SideMenu extends Component {
             }
           </ul>
         </div>
-        <div className="chart-list">
+        <div className="chart-list side-menu-lower">
           <div className="side-menu-heading">
             <img src={filterIcon} alt="filter-icon"/>
             <span>Dropdown Filters</span>
@@ -169,7 +169,7 @@ export default class SideMenu extends Component {
                 : null
             }
           </div>
-          <ul ref="filterListUl">
+          <ul ref="filterListUl" id="filter-list-ul">
             {
               filters.map((filter, index) => {
                 listClassName = (index === selectedFilterIndex) ? 'selected-chart' : ''
