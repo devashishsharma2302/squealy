@@ -41,7 +41,7 @@ export default class TabsComponent extends Component {
       if (!params[i].test_value && !params[i].default_value) {
         this.setState({
           showParamDefModal: true,
-          note: 'Please update the Test Data OR Default Value for parameters'
+          note: 'Please update the test data or default value for parameters'
         })
         return
       }

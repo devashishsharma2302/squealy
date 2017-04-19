@@ -6,7 +6,7 @@ from squealy.models import Chart, Filter
 class ChartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chart
-        fields = ('id', 'name', 'url', 'query', 'type', 'options', 'account', 'transformations',
+        fields = ('id', 'name', 'url', 'query', 'type', 'account', 'transformations',
                   'validations', 'parameters', 'database', 'transpose')
         depth = 1
 
