@@ -46,8 +46,7 @@ INSTALLED_APPS = [
     'squealy',
     'corsheaders',
     'rest_framework',
-    'social_django',
-    'blueocean'
+    'social_django'
 ]
 
 MIDDLEWARE = [
