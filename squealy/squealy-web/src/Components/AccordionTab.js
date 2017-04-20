@@ -13,7 +13,8 @@ export default class AccordionTab extends Component {
     super(props)
     this.state = {
       accordionHeaderIcon: 'fa-angle-down',
-      showModal: false
+      showModal: false,
+      key: "1"
     }
   }
 
@@ -36,9 +37,13 @@ export default class AccordionTab extends Component {
     this.setState({ showModal: true })
   }
 
+  collapsePanel = () => {
+    this.setState({
+      key: this.state.key === "1" ? "2" : "1"
+    })
+  }
 
   render() {
-   
     const {heading} = this.props
     const AccordionHeader = (
       <div className='accordion-header'>
@@ -54,7 +59,7 @@ export default class AccordionTab extends Component {
               : <h2 className="param-heading">{heading}</h2>
 
           }
-          <i className={'fa fa-2x param-heading-icon ' + this.state.accordionHeaderIcon} />
+          <i className={'fa fa-2x param-heading-icon ' + this.state.accordionHeaderIcon} onClick={this.collapsePanel}/>
           <JinjasqlDescription 
             modalHeader={"Jinjasql usage guide"}
             modalId={1}
@@ -66,13 +71,14 @@ export default class AccordionTab extends Component {
         </div>
       </div>)
     return (
-      <Accordion>
+      <Accordion activeKey={this.state.key} >
         <Panel
           bsClass="param-def-panel"
           header={AccordionHeader}
           defaultExpanded={true}
           onEnter={this.handleAccordionFadeIn}
           onExit={this.handleAccordionFadeOut}
+          eventKey="1"
           >
           <div>{this.props.children}</div>
         </Panel>

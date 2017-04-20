@@ -43,7 +43,7 @@ export default class ResultSection extends Component {
 
     const resultSectionOnSuccess =
       (googleDefined && resultData && resultData.hasOwnProperty('rows')) ?
-            <Tabs activeKey={resultSectionActiveKey} id="uncontrolled_tab_example" onSelect={(key) => onResultTabChanged(key)}>
+            <Tabs activeKey={resultSectionActiveKey} id="uncontrolled_tab_example" onSelect={(key) => {this.setState( {errorMessage: false},() => onResultTabChanged(key))}}>
               <Tab eventKey={1} title="Data">
                 {
                   errorMessage ?
