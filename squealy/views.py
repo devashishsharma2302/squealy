@@ -50,7 +50,7 @@ class DatabaseView(APIView):
                 # if db != 'default':
                 database_response.append({
                   'value': db,
-                  'label': database[db].get('DISPLAY_NAME') or database[db].get['NAME']
+                  'label': db
                 })
             if not database_response:
                 raise DatabaseConfigurationException('No databases found. Make sure that you have defined database configuration in django admin')
