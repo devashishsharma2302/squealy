@@ -357,17 +357,19 @@ export default class AuthoringInterfaceContainer extends Component {
   // Handles click event on run button. This function makes a POST call to get
   // result set of the query written by the user and triggers onSuccessTest if
   // the API is successfull
-  onHandleTestButton = (callback = null) => {
-    this.setState({
+  onHandleTestButton = (callback=null) => {
+    if (this.state.saveInProgress !== true) {
+      this.setState({
       resultLoading:true
-    })
-    const selectedChart = this.state.charts[this.state.selectedChartIndex]
-    let payloadObj = formatTestParameters(selectedChart.parameters, 'name', 'test_value')
-    if (this.state.resultSectionActiveKey == 1) {
-      payloadObj['chartType'] = 'Table'
+      })
+      const selectedChart = this.state.charts[this.state.selectedChartIndex]
+      let payloadObj = formatTestParameters(selectedChart.parameters, 'name', 'test_value')
+      if (this.state.resultSectionActiveKey == 1) {
+        payloadObj['chartType'] = 'Table'
+      }
+      postApiRequest(DOMAIN_NAME+'squealy/'+selectedChart.url+'/', payloadObj,
+                      this.onSuccessTest, this.onErrorTest, callback)
     }
-    postApiRequest(DOMAIN_NAME + 'squealy/' + selectedChart.url + '/', payloadObj,
-      this.onSuccessTest, this.onErrorTest, callback)
   }
 
   onResultTabChanged = (key, callback = null) => {
@@ -421,8 +423,11 @@ export default class AuthoringInterfaceContainer extends Component {
     this.setState({
       selectedChartIndex: index,
       selectedFilterIndex: null,
-      currentChartMode: this.state.charts[index].can_edit || false
-    }, () => this.setUrlPath('chart'))
+      currentChartMode: this.state.charts[index].can_edit || false},
+       () => {
+        this.setUrlPath('chart')
+        this.onResultTabChanged(1)
+        })
   }
 
   //Changes the selected API index to the one which was clicked from the Filter list
@@ -468,6 +473,7 @@ export default class AuthoringInterfaceContainer extends Component {
       databases,
       filters,
       selectedFilterIndex,
+      resultSectionActiveKey,
       resultLoading,
       dataLoading,
       visualisationLoading
@@ -507,6 +513,7 @@ export default class AuthoringInterfaceContainer extends Component {
           filterSelectionHandler={this.filterSelectionHandler}
           onHandleTestFilterButton={this.onHandleTestFilterButton}
           onResultTabChanged={this.onResultTabChanged}
+          resultSectionActiveKey={resultSectionActiveKey}
           resultLoading={resultLoading}
           dataLoading={dataLoading}
           visualisationLoading={visualisationLoading}

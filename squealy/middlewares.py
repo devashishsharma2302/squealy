@@ -20,7 +20,7 @@ class JWTAuthentication(object):
         if not request.user.is_authenticated() and token:
             user = self._authenticate(token)
             if user:
-                login(request, user)
+                login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                 request.user = user
         response = self.get_response(request)
 
@@ -32,7 +32,7 @@ class JWTAuthentication(object):
     def _authenticate(self, token):
         """"
         Decode the jwt token and return the user. Create new user if the user does not exist already.
-        Add the user to groups that are provoded in the jwt token.
+        Add the user to groups that are provided in the jwt token.
         """
         try:
             jwt_key = os.environ.get('JWT_KEY')
@@ -57,9 +57,6 @@ class JWTAuthentication(object):
         To extract the access token from the request.
         Assumption - The token is passed in key - 'accessToken'
         """
-        if request.method == 'GET':
-            return request.GET.get('accessToken')
-        elif request.method == 'POST':
-            return request.POST.get('accessToken')
+        if request.META.get('HTTP_AUTHORIZATION'):
+            return request.META['HTTP_AUTHORIZATION'].split(' ')[1]
         return None
-
