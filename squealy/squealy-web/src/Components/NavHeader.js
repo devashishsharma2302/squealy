@@ -35,7 +35,7 @@ export default class NavBar extends Component {
             </NavItem>
             <NavDropdown eventKey={2} title={userInfo.name} id='user_info_dropdown'>
                 <MenuItem eventKey={2.1}>{userInfo.email ? userInfo.email : 'No Email'}</MenuItem>
-                {userInfo.isAdmin ? <MenuItem eventKey={2.2} href={'/admin'} target={'_blank'}>Admin</MenuItem> : null}
+                {userInfo.isAdmin ? <MenuItem eventKey={2.2} href={baseUrl() + 'admin'} target={'_blank'}>Admin</MenuItem> : null}
                 <MenuItem eventKey={2.2} href={DOCUMENT_URL} target={'_blank'}>Help</MenuItem>
                 <MenuItem divider />
                 <MenuItem eventKey={2.2} href={baseUrl() + 'logout'}>Logout</MenuItem>
