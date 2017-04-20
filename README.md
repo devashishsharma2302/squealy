@@ -149,6 +149,10 @@ WHERE booking_date
 BETWEEN {{ params.start_date }}
 AND {{ params.end_date }};
 ```
+Once you are done creating your charts, you can get a documentation of all the REST APIs for these charts. To view this documentation, got to 
+```
+<your-domain>/swagger
+```
 
 <p align="center">
   <img src="./Readme-mediafiles/swagger.png" />
@@ -179,12 +183,6 @@ For above example, City filter should render after Country filter.
 ### Validations
 With every chart, you can attach another SQL query that would validate the API. The API would return a 403 Forbidden response, if the validation query returns no rows.
 
-### Transformations
-SQueaLy provides some transformation functions for processing the data after executing the query. Currently, 3 transformations are supported:
-
-- **Transpose:** This would return the transpose of the data table that is returned from the query.
-- **Merge:** This merges two columns into a single column and distributes the data accordingly.
-- **Split:** This is an alternative to pivoting the table. Chose a column to split and a metric column that is to be distributed.
 
 ### JWT Authentication
 SQueaLy provides a mechanism to log in a user via an access token that would help in sharing some other application's user-base with squealy without the need to import the users in SQueaLy database.
