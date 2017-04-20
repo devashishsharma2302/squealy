@@ -1,6 +1,6 @@
 # Fastrack analytics for your business. Use SQueaLy #
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)  
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy/?template=https://github.com/hashedin/squealy/tree/phase-2)  
 [![Build Status](https://travis-ci.org/hashedin/squealy.svg?branch=phase-2)](https://travis-ci.org/hashedin/squealy)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
 
