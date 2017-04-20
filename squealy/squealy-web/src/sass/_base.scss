@@ -95,7 +95,7 @@ button {
   background: $primary;
 }
 ::-webkit-scrollbar-track {
-  background: #EDEDEE;
+  background: $light-gray-color;
   border: 0px none $white_color;
   border-radius: 50px;
 }
