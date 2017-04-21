@@ -1,6 +1,6 @@
 # Fastrack analytics for your business. Use SQueaLy #
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)  
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy/?template=https://github.com/hashedin/squealy/tree/phase-2)  
 [![Build Status](https://travis-ci.org/hashedin/squealy.svg?branch=phase-2)](https://travis-ci.org/hashedin/squealy)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
 
@@ -36,7 +36,7 @@ SQueaLy also provides you the interface to schedule emails with reports embedded
 - Group the reports you want to send in the email
 - Write a [cron expression](http://docwiki.embarcadero.com/Connect/en/Writing_a_CRON_Expression) to schedule the email
 
-Not just that. For white labling, you can even customize the look and feel of the email message by providing the HTML for it 
+Not just that. For white labling, you can even customize the look and feel of the email message by providing the HTML for it
 
 
 ## Key Features
@@ -57,7 +57,7 @@ SQueaLy uses JinjaSQL behind the scenes which gives you power to **use JINJA ins
 
 **Permission based model**  
 
-SQueaLy provides you the ability to assign view/edit permission to any user for each chart/report. 
+SQueaLy provides you the ability to assign view/edit permission to any user for each chart/report.
 
 **Multiple Databases**  
 
@@ -102,14 +102,14 @@ For non-Django folks: By default, the admin user has all permissions.
 SQueaLy generates APIs in real-time corresponding to each chart. Just hit the API corresponding to your chart_url,
 **NOTE:** The chart_url is the chart name in lower case, replacing spaced by hyphen ('-')
 
-``` 
+```
 <your_domain>/squealy/<chart_url>?<param_name>=<value>&<param_name>=<value>
 ```
 This API will return the data in the format that is compatible with **GoogleCharts**.
 
 ### Query Parameterization
 To add a parameter, you need to use the keyword object "**params**" inside your jinja template.
-For example, to include a parameter named **foo**, 
+For example, to include a parameter named **foo**,
 
 ``` sql
 SELECT * from some_table
@@ -126,7 +126,7 @@ SQueaLy allows you to use user parameters inside the query template, the values 
 
 Use the keyword object "**user**" in the jinja template to access the **request.user** object provided by Django. For further details, checkout [Django User Objects](https://docs.djangoproject.com/en/1.10/topics/auth/default/#user-objects).
 
-For example, 
+For example,
 
 ``` sql
 --- To see the bookings of the current user only.
@@ -134,6 +134,25 @@ SELECT bookings from bookings_table
 WHERE some_value = {{params.foo}}
 AND name = {{user.username}}
 ```
+
+### Swagger Documentation
+[Swagger](http://swagger.io/)  is an integrated, cloud based API development platform that combines the core capabilities of Swagger with advanced features to build, document, and deploy APIs.
+
+``` sql
+--- Query for testchart1.
+SELECT * from bookings_table
+WHERE booking_id = {{ params.booking_id }};
+
+--- Query for testchart2
+SELECT * from bookings_table
+WHERE booking_date
+BETWEEN {{ params.start_date }}
+AND {{ params.end_date }};
+```
+
+<p align="center">
+  <img src="./Readme-mediafiles/swagger.png" />
+</p>
 
 ### Dropdown Filter APIs
 SQueaLy provides Filter APIs to add Dropdown options. You just need to write the query to get the data from the database.
@@ -160,7 +179,7 @@ For above example, City filter should render after Country filter.
 ### Validations
 With every chart, you can attach another SQL query that would validate the API. The API would return a 403 Forbidden response, if the validation query returns no rows.
 
-### Transformations 
+### Transformations
 SQueaLy provides some transformation functions for processing the data after executing the query. Currently, 3 transformations are supported:
 
 - **Transpose:** This would return the transpose of the data table that is returned from the query.
@@ -169,12 +188,12 @@ SQueaLy provides some transformation functions for processing the data after exe
 
 ### JWT Authentication
 SQueaLy provides a mechanism to log in a user via an access token that would help in sharing some other application's user-base with squealy without the need to import the users in SQueaLy database.
-- **JWT_KEY** - This is setup in the environment while deploying SQueaLy app. This is the private key that is shared between squealy and the other application which is directing users to SQueaLy. 
+- **JWT_KEY** - This is setup in the environment while deploying SQueaLy app. This is the private key that is shared between squealy and the other application which is directing users to SQueaLy.
 - **Token encoding**: Use the above key to create a jwt token in your application with the following payload:
     ``` js
     {
     "username": "foo", //Squealy assumes the authenticity of this user is handled by the directing application.
-    
+
     "groups": ["g1", "g2", "g3"] //List of Django permission groups that this user belongs to.
     }
     ```
@@ -182,7 +201,7 @@ SQueaLy provides a mechanism to log in a user via an access token that would hel
 
 ## Scheduling emails
 
-The scheduled emails can contain as many reports(charts) as you want. You just have to associate the reports(charts) you want in the email with the scheduled email. 
+The scheduled emails can contain as many reports(charts) as you want. You just have to associate the reports(charts) you want in the email with the scheduled email.
 
 To schedule emails embedded with reports, got to the Django admin and select the **Scheduled reports** model. On doing so you will see a form like this
 
@@ -201,7 +220,7 @@ You can customize the look and feel of the email body by writting HTML here. Do 
 Enter a valid cron expression to tell the schedule of the email. For examle, to schedule an email for 11AM everyday, the cron expression should be ```0 11 *	*	*```
 
 ### Report Parameters
-This would contain all the values of the parameters used in the database queries. For example 
+This would contain all the values of the parameters used in the database queries. For example
 ```
 If you have two reports(charts), one of them uses the parameter - facility-id and the other one uses  
 two parameters - start_date and end_date. Then you need to provide the names of these parameters with  
@@ -211,7 +230,7 @@ their corresponding values to be used while generating the reports for an email
 ### Report Recipients
 This would contain the email address of all the recipients of a particular scheduled email.
 
-### Associatong charts with Scheduled reports. 
+### Associatong charts with Scheduled reports.
 To associate charts with scheduled reports i.e. to determine which report has to be sent inwhich email, go tho Django admin and select the **Scheduled Report Charts** model. On doing so you will see a form like this
 
 
@@ -255,7 +274,7 @@ export KEY=VALUE
 - QUERY_DB - This is the DB used to run the queries on. Enter comma separated URLs for multiple DBs.
 - ADMIN_USERNAME - This is the default admin's username that would be created with the first migration command.
 - ADMIN_PASS - This is the password for the default admin user.
-- JWT_KEY - This is the shared private key that will be used to decode the JWT token. This is required for optionally enabling JWT Authentication mechanism that would enable the user to login via an access token parameter in the url or request body. For more information refer [above](#jwt-authentication). 
+- JWT_KEY - This is the shared private key that will be used to decode the JWT token. This is required for optionally enabling JWT Authentication mechanism that would enable the user to login via an access token parameter in the url or request body. For more information refer [above](#jwt-authentication).
 
 **Running the migrations**
 ```
