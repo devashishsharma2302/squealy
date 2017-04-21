@@ -47,11 +47,11 @@ class DatabaseView(APIView):
             database_response = []
             database = connections.databases
             for db in database:
-                # if db != 'default':db
-                database_response.append({
-                  'value': db,
-                  'label': database[db]['OPTIONS']['display_name'] if 'OPTIONS' in database[db] and 'display_name' in database[db]['OPTIONS'] else db
-                })
+                if db != 'default':
+                    database_response.append({
+                      'value': db,
+                      'label': database[db]['OPTIONS']['display_name'] if 'OPTIONS' in database[db] and 'display_name' in database[db]['OPTIONS'] else db
+                    })
             if not database_response:
                 raise DatabaseConfigurationException('No databases found. Make sure that you have defined database configuration in django admin')
             return Response({'databases': database_response})
@@ -270,11 +270,15 @@ class ChartsLoaderView(APIView):
         for chart in charts:
             if request.user.has_perm('squealy.can_edit_' + str(chart.id)):
                 chart_data = ChartSerializer(chart).data
+                for index, parameter in enumerate(chart_data['parameters']):
+                    parameter['kwargs'] = chart.parameters.all()[index].kwargs
                 chart_data['can_edit'] = True
                 chart_data['options'] = chart.options
                 permitted_charts.append(chart_data)
             elif request.user.has_perm('squealy.can_view_' + str(chart.id)):
                 chart_data = ChartSerializer(chart).data
+                for index, parameter in enumerate(chart_data['parameters']):
+                    parameter['kwargs'] = chart.parameters.all()[index].kwargs
                 chart_data['can_edit'] = False
                 chart_data['options'] = chart.options
                 permitted_charts.append(chart_data)
