@@ -186,6 +186,12 @@ hr {
   border-color: $squealy-theme-blue-active;
 }
   
+.btn-primary:focus {
+    color: #fff !important;
+    background-color: $squealy-theme-blue !important;
+    border-color: $squealy-theme-blue !important;
+}
+
 .btn-success {
   background: $squealy-success;
   border-color: $squealy-success;
