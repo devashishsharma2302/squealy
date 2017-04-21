@@ -50,6 +50,7 @@ export default class ChartConfigModal extends Component {
         <div className='row add-modal-content'>
           <div className='col-md-6'>
             <div className="validation-query">
+              <FormErrorMessage classValue={"chart-configuration-title"} message={"Customize Configurations"}/>
               <AceEditor
                 mode="json"
                 theme="tomorrow"
@@ -71,6 +72,7 @@ export default class ChartConfigModal extends Component {
           </button>
           <div className='col-md-5'>
             <div className="validation-query-example">
+              <FormErrorMessage classValue={"chart-configuration-title"} message={"Sample Configurations"}/>
               <AceEditor
                 mode="json"
                 theme="tomorrow"
