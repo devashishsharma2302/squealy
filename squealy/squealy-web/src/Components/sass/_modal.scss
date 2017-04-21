@@ -8,6 +8,12 @@
     padding: 0 4px 0 0 ;
   }
 
+  .chart-configuration-title {
+      color: $squealy-theme-blue;
+      display: flex;
+      justify-content: center;
+    }
+
   .add-modal-content {
     > button.btn-success {
       margin-top: 10px;
