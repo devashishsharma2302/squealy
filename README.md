@@ -201,7 +201,13 @@ SQueaLy provides a mechanism to log in a user via an access token that would hel
 
 The scheduled emails can contain as many reports(charts) as you want. You just have to associate the reports(charts) you want in the email with the scheduled email.
 
-To schedule emails embedded with reports, got to the Django admin and select the **Scheduled reports** model. On doing so you will see a form like this
+To schedule emails embedded with reports, initialize the following variables in the environment:
+1. EMAIL_HOST
+2. EMAIL_HOST_USER
+3. EMAIL_HOST_PASSWORD
+4. EMAIL_PORT
+
+Then, go to the Django admin and select the **Scheduled reports** model. On doing so you will see a form like this
 
 
 <p align="center">
