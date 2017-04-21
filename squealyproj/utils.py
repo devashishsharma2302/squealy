@@ -14,6 +14,7 @@ def extract_dj_database_urls(databases_as_string, DATABASES):
             db_config = dj_database_url.parse(db, conn_max_age=500)
             database_type = db.split(":")[0].strip()
             if (database_type == 'postgres'):
-                db_config['OPTIONS'] = {'options': ''}
+                if 'OPTIONS' not in db_config:
+                    db_config['OPTIONS'] = {'options': ''}
                 db_config['OPTIONS']['options'] = '-c default_transaction_read_only=on'
             DATABASES[db_config['NAME']] = db_config

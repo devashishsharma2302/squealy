@@ -270,11 +270,15 @@ class ChartsLoaderView(APIView):
         for chart in charts:
             if request.user.has_perm('squealy.can_edit_' + str(chart.id)):
                 chart_data = ChartSerializer(chart).data
+                for index, parameter in enumerate(chart_data['parameters']):
+                    parameter['kwargs'] = chart.parameters.all()[index].kwargs
                 chart_data['can_edit'] = True
                 chart_data['options'] = chart.options
                 permitted_charts.append(chart_data)
             elif request.user.has_perm('squealy.can_view_' + str(chart.id)):
                 chart_data = ChartSerializer(chart).data
+                for index, parameter in enumerate(chart_data['parameters']):
+                    parameter['kwargs'] = chart.parameters.all()[index].kwargs
                 chart_data['can_edit'] = False
                 chart_data['options'] = chart.options
                 permitted_charts.append(chart_data)

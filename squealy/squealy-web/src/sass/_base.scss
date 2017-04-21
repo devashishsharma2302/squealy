@@ -26,7 +26,7 @@ a[role="menuitem"] > i.fa {
 }
 
 .full-height {
-  height: 100%
+  height: 100%;
 }
 
 .active {
@@ -95,7 +95,7 @@ button {
   background: $primary;
 }
 ::-webkit-scrollbar-track {
-  background: $white-color;
+  background: $light-gray-color;
   border: 0px none $white_color;
   border-radius: 50px;
 }
