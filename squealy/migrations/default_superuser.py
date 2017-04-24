@@ -33,28 +33,24 @@ def create_default_superuser(apps, schema_editor):
 
     Title - Worldwide Buisiness Analytics Market Share
     */
-    SELECT  *
-    FROM (
-        VALUES
-        ('SAP', 21),
-        ('Oracle', 14),
-        ('IBM', 13),
-        ('SAS Institute', 12),
-        ('Microsoft', 9),
-        ('Others', 31)
-        ) AS market_share (company, share);
+
+    SELECT 'SAP' as company, 21 as share
+    union
+    SELECT 'Oracle', 14
+    union
+    SELECT 'IBM', 13
+    union
+    SELECT 'SAS Institute', 12
+    union
+    SELECT 'Microsoft', 9
+    union
+    SELECT 'Others', 31;
+
     """,
         type='PieChart',
         options={
             "is3D": "true",
-            "chartArea": {
-                "width": "80%",
-                "top": "10%",
-                "height": "80%",
-                "left": "5%"
-            },
             "pieSliceText": "label",
-            "width": 20,
             "title": "Worldwide Buisiness Analytics Market Share"
         }
     )
