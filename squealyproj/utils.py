@@ -17,7 +17,9 @@ def extract_dj_database_urls(databases_as_string, DATABASES):
                 if 'OPTIONS' not in db_config:
                     db_config['OPTIONS'] = {'options': ''}
                 db_config['OPTIONS']['options'] = '-c default_transaction_read_only=on'
-                display_name =  db_config['OPTIONS'].get('display_name', db_config['NAME'])
+            display_name = db_config['NAME']
+            if db_config.get('OPTIONS') and db_config['OPTIONS'].get('display_name'):
+                display_name =  db_config['OPTIONS'].get('display_name')
                 del db_config['OPTIONS']['display_name']
             DATABASES[display_name] = db_config
             del DATABASES['query_db']
