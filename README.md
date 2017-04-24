@@ -195,7 +195,12 @@ SQueaLy provides a mechanism to log in a user via an access token that would hel
     "groups": ["g1", "g2", "g3"] //List of Django permission groups that this user belongs to.
     }
     ```
-- **Sending the token**: You can send this token as a url parameter in a GET request or as a body parameter in a POST request to any of the squealy APIs. SQueaLy would ensure to login the user before handling the request.
+- **Sending the token**: You can send this token in the request header. SQueaLy would ensure to login the user before handling the request.
+
+Here is an example of hoe the request header should look like:
+```
+  Authorization: Bearer <token>
+```
 
 ## Scheduling emails
 
@@ -234,7 +239,7 @@ their corresponding values to be used while generating the reports for an email
 ### Report Recipients
 This would contain the email address of all the recipients of a particular scheduled email.
 
-### Associatong charts with Scheduled reports.
+### Associating charts with Scheduled reports.
 To associate charts with scheduled reports i.e. to determine which report has to be sent inwhich email, go tho Django admin and select the **Scheduled Report Charts** model. On doing so you will see a form like this
 
 
