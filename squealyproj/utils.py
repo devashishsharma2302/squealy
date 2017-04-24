@@ -20,3 +20,4 @@ def extract_dj_database_urls(databases_as_string, DATABASES):
                 display_name =  db_config['OPTIONS'].get('display_name', db_config['NAME'])
                 del db_config['OPTIONS']['display_name']
             DATABASES[display_name] = db_config
+            del DATABASES['query_db']
