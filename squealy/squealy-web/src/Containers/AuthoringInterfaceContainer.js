@@ -130,7 +130,7 @@ export default class AuthoringInterfaceContainer extends Component {
     } else {
       this.setState({
         [widgetStateKeyData]: [],
-        [selectedWidgetIndex]: 0,
+        [selectedWidgetIndex]: null,
         savedStatus: true,
         saveInProgress: false,
         currentChartMode: false,

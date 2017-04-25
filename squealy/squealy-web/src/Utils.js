@@ -1,3 +1,5 @@
+import React, { Component } from 'react';
+
 import {
   GOOGLE_CHART_TYPE_OPTIONS
 } from './Constant'
@@ -327,4 +329,15 @@ export function formatForDropdown(data) {
     })
   })
   return result
+}
+
+export const MainErrorMessage = ({ errorComponent }) => {
+  return (
+    <div className='full-height no-charts'>
+      <div className='col-md-6 col-md-offset-3 instructions'>
+        <h2> No {errorComponent} to show. </h2>
+        <h6>Add new {errorComponent} if you see the plus icon in the side menu, or ask your administrator to add one for you.</h6>
+      </div>
+    </div>
+  )
 }

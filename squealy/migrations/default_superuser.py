@@ -51,7 +51,8 @@ def create_default_superuser(apps, schema_editor):
         options={
             "is3D": "true",
             "pieSliceText": "label",
-            "title": "Worldwide Buisiness Analytics Market Share"
+            "title": "Worldwide Buisiness Analytics Market Share",
+            "height": 350
         }
     )
     default_chart.save()
