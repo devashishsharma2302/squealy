@@ -79,7 +79,7 @@ export default class ApiDesignView extends Component {
           </div>
         }
         {
-          currentChartMode === false && (selectedChartIndex >= 0) &&
+          currentChartMode === false && ( selectedChartIndex !== null && selectedChartIndex >= 0) &&
           <div className="col-md-12">
             <ViewOnlyResults
               chart={chart}
@@ -87,6 +87,15 @@ export default class ApiDesignView extends Component {
               filters={filters}
             />
           </div>
+        }
+        {
+          currentChartMode === null && selectedChartIndex === null && selectedFilterIndex === null &&
+          <div className='full-height no-charts'>
+                <div className='col-md-6 col-md-offset-3 instructions'>
+                  <h2> No filters to show. </h2>
+                  <h6>Add a new filter if you see the plus icon in the side menu, or ask your administrator to add one for you.</h6>
+                </div>
+            </div>
         }
         </div>
       )

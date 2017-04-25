@@ -115,7 +115,7 @@ export default class TabsComponent extends Component {
       icon: <i className="fa fa-pencil"/>
     }
     const widget = chartMode ? chart : filter
-    if (widget.can_edit) {
+    if ( widget && widget.can_edit) {
       viewButton.className = ''
       viewButton.title = null
       if (currentChartMode) {
