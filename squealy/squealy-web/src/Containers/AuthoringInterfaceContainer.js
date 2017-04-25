@@ -279,7 +279,7 @@ export default class AuthoringInterfaceContainer extends Component {
     canEditUrl = (accessMode && !window.location.pathname.includes('view')) ? 'edit' : 'view'
     //Only edit mode is valid for dropdown filters api
     canEditUrl = (type === 'filter' || (type === 'chart' && !charts[selectedChartIndex])) ? 'edit' : canEditUrl
-    newUrl = '/' + prefix + '/' + selectedData.name + '/' + canEditUrl
+    newUrl = '/' + prefix + '/' + selectedData.name + '/' + canEditUrl + window.location.search
     //currentChartMode will be null for filters to avoid manipulating view by changing url.
 
     accessMode = (type === 'chart') ?
