@@ -37,8 +37,6 @@ export default class MainComponent extends Component {
       visualisationLoading
     } = this.props
 
-    console.log('I am in filters',filters);
-
     return (
       <div className="full-height">
         <NavHeader savedStatus={savedStatus} saveInProgress={saveInProgress} userInfo={userInfo} />
