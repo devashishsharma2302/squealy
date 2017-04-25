@@ -36,6 +36,9 @@ export default class MainComponent extends Component {
       dataLoading,
       visualisationLoading
     } = this.props
+
+    console.log('I am in filters',filters);
+
     return (
       <div className="full-height">
         <NavHeader savedStatus={savedStatus} saveInProgress={saveInProgress} userInfo={userInfo} />
@@ -59,7 +62,7 @@ export default class MainComponent extends Component {
               />
           </div>
           <div className="col-md-9 api-design-container">
-            {(charts.length) ?
+            {!(charts.length === 0 && filters.length === 0) ?
               <div>
                 {
                   !(currentChartMode === null && selectedChartIndex === null && selectedFilterIndex === null) ?
