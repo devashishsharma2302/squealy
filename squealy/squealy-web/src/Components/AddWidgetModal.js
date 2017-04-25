@@ -17,7 +17,7 @@ export default class AddWidgetModal extends Component {
   componentWillReceiveProps(nextProps) {
     if (JSON.stringify(nextProps) !== JSON.stringify(this.props)) {
       const {editMode, widgetData, selectedWidgetIndex} = nextProps
-      if (editMode && selectedWidgetIndex && widgetData.length > selectedWidgetIndex) {
+      if (editMode && (selectedWidgetIndex !== null && selectedWidgetIndex !== undefined) && widgetData.length > selectedWidgetIndex) {
         this.setState({
           database: widgetData[selectedWidgetIndex].database,
           widgetName: widgetData[selectedWidgetIndex].name
