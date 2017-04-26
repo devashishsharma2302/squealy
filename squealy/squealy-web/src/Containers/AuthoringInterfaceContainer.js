@@ -343,14 +343,17 @@ export default class AuthoringInterfaceContainer extends Component {
 
   // Updates the selected chart with the error message recieved from the backend
   onErrorTest = (e) => {
+    console.log(e)
     let charts = JSON.parse(JSON.stringify(this.state.charts))
     charts[this.state.selectedChartIndex].apiErrorMsg = e.responseJSON.error
     this.setState({ charts: charts,  resultLoading: false, dataLoading: false, visualisationLoading: false })
   }
 
   onErrorFilterTest = (e) => {
+    console.log(e)
     let curFilterData = JSON.parse(JSON.stringify(this.state.filters))
     curFilterData[this.state.selectedFilterIndex].apiErrorMsg = e.responseJSON.error
+    console.log(curFilterData)
     this.setState({ filters: curFilterData })
   }
 

@@ -452,13 +452,16 @@ class FilterView(APIView):
         """
         This is the API endpoint for executing the query and returning the data for a particular Filter
         """
-        user = request.user
-        payload = request.GET.get("payload", None)
-        payload = json.loads(payload)
-        format_type = payload.get('format')
-        params = payload.get('params')
-        data = DataProcessor().fetch_filter_data(filter_url, params, format_type, user)
-        return Response(data)
+        try:
+            user = request.user
+            payload = request.GET.get("payload", None)
+            payload = json.loads(payload)
+            format_type = payload.get('format')
+            params = payload.get('params')
+            data = DataProcessor().fetch_filter_data(filter_url, params, format_type, user)
+            return Response(data)
+        except Exception as e:
+            return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
 
 
 class FilterLoaderView(APIView):
