@@ -1,4 +1,5 @@
 import os
+import re
 
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
@@ -26,7 +27,7 @@ from .exceptions import RequiredParameterMissingException,\
                         ChartNotFoundException, MalformedChartDataException, \
                         TransformationException, DatabaseWriteException, DuplicateUrlException,\
                         FilterNotFoundException, DatabaseConfigurationException,\
-                        SelectedDatabaseException
+                        SelectedDatabaseException, ChartNameInvalidException
 from .transformers import *
 from .formatters import *
 from .parameters import *
@@ -303,6 +304,9 @@ class ChartsLoaderView(APIView):
         """
         try:
             data = request.data['chart']
+            chart_name_regex = re.compile(r'[a-zA-Z0-9\-_]+$')
+            if not chart_name_regex.match(data['url']):
+                raise ChartNameInvalidException("""Only allowed special characters are hyphen(-) and underscore(_) """)
             chart_object = Chart(
                             id=data['id'],
                             name=data['name'],
