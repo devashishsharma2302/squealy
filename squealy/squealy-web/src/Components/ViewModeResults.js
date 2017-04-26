@@ -61,14 +61,18 @@ export default class ViewOnlyResults extends Component {
     const parameters = propsData.chart.parameters
 
     payloadObj = formatTestParameters(parameters, 'name', 'default_value')
-    if (payloadObj.hasOwnProperty('params') && payloadObj.params) {
-      payloadObj.params.chartType = propsData.chart.type
-    }
-    
     if (urlParams) {
       Object.keys(urlParams).map((key) => {
-        payloadObj.params[key] = urlParams[key]
+        if (key === 'chartType') {
+          payloadObj.chartType = urlParams[key]
+        }
+        else {
+          payloadObj.params[key] = urlParams[key]
+        }
       })
+    }
+    else {
+      payloadObj.chartType = propsData.chart.type
     }
 
     postApiRequest(DOMAIN_NAME + 'squealy/' + propsData.chart.url + '/', payloadObj,
@@ -159,15 +163,22 @@ export default class ViewOnlyResults extends Component {
 
   updateUrl = () => {
     const { payloadObj } = this.state
-    setUrlParams(payloadObj.params)
+    let urlParams = {"chartType": payloadObj.chartType, ...payloadObj.params}
+    setUrlParams(urlParams)
   }
 
   //Update the type of chart selected
   updateChartType = (value) => {
     let payloadObj = JSON.parse(JSON.stringify(this.state.payloadObj))
-    payloadObj.params['chartType'] = value
+    payloadObj.chartType = value
     this.setState({
-      payloadObj: payloadObj, chartLoading: true }, this.updateUrl)
+      payloadObj: payloadObj, chartLoading: true }, 
+      () => 
+        { 
+          this.updateUrl()
+          postApiRequest(DOMAIN_NAME + 'squealy/' + this.props.chart.url + '/', this.state.payloadObj,
+          this.onSuccessTest, this.onErrorTest, 'table')
+        })
   }
 
   onSuccessTest = (response) => {
@@ -242,7 +253,7 @@ export default class ViewOnlyResults extends Component {
                 <SquealyDropdown
                   name='chartType'
                   options={GOOGLE_CHART_TYPE_OPTIONS}
-                  selectedValue={this.state.payloadObj.params['chartType']}
+                  selectedValue={this.state.payloadObj.chartType}
                   onChangeHandler={(value) => this.updateChartType(value)} />
               }
             </div>
@@ -258,7 +269,7 @@ export default class ViewOnlyResults extends Component {
                         <GoogleChartsComponent
                           chartData={this.state.chartData}
                           options={chart.options}
-                          chartType={this.state.payloadObj.params['chartType']}
+                          chartType={this.state.payloadObj.chartType}
                           id={'visualisation_' + chart.id} /> : null)
                   }
                 </div>
