@@ -90,3 +90,8 @@ class DatabaseConfigurationException(APIException):
 class SelectedDatabaseException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     pass
+
+
+class ChartNameInvalidException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    pass
