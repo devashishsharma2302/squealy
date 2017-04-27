@@ -158,7 +158,7 @@ export default class TabsComponent extends Component {
             { chartMode && 
               <Button
                 bsStyle='primary'
-                className='tab-component'
+                className='tab-component validation-btn'
                 onClick={() => this.modalVisibilityHandler('showValidationsModal')}>
                   Validations
                   <NotificationBadge
