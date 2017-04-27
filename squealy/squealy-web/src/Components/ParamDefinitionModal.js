@@ -15,8 +15,8 @@ export default class ParamDefinitionModal extends Component {
       selectedType: 'query',
       paramDefinition: getEmptyParamDefinition(),
       editMode: false,
-      selectedDateFormat: 'DD-MM-YYYY',
-      selectedDateTimeFormat: 'DD-MM-YYYY LT',
+      selectedDateFormat: '',
+      selectedDateTimeFormat: '',
       errorName: false,
       errorTestValue: false,
       errorDefaultValue: false,
@@ -120,6 +120,9 @@ export default class ParamDefinitionModal extends Component {
       dateTimeFormat = 'DD-MM-YYYY LT',
       selectedDropdownAPI = ''
     currentParamDefinition['data_type'] = value
+    if (value === 'date' || value === 'datetime'){
+        currentParamDefinition['kwargs']['format'] = (value === 'date') ? dateFormat: dateTimeFormat
+      }
     dateFormat = this.state.selectedDateFormat || dateFormat
     dateTimeFormat = this.state.selectedDateTimeFormat || dateTimeFormat
     selectedDropdownAPI = (value === 'dropdown' && this.state.dropdownApiOptions.length) ? 
