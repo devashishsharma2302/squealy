@@ -24,8 +24,8 @@ SWAGGER_JSON_TEMPLATE = {
             }
         ],
         "schemes": [
-            "https",
-            "http"
+            "http",
+            "https"
         ],
         "paths": {
 
