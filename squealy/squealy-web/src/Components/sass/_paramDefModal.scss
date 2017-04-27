@@ -34,6 +34,7 @@
 
 .api-param-def-table {
   border: 1px solid $light-gray-color;
+  table-layout:fixed;
 
   .validation-table-header-left {
     padding-left: 50px;
@@ -109,3 +110,11 @@
   text-align: center;
 }
 
+.param-name {
+  width: 100%;
+  display: block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+
+}
