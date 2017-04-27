@@ -1,4 +1,4 @@
-# Fastrack analytics for your business. Use SQueaLy #
+# Fast track analytics for your business. Use SQueaLy #
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy/?template=https://github.com/hashedin/squealy/tree/phase-2)  
 [![Build Status](https://travis-ci.org/hashedin/squealy.svg?branch=phase-2)](https://travis-ci.org/hashedin/squealy)
@@ -84,6 +84,10 @@ Athena, Redshift, Mysql, Postgres, Sqlite,
 The app is deployed and the first chart has already been created for you. Hit the **Run** button and you can see the data/visualization in the results section.
 
 ## Usage
+
+<p align="center">
+  <img src="./Readme-mediafiles/auth_interface.png" />
+</p>
 
 ### Managing Permissions (Chart-level Authorization)
 SQueaLy uses Django's default permission model for managing chart level authorization.
