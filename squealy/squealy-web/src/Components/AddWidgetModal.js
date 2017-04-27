@@ -4,8 +4,8 @@ import { SquealyModal, SquealyDropdown } from './SquealyUtilsComponents'
 import { FormErrorMessage } from './ErrorMessageComponent'
 
 export default class AddWidgetModal extends Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
       widgetName: '',
       widgetNameError: '',
@@ -65,6 +65,15 @@ export default class AddWidgetModal extends Component {
     })
   }
 
+  removeErrorInstance = () => {
+    this.setState({
+      widgetName: '',
+      widgetNameError: '',
+      database: '',
+      errorInName: false
+    }, this.props.closeModal)
+  }
+
   render () {
     const {
       selectedWidgetHandler,
@@ -109,7 +118,7 @@ export default class AddWidgetModal extends Component {
     return (
       <SquealyModal
         modalId={modalId}
-        closeModal={closeModal}
+        closeModal={this.removeErrorInstance}
         showModal={showModal}
         modalHeader= {modalHeading}
         modalContent={modalContent}

@@ -183,7 +183,9 @@ export function getEmptyParamDefinition(apiIndex) {
     data_type: 'string',
     mandatory: false,
     default_value: '',
-    kwargs: {},
+    kwargs: {
+      format: ''
+    },
     test_value: '',
     dropdown_api: '',
     is_parameterized: false
