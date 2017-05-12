@@ -266,7 +266,10 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 **Database Setup**
-SQuealy needs a postgres database to run. Create a database and a user with **Create DB** role. (To run test cases). Use the following command on psql to grant this access to a user:
+
+An Sqlite database setup already exists in SQueaL's settings.py but if you want to use Postgres database, you can follow these instructions:
+
+Create a database and a user with **Create DB** role. (To run test cases). Use the following command on psql to grant this access to a user:
 ```
 ALTER USER username CREATEDB;
 ```
@@ -298,6 +301,12 @@ python manage.py migrate
 ```
 python manage.py runserver
 ```
+
+Now go to localhost:8000 and login with:
+
+**Username:** admin
+**Password:** admin@123
+
 
 **Running test cases**
 ```
