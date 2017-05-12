@@ -27,7 +27,7 @@ You can provide not only chart level view permissions but also user/parameter le
 You have a chain of hotels based on multiple locations. You create 5 reports which are to be viewed by  
 the managers of each hotel but you don't want the manager of one location to view the report of the  
 hotels not managed by him. Now if you write this logic in your own code, it is going to take a lot of  
-time but using SQueLy, this can be done in seconds.
+time but using SQueaLy, this can be done in seconds.
 ```
 
 **When you want scheduled emails embedded with reports**  
@@ -267,7 +267,7 @@ pip install -r requirements.txt
 ```
 **Database Setup**
 
-An Sqlite database setup already exists in SQueaL's settings.py but if you want to use Postgres database, you can follow these instructions:
+An Sqlite database setup already exists in SQueaLy's settings.py but if you want to use Postgres database, you can follow these instructions:
 
 Create a database and a user with **Create DB** role. (To run test cases). Use the following command on psql to grant this access to a user:
 ```
@@ -304,7 +304,7 @@ python manage.py runserver
 
 Now go to localhost:8000 and login with:
 
-**Username:** admin
+**Username:** admin  
 **Password:** admin@123
 
 
