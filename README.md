@@ -286,7 +286,7 @@ Before running the server, make sure to set the following environment variables 
 ```
 export KEY=VALUE
 ```
-- DATABASE_URL - This is the database that will be used by squealy internally for user management.
+- DATABASE_URL(Configure this only if you don't want to use the default sqlite db) - This is the database that will be used by squealy internally for user management.
 - QUERY_DB - This is the DB used to run the queries on. Enter comma separated URLs for multiple DBs.
 - ADMIN_USERNAME - This is the default admin's username that would be created with the first migration command.
 - ADMIN_PASS - This is the password for the default admin user.
@@ -302,7 +302,7 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-Now go to localhost:8000 and login with:
+Now go to localhost:8000 and login with the credentials you have exported in the environment. If you haven't configured the ADMIN_USERNAM and ADMIN_PASS in the environment the following will be the default credentials for the admin:
 
 **Username:** admin  
 **Password:** admin@123
