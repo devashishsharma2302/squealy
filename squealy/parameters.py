@@ -13,7 +13,7 @@ class Parameter():
 
 
 class String(Parameter):
-    def __init__(self, name, description=None, default_value=None, valid_values=None):
+    def __init__(self, name, description=None, default_value=None, valid_values=None, **kwargs):
         self.default_value = default_value
         self.valid_values = valid_values
         self.name = name
@@ -34,7 +34,7 @@ class String(Parameter):
 
 
 class Date(Parameter):
-    def __init__(self, name, description=None, default_value=None, format=None):
+    def __init__(self, name, description=None, default_value=None, format=None, **kwargs):
         self.default_value = default_value
         self.format = format
         self.name = name
@@ -74,7 +74,7 @@ class Date(Parameter):
 
 
 class Datetime(Parameter):
-    def __init__(self, name, description=None, default_value=None, format=None):
+    def __init__(self, name, description=None, default_value=None, format=None, **kwargs):
         self.datetime_macros = {"today": self.now, "now": self.now}
         self.default_value = default_value
         self.format = format
@@ -109,7 +109,7 @@ class Datetime(Parameter):
 
 
 class Number(Parameter):
-    def __init__(self, name, description=None, default_value=None, valid_values=None):
+    def __init__(self, name, description=None, default_value=None, valid_values=None, **kwargs):
         self.default_value = default_value
         self.valid_values = valid_values
         self.name = name
