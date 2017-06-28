@@ -254,6 +254,8 @@ To associate charts with scheduled reports i.e. to determine which report has to
 Here, just select a chart and the scheduled report and hit save. Doing so will associate one chart with the selected scheduled report. Repeat this for as many charts you want to associate to a scheduled report
 
 # Development
+NOTE: For development, make sure to use python2.x. Squealy does not support python 3.x yet
+
 ## Backend setup
 **Activate a virtual environment**
 ```
