@@ -129,6 +129,10 @@ if os.environ.get('AWS_ATHENA_S3_STAGING_DIR'):
         'AWS_SECRET_ACCESS_KEY': os.environ.get('AWS_SECRET_ACCESS_KEY'),
         'AWS_DEFAULT_REGION': os.environ.get('AWS_DEFAULT_REGION', 'us-east-1')
     }
+if os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'):
+    DATABASES['BigQuery'] = {
+        'NAME': 'BigQuery'
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators

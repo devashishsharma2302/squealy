@@ -8,7 +8,7 @@ from django.db.utils import IntegrityError
 from django.shortcuts import render
 from django.db import transaction
 from django.http import HttpResponse, JsonResponse
-
+from google.cloud import bigquery
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import permission_classes, api_view
@@ -104,7 +104,6 @@ class DataProcessor(object):
         """
         Process and return the result after executing the chart query
         """
-
         # Parse Parameters
         parameter_definitions = chart.parameters.all()
         if parameter_definitions:
@@ -122,6 +121,7 @@ class DataProcessor(object):
         if chart.transpose:
             table = Transpose().transform(table)
 
+        print table
         # Format the table according to google charts / highcharts etc
         data = self._format(table, chart.format, chart_type)
 
@@ -170,13 +170,15 @@ class DataProcessor(object):
                                                      "user": user
                                                     })
         conn = connections[str(db)]
-        if conn.settings_dict['NAME'] == 'Athena':
-            conn = connect(driver_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'athena-jdbc/AthenaJDBC41-1.0.0.jar'))
-        with conn.cursor() as cursor:
-            cursor.execute(query, bind_params)
+        if conn.settings_dict['NAME'] == 'BigQuery':
+            client = bigquery.Client()
+            # Todo: Make this SQL Injection safe by binding parameters via google-cloud-bigquery library
+            query = client.run_sync_query(query % tuple(bind_params))
+            query.run()
             rows = []
-            cols = [desc[0] for desc in cursor.description]
-            for db_row in cursor:
+            cols = [column._name for column in query.schema]
+
+            for db_row in query.rows:
                 row_list = []
                 for col in db_row:
                     value = col
@@ -187,7 +189,28 @@ class DataProcessor(object):
                         value = value
                     row_list.append(value)
                 rows.append(row_list)
-        return Table(columns=cols, data=rows)
+            return Table(columns=cols, data=rows)
+
+        else:
+            if conn.settings_dict['NAME'] == 'Athena':
+                conn = connect(driver_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'athena-jdbc/AthenaJDBC41-1.0.0.jar'))
+            with conn.cursor() as cursor:
+                cursor.execute(query, bind_params)
+                rows = []
+                cols = [desc[0] for desc in cursor.description]
+                print cols
+                for db_row in cursor:
+                    row_list = []
+                    for col in db_row:
+                        value = col
+                        if isinstance(value, str):
+                            # If value contains a non english alphabet
+                            value = value.encode('utf-8')
+                        else:
+                            value = value
+                        row_list.append(value)
+                    rows.append(row_list)
+            return Table(columns=cols, data=rows)
 
     def _format(self, table, format, chart_type='Table'):
         if format:
