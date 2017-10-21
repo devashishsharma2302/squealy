@@ -17,7 +17,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from pyathenajdbc import connect
 
 from squealy.constants import SQL_WRITE_BLACKLIST, SWAGGER_JSON_TEMPLATE, SWAGGER_DICT
 from squealy.jinjasql_loader import configure_jinjasql
@@ -192,8 +191,6 @@ class DataProcessor(object):
             return Table(columns=cols, data=rows)
 
         else:
-            if conn.settings_dict['NAME'] == 'Athena':
-                conn = connect(driver_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'athena-jdbc/AthenaJDBC41-1.0.0.jar'))
             with conn.cursor() as cursor:
                 cursor.execute(query, bind_params)
                 rows = []
