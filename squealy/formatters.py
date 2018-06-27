@@ -1,5 +1,7 @@
 import decimal
 
+from past.builtins import long
+
 from squealy.exceptions import InvalidChartDataException
 from squealy.transformers import Split
 
