@@ -1,9 +1,11 @@
+from __future__ import absolute_import
+
 from datetime import datetime
 
 from croniter import croniter
 from django.forms import ModelForm, ValidationError
 
-from models import ScheduledReport
+from .models import ScheduledReport
 from squealy.widgets import HtmlEditor
 
 

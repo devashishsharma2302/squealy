@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from django.contrib import admin
 from django.template.defaultfilters import escape
 from django.core.urlresolvers import reverse
@@ -11,7 +13,7 @@ from social_django.admin import UserSocialAuthOption, NonceOption, AssociationOp
 from squealy.models import Account, Chart, Parameter,\
     Transformation, Validation, ScheduledReport, ReportParameter,\
     ReportRecipient, ScheduledReportChart, Filter, FilterParameter
-from forms import ScheduledReportForm
+from .forms import ScheduledReportForm
 
 
 class ReportRecipientAdmin(admin.TabularInline):
